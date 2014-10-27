@@ -1,8 +1,14 @@
 from mongoengine import Document, \
     StringField, BooleanField, IntField, \
     ListField, EmbeddedDocumentField, EmbeddedDocument, ReferenceField, CASCADE, \
-    ValidationError
+    ValidationError, QuerySet
 from mongoengine_extras.fields import slugify, SlugField
+from bson import json_util
+
+
+class CustomQuerySet(QuerySet):
+    def to_json(self):
+        return "[%s]" % (",".join([doc.to_json() for doc in self]))
 
 
 class User(Document):
@@ -14,17 +20,23 @@ class User(Document):
     }
 
 
-class Card(EmbeddedDocument):
+class Card(Document):
     title = StringField(max_length=100, required=True)
     description = StringField(max_length=500)
     labels = ListField(StringField(max_length=50))
+
+
+class CardTransition(EmbeddedDocument):
+    card = ReferenceField(Card)
+    who = ReferenceField(User)
+    active = BooleanField(default=True)
 
 
 class Column(EmbeddedDocument):
     title = StringField(max_length=100, required=True)
     max_cards = IntField()
     min_cards = IntField()
-    cards = ListField(EmbeddedDocumentField(Card))
+    cards = ListField(EmbeddedDocumentField(CardTransition))
 
 
 class Project(Document):
@@ -37,9 +49,18 @@ class Project(Document):
                            reverse_delete_rule=CASCADE)
     columns = ListField(EmbeddedDocumentField(Column))
     slug = SlugField()
+
     meta = {
-        'indexes': ['name', 'slug']
+        'indexes': ['name', 'slug'],
+        'queryset_class': CustomQuerySet
     }
+
+    def to_json(self):
+        data = self.to_mongo()
+        data["owner"] = self.owner.to_mongo()
+        data["owner"]["id"] = str(self.owner.pk)
+        del data["owner"]["_id"]
+        return json_util.dumps(data)
 
     def clean(self):
         if self.owner is None:

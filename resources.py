@@ -1,5 +1,5 @@
 from flask.ext.restful import Resource, request
-from schemas import User, Column, Project
+from schemas import User, Column, Project, CardTransition, Card
 
 
 class ProjectList(Resource):

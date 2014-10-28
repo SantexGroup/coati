@@ -1,5 +1,7 @@
+from flask import jsonify
 from flask.ext.restful import Resource, request
-from schemas import User, Column, Project, CardTransition, Card
+from werkzeug.exceptions import BadRequest
+from schemas import User, Column, Project
 
 
 class ProjectList(Resource):
@@ -9,20 +11,30 @@ class ProjectList(Resource):
 
 
     def get(self):
-        return Project.objects.all().to_json()
+        return Project.objects.all().to_json(), 200
 
     def post(self):
-        data = request.json
+        """
+        Create Project with 3 default columns
+        """
+        try:
+            data = request.json
+        except BadRequest, e:
+            msg = "payload must be a valid json"
+            return jsonify({"error": msg}), 400
+        try:
+            user = User.objects.get(id=data.get('owner'))
+        except User.DoesNotExist, e:
+            return jsonify({"error": 'owner user does not exist'}), 400
+
         prj = Project(name=data.get('name'),
-                      owner=User.objects.get(id=data.get('owner')).to_dbref())
+                      owner=user.to_dbref())
         prj.active = data.get('active')
         prj.private = data.get('private')
         prj.description = data.get('description')
-
-        for col in data.get('columns'):
+        for idx in ['ToDo', 'In Progress', 'Done']:
             column = Column()
-            column.title = col.get('title')
-            column.max_cards = col.get('max_cards')
+            column.title = idx
             prj.columns.append(column)
         prj.save()
         return prj.to_json(), 201
@@ -30,8 +42,8 @@ class ProjectList(Resource):
 
 class ProjectInstance(Resource):
 
-    def get(self, project_id):
-        return Project.objects(id=project_id).to_json()
+    def get(self, slug):
+        return Project.objects(slug=slug).to_json()
 
     def put(self, project_id):
         pass

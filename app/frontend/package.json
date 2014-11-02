@@ -1,0 +1,40 @@
+{
+  "author": "Gaston Robledo",
+  "name": "KoalaBoard",
+  "version": "0.1.0",
+  "homepage": "https://bitbucket.org/alejandrocragnolini/koala-board",
+  "licenses": {
+    "type": "MIT",
+    "url": "https://bitbucket.org/alejandrocragnolini/koala-board"
+  },
+  "bugs": "https://bitbucket.org/alejandrocragnolini/koala-board/issues",
+  "repository": {
+    "type": "git",
+    "url": "git@bitbucket.org:alejandrocragnolini/koala-board.git"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-recess": "~0.3.0",
+    "grunt-contrib-clean": "~0.4.1",
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-contrib-jshint": "~0.4.3",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-uglify": "~0.2.0",
+    "grunt-karma": "~0.8.0",
+    "grunt-ngmin": "0.0.2",
+    "grunt-html2js": "~0.1.3",
+    "grunt-contrib-coffee": "~0.7.0",
+    "grunt-coffeelint": "0.0.6",
+    "grunt-conventional-changelog": "~0.1.1",
+    "grunt-bump": "0.0.6",
+    "grunt-contrib-less": "~0.9.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "karma-ng-scenario": "latest",
+    "karma-chrome-launcher": "~0.1.3",
+    "karma-firefox-launcher": "~0.1.3",
+    "karma-jasmine": "~0.1.5",
+    "karma-coffee-preprocessor": "~0.2.1",
+    "karma-phantomjs-launcher": "~0.1.4"
+  }
+}

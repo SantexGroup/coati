@@ -2,5 +2,6 @@ flask==0.10.1
 flask-mongoengine==0.7.1
 flask-restful==0.2.12
 flask-oauth==0.12
+flask-classy==0.6.10
 mongoengine==0.8.7
 mongoengine-extras==0.0.1

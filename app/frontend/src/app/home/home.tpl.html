@@ -1,0 +1,40 @@
+<div class="row" style="margin-bottom:10px;">
+    <div class="col-lg-12">
+        <button type="button" class="btn btn-primary"><i
+                class="icon-tasks"></i> New Project
+        </button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <h4>Projects</h4>
+
+        <p data-ng-show="projects.length < 1">You don't have Projects created
+            yet!</p>
+
+        <!--widget start-->
+        <aside class="profile-nav alt blue-border col-lg-3"
+               style="margin-right: 5px"
+               ng-repeat="item in projects track by item._id.$oid"
+               data-index="<[ $index ]>">
+            <section class="panel">
+                <div class="user-heading alt blue-bg">
+                    <h1>
+                        <a href="/project/<[ item.slug ]>/"><[
+                            item.name
+                            ]></a>
+                    </h1>
+                </div>
+                <p><[ item.description ]></p>
+                <ul class="nav nav-pills nav-stacked">
+                    <li>
+                        <span class="label"
+                              data-ng-class="{true: 'label-sucess', false: 'label-danger'}[item.active]"></span>
+                    </li>
+                </ul>
+
+            </section>
+        </aside>
+        <!--widget end-->
+    </div>
+</div>

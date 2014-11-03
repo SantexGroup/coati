@@ -1,4 +1,4 @@
-angular.module('templates-app', ['extras/404.tpl.html', 'home/home.tpl.html', 'project/project.tpl.html', 'user/user.tpl.html']);
+angular.module('templates-app', ['extras/404.tpl.html', 'home/home.tpl.html', 'project/board.tpl.html', 'project/overview.tpl.html', 'project/project.tpl.html', 'project/reports.tpl.html', 'project/settings.tpl.html', 'user/user.tpl.html']);
 
 angular.module("extras/404.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("extras/404.tpl.html",
@@ -58,6 +58,16 @@ angular.module("home/home.tpl.html", []).run(["$templateCache", function($templa
     "</div>");
 }]);
 
+angular.module("project/board.tpl.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("project/board.tpl.html",
+    "<h2>Board view</h2>");
+}]);
+
+angular.module("project/overview.tpl.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("project/overview.tpl.html",
+    "<h2><[ project.name ]></h2>");
+}]);
+
 angular.module("project/project.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("project/project.tpl.html",
     "<div class=\"row\">\n" +
@@ -65,33 +75,48 @@ angular.module("project/project.tpl.html", []).run(["$templateCache", function($
     "        <section class=\"panel\">\n" +
     "            <header class=\"panel-heading tab-bg-dark-navy-blue \">\n" +
     "                <ul class=\"nav nav-tabs\">\n" +
-    "                    <li class=\"\">\n" +
-    "                        <a data-toggle=\"tab\" href=\"#home\">Overview</a>\n" +
+    "                    <li ng-class=\"{active:overview}\">\n" +
+    "                        <a data-toggle=\"tab\" ng-click=\"switchView('project.overview');\">Overview</a>\n" +
     "                    </li>\n" +
-    "                    <li class=\"active\">\n" +
-    "                        <a data-toggle=\"tab\" href=\"#about\">Board</a>\n" +
+    "                    <li ng-class=\"{active:board}\">\n" +
+    "                        <a data-toggle=\"tab\"  ng-click=\"switchView('project.board');\">Board</a>\n" +
     "                    </li>\n" +
-    "                    <li class=\"\">\n" +
-    "                        <a data-toggle=\"tab\" href=\"#profile\">Reports</a>\n" +
+    "                    <li ng-class=\"{active:reports}\">\n" +
+    "                        <a data-toggle=\"tab\" ng-click=\"switchView('project.reports');\">Reports</a>\n" +
     "                    </li>\n" +
-    "                    <li class=\"\">\n" +
-    "                        <a data-toggle=\"tab\" href=\"#contact\">Settings</a>\n" +
+    "                    <li ng-class=\"{active:settings}\">\n" +
+    "                        <a data-toggle=\"tab\" ng-click=\"switchView('project.settings');\">Settings</a>\n" +
     "                    </li>\n" +
     "                </ul>\n" +
     "            </header>\n" +
     "            <div class=\"panel-body\">\n" +
     "                <div class=\"tab-content\">\n" +
-    "                    <div id=\"home\" class=\"tab-pane\">\n" +
-    "                        <h2><[ project.name ]></h2>\n" +
+    "                    <div id=\"overview\" ui-view=\"project-overview\"\n" +
+    "                         class=\"tab-pane\" ng-class=\"{active:overview}\"></div>\n" +
+    "                    <div id=\"board\" ui-view=\"project-board\" class=\"tab-pane\"\n" +
+    "                         ng-class=\"{active:board}\">Board View\n" +
     "                    </div>\n" +
-    "                    <div id=\"about\" class=\"tab-pane active\">Board View</div>\n" +
-    "                    <div id=\"profile\" class=\"tab-pane\">Reports</div>\n" +
-    "                    <div id=\"contact\" class=\"tab-pane\">Settings</div>\n" +
+    "                    <div id=\"reports\" ui-view=\"project-reports\" class=\"tab-pane\"\n" +
+    "                         ng-class=\"{active:reports}\">Reports\n" +
+    "                    </div>\n" +
+    "                    <div id=\"settings\" ui-view=\"project-settings\"\n" +
+    "                         class=\"tab-pane\" ng-class=\"{active:settings}\">Settings\n" +
+    "                    </div>\n" +
     "                </div>\n" +
     "            </div>\n" +
     "        </section>\n" +
     "    </div>\n" +
     "</div>");
+}]);
+
+angular.module("project/reports.tpl.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("project/reports.tpl.html",
+    "<h2>Reports View</h2>");
+}]);
+
+angular.module("project/settings.tpl.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("project/settings.tpl.html",
+    "<h2>Settings View</h2>");
 }]);
 
 angular.module("user/user.tpl.html", []).run(["$templateCache", function($templateCache) {

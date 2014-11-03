@@ -262,7 +262,7 @@
         <li dropdown data-ng-controller="UserCtrl" update-profile>
             <a class="dropdown-toggle user_picture" href="#">
                 <img alt="" src="/frontend/build/assets/img/koala.png">
-                <span class="username">{{ user.first_name }}</span>
+                <span class="username">{{ user.email }}</span>
                 <b class="caret"></b>
             </a>
             <ul class="dropdown-menu extended logout">
@@ -305,7 +305,12 @@
 <script type="text/javascript"
         src="http://localhost:9000/socket.io/socket.io.js"></script>
 <script>
-    var username = '{{ user }}';
+    var username = {
+        email: '{{ user.email }}',
+        first_name: '{{ user.first_name }}',
+        last_name: '{{ user.last_name }}',
+        id: '{{ user._id["$oid"] }}'
+    };
 </script>
 
 

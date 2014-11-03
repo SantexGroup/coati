@@ -44,7 +44,7 @@ class ProjectList(Resource):
 class ProjectInstance(Resource):
 
     def get(self, slug):
-        return Project.objects(slug=slug).to_json()
+        return Project.objects.get(slug=slug).to_json()
 
     def put(self, project_id):
         pass

@@ -52,40 +52,13 @@ angular.module('KoalaApp.ApiServices', ['KoalaApp.Utils'])
             }
         };
     })
-    .factory('ClientService', function ($requests) {
-        var BASE_URL = '/clients/';
-        return {
-            query: function () {
-                return $requests.$do(BASE_URL, $requests.METHODS.GET);
-            },
-            update: function (organization, data) {
-                return $requests.$do(organization.url, $requests.METHODS.UPDATE, data);
-            },
-            save: function (data) {
-                return $requests.$do(BASE_URL, $requests.METHODS.POST, data);
-            },
-            erase: function (organization) {
-                var url = BASE_URL + organization.slug;
-                return $requests.$do(url, $requests.METHODS.DELETE);
-            },
-            get: function (slug) {
-                var url = BASE_URL + slug;
-                return $requests.$do(url, $requests.METHODS.GET);
-            },
-            projects: function(client){
-                var url = BASE_URL + client + '/projects/';
-                return $requests.$do(url, $requests.METHODS.GET);
-            }
-        };
-    })
     .factory('ProjectService', function ($requests) {
-        var BASE_URL = '/projects';
         return {
             query: function () {
-                return $requests.$do(BASE_URL, $requests.METHODS.GET);
+                return $requests.$do('/projects', $requests.METHODS.GET);
             },
             get: function(slug){
-                var url = BASE_URL + '/' + slug;
+                var url = '/project/' + slug;
                 return $requests.$do(url, $requests.METHODS.GET);
             }
         };

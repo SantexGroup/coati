@@ -3,28 +3,33 @@
         <section class="panel">
             <header class="panel-heading tab-bg-dark-navy-blue ">
                 <ul class="nav nav-tabs">
-                    <li class="">
-                        <a data-toggle="tab" href="#home">Overview</a>
+                    <li ng-class="{active:overview}">
+                        <a data-toggle="tab" ng-click="switchView('project.overview');">Overview</a>
                     </li>
-                    <li class="active">
-                        <a data-toggle="tab" href="#about">Board</a>
+                    <li ng-class="{active:board}">
+                        <a data-toggle="tab"  ng-click="switchView('project.board');">Board</a>
                     </li>
-                    <li class="">
-                        <a data-toggle="tab" href="#profile">Reports</a>
+                    <li ng-class="{active:reports}">
+                        <a data-toggle="tab" ng-click="switchView('project.reports');">Reports</a>
                     </li>
-                    <li class="">
-                        <a data-toggle="tab" href="#contact">Settings</a>
+                    <li ng-class="{active:settings}">
+                        <a data-toggle="tab" ng-click="switchView('project.settings');">Settings</a>
                     </li>
                 </ul>
             </header>
             <div class="panel-body">
                 <div class="tab-content">
-                    <div id="home" class="tab-pane">
-                        <h2><[ project.name ]></h2>
+                    <div id="overview" ui-view="project-overview"
+                         class="tab-pane" ng-class="{active:overview}"></div>
+                    <div id="board" ui-view="project-board" class="tab-pane"
+                         ng-class="{active:board}">Board View
                     </div>
-                    <div id="about" class="tab-pane active">Board View</div>
-                    <div id="profile" class="tab-pane">Reports</div>
-                    <div id="contact" class="tab-pane">Settings</div>
+                    <div id="reports" ui-view="project-reports" class="tab-pane"
+                         ng-class="{active:reports}">Reports
+                    </div>
+                    <div id="settings" ui-view="project-settings"
+                         class="tab-pane" ng-class="{active:settings}">Settings
+                    </div>
                 </div>
             </div>
         </section>

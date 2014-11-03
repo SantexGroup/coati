@@ -1,4 +1,4 @@
-import os
+import os, json
 from jinja2 import ChoiceLoader, FileSystemLoader
 from flask import Flask, blueprints, render_template, session
 from flask.ext.mongoengine import MongoEngine
@@ -29,18 +29,14 @@ auth.init_app(app)
 api.init_app(app)
 
 
-## Default Routes
-@app.route('/')
-def index():
+# # Default Routes
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def index(path):
     user = session.get('user')
     if not user:
         return render_template('login.html')
     else:
-        return to_angular(path='', user=user)
-
-
-@app.route('/<path:path>')
-def to_angular(path, user=None):
-    return render_template('index.html', user=user)
+        return render_template('index.html', user=json.loads(user))
 
 

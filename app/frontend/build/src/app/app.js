@@ -41,7 +41,7 @@
 
         scope.$on('$stateChangeSuccess', function (event, toState) {
             if (angular.isDefined(toState.data.pageTitle)) {
-                scope.pageTitle = toState.data.pageTitle + ' | Koala';
+                scope.pageTitle = toState.data.pageTitle + ' | Coati';
             }
             scope.actual_path = toState.name;
         });

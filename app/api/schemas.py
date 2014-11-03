@@ -63,6 +63,12 @@ class Ticket(mongoengine.Document):
             self.number = 1
 
 
+class Comment(mongoengine.Document):
+    comment = mongoengine.StringField()
+    who = mongoengine.ReferenceField(User)
+    ticket = mongoengine.ReferenceField(Ticket)
+
+
 class Sprint(mongoengine.Document):
     name = mongoengine.StringField(max_length=100, required=True)
     tickets = mongoengine.ListField(mongoengine.ReferenceField(Ticket))

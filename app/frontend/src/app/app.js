@@ -55,7 +55,7 @@
         'templates-app', 'templates-common',
         'ui.router', 'ui.bootstrap', 'ngCookies',
         'Koala.Config', 'KoalaApp.Directives', 'KoalaApp.Home',
-        'KoalaApp.User', 'Koala.Projects', 'KoalaApp.Errors'])
+        'KoalaApp.User', 'Koala.Projects', 'Koala.Tickets', 'KoalaApp.Errors'])
         .config(ConfigApp)
         .filter('getByProperty', filterGetByProperty)
         .filter('getIndexByProperty', filterGetIndexByProperty)

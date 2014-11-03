@@ -73,6 +73,8 @@
             });
     }
 
+
+
     function ProjectCtrl(scope, state) {
 
         scope.switchView = function (view) {
@@ -99,23 +101,6 @@
             scope.project = prj;
             getTickets(prj._id.$oid);
         });
-
-        scope.show_ticket_form = function () {
-            var modalDeleteInstance = modal.open({
-                templateUrl: 'ticket/ticket_form.tpl.html',
-                controller: 'TicketModalFormController',
-                resolve: {
-                    Project: function () {
-                        return scope.project;
-                    }
-                }
-            });
-            modalDeleteInstance.result.then(function () {
-                getTickets(scope.project._id.$oid);
-            }, function (err) {
-                console.log(err);
-            });
-        };
     }
 
     function ProjectCtrlBoard(scope, state, ProjectService) {
@@ -139,8 +124,7 @@
 
     angular.module('Koala.Projects', ['ui.router',
         'KoalaApp.Directives',
-        'KoalaApp.ApiServices',
-        'Koala.Tickets'])
+        'KoalaApp.ApiServices'])
         .config(ConfigModule)
         .controller('ProjectCtrl', ProjectCtrl)
         .controller('ProjectCtrlOverview', ProjectCtrlOverview)

@@ -1,55 +1,58 @@
-<form name="form.ticket_form" class="form-horizontal" ng-submit="save()"
-      novalidate>
-    <div class="modal-header">
+<section class="panel">
+    <header class="panel-heading">
         <h4 class="modal-title">
             New Ticket
         </h4>
-    </div>
-    <div class="modal-body">
-        <div class="alert alert-block alert-danger fade in"
-             data-ng-repeat="alert in alerts">
-            <button data-dismiss="alert" data-ng-click="closeAlert($index)"
-                    class="close close-sm" type="button">
-                <i class="icon-remove"></i>
-            </button>
-            <[ alert.msg ]>
-        </div>
-        <div class="form-group">
-            <label class="control-label col-md-2">Title</label>
+    </header>
+    <div class="panel-body">
+        <div class="col-md-12">
 
-            <div class="col-md-7">
-                <input class="form-control"
-                       data-ng-class="{'error': form.ticket_form.title.$invalid && submitted}"
-                       autocomplete="off"
-                       placeholder="Title" data-ng-model="ticket.title"
-                       name="title" type="text" required>
-                <label for="title" class="error"
-                       data-ng-show="form.ticket_form.title.$invalid && submitted">Please
-                    enter a title</label>
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="control-label col-md-2">Description</label>
 
-            <div class="col-md-7">
-                <textarea class="form-control" rows="3"
-                          name="description"
-                          data-ng-model="ticket.description"></textarea>
+            <div class="alert alert-block alert-danger fade in"
+                 data-ng-repeat="alert in alerts">
+                <button data-dismiss="alert" data-ng-click="closeAlert($index)"
+                        class="close close-sm" type="button">
+                    <i class="icon-remove"></i>
+                </button>
+                <[ alert.msg ]>
             </div>
-        </div>
-        <div class="form-group">
-            <label class="control-label col-md-2">Labels</label>
-            <div class="col-md-7">
-                <tags-input ng-model="labels" replace-spaces-with-dashes="false" placeholder="Add Label"></tags-input>
-            </div>
+
+            <form name="form.ticket_form" class="form-horizontal"
+                  ng-submit="save()"
+                  novalidate>
+
+                <div class="form-group">
+                    <label>Title</label>
+                    <input class="form-control"
+                           data-ng-class="{'error': form.ticket_form.title.$invalid && submitted}"
+                           autocomplete="off"
+                           placeholder="Title" data-ng-model="ticket.title"
+                           name="title" type="text" required>
+                    <label for="title" class="error"
+                           data-ng-show="form.ticket_form.title.$invalid && submitted">Please
+                        enter a title</label>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea class="form-control" rows="3"
+                              name="description"
+                              data-ng-model="ticket.description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Labels</label>
+                    <tags-input ng-model="labels"
+                                replace-spaces-with-dashes="false"
+                                placeholder="Add Label"></tags-input>
+                </div>
+
+                <button class="btn btn-primary"
+                        type="submit">Save
+                </button>
+                <button class="btn btn-warning"
+                        data-ng-click="cancel();">Cancel
+                </button>
+
+            </form>
         </div>
     </div>
-    <div class="modal-footer">
-        <button class="btn btn-primary"
-                type="submit">Save
-        </button>
-        <button class="btn btn-warning"
-                data-ng-click="cancel();">Cancel
-        </button>
-    </div>
-</form>
+</section>

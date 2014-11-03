@@ -1,1 +1,38 @@
-<h2><[ project.name ]></h2>
+<h3><[ project.name ]></h3>
+<p><[ project.description ]></p>
+<hr/>
+<div class="row">
+    <div class="col-md-12">
+        <section class="panel tasks-widget">
+            <header class="panel-heading">
+                <h4 class="pull-left" style="padding:0px;margin:0px;">Tasks / User Stories</h4>
+                <div class="add-task-row pull-right">
+                    <a class="btn btn-success btn-sm pull-left" href="#" ng-click="show_ticket_form();">Add New
+                        Task</a>
+                </div>
+                <div style="clear:both"></div>
+            </header>
+            <div class="panel-body">
+                <div class="task-content" >
+                    <ul class="task-list">
+                        <li ng-repeat="ticket in tickets track by ticket._id.$oid">
+                            <div class="task-title">
+                                <span class="task-title-sp">
+                                  <[ project.prefix ]>-<[ ticket.number ]>: <[ ticket.title ]>
+                                </span>
+                                <div class="pull-right hidden-phone">
+                                    <button class="btn btn-success btn-xs"><i
+                                            class="icon-ok"></i></button>
+                                    <button class="btn btn-primary btn-xs"><i
+                                            class="icon-pencil"></i></button>
+                                    <button class="btn btn-danger btn-xs"><i
+                                            class="icon-trash "></i></button>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

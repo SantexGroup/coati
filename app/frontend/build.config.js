@@ -72,14 +72,16 @@ module.exports = {
             'vendor/jquery-ui/ui/minified/jquery-ui.min.js',
             'vendor/angular-cookies/angular-cookies.min.js',
             'vendor/bootstrap/dist/js/bootstrap.min.js',
-            'vendor/html5shiv/dist/html5shiv.min.js'
+            'vendor/html5shiv/dist/html5shiv.min.js',
+            'vendor/ng-tags-input/ng-tags-input.min.js'
         ],
         maps: [
             'vendor/jquery/dist/jquery.min.map',
             'vendor/angular-cookies/angular-cookies.min.js.map'
         ],
         css: [
-            'vendor/angular-notifications/notification.min.css'
+            'vendor/angular-notifications/notification.min.css',
+            'vendor/ng-tags-input/ng-tags-input.min.css'
         ],
         assets: [],
         fonts: [

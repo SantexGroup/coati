@@ -57,9 +57,19 @@ angular.module('KoalaApp.ApiServices', ['KoalaApp.Utils'])
             query: function () {
                 return $requests.$do('/projects', $requests.METHODS.GET);
             },
-            get: function(slug){
+            get: function (slug) {
                 var url = '/project/' + slug;
                 return $requests.$do(url, $requests.METHODS.GET);
+            }
+        };
+    })
+    .factory('TicketService', function ($requests) {
+        return {
+            query: function (project_pk) {
+                return $requests.$do('/tickets/' + project_pk, $requests.METHODS.GET);
+            },
+            save: function(project_pk, tkt){
+                return $requests.$do('/tickets/' + project_pk, $requests.METHODS.POST, tkt);
             }
         };
     });

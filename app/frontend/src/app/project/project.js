@@ -73,24 +73,49 @@
             });
     }
 
-    function ProjectCtrl(scope, state){
+    function ProjectCtrl(scope, state) {
 
-        scope.switchView = function(view){
-          state.go(view, {slug: state.params.slug}, {reload:true});
+        scope.switchView = function (view) {
+            state.go(view, {slug: state.params.slug}, {reload: true});
         };
-        if(state.current.tab_active) {
+        if (state.current.tab_active) {
             scope.tab_active = state.current.tab_active;
             scope[scope.tab_active] = true;
             scope.slug = state.params.slug;
-        }else{
-            state.go('project.overview', {slug: state.params.slug}, {reload:true});
+        } else {
+            state.go('project.overview', {slug: state.params.slug}, {reload: true});
         }
     }
 
-    function ProjectCtrlOverview(scope, state, ProjectService) {
+    function ProjectCtrlOverview(scope, state, modal, ProjectService, TicketService) {
+
+        var getTickets = function(project_id){
+            TicketService.query(project_id).then(function (tickets) {
+                scope.tickets = tickets;
+            });
+        };
+
         ProjectService.get(state.params.slug).then(function (prj) {
             scope.project = prj;
+            getTickets(prj._id.$oid);
         });
+
+        scope.show_ticket_form = function () {
+            var modalDeleteInstance = modal.open({
+                templateUrl: 'ticket/ticket_form.tpl.html',
+                controller: 'TicketModalFormController',
+                resolve: {
+                    Project: function () {
+                        return scope.project;
+                    }
+                }
+            });
+            modalDeleteInstance.result.then(function () {
+                getTickets(scope.project._id.$oid);
+            }, function (err) {
+                console.log(err);
+            });
+        };
     }
 
     function ProjectCtrlBoard(scope, state, ProjectService) {
@@ -107,14 +132,15 @@
 
     ConfigModule.$inject = ['$stateProvider'];
     ProjectCtrl.$inject = ['$scope', '$state'];
-    ProjectCtrlOverview.$inject = ['$scope', '$state', 'ProjectService'];
+    ProjectCtrlOverview.$inject = ['$scope', '$state', '$modal', 'ProjectService', 'TicketService'];
     ProjectCtrlBoard.$inject = ['$scope', '$state', 'ProjectService'];
     ProjectCtrlReports.$inject = ['$scope', '$state', 'ProjectService'];
     ProjectCtrlSettings.$inject = ['$scope', '$state', 'ProjectService'];
 
     angular.module('Koala.Projects', ['ui.router',
         'KoalaApp.Directives',
-        'KoalaApp.ApiServices'])
+        'KoalaApp.ApiServices',
+        'Koala.Tickets'])
         .config(ConfigModule)
         .controller('ProjectCtrl', ProjectCtrl)
         .controller('ProjectCtrlOverview', ProjectCtrlOverview)

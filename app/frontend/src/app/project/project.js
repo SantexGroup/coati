@@ -91,16 +91,28 @@
 
     function ProjectCtrlOverview(scope, state, modal, ProjectService, TicketService) {
 
-        var getTickets = function(project_id){
+        var getBacklogTickets = function(project_id){
             TicketService.query(project_id).then(function (tickets) {
                 scope.tickets = tickets;
             });
         };
 
+        var getSprintsWithTickets = function(project_id){
+            ProjectService.get_sprints(project_id).then(function(sprints){
+                scope.sprints = sprints;
+            });
+        };
+
         ProjectService.get(state.params.slug).then(function (prj) {
             scope.project = prj;
-            getTickets(prj._id.$oid);
+            getBacklogTickets(prj._id.$oid);
         });
+
+        scope.create_sprint = function(){
+            ProjectService.add_sprint(scope.project._id.$oid).then(function(sprint){
+               scope.sprints.push(sprint);
+            });
+        }
     }
 
     function ProjectCtrlBoard(scope, state, ProjectService) {

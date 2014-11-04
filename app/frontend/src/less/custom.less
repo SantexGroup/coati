@@ -217,13 +217,53 @@ label.control-label {
   display: block;
   height: 50px
 }
+
 .dropdown-menu {
-  left:auto !important;
+  left: auto !important;
   right: 0px !important;
 }
-label.error{
+
+label.error {
   color: #FF0000;
 }
-input.error{
-    border:1px solid #FF0000;
+
+input.error {
+  border: 1px solid #FF0000;
+}
+
+.backlog header, .sprint-item header{
+  background: #eee;
+}
+.backlog .panel-body, .sprint-item .panel-body{
+  border-right: 1px solid #eee;
+  border-left: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+/* ******************************************* */
+/* Optional CSS, default style for ng-sortable */
+/* ******************************************* */
+
+.as-sortable-item, .as-sortable-placeholder {
+    min-height: 20px;
+    margin: 1px 2px 5px 1px;
+    border-radius: 10px;
+}
+
+.as-sortable-item-handle {
+}
+
+.as-sortable-placeholder {
+    border: 1px dashed #dddddd;
+    box-sizing: border-box;
+    background-color: #f1fbe5;
+}
+
+.as-sortable-drag {
+    opacity: .8;
+}
+
+.as-sortable-hidden {
 }

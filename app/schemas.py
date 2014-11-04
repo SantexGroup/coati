@@ -56,8 +56,11 @@ class Ticket(mongoengine.Document):
 
     def clean(self):
         try:
+            if self.project is None:
+                raise mongoengine.ValidationError('Project must be provided')
             ticket_max = \
-            Ticket.objects(project=self.project).order_by('-number').limit(1)[0]
+                Ticket.objects(project=self.project).order_by('-number').limit(
+                    1)[0]
             self.number = ticket_max.number + 1
         except Exception as ex:
             self.number = 1
@@ -68,13 +71,23 @@ class Comment(mongoengine.Document):
     who = mongoengine.ReferenceField(User)
     ticket = mongoengine.ReferenceField(Ticket)
 
+    def clean(self):
+        if self.who is None:
+            raise mongoengine.ValidationError('User must be provided')
+        if self.ticket is None:
+            raise mongoengine.ValidationError('Ticket must be provided')
+
 
 class Sprint(mongoengine.Document):
     name = mongoengine.StringField(max_length=100, required=True)
     tickets = mongoengine.ListField(mongoengine.ReferenceField(Ticket))
-    start_date = mongoengine.DateTimeField(required=True)
-    end_date = mongoengine.DateTimeField(required=True)
+    start_date = mongoengine.DateTimeField()
+    end_date = mongoengine.DateTimeField()
     project = mongoengine.ReferenceField(Project)
+
+    def clean(self):
+        if self.project is None:
+            raise mongoengine.ValidationError('Project must be provided')
 
 
 class Column(mongoengine.Document):
@@ -83,9 +96,21 @@ class Column(mongoengine.Document):
     min_cards = mongoengine.IntField()
     project = mongoengine.ReferenceField(Project)
 
+    def clean(self):
+        if self.project is None:
+            raise mongoengine.ValidationError('Project must be provided')
+
 
 class TicketTransition(mongoengine.Document):
     column = mongoengine.ReferenceField(Column)
     ticket = mongoengine.ReferenceField(Ticket)
     date = mongoengine.DateTimeField()
     who = mongoengine.ReferenceField(User)
+
+    def clean(self):
+        if self.column is None:
+            raise mongoengine.ValidationError('Column must be provided')
+        if self.ticket is None:
+            raise mongoengine.ValidationError('Ticket must be provided')
+        if self.who is None:
+            raise mongoengine.ValidationError('User must be provided')

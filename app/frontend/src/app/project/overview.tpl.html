@@ -1,46 +1,72 @@
 <h3>
     <[ project.name ]>
-    <a class="btn btn-success btn-sm pull-left"
+    <a class="btn btn-success btn-sm pull-right"
        href="/tickets-for/<[ project._id.$oid ]>/new-ticket">Add New
         Task</a>
 </h3>
 <p><[ project.description ]></p>
-<hr/>
 
-<div class="row">
+
+<div class="row" id="planning">
     <div class="col-md-12">
-        <section class="panel task-widget" ng-repeat="sprint in sprints">
-            <header class="panel-heading">
-                <span><[ sprint.name ]></span>
-            </header>
-            <div class="panel-body">
-                <div class="task-content">
-                    <ul class="task-list">
-                        <li ng-repeat="ticket in sprint.tickets track by ticket._id.$oid">
-                            <div class="task-title">
+        <ul class="sprint-section" as-sortable="dragControlListeners"
+            ng-model="data.sprints">
+            <li ng-repeat="sprint in data.sprints" as-sortable-item>
+                <section class="panel task-widget sprint-item">
+                    <header class="panel-heading" as-sortable-item-handle>
+                        <span><[ sprint.name ]></span>
+
+                        <div class="options pull-right">
+                            <a class="btn btn-sm btn-danger pull-left" ng-click="remove_sprint(sprint._id.$oid)">
+                                <i class="icon-remove"></i> Remove
+                            </a>
+                        </div>
+                        <div class="add-task-row pull-right"
+                             ng-if="$index == 0" style="margin-right:5px;">
+                            <a class="btn btn-primary btn-sm pull-left" href="#"
+                               ng-click="start_sprint();">Start Sprint</a>
+                        </div>
+                        <div style="clear:both"></div>
+                    </header>
+                    <div class="panel-body">
+                        <div class="task-content">
+                            <ul class="task-list">
+                                <li ng-repeat="ticket in sprint.tickets track by ticket._id.$oid">
+                                    <div class="task-title">
                                 <span class="task-title-sp">
                                   <[ project.prefix ]>-<[ ticket.number ]>: <[ ticket.title ]>
                                 </span>
 
-                                <div class="pull-right hidden-phone">
-                                    <button class="btn btn-success btn-xs"><i
-                                            class="icon-ok"></i></button>
-                                    <button class="btn btn-primary btn-xs"><i
-                                            class="icon-pencil"></i></button>
-                                    <button class="btn btn-danger btn-xs"><i
-                                            class="icon-trash "></i></button>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </section>
+                                        <div class="pull-right hidden-phone">
+                                            <button class="btn btn-success btn-xs">
+                                                <i
+                                                        class="icon-ok"></i>
+                                            </button>
+                                            <button class="btn btn-primary btn-xs">
+                                                <i
+                                                        class="icon-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-xs">
+                                                <i
+                                                        class="icon-trash "></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </li>
+        </ul>
+
         <section class="panel tasks-widget backlog">
             <header class="panel-heading">
                 <span>Backlog</span>
+
                 <div class="add-task-row pull-right">
-                    <a class="btn btn-primary btn-sm pull-left" href="#">Create
+                    <a class="btn btn-primary btn-sm pull-left" href="#"
+                       ng-click="create_sprint();">Create
                         Sprint</a>
                 </div>
                 <div style="clear:both"></div>
@@ -48,7 +74,7 @@
             <div class="panel-body">
                 <div class="task-content">
                     <ul class="task-list">
-                        <li ng-repeat="ticket in tickets track by ticket._id.$oid">
+                        <li ng-repeat="ticket in data.tickets track by ticket._id.$oid">
                             <div class="task-title">
                                 <span class="task-title-sp">
                                   <[ project.prefix ]>-<[ ticket.number ]>: <[ ticket.title ]>

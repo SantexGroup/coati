@@ -74,7 +74,6 @@
     }
 
 
-
     function ProjectCtrl(scope, state) {
 
         scope.switchView = function (view) {
@@ -89,30 +88,63 @@
         }
     }
 
-    function ProjectCtrlOverview(scope, state, modal, ProjectService, TicketService) {
+    function ProjectCtrlOverview(scope, state, modal, ProjectService, TicketService, SprintService) {
 
-        var getBacklogTickets = function(project_id){
+        scope.data = {};
+
+        var getBacklogTickets = function (project_id) {
             TicketService.query(project_id).then(function (tickets) {
-                scope.tickets = tickets;
+                scope.data.tickets = tickets;
             });
         };
 
-        var getSprintsWithTickets = function(project_id){
-            ProjectService.get_sprints(project_id).then(function(sprints){
-                scope.sprints = sprints;
+        var getSprintsWithTickets = function (project_id) {
+            SprintService.query(project_id).then(function (sprints) {
+                scope.data.sprints = sprints;
+            });
+        };
+
+
+        scope.dragControlListeners = {
+            accept: function (sourceItemHandleScope, destSortableScope) {
+                return true;
+            },
+            itemMoved: function (event) {
+                //do something
+            },
+            orderChanged: function (event) {
+                //do something
+            },
+            containment: '#planning'
+        };
+
+
+
+        scope.create_sprint = function () {
+            SprintService.save(scope.project._id.$oid).then(function (sprint) {
+                scope.data.sprints.push(sprint);
+            });
+        };
+
+        scope.remove_sprint = function (sprint_id) {
+            SprintService.erase(sprint_id).then(function (sprint) {
+                var index = -1;
+                angular.forEach(scope.data.sprints, function(item, key){
+                    if(item._id.$oid == sprint_id){
+                        index = key;
+                    }
+                });
+                if(index != -1) {
+                    scope.data.sprints.splice(index, 1);
+                }
             });
         };
 
         ProjectService.get(state.params.slug).then(function (prj) {
             scope.project = prj;
             getBacklogTickets(prj._id.$oid);
+            getSprintsWithTickets(prj._id.$oid);
         });
-
-        scope.create_sprint = function(){
-            ProjectService.add_sprint(scope.project._id.$oid).then(function(sprint){
-               scope.sprints.push(sprint);
-            });
-        }
     }
 
     function ProjectCtrlBoard(scope, state, ProjectService) {
@@ -129,12 +161,12 @@
 
     ConfigModule.$inject = ['$stateProvider'];
     ProjectCtrl.$inject = ['$scope', '$state'];
-    ProjectCtrlOverview.$inject = ['$scope', '$state', '$modal', 'ProjectService', 'TicketService'];
+    ProjectCtrlOverview.$inject = ['$scope', '$state', '$modal', 'ProjectService', 'TicketService', 'SprintService'];
     ProjectCtrlBoard.$inject = ['$scope', '$state', 'ProjectService'];
     ProjectCtrlReports.$inject = ['$scope', '$state', 'ProjectService'];
     ProjectCtrlSettings.$inject = ['$scope', '$state', 'ProjectService'];
 
-    angular.module('Koala.Projects', ['ui.router',
+    angular.module('Koala.Projects', ['ui.router', 'ui.sortable',
         'KoalaApp.Directives',
         'KoalaApp.ApiServices'])
         .config(ConfigModule)

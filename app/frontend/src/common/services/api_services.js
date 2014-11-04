@@ -72,4 +72,17 @@ angular.module('KoalaApp.ApiServices', ['KoalaApp.Utils'])
                 return $requests.$do('/tickets/' + project_pk, $requests.METHODS.POST, tkt);
             }
         };
+    })
+    .factory('SprintService', function ($requests) {
+        return {
+            query: function (project_pk) {
+                return $requests.$do('/sprints/' + project_pk, $requests.METHODS.GET);
+            },
+            save: function(project_pk, sp){
+                return $requests.$do('/sprints/' + project_pk, $requests.METHODS.POST, sp);
+            },
+            erase: function(sprint_id){
+                return $requests.$do('/sprint/' + sprint_id, $requests.METHODS.DELETE);
+            }
+        };
     });

@@ -1,8 +1,11 @@
 __author__ = 'gastonrobledo'
 import json
+
 from flask_oauth import OAuth
 from flask import session, redirect, url_for, blueprints, request, current_app
-from app.api.schemas import User
+
+from app.schemas import User
+
 
 blueprint = blueprints.Blueprint('auth', __name__)
 

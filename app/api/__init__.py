@@ -1,7 +1,7 @@
 from flask.ext.restful import Api
 from resources import ProjectList, ProjectInstance, UsersList, UserInstance, \
     Tickets
-from utils import output_json
+from app.utils import output_json
 
 
 def init_app(app):

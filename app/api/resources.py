@@ -2,7 +2,8 @@ from flask import jsonify
 from flask.ext.restful import Resource, request
 from werkzeug.exceptions import BadRequest
 
-from app.api.schemas import User, Project, Ticket
+from app.schemas import User, Project, Ticket
+
 
 class ProjectList(Resource):
 

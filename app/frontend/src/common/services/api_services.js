@@ -2,7 +2,7 @@ var SOCKET_URL = 'http://localhost:9000';
 
 
 angular.module('KoalaApp.Utils', ['ngCookies', 'Koala.Config'])
-    .factory('$requests', function ($http, $q, $cookies, koalaConf) {
+    .factory('$requests', function ($http, $q, $state, $cookies, koalaConf) {
         return {
             METHODS: {
                 UPDATE: 'PUT',
@@ -11,18 +11,24 @@ angular.module('KoalaApp.Utils', ['ngCookies', 'Koala.Config'])
                 PATCH: 'PATCH',
                 GET: 'GET'
             },
-            '$do': function (url, method, data) {
+            '$do': function (url, method, data, not_default) {
 
-                $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
+                var token = window.sessionStorage.getItem('token');
+                if(token) {
+                    $http.defaults.headers.common['Authorization'] = 'Token ' + token;
+                }
 
                 var results = $q.defer();
                 $http({
-                    url: koalaConf.BASE_API_URL + url,
+                    url: (not_default ? url : koalaConf.BASE_API_URL + url),
                     method: method,
                     data: data
                 }).success(function (body) {
                     results.resolve(body);
                 }).error(function (data, status) {
+                    if(status == 401){
+                        $state.go('login');
+                    }
                     results.reject({
                         'message': data,
                         'code': status
@@ -33,20 +39,27 @@ angular.module('KoalaApp.Utils', ['ngCookies', 'Koala.Config'])
         };
     });
 
-angular.module('KoalaApp.ApiServices', ['KoalaApp.Utils'])
+angular.module('KoalaApp.ApiServices', ['KoalaApp.Utils', 'Koala.Config'])
 
+    .factory('LoginService', function($requests, koalaConf){
+        return {
+            'auth': function(provider){
+                window.location.href = '/auth/authenticate?provider='+provider+'&callback='+koalaConf.CALLBACK_URL;
+            }
+        };
+    })
     .factory('UserService', function ($requests) {
         var BASE_URL = '/users/';
         return {
-            me: function () {
+            'me': function () {
                 var url = BASE_URL + 'me';
                 return $requests.$do(url, $requests.METHODS.GET);
             },
-            search: function (q) {
+            'search': function (q) {
                 var url = BASE_URL + 'search/' + q;
                 return $requests.$do(url, $requests.METHODS.GET);
             },
-            save: function (user) {
+            'save': function (user) {
                 var url = BASE_URL + 'me';
                 return $requests.$do(url, $requests.METHODS.UPDATE, user);
             }
@@ -54,10 +67,10 @@ angular.module('KoalaApp.ApiServices', ['KoalaApp.Utils'])
     })
     .factory('ProjectService', function ($requests) {
         return {
-            query: function () {
+            'query': function () {
                 return $requests.$do('/projects', $requests.METHODS.GET);
             },
-            get: function (slug) {
+            'get': function (slug) {
                 var url = '/project/' + slug;
                 return $requests.$do(url, $requests.METHODS.GET);
             }
@@ -65,23 +78,23 @@ angular.module('KoalaApp.ApiServices', ['KoalaApp.Utils'])
     })
     .factory('TicketService', function ($requests) {
         return {
-            query: function (project_pk) {
+            'query': function (project_pk) {
                 return $requests.$do('/tickets/' + project_pk, $requests.METHODS.GET);
             },
-            save: function(project_pk, tkt){
+            'save': function(project_pk, tkt){
                 return $requests.$do('/tickets/' + project_pk, $requests.METHODS.POST, tkt);
             }
         };
     })
     .factory('SprintService', function ($requests) {
         return {
-            query: function (project_pk) {
+            'query': function (project_pk) {
                 return $requests.$do('/sprints/' + project_pk, $requests.METHODS.GET);
             },
-            save: function(project_pk, sp){
+            'save': function(project_pk, sp){
                 return $requests.$do('/sprints/' + project_pk, $requests.METHODS.POST, sp);
             },
-            erase: function(sprint_id){
+            'erase': function(sprint_id){
                 return $requests.$do('/sprint/' + sprint_id, $requests.METHODS.DELETE);
             }
         };

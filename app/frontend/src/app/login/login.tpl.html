@@ -1,6 +1,3 @@
-{% extends 'base.html' %}
-{% block title %}Coati Scrum Board{% endblock %}
-{% block content %}
 <form class="form-signin">
     <h2 class="form-signin-heading">Coati Agile Board</h2>
 
@@ -10,22 +7,23 @@
         <p>Please log in with some social account!</p>
 
         <div class="login-social-link">
-            <a href="/authenticate?provider=github" class="btn-github" style="width: 290px;
+            <a href="#" ng-click="authenticate('github')" class="btn-github"
+               style="width: 290px;
 text-align: center;">
                 <i class="icon-github"></i>
                 GitHub
             </a>
         </div>
         <div class="login-social-link">
-            <a href="/authenticate?provider=google" class="btn-google-plus">
+            <a href="#" ng-click="authenticate('google')" class="btn-google-plus">
                 <i class="icon-google-plus"></i>
                 Google
             </a>
-            <a href="/authenticate?provider=facebook" class="btn-facebook">
+            <a href="#" ng-click="authenticate('facebook')" class="btn-facebook">
                 <i class="icon-facebook"></i>
                 Facebook
             </a>
         </div>
     </div>
 </form>
-{% endblock %}
+

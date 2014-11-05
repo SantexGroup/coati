@@ -20,9 +20,8 @@ class ProjectList(Resource):
         """
         Create Project
         """
-        try:
-            data = request.json
-        except BadRequest, e:
+        data = request.get_json(force=True, silent=True)
+        if not data:
             msg = "payload must be a valid json"
             return jsonify({"error": msg}), 400
         try:
@@ -46,7 +45,10 @@ class ProjectInstance(Resource):
 
     def put(self, slug):
         project = Project.objects.get(slug=slug)
-        data = request.json
+        data = request.get_json(force=True, silent=True)
+        if not data:
+            msg = "payload must be a valid json"
+            return jsonify({"error": msg}), 400
         project.active = data.get('active', project.active)
         project.description = data.get('description', project.description)
         project.name = data.get('name', project.name)

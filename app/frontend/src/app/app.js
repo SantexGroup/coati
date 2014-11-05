@@ -34,27 +34,40 @@
         };
     }
 
-    function AppController(scope) {
+    function AppController(scope, rootScope, stateParams, LoginService) {
+
         scope.search = function ($event) {
             // do noting yet
         };
 
-        scope.$on('$stateChangeSuccess', function (event, toState) {
+        rootScope.$on('$stateChangeStart', function (event, toState) {
             if (angular.isDefined(toState.data.pageTitle)) {
                 scope.pageTitle = toState.data.pageTitle + ' | Coati';
             }
             scope.actual_path = toState.name;
+            rootScope.state_name  = toState.name;
         });
+
+        rootScope.$on('$stateChangeSuccess', function (event) {
+            if (rootScope.state_name !== "login") {
+                if (window.sessionStorage.getItem('token') == null) {
+                    event.preventDefault();
+                    state.go('login', stateParams);
+                }
+            }
+        });
+
     }
 
     // Injections
     ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider'];
-    AppController.$inject = ['$scope'];
+    AppController.$inject = ['$scope', '$rootScope', '$stateParams', 'LoginService'];
 
     angular.module('KoalaApp', [
         'templates-app', 'templates-common',
         'ui.router', 'ui.bootstrap', 'ngCookies',
         'Koala.Config', 'KoalaApp.Directives', 'KoalaApp.Home',
+        'KoalaApp.Login',
         'KoalaApp.User', 'Koala.Projects', 'Koala.Tickets', 'KoalaApp.Errors'])
         .config(ConfigApp)
         .filter('getByProperty', filterGetByProperty)

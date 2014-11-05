@@ -9,6 +9,7 @@
 
         var globals = {
             BASE_API_URL: '/api',
+            CALLBACK_URL: '/login/auth',
             DEFAULT_CONTENT_TYPE: 'application/json; charset=utf-8'
         };
         return {

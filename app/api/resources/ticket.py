@@ -18,11 +18,11 @@ class TicketList(Resource):
         """
         Create Project
         """
-        try:
-            data = request.json
-        except BadRequest, e:
+        data = request.get_json(force=True, silent=True)
+        if not data:
             msg = "payload must be a valid json"
             return jsonify({"error": msg}), 400
+
         try:
             project = Project.objects.get(id=project_pk)
         except Project.DoesNotExist, e:

@@ -1,3 +1,6 @@
+from functools import wraps
+from app.utils import output_json
+
 __author__ = 'gastonrobledo'
 import json
 
@@ -7,7 +10,7 @@ from flask import session, redirect, url_for, blueprints, request, current_app
 from app.schemas import User
 
 
-blueprint = blueprints.Blueprint('auth', __name__)
+blueprint = blueprints.Blueprint('auth', __name__, url_prefix='/auth')
 
 
 def init_app(app):
@@ -32,12 +35,13 @@ def get_provider(oauth_provider):
 def authenticate():
     oauth_provider = request.args.get('provider', 'google')
     session['provider'] = oauth_provider
+    session['callback_url'] = request.args.get('callback')
     access_token = session.get('access_token')
     user = session.get('user')
     if access_token is None or user is None:
         return redirect(url_for('auth.login'))
     else:
-        return redirect(url_for('index'))
+        return redirect(session.get('callback_url')+'?token='+access_token[0])
 
 
 def adquire_user(token):
@@ -85,7 +89,8 @@ def authorized():
     provider.free_request_token()
     access_token = data['access_token']
     session['access_token'] = access_token, ''
-    return adquire_user(access_token)
+    adquire_user(access_token)
+    return redirect(session.get('callback_url'))
 
 
 def get_access_token():
@@ -121,8 +126,10 @@ def extract_data(data):
     session['user'] = user.to_json()
 
 
+
 @blueprint.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('index'))
+    return redirect('/login?logout=true')
+
 

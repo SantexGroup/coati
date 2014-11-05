@@ -6,8 +6,10 @@ from resources.user import UsersList, UserInstance
 from app.utils import output_json
 
 
-def init_app(app):
-    api = Api(app, default_mediatype='application/json')
+def init_app(app, decorators=None):
+    api = Api(app,
+              default_mediatype='application/json',
+              decorators=decorators)
     api.add_resource(ProjectList, '/api/projects')
     api.add_resource(ProjectInstance, '/api/project/<string:slug>')
     api.add_resource(UsersList, '/api/users')

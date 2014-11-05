@@ -1,15 +1,14 @@
 import os, json
 from jinja2 import ChoiceLoader, FileSystemLoader
-from flask import Flask, blueprints, render_template, session
+from flask import Flask, render_template, session
 from flask.ext.mongoengine import MongoEngine
-from app import api, auth
-
-blueprint = blueprints.Blueprint('main', __name__,
-                                 static_folder='frontend',
-                                 template_folder='/')
+from app import api, auth, utils
 
 app = Flask(__name__)
 app.config.from_pyfile('../config.py')
+app.static_folder = 'frontend/' + app.config['FRONTEND']
+app.static_url_path = '/static'
+
 db = MongoEngine(app)
 
 app_path = os.path.dirname(os.path.abspath(__file__))
@@ -20,23 +19,20 @@ custom_loader = ChoiceLoader([
     fsLoader
 ])
 app.jinja_loader = custom_loader
-
-app.register_blueprint(blueprint)
-
 # # Init apps
 auth.init_app(app)
 # # Init Api
-api.init_app(app)
+api.init_app(app, decorators=[utils.require_authentication])
 
 
 # # Default Routes
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def index(path):
-    user = session.get('user')
-    if not user:
-        return render_template('login.html')
-    else:
-        return render_template('index.html', user=json.loads(user))
+    try:
+        user = json.loads(session.get('user'))
+    except Exception as ex:
+        user = ''
+    return render_template('index.html', user=user)
 
 

@@ -1,4 +1,5 @@
 from functools import wraps
+import mongoengine
 from app.utils import output_json
 
 __author__ = 'gastonrobledo'
@@ -7,7 +8,7 @@ import json
 from flask_oauth import OAuth
 from flask import session, redirect, url_for, blueprints, request, current_app
 
-from app.schemas import User
+from app.schemas import User, Token
 
 
 blueprint = blueprints.Blueprint('auth', __name__, url_prefix='/auth')
@@ -26,9 +27,12 @@ def get_provider(oauth_provider):
     conf = current_app.config['PROVIDERS'].get(oauth_provider or 'google')
     prov = oauth.remote_app(oauth_provider, register=True, **conf)
     prov.authorized_handler(authorized)
-    prov.tokengetter(get_access_token)
+    prov.tokengetter(get_token)
     return prov
 
+
+def get_token(token='user'):
+    return None
 
 # # Routes
 @blueprint.route('/authenticate')
@@ -41,10 +45,11 @@ def authenticate():
     if access_token is None or user is None:
         return redirect(url_for('auth.login'))
     else:
-        return redirect(session.get('callback_url')+'?token='+access_token[0])
+        return redirect(
+            session.get('callback_url') + '?token=' + access_token[0])
 
 
-def adquire_user(token):
+def adquire_user(access_token):
     from urllib2 import Request, urlopen, URLError
 
     types = {
@@ -53,7 +58,8 @@ def adquire_user(token):
         'facebook': 'OAuth'
     }
     headers = {
-        'Authorization': types.get(session.get('provider')) + ' ' + token}
+        'Authorization': types.get(
+            session.get('provider')) + ' ' + access_token}
     info_url = current_app.config['PROVIDERS_INFO'].get(session.get('provider'))
     req = Request(info_url, None, headers)
     try:
@@ -66,8 +72,12 @@ def adquire_user(token):
         return res.read()
 
     data = json.loads(res.read())
-    extract_data(data)
-    return redirect(url_for('index'))
+    user = extract_data(data)
+    # store token in db
+    token = Token(user=user.to_dbref())
+    token.token = access_token
+    token.provider = session.get('provider')
+    token.save()
 
 
 @blueprint.route('/login')
@@ -88,13 +98,9 @@ def authorized():
         data = provider.handle_unknown_response()
     provider.free_request_token()
     access_token = data['access_token']
-    session['access_token'] = access_token, ''
     adquire_user(access_token)
-    return redirect(session.get('callback_url'))
+    return redirect('%s?token=%s' % (session.get('callback_url'), access_token))
 
-
-def get_access_token():
-    return session.get('access_token')
 
 
 def extract_data(data):
@@ -123,8 +129,7 @@ def extract_data(data):
                                                        first_name=names[0],
                                                        last_name=names[1])
 
-    session['user'] = user.to_json()
-
+    return user
 
 
 @blueprint.route('/logout')

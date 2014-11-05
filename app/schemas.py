@@ -17,6 +17,12 @@ class User(mongoengine.Document):
     }
 
 
+class Token(mongoengine.Document):
+    token = mongoengine.StringField()
+    provider = mongoengine.StringField()
+    user = mongoengine.ReferenceField(User)
+
+
 class Project(mongoengine.Document):
     name = mongoengine.StringField(required=True, unique_with='owner')
     description = mongoengine.StringField(max_length=500)

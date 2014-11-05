@@ -1,6 +1,8 @@
 import functools
 import json
-from flask import make_response, request, session
+from flask import make_response, request
+from mongoengine import DoesNotExist
+from app.schemas import Token
 
 __author__ = 'gastonrobledo'
 
@@ -15,6 +17,13 @@ def output_json(obj, code, headers=None):
     return resp
 
 
+def verify_token(token):
+    try:
+        return Token.objects.get(token=token) is not None
+    except DoesNotExist:
+        return False
+
+
 def require_authentication(view_function):
     @functools.wraps(view_function)
     # the new, post-decoration function. Note *args and **kwargs here.
@@ -27,8 +36,7 @@ def require_authentication(view_function):
             res.content_type = 'application/json'
             return res
         token = header.split(' ')[1]
-        current_token = session.get('access_token')
-        if current_token[0] == token:
+        if verify_token(token):
             return view_function(*args, **kwargs)
         else:
             res = output_json(json.dumps({'error': 'Authorization token invalid'}),

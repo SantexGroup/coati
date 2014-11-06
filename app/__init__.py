@@ -3,6 +3,7 @@ from jinja2 import ChoiceLoader, FileSystemLoader
 from flask import Flask, render_template, session
 from flask.ext.mongoengine import MongoEngine
 from app import api, auth, utils
+from auth import decorators
 
 app = Flask(__name__)
 app.config.from_pyfile('../config.py')
@@ -22,7 +23,7 @@ app.jinja_loader = custom_loader
 # # Init apps
 auth.init_app(app)
 # # Init Api
-api.init_app(app, decorators=[utils.require_authentication])
+api.init_app(app, decorators=[decorators.require_authentication])
 
 
 # # Default Routes

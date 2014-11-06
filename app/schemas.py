@@ -1,4 +1,5 @@
 import mongoengine
+from datetime import datetime, timedelta
 from mongoengine_extras.fields import slugify, SlugField
 from bson import json_util
 
@@ -21,6 +22,35 @@ class Token(mongoengine.Document):
     token = mongoengine.StringField()
     provider = mongoengine.StringField()
     user = mongoengine.ReferenceField(User)
+    expire = mongoengine.DateTimeField()
+
+    @staticmethod
+    def verify_token(token):
+        try:
+            token = Token.objects.get(token=token)
+            if token is None or token.expire <= datetime.now():
+                return False
+            return True
+        except mongoengine.DoesNotExist:
+            return False
+
+    @staticmethod
+    def get_token_by_user(user_id):
+        try:
+            return Token.objects.get(user=user_id)
+        except mongoengine.DoesNotExist:
+            return None
+
+    @staticmethod
+    def save_token_for_user(user, **kwargs):
+        # remove old tokens
+        Token.objects(user=user.to_dbref()).delete()
+        # store token in db
+        token = Token(user=user.to_dbref())
+        token.token = kwargs['access_token']
+        token.provider = kwargs['provider']
+        token.expire = datetime.now() + timedelta(seconds=kwargs['expire_in'])
+        return token.save()
 
 
 class Project(mongoengine.Document):

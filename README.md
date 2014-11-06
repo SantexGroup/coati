@@ -20,6 +20,8 @@ http://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/
 Clone repository
 ```sh
 git clone git@bitbucket.org:gastonrobledo/coati.git
+cd coati
+pip install -r requirements.txt
 ```
 
 Compile FrontEnd

@@ -1,6 +1,6 @@
 {
-    "name": "KoalaBoard",
-    "version": "0.1.0",
+    "name": "CoatiAgileBoard",
+    "version": "0.1.1",
     "directory": "vendor",
     "dependencies": {
         "angular": "1.2.14",

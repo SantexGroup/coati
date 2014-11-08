@@ -120,6 +120,7 @@ class Sprint(mongoengine.Document):
     start_date = mongoengine.DateTimeField()
     end_date = mongoengine.DateTimeField()
     project = mongoengine.ReferenceField(Project)
+    order = mongoengine.IntField(min_value=0)
 
     def clean(self):
         if self.project is None:

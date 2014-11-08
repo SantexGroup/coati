@@ -1,8 +1,33 @@
 var SOCKET_URL = 'http://localhost:9000';
 
 
-angular.module('KoalaApp.Utils', ['ngCookies', 'Koala.Config'])
-    .factory('$requests', function ($http, $q, $state, $cookies, koalaConf) {
+angular.module('Coati.Utils', ['ngCookies', 'Coati.Config'])
+    .factory('tokens', function(){
+        return {
+            'get_token': function(){
+                var token_data = window.sessionStorage.getItem('token_data');
+                if(token_data != null){
+                   token_data = JSON.parse(token_data);
+                   var expire_in_seconds = token_data['expire'];
+                   var token = token_data['token'];
+                   var now = new Date().getTime();
+                   var expire = now + (expire_in_seconds * 1000);
+                   if(expire >= now){
+                       return token;
+                   }
+                }
+                return null;
+            },
+            'store_token': function(token, expire){
+                var data = {
+                    'token': token,
+                    'expire': expire
+                };
+                window.sessionStorage.setItem('token_data', JSON.stringify(data));
+            }
+        };
+    })
+    .factory('$requests', function ($http, $q, $state, $cookies, Conf, tokens) {
         return {
             METHODS: {
                 UPDATE: 'PUT',
@@ -13,14 +38,14 @@ angular.module('KoalaApp.Utils', ['ngCookies', 'Koala.Config'])
             },
             '$do': function (url, method, data, not_default) {
 
-                var token = window.sessionStorage.getItem('token');
+                var token = tokens.get_token();
                 if(token) {
                     $http.defaults.headers.common['Authorization'] = 'Token ' + token;
                 }
 
                 var results = $q.defer();
                 $http({
-                    url: (not_default ? url : koalaConf.BASE_API_URL + url),
+                    url: (not_default ? url : Conf.BASE_API_URL + url),
                     method: method,
                     data: data
                 }).success(function (body) {
@@ -39,12 +64,12 @@ angular.module('KoalaApp.Utils', ['ngCookies', 'Koala.Config'])
         };
     });
 
-angular.module('KoalaApp.ApiServices', ['KoalaApp.Utils', 'Koala.Config'])
+angular.module('Coati.ApiServices', ['Coati.Utils', 'Coati.Config'])
 
-    .factory('LoginService', function($requests, koalaConf){
+    .factory('LoginService', function($requests, Conf){
         return {
             'auth': function(provider){
-                window.location.href = '/auth/authenticate?provider='+provider+'&callback='+koalaConf.CALLBACK_URL;
+                window.location.href = '/auth/authenticate?provider='+provider+'&callback='+Conf.CALLBACK_URL;
             }
         };
     })
@@ -96,6 +121,9 @@ angular.module('KoalaApp.ApiServices', ['KoalaApp.Utils', 'Koala.Config'])
             },
             'erase': function(sprint_id){
                 return $requests.$do('/sprint/' + sprint_id, $requests.METHODS.DELETE);
+            },
+            'update_order': function(project_pk, data){
+                return $requests.$do('/sprints/' + project_pk + '/order', $requests.METHODS.POST, data);
             }
         };
     });

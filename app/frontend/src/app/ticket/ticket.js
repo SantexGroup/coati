@@ -46,9 +46,9 @@
     Config.$inject = ['$stateProvider'];
     TicketFormController.$inject = ['$scope', '$state', 'TicketService'];
 
-    angular.module('Koala.Tickets', ['ui.router','ngTagsInput',
-        'KoalaApp.Directives',
-        'KoalaApp.ApiServices'])
+    angular.module('Coati.Tickets', ['ui.router','ngTagsInput',
+        'Coati.Directives',
+        'Coati.ApiServices'])
         .config(Config)
         .controller('TicketFormController', TicketFormController);
 

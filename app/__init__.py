@@ -30,9 +30,9 @@ api.init_app(app, decorators=[decorators.require_authentication])
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def index(path):
-    try:
-        user = json.loads(session.get('user'))
-    except Exception as ex:
+    if session.get('user'):
+        user = session.get('user')
+    else:
         user = ''
     return render_template('index.html', user=user)
 

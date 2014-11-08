@@ -34,7 +34,7 @@
         };
     }
 
-    function AppController(scope, rootScope, stateParams, LoginService) {
+    function AppController(scope, rootScope, state, stateParams, tokens) {
 
         scope.search = function ($event) {
             // do noting yet
@@ -49,8 +49,8 @@
         });
 
         rootScope.$on('$stateChangeSuccess', function (event) {
-            if (rootScope.state_name !== "login") {
-                if (window.sessionStorage.getItem('token') == null) {
+            if (rootScope.state_name !== "login" && rootScope.state_name !== 'login_auth') {
+                if (tokens.get_token() == null) {
                     event.preventDefault();
                     state.go('login', stateParams);
                 }
@@ -61,14 +61,14 @@
 
     // Injections
     ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider'];
-    AppController.$inject = ['$scope', '$rootScope', '$stateParams', 'LoginService'];
+    AppController.$inject = ['$scope', '$rootScope','$state', '$stateParams', 'tokens'];
 
-    angular.module('KoalaApp', [
+    angular.module('Coati', [
         'templates-app', 'templates-common',
         'ui.router', 'ui.bootstrap', 'ngCookies',
-        'Koala.Config', 'KoalaApp.Directives', 'KoalaApp.Home',
-        'KoalaApp.Login',
-        'KoalaApp.User', 'Koala.Projects', 'Koala.Tickets', 'KoalaApp.Errors'])
+        'Coati.Config', 'Coati.Directives', 'Coati.Home',
+        'Coati.Login',
+        'Coati.User', 'Coati.Projects', 'Coati.Tickets', 'Coati.Errors'])
         .config(ConfigApp)
         .filter('getByProperty', filterGetByProperty)
         .filter('getIndexByProperty', filterGetIndexByProperty)

@@ -23,5 +23,5 @@
     }
 
 //angular module
-    angular.module('Koala.Config', []).provider('koalaConf', KoalaGlobalConfiguration);
+    angular.module('Coati.Config', []).provider('Conf', KoalaGlobalConfiguration);
 }());

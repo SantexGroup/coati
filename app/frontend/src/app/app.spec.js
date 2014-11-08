@@ -1,7 +1,7 @@
 describe('app test case', function () {
 
     var $rootScope, $scope;
-    beforeEach(module('KoalaApp'));
+    beforeEach(module('Coati'));
 
     beforeEach(inject(function ($injector) {
         var $controller;

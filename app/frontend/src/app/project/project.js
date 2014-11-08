@@ -104,9 +104,8 @@
             });
         };
 
-
-        scope.dragControlListeners = {
-            accept: function (sourceItemHandleScope, destSortableScope) {
+        scope.sortBacklog = {
+            accept: function (sourceItem, destItem) {
                 return true;
             },
             itemMoved: function (event) {
@@ -115,9 +114,40 @@
             orderChanged: function (event) {
                 //do something
             },
-            containment: '#planning'
+            containment: '#overview'
         };
 
+        scope.sortTickets = {
+            accept: function (sourceItem, destItem) {
+                return true;
+            },
+            itemMoved: function (event) {
+                //do something
+            },
+            orderChanged: function (event) {
+                //do something
+            },
+            containment: '#overview'
+        };
+
+        scope.sortSprints = {
+            accept: function (sourceItem, destItem) {
+                return true;
+            },
+            itemMoved: function (event) {
+                //do something
+                console.log(event);
+            },
+            orderChanged: function (event) {
+                //do something
+                var new_order = [];
+                angular.forEach(scope.data.sprints, function(val, key){
+                    new_order.push(val._id.$oid);
+                });
+                SprintService.update_order(scope.project._id.$oid, new_order);
+            },
+            containment: '#overview'
+        };
 
 
         scope.create_sprint = function () {
@@ -129,12 +159,12 @@
         scope.remove_sprint = function (sprint_id) {
             SprintService.erase(sprint_id).then(function (sprint) {
                 var index = -1;
-                angular.forEach(scope.data.sprints, function(item, key){
-                    if(item._id.$oid == sprint_id){
+                angular.forEach(scope.data.sprints, function (item, key) {
+                    if (item._id.$oid == sprint_id) {
                         index = key;
                     }
                 });
-                if(index != -1) {
+                if (index != -1) {
                     scope.data.sprints.splice(index, 1);
                 }
             });
@@ -166,9 +196,9 @@
     ProjectCtrlReports.$inject = ['$scope', '$state', 'ProjectService'];
     ProjectCtrlSettings.$inject = ['$scope', '$state', 'ProjectService'];
 
-    angular.module('Koala.Projects', ['ui.router', 'ui.sortable',
-        'KoalaApp.Directives',
-        'KoalaApp.ApiServices'])
+    angular.module('Coati.Projects', ['ui.router', 'ui.sortable',
+        'Coati.Directives',
+        'Coati.ApiServices'])
         .config(ConfigModule)
         .controller('ProjectCtrl', ProjectCtrl)
         .controller('ProjectCtrlOverview', ProjectCtrlOverview)

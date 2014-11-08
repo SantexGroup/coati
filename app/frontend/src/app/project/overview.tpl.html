@@ -9,15 +9,16 @@
 
 <div class="row" id="planning">
     <div class="col-md-12">
-        <ul class="sprint-section" as-sortable="dragControlListeners"
+        <ul class="sprint-section" as-sortable="sortSprints"
             ng-model="data.sprints">
-            <li ng-repeat="sprint in data.sprints" as-sortable-item>
+            <li ng-repeat="sprint in data.sprints" as-sortable-item class="sprint-item">
                 <section class="panel task-widget sprint-item">
                     <header class="panel-heading" as-sortable-item-handle>
                         <span><[ sprint.name ]></span>
 
                         <div class="options pull-right">
-                            <a class="btn btn-sm btn-danger pull-left" ng-click="remove_sprint(sprint._id.$oid)">
+                            <a class="btn btn-sm btn-danger pull-left"
+                               ng-click="remove_sprint(sprint._id.$oid)">
                                 <i class="icon-remove"></i> Remove
                             </a>
                         </div>
@@ -30,9 +31,11 @@
                     </header>
                     <div class="panel-body">
                         <div class="task-content">
-                            <ul class="task-list">
-                                <li ng-repeat="ticket in sprint.tickets track by ticket._id.$oid">
-                                    <div class="task-title">
+                            <ul class="task-list ticket-item" as-sortable="sortTickets" ng-model="sprint.tickets">
+                                <li ng-repeat="ticket in sprint.tickets track by ticket._id.$oid"
+                                    as-sortable-item>
+                                    <div class="task-title"
+                                         as-sortable-item-handle>
                                 <span class="task-title-sp">
                                   <[ project.prefix ]>-<[ ticket.number ]>: <[ ticket.title ]>
                                 </span>
@@ -73,9 +76,10 @@
             </header>
             <div class="panel-body">
                 <div class="task-content">
-                    <ul class="task-list">
-                        <li ng-repeat="ticket in data.tickets track by ticket._id.$oid">
-                            <div class="task-title">
+                    <ul class="task-list" as-sortable="sortBacklog"  ng-model="data.tickets">
+                        <li ng-repeat="ticket in data.tickets track by ticket._id.$oid"
+                            as-sortable-item>
+                            <div class="task-title" as-sortable-item-handle>
                                 <span class="task-title-sp">
                                   <[ project.prefix ]>-<[ ticket.number ]>: <[ ticket.title ]>
                                 </span>

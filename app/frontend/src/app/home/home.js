@@ -71,10 +71,10 @@
     MainController.$inject = ['$scope', 'ProjectService'];
 
 
-    angular.module('KoalaApp.Home',
+    angular.module('Coati.Home',
         ['ui.router', 'ui.bootstrap',
-            'KoalaApp.Directives',
-            'KoalaApp.ApiServices'])
+            'Coati.Directives',
+            'Coati.ApiServices'])
         .config(ConfigModule)
         .controller('MainController', MainController);
 

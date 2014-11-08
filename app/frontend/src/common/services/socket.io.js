@@ -1,4 +1,4 @@
-angular.module('KoalaApp.SocketIO', []).factory('$socket', function ($rootScope) {
+angular.module('Coati.SocketIO', []).factory('$socket', function ($rootScope) {
     var socket;
     if (typeof io !== 'undefined') {
         socket = io.connect(SOCKET_URL);

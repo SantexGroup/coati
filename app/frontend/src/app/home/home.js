@@ -18,7 +18,7 @@
                 }
             },
             data: {
-                pageTitle: 'Koala :: Home'
+                pageTitle: 'Home'
             }
         });
     }
@@ -26,44 +26,20 @@
     /**
      * Controller of main dashboard
      * @param scope
-     * @param modal
      * @param ProjectService - API Service for Projects
      * @constructor
      */
     function MainController(scope, ProjectService) {
         scope.user = window.username;
 
-        // Private methods
-        var getDashboard = function () {
+        scope.getDashboard = function () {
 
             ProjectService.query().then(function(projects){
                scope.projects = projects;
             });
         };
 
-
-        // Public methods
-
-        scope.getClass = function (activity) {
-            var css = '';
-            switch (activity.verb) {
-                case 'delete':
-                    css = 'red';
-                    break;
-                case 'add':
-                    css = 'green';
-                    break;
-                case 'update':
-                    css = 'blue';
-                    break;
-                case 'general':
-                    css = 'purple';
-                    break;
-            }
-            return css;
-        };
-
-        getDashboard();
+        scope.getDashboard();
     }
 
     //Injections

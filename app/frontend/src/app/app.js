@@ -36,10 +36,6 @@
 
     function AppController(scope, rootScope, state, stateParams, tokens) {
 
-        scope.search = function ($event) {
-            // do noting yet
-        };
-
         rootScope.$on('$stateChangeStart', function (event, toState) {
             if (angular.isDefined(toState.data.pageTitle)) {
                 scope.pageTitle = toState.data.pageTitle + ' | Coati';

@@ -105,34 +105,36 @@
         };
 
         scope.sortBacklog = {
-            accept: function (sourceItem, destItem) {
-                return true;
-            },
             itemMoved: function (event) {
+                console.log('Backlog :: Moved');
+                console.log(event);
                 //do something
             },
             orderChanged: function (event) {
                 //do something
+                console.log('Backlog :: SORT');
+                console.log(event);
             },
             containment: '#overview'
         };
 
         scope.sortTickets = {
-            accept: function (sourceItem, destItem) {
-                return true;
-            },
             itemMoved: function (event) {
+                console.log('Ticket :: Moved');
+                console.log(event);
                 //do something
             },
             orderChanged: function (event) {
                 //do something
+                console.log('Ticket :: SORT');
+                console.log(event);
             },
             containment: '#overview'
         };
 
         scope.sortSprints = {
             accept: function (sourceItem, destItem) {
-                return true;
+                return sourceItem.element.hasClass('sprint-item');
             },
             itemMoved: function (event) {
                 //do something

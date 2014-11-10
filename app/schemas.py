@@ -89,17 +89,21 @@ class Ticket(mongoengine.Document):
     labels = mongoengine.ListField(mongoengine.StringField())
     project = mongoengine.ReferenceField(Project)
     number = mongoengine.IntField()
+    order = mongoengine.IntField()
 
     def clean(self):
         try:
             if self.project is None:
                 raise mongoengine.ValidationError('Project must be provided')
-            ticket_max = \
-                Ticket.objects(project=self.project).order_by('-number').limit(
-                    1)[0]
-            self.number = ticket_max.number + 1
+            if self._created:
+                ticket_max = \
+                    Ticket.objects(project=self.project).order_by('-number').limit(
+                        1)[0]
+                self.number = ticket_max.number + 1
+                self.order = Ticket.objects.count()
         except Exception as ex:
             self.number = 1
+            self.order = 0
 
 
 class Comment(mongoengine.Document):
@@ -116,7 +120,6 @@ class Comment(mongoengine.Document):
 
 class Sprint(mongoengine.Document):
     name = mongoengine.StringField(max_length=100, required=True)
-    tickets = mongoengine.ListField(mongoengine.ReferenceField(Ticket))
     start_date = mongoengine.DateTimeField()
     end_date = mongoengine.DateTimeField()
     project = mongoengine.ReferenceField(Project)
@@ -125,6 +128,12 @@ class Sprint(mongoengine.Document):
     def clean(self):
         if self.project is None:
             raise mongoengine.ValidationError('Project must be provided')
+
+
+class TicketOrderSprint(mongoengine.Document):
+    ticket = mongoengine.ReferenceField(Ticket)
+    order = mongoengine.IntField()
+    sprint = mongoengine.ReferenceField(Sprint)
 
 
 class Column(mongoengine.Document):

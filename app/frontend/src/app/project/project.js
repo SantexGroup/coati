@@ -106,27 +106,28 @@
 
         scope.sortBacklog = {
             itemMoved: function (event) {
-                console.log('Backlog :: Moved');
+                // This happens when a ticket is moved from the Backlog to a Sprint
+                
                 console.log(event);
-                //do something
             },
             orderChanged: function (event) {
-                //do something
-                console.log('Backlog :: SORT');
-                console.log(event);
+                // This happens when a ticket is sorted in the backlog
+               var new_order = [];
+                angular.forEach(scope.data.tickets, function(val, key){
+                    new_order.push(val._id.$oid);
+                });
+                TicketService.update_order(scope.project._id.$oid, new_order);
             },
             containment: '#overview'
         };
 
         scope.sortTickets = {
             itemMoved: function (event) {
-                console.log('Ticket :: Moved');
+                // This happens when a ticket is moved from one Sprint to another
                 console.log(event);
-                //do something
             },
             orderChanged: function (event) {
-                //do something
-                console.log('Ticket :: SORT');
+                // This happens when a tikcet is sorted withing the same Sprint
                 console.log(event);
             },
             containment: '#overview'
@@ -135,10 +136,6 @@
         scope.sortSprints = {
             accept: function (sourceItem, destItem) {
                 return sourceItem.element.hasClass('sprint-item');
-            },
-            itemMoved: function (event) {
-                //do something
-                console.log(event);
             },
             orderChanged: function (event) {
                 //do something

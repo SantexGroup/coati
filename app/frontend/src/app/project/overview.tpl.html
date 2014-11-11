@@ -77,11 +77,11 @@
             <div class="panel-body" as-sortable="sortBacklog"  ng-model="data.tickets">
                 <div class="task-content">
                     <ul class="task-list">
-                        <li ng-repeat="ticket in data.tickets track by ticket._id.$oid"
+                        <li ng-repeat="tkt_order in data.tickets|orderBy: 'order' track by tkt_order.ticket._id.$oid"
                             as-sortable-item class="user-story">
                             <div class="task-title" as-sortable-item-handle>
                                 <span class="task-title-sp">
-                                  <[ project.prefix ]>-<[ ticket.number ]>: <[ ticket.title ]>
+                                  <[ project.prefix ]>-<[ tkt_order.number ]>: <[ tkt_order.ticket.title ]>
                                 </span>
 
                                 <div class="pull-right hidden-phone">

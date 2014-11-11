@@ -98,6 +98,9 @@ angular.module('Coati.ApiServices', ['Coati.Utils', 'Coati.Config'])
             'get': function (slug) {
                 var url = '/project/' + slug;
                 return $requests.$do(url, $requests.METHODS.GET);
+            },
+            'save': function(data){
+                return $requests.$do('/projects', $requests.METHODS.POST, data);
             }
         };
     })

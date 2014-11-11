@@ -2,17 +2,14 @@ __author__ = 'gastonrobledo'
 
 from flask import jsonify
 from flask.ext.restful import Resource, request
-from werkzeug.exceptions import BadRequest
-from app.schemas import Project, Ticket, TicketOrderSprint
+from app.schemas import Project, Ticket, TicketOrder, Sprint
+from mongoengine import queryset
 
 
-class TicketBacklogList(Resource):
+class TicketProjectList(Resource):
 
     def __init__(self):
-        super(TicketBacklogList, self).__init__()
-
-    def get(self, project_pk):
-        return Ticket.objects(project=project_pk).order_by('order').to_json()
+        super(TicketProjectList, self).__init__()
 
     def post(self, project_pk):
         """
@@ -28,21 +25,32 @@ class TicketBacklogList(Resource):
         except Project.DoesNotExist, e:
             return jsonify({"error": 'project does not exist'}), 400
 
-        tkt = Ticket(project=project.to_dbref())
+        tkt = Ticket()
         tkt.description = data.get('description')
         tkt.labels = data.get('labels')
         tkt.title = data.get('title')
+
+        # get max ticket number
+        number = 1
+        for t in project.tickets:
+            if number < t.number:
+                number = t.number
+
+        tkt_order = TicketOrder(ticket=tkt)
+        tkt_order.order = len(project.tickets)
+        tkt_order.number = number + 1
+
+        project.tickets.append(tkt_order)
         tkt.save()
+        project.save()
+
         return tkt.to_json(), 201
 
 
-class TicketOrderBacklogList(Resource):
+class TicketOrderProject(Resource):
 
     def __init__(self):
-        super(TicketOrderBacklogList, self).__init__()
-
-    def get(self, project_pk):
-        return Ticket.objects(project=project_pk).order_by('order').to_json()
+        super(TicketOrderProject, self).__init__()
 
     def post(self, project_pk):
         """
@@ -50,21 +58,22 @@ class TicketOrderBacklogList(Resource):
         """
         data = request.get_json(force=True, silent=True)
         if data:
-            for index, s in enumerate(data):
-                ticket = Ticket.objects.get(project=project_pk, pk=s)
-                ticket.order = index
-                ticket.save()
+            project = Project.objects.get(pk=project_pk)
+            for index, tkt_id in enumerate(data):
+                for tkt_order in project.tickets:
+                    if str(tkt_order.ticket.id) == tkt_id:
+                        tkt_order.order = index
+                        break
+            project.save()
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400
 
 
-class TicketSprintList(Resource):
+class TicketOrderSprint(Resource):
 
     def __init__(self):
-        super(TicketSprintList, self).__init__()
+        super(TicketOrderSprint, self).__init__()
 
-    def get(self, sprint_pk):
-        return TicketOrderSprint.objects(sprint=sprint_pk).order_by('order').to_json()
 
     def post(self, sprint_pk):
         """
@@ -72,9 +81,9 @@ class TicketSprintList(Resource):
         """
         data = request.get_json(force=True, silent=True)
         if data:
-            for index, s in enumerate(data):
-                sprint = TicketOrderSprint.objects.get(pk=s)
-                sprint.order = index
-                sprint.save()
+            sprint = Sprint.objects.get(pk=sprint_pk)
+            for index, tkt_order in enumerate(sprint.tickets):
+                tkt_order.order = index
+            sprint.save()
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400

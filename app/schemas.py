@@ -53,6 +53,18 @@ class Token(mongoengine.Document):
         return token.save()
 
 
+class Ticket(mongoengine.Document):
+    title = mongoengine.StringField(max_length=200, required=True)
+    description = mongoengine.StringField()
+    labels = mongoengine.ListField(mongoengine.StringField())
+
+
+class TicketOrder(mongoengine.EmbeddedDocument):
+    ticket = mongoengine.ReferenceField(Ticket)
+    order = mongoengine.IntField()
+    number = mongoengine.IntField()
+
+
 class Project(mongoengine.Document):
     name = mongoengine.StringField(required=True, unique_with='owner')
     description = mongoengine.StringField(max_length=500)
@@ -63,6 +75,8 @@ class Project(mongoengine.Document):
                                        reverse_delete_rule=mongoengine.CASCADE)
     prefix = mongoengine.StringField()
     slug = SlugField()
+    tickets = mongoengine.ListField(
+        mongoengine.EmbeddedDocumentField(TicketOrder))
 
     meta = {
         'indexes': ['name', 'slug'],
@@ -73,6 +87,16 @@ class Project(mongoengine.Document):
         data = self.to_mongo()
         data["owner"] = self.owner.to_mongo()
         data["owner"]["id"] = str(self.owner.pk)
+        tickets = self.tickets
+        new_tickets = []
+        for t in tickets:
+            d = {
+                'order': t.order,
+                'number': t.number,
+                'ticket': t.ticket.to_mongo()
+            }
+            new_tickets.append(d)
+        data['tickets'] = new_tickets
         del data["owner"]["_id"]
         return json_util.dumps(data)
 
@@ -81,29 +105,6 @@ class Project(mongoengine.Document):
             raise mongoengine.ValidationError('Owner must be provided')
         if self.slug is None:
             self.slug = slugify(self.name)
-
-
-class Ticket(mongoengine.Document):
-    title = mongoengine.StringField(max_length=200, required=True)
-    description = mongoengine.StringField()
-    labels = mongoengine.ListField(mongoengine.StringField())
-    project = mongoengine.ReferenceField(Project)
-    number = mongoengine.IntField()
-    order = mongoengine.IntField()
-
-    def clean(self):
-        try:
-            if self.project is None:
-                raise mongoengine.ValidationError('Project must be provided')
-            if self._created:
-                ticket_max = \
-                    Ticket.objects(project=self.project).order_by('-number').limit(
-                        1)[0]
-                self.number = ticket_max.number + 1
-                self.order = Ticket.objects.count()
-        except Exception as ex:
-            self.number = 1
-            self.order = 0
 
 
 class Comment(mongoengine.Document):
@@ -124,16 +125,12 @@ class Sprint(mongoengine.Document):
     end_date = mongoengine.DateTimeField()
     project = mongoengine.ReferenceField(Project)
     order = mongoengine.IntField(min_value=0)
+    tickets = mongoengine.ListField(
+        mongoengine.EmbeddedDocumentField(TicketOrder))
 
     def clean(self):
         if self.project is None:
             raise mongoengine.ValidationError('Project must be provided')
-
-
-class TicketOrderSprint(mongoengine.Document):
-    ticket = mongoengine.ReferenceField(Ticket)
-    order = mongoengine.IntField()
-    sprint = mongoengine.ReferenceField(Sprint)
 
 
 class Column(mongoengine.Document):

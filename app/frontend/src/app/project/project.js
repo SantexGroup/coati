@@ -2,6 +2,18 @@
 
     function ConfigModule(stateProvider) {
         stateProvider
+            .state('project-new', {
+                url: '/project/new-project/',
+                views: {
+                    "main": {
+                        controller: 'ProjectFormCtrl',
+                        templateUrl: 'project/new_project.tpl.html'
+                    }
+                },
+                data: {
+                    pageTitle: 'New Project'
+                }
+            })
             .state('project', {
                 url: '/project/:slug/',
                 views: {
@@ -92,11 +104,6 @@
 
         scope.data = {};
 
-        var getBacklogTickets = function (project_id) {
-            TicketService.query(project_id).then(function (tickets) {
-                scope.data.tickets = tickets;
-            });
-        };
 
         var getSprintsWithTickets = function (project_id) {
             SprintService.query(project_id).then(function (sprints) {
@@ -114,7 +121,7 @@
                 // This happens when a ticket is sorted in the backlog
                var new_order = [];
                 angular.forEach(scope.data.tickets, function(val, key){
-                    new_order.push(val._id.$oid);
+                    new_order.push(val.ticket._id.$oid);
                 });
                 TicketService.update_order(scope.project._id.$oid, new_order);
             },
@@ -127,7 +134,7 @@
                 console.log(event);
             },
             orderChanged: function (event) {
-                // This happens when a tikcet is sorted withing the same Sprint
+                // This happens when a ticket is sorted withing the same Sprint
                 console.log(event);
             },
             containment: '#overview'
@@ -171,9 +178,31 @@
 
         ProjectService.get(state.params.slug).then(function (prj) {
             scope.project = prj;
-            getBacklogTickets(prj._id.$oid);
+            scope.data.tickets = prj.tickets;
             getSprintsWithTickets(prj._id.$oid);
         });
+    }
+
+    function ProjectFormCtrl(scope, state, ProjectService) {
+
+        scope.form = {};
+        scope.project = {};
+        scope.save = function () {
+            if (scope.form.project_form.$valid) {
+                ProjectService.save(scope.project).then(function (project) {
+                    //ver aca
+                    state.go('project.overview', {slug: project.slug});
+                }, function(err){
+                    console.log(err);
+                });
+            } else {
+                scope.submitted = true;
+            }
+        };
+
+        scope.cancel = function () {
+            state.go('home');
+        };
     }
 
     function ProjectCtrlBoard(scope, state, ProjectService) {
@@ -194,6 +223,7 @@
     ProjectCtrlBoard.$inject = ['$scope', '$state', 'ProjectService'];
     ProjectCtrlReports.$inject = ['$scope', '$state', 'ProjectService'];
     ProjectCtrlSettings.$inject = ['$scope', '$state', 'ProjectService'];
+    ProjectFormCtrl.$inject = ['$scope', '$state', 'ProjectService'];
 
     angular.module('Coati.Projects', ['ui.router', 'ui.sortable',
         'Coati.Directives',
@@ -203,6 +233,7 @@
         .controller('ProjectCtrlOverview', ProjectCtrlOverview)
         .controller('ProjectCtrlBoard', ProjectCtrlBoard)
         .controller('ProjectCtrlReports', ProjectCtrlReports)
-        .controller('ProjectCtrlSettings', ProjectCtrlSettings);
+        .controller('ProjectCtrlSettings', ProjectCtrlSettings)
+        .controller('ProjectFormCtrl', ProjectFormCtrl);
 
 }());

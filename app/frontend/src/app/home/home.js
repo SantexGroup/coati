@@ -29,7 +29,7 @@
      * @param ProjectService - API Service for Projects
      * @constructor
      */
-    function MainController(scope, ProjectService) {
+    function MainController(scope, state, ProjectService) {
         scope.user = window.username;
 
         scope.getDashboard = function () {
@@ -39,12 +39,16 @@
             });
         };
 
+        scope.create_project = function(){
+            state.go('project-new');
+        };
+
         scope.getDashboard();
     }
 
     //Injections
     ConfigModule.$inject = ['$stateProvider'];
-    MainController.$inject = ['$scope', 'ProjectService'];
+    MainController.$inject = ['$scope', '$state', 'ProjectService'];
 
 
     angular.module('Coati.Home',

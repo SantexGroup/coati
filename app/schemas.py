@@ -59,10 +59,27 @@ class Ticket(mongoengine.Document):
     labels = mongoengine.ListField(mongoengine.StringField())
 
 
-class TicketOrder(mongoengine.EmbeddedDocument):
+class BacklogTicketOrder(mongoengine.Document):
     ticket = mongoengine.ReferenceField(Ticket)
     order = mongoengine.IntField()
     number = mongoengine.IntField()
+    project = mongoengine.ReferenceField('Project')
+
+    meta = {
+        'queryset_class': CustomQuerySet
+    }
+
+    def to_json(self, *args, **kwargs):
+        data = self.to_mongo()
+        data["ticket"] = self.ticket.to_mongo()
+        return json_util.dumps(data)
+
+
+class SprintTicketOrder(mongoengine.Document):
+    ticket = mongoengine.ReferenceField(Ticket)
+    order = mongoengine.IntField()
+    number = mongoengine.IntField()
+    sprint = mongoengine.ReferenceField('Sprint')
 
 
 class Project(mongoengine.Document):
@@ -75,8 +92,6 @@ class Project(mongoengine.Document):
                                        reverse_delete_rule=mongoengine.CASCADE)
     prefix = mongoengine.StringField()
     slug = SlugField()
-    tickets = mongoengine.ListField(
-        mongoengine.EmbeddedDocumentField(TicketOrder))
 
     meta = {
         'indexes': ['name', 'slug'],
@@ -87,16 +102,6 @@ class Project(mongoengine.Document):
         data = self.to_mongo()
         data["owner"] = self.owner.to_mongo()
         data["owner"]["id"] = str(self.owner.pk)
-        tickets = self.tickets
-        new_tickets = []
-        for t in tickets:
-            d = {
-                'order': t.order,
-                'number': t.number,
-                'ticket': t.ticket.to_mongo()
-            }
-            new_tickets.append(d)
-        data['tickets'] = new_tickets
         del data["owner"]["_id"]
         return json_util.dumps(data)
 
@@ -125,8 +130,6 @@ class Sprint(mongoengine.Document):
     end_date = mongoengine.DateTimeField()
     project = mongoengine.ReferenceField(Project)
     order = mongoengine.IntField(min_value=0)
-    tickets = mongoengine.ListField(
-        mongoengine.EmbeddedDocumentField(TicketOrder))
 
     def clean(self):
         if self.project is None:

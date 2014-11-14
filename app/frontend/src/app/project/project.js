@@ -111,6 +111,12 @@
             });
         };
 
+        var getTicketsForProject = function(project_id){
+            TicketService.query(project_id).then(function(tkts){
+                scope.data.tickets = tkts;
+            });
+        };
+
         scope.sortBacklog = {
             itemMoved: function (event) {
                 // This happens when a ticket is moved from the Backlog to a Sprint
@@ -178,7 +184,7 @@
 
         ProjectService.get(state.params.slug).then(function (prj) {
             scope.project = prj;
-            scope.data.tickets = prj.tickets;
+            getTicketsForProject(prj._id.$oid);
             getSprintsWithTickets(prj._id.$oid);
         });
     }

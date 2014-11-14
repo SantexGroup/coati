@@ -2,8 +2,8 @@ __author__ = 'gastonrobledo'
 
 from flask import jsonify
 from flask.ext.restful import Resource, request
-from app.schemas import Project, Ticket, TicketOrder, Sprint
-from mongoengine import queryset
+
+from app.schemas import Project, Ticket, BacklogTicketOrder
 
 
 class TicketProjectList(Resource):
@@ -11,9 +11,12 @@ class TicketProjectList(Resource):
     def __init__(self):
         super(TicketProjectList, self).__init__()
 
+    def get(self, project_pk):
+        return BacklogTicketOrder.objects(project=project_pk).order_by('order').to_json()
+
     def post(self, project_pk):
         """
-        Create Project
+        Create Ticket and sort it
         """
         data = request.get_json(force=True, silent=True)
         if not data:
@@ -31,18 +34,21 @@ class TicketProjectList(Resource):
         tkt.title = data.get('title')
 
         # get max ticket number
-        number = 1
-        for t in project.tickets:
-            if number < t.number:
-                number = t.number
+        try:
+            last_tkt = BacklogTicketOrder.objects(project=project).order_by('-number')
+            if last_tkt:
+                number = last_tkt[0].number + 1
+            else:
+                number = 1
+        except Exception as ex:
+            number = 1
 
-        tkt_order = TicketOrder(ticket=tkt)
-        tkt_order.order = len(project.tickets)
-        tkt_order.number = number + 1
+        tkt_order = BacklogTicketOrder(ticket=tkt, project=project)
+        tkt_order.order = BacklogTicketOrder.objects.count()
+        tkt_order.number = number
 
-        project.tickets.append(tkt_order)
         tkt.save()
-        project.save()
+        tkt_order.save()
 
         return tkt.to_json(), 201
 
@@ -58,13 +64,11 @@ class TicketOrderProject(Resource):
         """
         data = request.get_json(force=True, silent=True)
         if data:
-            project = Project.objects.get(pk=project_pk)
             for index, tkt_id in enumerate(data):
-                for tkt_order in project.tickets:
-                    if str(tkt_order.ticket.id) == tkt_id:
-                        tkt_order.order = index
-                        break
-            project.save()
+                tkt_order = BacklogTicketOrder.objects.get(ticket=tkt_id,
+                                                           project=project_pk)
+                tkt_order.order = index
+                tkt_order.save()
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400
 
@@ -81,9 +85,10 @@ class TicketOrderSprint(Resource):
         """
         data = request.get_json(force=True, silent=True)
         if data:
-            sprint = Sprint.objects.get(pk=sprint_pk)
-            for index, tkt_order in enumerate(sprint.tickets):
+            for index, tkt_id in enumerate(data):
+                tkt_order = TicketOrderSprint.objects.get(ticket=tkt_id,
+                                                          sprint=sprint_pk)
                 tkt_order.order = index
-            sprint.save()
+                tkt_order.save()
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400

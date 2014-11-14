@@ -11,7 +11,8 @@
     <div class="col-md-12">
         <ul class="sprint-section" as-sortable="sortSprints"
             ng-model="data.sprints">
-            <li ng-repeat="sprint in data.sprints" as-sortable-item class="sprint-item">
+            <li ng-repeat="sprint in data.sprints" as-sortable-item
+                class="sprint-item">
                 <section class="panel tasks-widget sprint-item">
                     <header class="panel-heading" as-sortable-item-handle>
                         <span><[ sprint.name ]></span>
@@ -29,31 +30,18 @@
                         </div>
                         <div style="clear:both"></div>
                     </header>
-                    <div class="panel-body" as-sortable="sortTickets" ng-model="sprint.tickets">
+                    <div class="panel-body" as-sortable="sortTickets"
+                         ng-model="sprint.tickets">
                         <div class="task-content">
                             <ul class="task-list">
                                 <li ng-repeat="tkt_order in sprint.tickets track by tkt_order._id.$oid"
                                     as-sortable-item class="ticket-item">
                                     <div class="task-title"
                                          as-sortable-item-handle>
-                                <span class="task-title-sp">
-                                  <[ project.prefix ]>-<[ tkt_order.number ]>: <[ tkt_order.ticket.title ]>
-                                </span>
+                                        <span class="task-title-sp">
+                                          <[ project.prefix ]>-<[ tkt_order.number ]>: <[ tkt_order.ticket.title ]>
+                                        </span>
 
-                                        <div class="pull-right hidden-phone">
-                                            <button class="btn btn-success btn-xs">
-                                                <i
-                                                        class="icon-ok"></i>
-                                            </button>
-                                            <button class="btn btn-primary btn-xs">
-                                                <i
-                                                        class="icon-pencil"></i>
-                                            </button>
-                                            <button class="btn btn-danger btn-xs">
-                                                <i
-                                                        class="icon-trash "></i>
-                                            </button>
-                                        </div>
                                     </div>
                                 </li>
                             </ul>
@@ -74,7 +62,8 @@
                 </div>
                 <div style="clear:both"></div>
             </header>
-            <div class="panel-body" as-sortable="sortBacklog"  ng-model="data.tickets">
+            <div class="panel-body" as-sortable="sortBacklog"
+                 ng-model="data.tickets">
                 <div class="task-content">
                     <ul class="task-list">
                         <li ng-repeat="tkt_order in data.tickets track by tkt_order.ticket._id.$oid"
@@ -83,15 +72,6 @@
                                 <span class="task-title-sp">
                                   <[ project.prefix ]>-<[ tkt_order.number ]>: <[ tkt_order.ticket.title ]>
                                 </span>
-
-                                <div class="pull-right hidden-phone">
-                                    <button class="btn btn-success btn-xs"><i
-                                            class="icon-ok"></i></button>
-                                    <button class="btn btn-primary btn-xs"><i
-                                            class="icon-pencil"></i></button>
-                                    <button class="btn btn-danger btn-xs"><i
-                                            class="icon-trash "></i></button>
-                                </div>
                             </div>
                         </li>
                     </ul>

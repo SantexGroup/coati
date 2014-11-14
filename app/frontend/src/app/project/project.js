@@ -120,8 +120,19 @@
         scope.sortBacklog = {
             itemMoved: function (event) {
                 // This happens when a ticket is moved from the Backlog to a Sprint
-                
-                console.log(event);
+                var source = event.source.itemScope.modelValue;
+                var dest = event.dest.sortableScope.$parent.modelValue;
+                var data = {
+                    source: {
+                        ticket_id: source.ticket._id.$oid,
+                        project_id: source.project.$oid,
+                        number: source.number
+                    },
+                    dest: {
+                        sprint_id: dest._id.$oid
+                    }
+                };
+                TicketService.movement(data);
             },
             orderChanged: function (event) {
                 // This happens when a ticket is sorted in the backlog
@@ -137,7 +148,14 @@
         scope.sortTickets = {
             itemMoved: function (event) {
                 // This happens when a ticket is moved from one Sprint to another
-                console.log(event);
+                var source = event.source.itemScope.modelValue;
+                var data = {
+                    source: {
+
+                    },
+                    dest: event.dest.sortableScope.$parent.modelValue
+                };
+                TicketService.movement(data);
             },
             orderChanged: function (event) {
                 // This happens when a ticket is sorted withing the same Sprint

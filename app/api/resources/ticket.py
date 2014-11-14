@@ -3,7 +3,7 @@ __author__ = 'gastonrobledo'
 from flask import jsonify
 from flask.ext.restful import Resource, request
 
-from app.schemas import Project, Ticket, BacklogTicketOrder
+from app.schemas import Project, Ticket, BacklogTicketOrder, SprintTicketOrder
 
 
 class TicketProjectList(Resource):
@@ -92,3 +92,28 @@ class TicketOrderSprint(Resource):
                 tkt_order.save()
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400
+
+
+class TicketMovement(Resource):
+
+    def __init__(self):
+        super(TicketMovement, self).__init__()
+
+    def post(self):
+
+        data = request.get_json(force=True, silent=True)
+        if data:
+            source = data['source']
+            dest = data['dest']
+
+            if source.get('project_id'):
+                #From project to sprint
+                tkt_ord_sprint = SprintTicketOrder()
+                tkt_ord_sprint.sprint = dest.get('sprint_id')
+
+            else:
+                #From sprint to sprint or project
+                pass
+
+            return jsonify({'success': True}), 200
+        return jsonify({'error': 'Bad Request'}), 400

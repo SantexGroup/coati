@@ -187,6 +187,6 @@ angular.module('Coati.Directives', ['Coati.ApiServices'])
                     scope.handleCancel({value: scope.model});
                 };
             },
-            templateUrl: 'board/inline_edit.tpl.html'
+            template: '<input style="width: auto" class="form-control" type="text" on-enter="save()" on-esc="cancel()" ng-model="model" ng-show="editMode"><span ng-hide="editMode" ng-click="edit()">{{ model }}</span>'
         };
     });

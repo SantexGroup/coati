@@ -134,6 +134,9 @@ angular.module('Coati.ApiServices', ['Coati.Utils', 'Coati.Config'])
             'erase': function(sprint_id){
                 return $requests.$do('/sprint/' + sprint_id, $requests.METHODS.DELETE);
             },
+            'update': function(sprint){
+                return $requests.$do('/sprint/' + sprint._id.$oid, $requests.METHODS.UPDATE, sprint);
+            },
             'update_order': function(project_pk, data){
                 return $requests.$do('/sprints/' + project_pk + '/order', $requests.METHODS.POST, data);
             }

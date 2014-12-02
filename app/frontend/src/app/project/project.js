@@ -235,6 +235,10 @@
             });
         };
 
+        scope.update_sprint_name = function(sprint){
+            SprintService.update(sprint);
+        };
+
         ProjectService.get(state.params.slug).then(function (prj) {
             scope.project = prj;
             getTicketsForProject(prj._id.$oid);

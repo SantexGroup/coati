@@ -15,7 +15,8 @@
                 class="sprint-item">
                 <section class="panel tasks-widget sprint-item">
                     <header class="panel-heading" as-sortable-item-handle>
-                        <span><[ sprint.name ]></span>
+                        <span inline-edit="sprint.name"
+                                 on-save="update_sprint_name(sprint)"><[ sprint.name ]></span>
 
                         <div class="options pull-right">
                             <a class="btn btn-sm btn-danger pull-left"
@@ -36,12 +37,17 @@
                          ng-model="sprint.tickets">
                                 <li ng-repeat="tkt in sprint.tickets track by tkt._id.$oid"
                                     as-sortable-item class="ticket-item">
-                                    <div class="task-title"
-                                         as-sortable-item-handle>
+                                    <i class="icon-ellipsis-vertical" as-sortable-item-handle></i>
+                                    <div class="task-title">
                                         <span class="task-title-sp">
                                           <[ project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
                                         </span>
-
+                                        <span class="badge badge-sm label-primary" ng-repeat="lbl in tkt.labels"><[ lbl ]></span>
+                                        <div class="pull-right hidden-phone">
+                                              <button class="btn btn-success btn-xs  icon-eye-open"></button>
+                                              <button class="btn btn-primary btn-xs icon-pencil"></button>
+                                              <button class="btn btn-danger btn-xs icon-trash"></button>
+                                        </div>
                                     </div>
                                 </li>
                             </ul>
@@ -68,11 +74,18 @@
                         ng-model="data.tickets">
                         <li ng-repeat="tkt in data.tickets track by tkt._id.$oid"
                             as-sortable-item class="user-story">
-                            <div class="task-title" as-sortable-item-handle>
-                                <span class="task-title-sp">
-                                  <[ project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
-                                </span>
-                            </div>
+                            <i class="icon-ellipsis-vertical" as-sortable-item-handle></i>
+                                    <div class="task-title">
+                                        <span class="task-title-sp">
+                                          <[ project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
+                                        </span>
+                                        <span class="badge badge-sm label-primary" ng-repeat="lbl in tkt.labels"><[ lbl ]></span>
+                                        <div class="pull-right hidden-phone">
+                                              <button class="btn btn-success btn-xs icon-eye-open"></button>
+                                              <button class="btn btn-primary btn-xs icon-pencil"></button>
+                                              <button class="btn btn-danger btn-xs icon-trash"></button>
+                                        </div>
+                                    </div>
                         </li>
                     </ul>
                 </div>

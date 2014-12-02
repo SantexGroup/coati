@@ -48,6 +48,15 @@ class SprintInstance(Resource):
         sp = Sprint.objects.get(pk=sp_id)
         return sp.to_json, 200
 
+    def put(self, sp_id):
+        data = request.get_json(force=True, silent=True)
+        if data:
+            sp = Sprint.objects.get(pk=sp_id)
+            sp.name = data.get('name')
+            sp.save()
+            return sp.to_json(), 200
+        return jsonify({"error": 'Bad Request'}), 400
+
     def delete(self, sp_id):
         sp = Sprint.objects.get(pk=sp_id)
         sp.delete()

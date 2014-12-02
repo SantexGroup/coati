@@ -111,8 +111,8 @@
             });
         };
 
-        var getTicketsForProject = function(project_id){
-            TicketService.query(project_id).then(function(tkts){
+        var getTicketsForProject = function (project_id) {
+            TicketService.query(project_id).then(function (tkts) {
                 scope.data.tickets = tkts;
             });
         };
@@ -122,6 +122,10 @@
                 // This happens when a ticket is moved from the Backlog to a Sprint
                 var source = event.source.itemScope.modelValue;
                 var dest = event.dest.sortableScope.$parent.modelValue;
+                var new_order = [];
+                angular.forEach(event.dest.sortableScope.modelValue, function (val, key) {
+                    new_order.push(val.ticket._id.$oid);
+                });
                 var data = {
                     source: {
                         ticket_id: source.ticket._id.$oid,
@@ -129,33 +133,51 @@
                         number: source.number
                     },
                     dest: {
-                        sprint_id: dest._id.$oid
+                        sprint_id: dest._id.$oid,
+                        order: new_order
                     }
                 };
                 TicketService.movement(data);
             },
             orderChanged: function (event) {
                 // This happens when a ticket is sorted in the backlog
-               var new_order = [];
-                angular.forEach(scope.data.tickets, function(val, key){
+                var new_order = [];
+                angular.forEach(scope.data.tickets, function (val, key) {
                     new_order.push(val.ticket._id.$oid);
                 });
                 TicketService.update_backlog_order(scope.project._id.$oid, new_order);
             },
-            containment: '#overview'
+            containment: '#overview',
+            containerPositioning: 'relative',
+            type_sortable: 'project'
         };
 
         scope.sortTickets = {
             itemMoved: function (event) {
                 // This happens when a ticket is moved from one Sprint to another or backlog
+                var dest = {};
+                var new_order = [];
+                var tickets = event.dest.sortableScope.modelValue;
+                angular.forEach(tickets, function (val, key) {
+                    new_order.push(val.ticket._id.$oid);
+                });
+                if (event.dest.sortableScope.options.type_sortable === 'project') {
+                    dest = {
+                        project_id: event.dest.sortableScope.$parent.project._id.$oid,
+                        order: new_order
+                    };
+                } else {
+                    dest = {
+                        sprint_id: event.dest.sortableScope.$parent.modelValue._id.$oid,
+                        order: new_order
+                    };
+                }
                 var data = {
                     source: {
                         ticket_id: event.source.itemScope.modelValue.ticket._id.$oid,
                         sprint_id: event.source.sortableScope.$parent.modelValue._id.$oid
                     },
-                    dest: {
-                        sprint_id: event.dest.sortableScope.$parent.modelValue._id.$oid
-                    }
+                    dest: dest
                 };
                 TicketService.movement(data);
             },
@@ -163,13 +185,15 @@
                 // This happens when a ticket is sorted withing the same Sprint
                 var new_order = [];
                 var tickets = event.source.sortableScope.modelValue;
-                angular.forEach(tickets, function(val, key){
+                angular.forEach(tickets, function (val, key) {
                     new_order.push(val.ticket._id.$oid);
                 });
                 var sprint = event.source.sortableScope.$parent.modelValue;
                 TicketService.update_sprint_order(sprint._id.$oid, new_order);
             },
-            containment: '#overview'
+            containment: '#overview',
+            containerPositioning: 'relative',
+            type_sortable: 'sprint'
         };
 
         scope.sortSprints = {
@@ -179,12 +203,13 @@
             orderChanged: function (event) {
                 //do something
                 var new_order = [];
-                angular.forEach(scope.data.sprints, function(val, key){
+                angular.forEach(scope.data.sprints, function (val, key) {
                     new_order.push(val._id.$oid);
                 });
                 SprintService.update_order(scope.project._id.$oid, new_order);
             },
-            containment: '#overview'
+            containment: '#overview',
+            containerPositioning: 'relative'
         };
 
 
@@ -224,7 +249,7 @@
                 ProjectService.save(scope.project).then(function (project) {
                     //ver aca
                     state.go('project.overview', {slug: project.slug});
-                }, function(err){
+                }, function (err) {
                     console.log(err);
                 });
             } else {

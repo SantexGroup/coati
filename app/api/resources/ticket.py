@@ -108,9 +108,14 @@ class TicketMovement(Resource):
                 ticket = Ticket.objects.get(pk=source.get('ticket_id'))
                 tkt_ord_sprint = SprintTicketOrder()
                 tkt_ord_sprint.sprint = sprint
-                tkt_ord_sprint.order = SprintTicketOrder.objects.count()
                 tkt_ord_sprint.ticket = ticket
                 tkt_ord_sprint.save()
+
+                for index, tkt_id in enumerate(dest.get('order')):
+                    tkt_order = SprintTicketOrder.objects.get(ticket=tkt_id,
+                                                              sprint=sprint)
+                    tkt_order.order = index
+                    tkt_order.save()
 
                 bto = BacklogTicketOrder.objects.get(ticket=ticket,
                                                      project=source.get(
@@ -119,11 +124,42 @@ class TicketMovement(Resource):
 
             elif source.get('sprint_id') and dest.get('sprint_id'):
                 # From sprint to sprint
-                pass
+                sprint = Sprint.objects.get(pk=dest.get('sprint_id'))
+                ticket = Ticket.objects.get(pk=source.get('ticket_id'))
+                tkt_ord_sprint = SprintTicketOrder()
+                tkt_ord_sprint.sprint = sprint
+                tkt_ord_sprint.ticket = ticket
+                tkt_ord_sprint.save()
+
+                for index, tkt_id in enumerate(dest.get('order')):
+                    tkt_order = SprintTicketOrder.objects.get(ticket=tkt_id,
+                                                              sprint=sprint)
+                    tkt_order.order = index
+                    tkt_order.save()
+
+                sto = SprintTicketOrder.objects.get(ticket=ticket,
+                                                    sprint=source.get(
+                                                        'sprint_id'))
+                sto.delete()
+
             elif source.get('sprint_id') and dest.get('project_id'):
                 # From sprint to backlog
-                pass
+                ticket = Ticket.objects.get(pk=source.get('ticket_id'))
+                project = Project.objects.get(pk=dest.get('project_id'))
+                sprint = Sprint.objects.get(pk=source.get('sprint_id'))
+                bto = BacklogTicketOrder()
+                bto.ticket = ticket
+                bto.project = project
+                bto.save()
+                for index, tkt_id in enumerate(dest.get('order')):
+                    tkt_order = BacklogTicketOrder.objects.get(ticket=tkt_id,
+                                                               project=project)
+                    tkt_order.order = index
+                    tkt_order.save()
 
+                sto = SprintTicketOrder.objects.get(ticket=ticket,
+                                                    sprint=sprint)
+                sto.delete()
 
             return jsonify({'success': True}), 200
         return jsonify({'error': 'Bad Request'}), 400

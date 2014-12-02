@@ -30,10 +30,10 @@
                         </div>
                         <div style="clear:both"></div>
                     </header>
-                    <div class="panel-body" as-sortable="sortTickets"
-                         ng-model="sprint.tickets">
+                    <div class="panel-body">
                         <div class="task-content">
-                            <ul class="task-list">
+                            <ul class="task-list" as-sortable="sortTickets"
+                         ng-model="sprint.tickets">
                                 <li ng-repeat="tkt_order in sprint.tickets track by tkt_order.ticket._id.$oid"
                                     as-sortable-item class="ticket-item">
                                     <div class="task-title"
@@ -62,10 +62,10 @@
                 </div>
                 <div style="clear:both"></div>
             </header>
-            <div class="panel-body" as-sortable="sortBacklog"
-                 ng-model="data.tickets">
+            <div class="panel-body">
                 <div class="task-content">
-                    <ul class="task-list">
+                    <ul class="task-list" as-sortable="sortBacklog"
+                        ng-model="data.tickets">
                         <li ng-repeat="tkt_order in data.tickets track by tkt_order.ticket._id.$oid"
                             as-sortable-item class="user-story">
                             <div class="task-title" as-sortable-item-handle>

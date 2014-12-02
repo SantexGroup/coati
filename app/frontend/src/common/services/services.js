@@ -112,8 +112,11 @@ angular.module('Coati.ApiServices', ['Coati.Utils', 'Coati.Config'])
             'save': function(project_pk, tkt){
                 return $requests.$do('/tickets/' + project_pk, $requests.METHODS.POST, tkt);
             },
-            'update_order': function(project_pk, data){
+            'update_backlog_order': function(project_pk, data){
                 return $requests.$do('/tickets/' + project_pk + '/order', $requests.METHODS.POST, data);
+            },
+            'update_sprint_order': function(sprint_pk, data){
+                return $requests.$do('/tickets/sprint/' + sprint_pk + '/order', $requests.METHODS.POST, data);
             },
             'movement': function(data){
                 return $requests.$do('/ticket/movement', $requests.METHODS.POST, data);

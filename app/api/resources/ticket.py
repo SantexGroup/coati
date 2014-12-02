@@ -3,8 +3,7 @@ __author__ = 'gastonrobledo'
 from flask import jsonify
 from flask.ext.restful import Resource, request
 
-from app.schemas import Project, Ticket, BacklogTicketOrder, SprintTicketOrder, \
-    Sprint
+from app.schemas import Project, Ticket, SprintTicketOrder, Sprint
 
 
 class TicketProjectList(Resource):
@@ -12,8 +11,7 @@ class TicketProjectList(Resource):
         super(TicketProjectList, self).__init__()
 
     def get(self, project_pk):
-        return BacklogTicketOrder.objects(project=project_pk).order_by(
-            'order').to_json()
+        return Project.objects.get(pk=project_pk).get_tickets().to_json()
 
     def post(self, project_pk):
         """
@@ -45,10 +43,8 @@ class TicketProjectList(Resource):
             number = 1
         tkt.number = number
 
-        tkt_order = BacklogTicketOrder(ticket=tkt, project=project)
-        tkt_order.order = BacklogTicketOrder.objects.count()
+        tkt.order = Ticket.objects.count()
         tkt.save()
-        tkt_order.save()
 
         return tkt.to_json(), 201
 
@@ -64,8 +60,8 @@ class TicketOrderProject(Resource):
         data = request.get_json(force=True, silent=True)
         if data:
             for index, tkt_id in enumerate(data):
-                tkt_order = BacklogTicketOrder.objects.get(ticket=tkt_id,
-                                                           project=project_pk)
+                tkt_order = Ticket.objects.get(ticket=tkt_id,
+                                               project=project_pk)
                 tkt_order.order = index
                 tkt_order.save()
             return jsonify({'success': True}), 200
@@ -117,11 +113,6 @@ class TicketMovement(Resource):
                     tkt_order.order = index
                     tkt_order.save()
 
-                bto = BacklogTicketOrder.objects.get(ticket=ticket,
-                                                     project=source.get(
-                                                         'project_id'))
-                bto.delete()
-
             elif source.get('sprint_id') and dest.get('sprint_id'):
                 # From sprint to sprint
                 sprint = Sprint.objects.get(pk=dest.get('sprint_id'))
@@ -145,21 +136,15 @@ class TicketMovement(Resource):
             elif source.get('sprint_id') and dest.get('project_id'):
                 # From sprint to backlog
                 ticket = Ticket.objects.get(pk=source.get('ticket_id'))
-                project = Project.objects.get(pk=dest.get('project_id'))
                 sprint = Sprint.objects.get(pk=source.get('sprint_id'))
-                bto = BacklogTicketOrder()
-                bto.ticket = ticket
-                bto.project = project
-                bto.save()
+                spo = SprintTicketOrder.objects.get(ticket=ticket,
+                                                    sprint=sprint)
+                spo.delete()
+
                 for index, tkt_id in enumerate(dest.get('order')):
-                    tkt_order = BacklogTicketOrder.objects.get(ticket=tkt_id,
-                                                               project=project)
+                    tkt_order = Ticket.objects.get(pk=tkt_id)
                     tkt_order.order = index
                     tkt_order.save()
-
-                sto = SprintTicketOrder.objects.get(ticket=ticket,
-                                                    sprint=sprint)
-                sto.delete()
 
             return jsonify({'success': True}), 200
         return jsonify({'error': 'Bad Request'}), 400

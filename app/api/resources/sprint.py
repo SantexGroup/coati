@@ -3,7 +3,7 @@ __author__ = 'gastonrobledo'
 from flask import jsonify, request
 from flask.ext.restful import Resource
 
-from app.schemas import Sprint, Project
+from app.schemas import Sprint, Project, SprintTicketOrder
 
 
 class SprintOrder(Resource):

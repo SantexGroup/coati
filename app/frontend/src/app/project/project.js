@@ -124,11 +124,11 @@
                 var dest = event.dest.sortableScope.$parent.modelValue;
                 var new_order = [];
                 angular.forEach(event.dest.sortableScope.modelValue, function (val, key) {
-                    new_order.push(val.ticket._id.$oid);
+                    new_order.push(val._id.$oid);
                 });
                 var data = {
                     source: {
-                        ticket_id: source.ticket._id.$oid,
+                        ticket_id: source._id.$oid,
                         project_id: source.project.$oid,
                         number: source.number
                     },
@@ -143,7 +143,7 @@
                 // This happens when a ticket is sorted in the backlog
                 var new_order = [];
                 angular.forEach(scope.data.tickets, function (val, key) {
-                    new_order.push(val.ticket._id.$oid);
+                    new_order.push(val._id.$oid);
                 });
                 TicketService.update_backlog_order(scope.project._id.$oid, new_order);
             },
@@ -159,7 +159,7 @@
                 var new_order = [];
                 var tickets = event.dest.sortableScope.modelValue;
                 angular.forEach(tickets, function (val, key) {
-                    new_order.push(val.ticket._id.$oid);
+                    new_order.push(val._id.$oid);
                 });
                 if (event.dest.sortableScope.options.type_sortable === 'project') {
                     dest = {
@@ -174,7 +174,7 @@
                 }
                 var data = {
                     source: {
-                        ticket_id: event.source.itemScope.modelValue.ticket._id.$oid,
+                        ticket_id: event.source.itemScope.modelValue._id.$oid,
                         sprint_id: event.source.sortableScope.$parent.modelValue._id.$oid
                     },
                     dest: dest
@@ -186,7 +186,7 @@
                 var new_order = [];
                 var tickets = event.source.sortableScope.modelValue;
                 angular.forEach(tickets, function (val, key) {
-                    new_order.push(val.ticket._id.$oid);
+                    new_order.push(val._id.$oid);
                 });
                 var sprint = event.source.sortableScope.$parent.modelValue;
                 TicketService.update_sprint_order(sprint._id.$oid, new_order);
@@ -230,6 +230,8 @@
                 if (index != -1) {
                     scope.data.sprints.splice(index, 1);
                 }
+                getTicketsForProject(scope.project._id.$oid);
+
             });
         };
 

@@ -1,7 +1,7 @@
 var SOCKET_URL = 'http://localhost:9000';
 
 
-angular.module('Coati.Utils', ['ngCookies', 'Coati.Config'])
+angular.module('Coati.Utils', ['Coati.Config'])
     .factory('tokens', function(){
         return {
             'get_token': function(){
@@ -27,7 +27,7 @@ angular.module('Coati.Utils', ['ngCookies', 'Coati.Config'])
             }
         };
     })
-    .factory('$requests', function ($http, $q, $state, $cookies, Conf, tokens) {
+    .factory('$requests', function ($http, $q, $state, Conf, tokens) {
         return {
             METHODS: {
                 UPDATE: 'PUT',

@@ -1,4 +1,4 @@
-(function () {
+(function (angular) {
 
     function ConfigModule(stateProvider) {
         stateProvider
@@ -299,4 +299,4 @@
         .controller('ProjectCtrlSettings', ProjectCtrlSettings)
         .controller('ProjectFormCtrl', ProjectFormCtrl);
 
-}());
+}(angular));

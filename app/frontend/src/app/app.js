@@ -1,4 +1,4 @@
-(function () {
+(function (angular) {
 
     function ConfigApp(interpolate, location, urlRoute) {
         urlRoute.when('/', '/home/');
@@ -61,7 +61,7 @@
 
     angular.module('Coati', [
         'templates-app', 'templates-common',
-        'ui.router', 'ui.bootstrap', 'ngCookies',
+        'ui.router', 'ui.bootstrap',
         'Coati.Config', 'Coati.Directives', 'Coati.Home',
         'Coati.Login',
         'Coati.User', 'Coati.Projects', 'Coati.Tickets', 'Coati.Errors'])
@@ -70,6 +70,6 @@
         .filter('getIndexByProperty', filterGetIndexByProperty)
         .controller('AppCtrl', AppController);
 
-}());
+}(angular));
 
 

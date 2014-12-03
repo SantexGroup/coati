@@ -55,7 +55,8 @@ module.exports = function ( karma ) {
      */
     browsers: [
       'PhantomJS'
-    ]
+    ],
+    logLevel: 'DEBUG'
   });
 };
 

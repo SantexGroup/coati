@@ -1,4 +1,4 @@
-(function () {
+(function (angular) {
 
     /**
      * Configuration module users
@@ -66,6 +66,6 @@
         .controller('UserCtrl', UserController)
         .controller('UserProfileCtrl', UserProfileController);
 
-}());
+}(angular));
 
 

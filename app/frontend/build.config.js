@@ -73,7 +73,8 @@ module.exports = {
             'vendor/angular-cookies/angular-cookies.min.js',
             'vendor/bootstrap/dist/js/bootstrap.min.js',
             'vendor/html5shiv/dist/html5shiv.min.js',
-            'vendor/ng-tags-input/ng-tags-input.min.js'
+            'vendor/ng-tags-input/ng-tags-input.min.js',
+            'vendor/ng-sortable/dist/ng-sortable.js'
         ],
         maps: [
             'vendor/jquery/dist/jquery.min.map',
@@ -81,7 +82,8 @@ module.exports = {
         ],
         css: [
             'vendor/angular-notifications/notification.min.css',
-            'vendor/ng-tags-input/ng-tags-input.min.css'
+            'vendor/ng-tags-input/ng-tags-input.min.css',
+            'vendor/ng-sortable/ng-sortable.min.css'
         ],
         assets: [],
         fonts: [

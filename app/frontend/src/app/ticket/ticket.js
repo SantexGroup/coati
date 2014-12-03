@@ -1,4 +1,4 @@
-(function () {
+(function (angular) {
 
     function Config(stateProvider){
         stateProvider
@@ -53,4 +53,4 @@
         .controller('TicketFormController', TicketFormController);
 
 
-}());
+}(angular));

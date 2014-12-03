@@ -1,4 +1,4 @@
-(function () {
+(function (angular) {
 
     function Config(stateProvider) {
         stateProvider.state('login', {
@@ -62,4 +62,4 @@
         .controller('LoginAuthController', LoginAuthController);
 
 
-}());
+}(angular));

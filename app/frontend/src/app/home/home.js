@@ -1,4 +1,4 @@
-(function () {
+(function (angular) {
     /**
      * Home Module
      */
@@ -58,6 +58,6 @@
         .config(ConfigModule)
         .controller('MainController', MainController);
 
-}());
+}(angular));
 
 

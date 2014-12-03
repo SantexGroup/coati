@@ -118,6 +118,9 @@
         };
 
         scope.sortBacklog = {
+            accept: function (sourceItem, destItem) {
+                return sourceItem.element.hasClass('user-story') || sourceItem.element.hasClass('ticket-item');
+            },
             itemMoved: function (event) {
                 // This happens when a ticket is moved from the Backlog to a Sprint
                 var source = event.source.itemScope.modelValue;
@@ -153,6 +156,9 @@
         };
 
         scope.sortTickets = {
+            accept: function (sourceItem, destItem) {
+                return sourceItem.element.hasClass('user-story') || sourceItem.element.hasClass('ticket-item');
+            },
             itemMoved: function (event) {
                 // This happens when a ticket is moved from one Sprint to another or backlog
                 var dest = {};

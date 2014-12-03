@@ -9,12 +9,12 @@
 
 <div class="row" id="planning">
     <div class="col-md-12">
-        <ul class="sprint-section"  data-is-enabled="true" data-as-sortable="sortSprints"
-            data-ng-model="data.sprints">
-            <li ng-repeat="sprint in data.sprints" data-as-sortable-item
+        <ul class="sprint-section" as-sortable="sortSprints" is-enabled="true"
+            ng-model="data.sprints">
+            <li ng-repeat="sprint in data.sprints" as-sortable-item
                 class="sprint-item">
                 <section class="panel tasks-widget sprint-item">
-                    <header class="panel-heading" data-as-sortable-item-handle>
+                    <header class="panel-heading" as-sortable-item-handle>
                         <span><[ sprint.name ]></span>
 
                         <div class="options pull-right">
@@ -32,10 +32,10 @@
                     </header>
                     <div class="panel-body">
                         <div class="task-content">
-                            <ul class="task-list"  data-is-enabled="true" data-as-sortable="sortTickets" data-ng-model="sprint.tickets">
+                            <ul class="task-list" as-sortable="sortTickets" is-enabled="true" ng-model="sprint.tickets">
                                 <li ng-repeat="tkt in sprint.tickets track by tkt._id.$oid"
-                                    data-as-sortable-item class="ticket-item">
-                                    <i class="icon-ellipsis-vertical" data-as-sortable-item-handle></i>
+                                    as-sortable-item class="ticket-item">
+                                    <i class="icon-ellipsis-vertical" as-sortable-item-handle></i>
                                     <div class="task-title">
                                         <span class="task-title-sp">
                                           <[ project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
@@ -68,11 +68,11 @@
             </header>
             <div class="panel-body">
                 <div class="task-content">
-                    <ul class="task-list" data-as-sortable="sortBacklog"
-                        data-ng-model="data.tickets" data-is-enabled="true">
+                    <ul class="task-list"as-sortable="sortBacklog"
+                        ng-model="data.tickets">
                         <li ng-repeat="tkt in data.tickets track by tkt._id.$oid"
-                            data-as-sortable-item class="user-story">
-                            <i class="icon-ellipsis-vertical" data-as-sortable-item-handle></i>
+                            as-sortable-item class="user-story">
+                            <i class="icon-ellipsis-vertical" as-sortable-item-handle></i>
                                     <div class="task-title">
                                         <span class="task-title-sp">
                                           <[ project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>

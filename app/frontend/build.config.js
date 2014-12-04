@@ -77,8 +77,7 @@ module.exports = {
             'vendor/ng-sortable/dist/ng-sortable.js'
         ],
         maps: [
-            'vendor/jquery/dist/jquery.min.map',
-            'vendor/angular-cookies/angular-cookies.min.js.map'
+            'vendor/jquery/dist/jquery.min.map'
         ],
         css: [
             'vendor/angular-notifications/notification.min.css',

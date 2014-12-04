@@ -8,13 +8,14 @@
 
 
 <div class="row" id="planning">
-    <div class="col-md-12">
+    <div class="col-md-12" id="planning-list">
         <ul class="sprint-section" as-sortable="sortSprints" is-enabled="true"
             ng-model="data.sprints">
             <li ng-repeat="sprint in data.sprints" as-sortable-item
                 class="sprint-item">
                 <section class="panel tasks-widget sprint-item">
-                    <header class="panel-heading" as-sortable-item-handle>
+                    <header class="panel-heading">
+                        <i class="icon-ellipsis-vertical handler" as-sortable-item-handle></i>
                         <span><[ sprint.name ]></span>
 
                         <div class="options pull-right">
@@ -35,14 +36,14 @@
                             <ul class="task-list" as-sortable="sortTickets" is-enabled="true" ng-model="sprint.tickets">
                                 <li ng-repeat="tkt in sprint.tickets track by tkt._id.$oid"
                                     as-sortable-item class="ticket-item">
-                                    <i class="icon-ellipsis-vertical" as-sortable-item-handle></i>
+                                    <i class="icon-ellipsis-vertical handler" as-sortable-item-handle></i>
                                     <div class="task-title">
                                         <span class="task-title-sp">
                                           <[ project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
                                         </span>
                                         <span class="badge badge-sm label-primary" ng-repeat="lbl in tkt.labels"><[ lbl ]></span>
                                         <div class="pull-right hidden-phone">
-                                              <button class="btn btn-success btn-xs  icon-eye-open"></button>
+                                              <button class="btn btn-success btn-xs  icon-eye-open" ng-click="showDetail(tkt);"></button>
                                               <button class="btn btn-primary btn-xs icon-pencil"></button>
                                               <button class="btn btn-danger btn-xs icon-trash"></button>
                                         </div>
@@ -69,7 +70,7 @@
             <div class="panel-body">
                 <div class="task-content">
                     <ul class="task-list"as-sortable="sortBacklog"
-                        ng-model="data.tickets">
+                        ng-model="data.tickets" is-enabled="true">
                         <li ng-repeat="tkt in data.tickets track by tkt._id.$oid"
                             as-sortable-item class="user-story">
                             <i class="icon-ellipsis-vertical" as-sortable-item-handle></i>
@@ -79,7 +80,7 @@
                                         </span>
                                         <span class="badge badge-sm label-primary" ng-repeat="lbl in tkt.labels"><[ lbl ]></span>
                                         <div class="pull-right hidden-phone">
-                                              <button class="btn btn-success btn-xs icon-eye-open"></button>
+                                              <button class="btn btn-success btn-xs icon-eye-open" ng-click="showDetail(tkt);"></button>
                                               <button class="btn btn-primary btn-xs icon-pencil"></button>
                                               <button class="btn btn-danger btn-xs icon-trash"></button>
                                         </div>
@@ -90,4 +91,5 @@
             </div>
         </section>
     </div>
+    <ticket-detail-view reduced-item="#planning-list" size-reduced-item="8"></ticket-detail-view>
 </div>

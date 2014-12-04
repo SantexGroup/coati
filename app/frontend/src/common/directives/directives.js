@@ -189,4 +189,31 @@ angular.module('Coati.Directives', ['Coati.ApiServices'])
             },
             template: '<input style="width: auto" class="form-control" type="text" on-enter="save()" on-esc="cancel()" ng-model="model" ng-show="editMode"><span ng-hide="editMode" ng-click="edit()"><[ model ]></span>'
         };
+    }).
+    directive('ticketDetailView', function () {
+        return {
+            restrict: 'E',
+            scope: {
+                reduceItem: '@reducedItem',
+                sizeReducedItem: '@sizeReducedItem'
+            },
+            transclude: true,
+            replace: true,
+            templateUrl: 'ticket/ticket_detail_view.tpl.html',
+            link: function (scope, elem, attrs, ctrl) {
+                scope.$watch('$parent.ticket_detail', function(new_val, old_val){
+                    if(new_val){
+                        scope.model = new_val;
+                        $(elem).show("fold", 500);
+                        $(scope.reduceItem).addClass('col-md-' + scope.sizeReducedItem, 500);
+                    }else{
+                        $(elem).hide("fold", 500);
+                        $(scope.reduceItem).removeClass('col-md-' + scope.sizeReducedItem, 500);
+                    }
+                });
+                scope.close = function(){
+                    scope.$parent.ticket_detail = null;
+                };
+            }
+        };
     });

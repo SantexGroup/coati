@@ -103,6 +103,7 @@
     function ProjectCtrlOverview(scope, state, modal, ProjectService, TicketService, SprintService) {
 
         scope.data = {};
+        scope.ticket_detail = null;
 
 
         var getSprintsWithTickets = function (project_id) {
@@ -115,6 +116,9 @@
             TicketService.query(project_id).then(function (tkts) {
                 scope.data.tickets = tkts;
             });
+        };
+        scope.showDetail = function(tkt){
+            scope.ticket_detail = tkt;
         };
 
         scope.sortBacklog = {

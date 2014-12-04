@@ -3,6 +3,13 @@ from datetime import datetime, timedelta
 from mongoengine_extras.fields import slugify, SlugField
 from bson import json_util
 
+TICKET_TYPE = (('U', 'User Story'),
+               ('F', 'Feature'),
+               ('B', 'Bug'),
+               ('I', 'Improvement'),
+               ('E', 'Epic'),
+               ('T', 'Task'))
+
 
 class CustomQuerySet(mongoengine.QuerySet):
     def to_json(self):
@@ -130,14 +137,17 @@ class Ticket(mongoengine.Document):
     project = mongoengine.ReferenceField('Project',
                                          reverse_delete_rule=mongoengine.CASCADE)
     order = mongoengine.IntField()
+    points = mongoengine.IntField()
+    type = mongoengine.StringField(max_length=1, choices=TICKET_TYPE)
 
     meta = {
         'queryset_class': CustomQuerySet
     }
 
-    def clean(self):
-        if not self._created:
-            self.number = Ticket.objects(project=self.project).count() + 1
+    def to_json(self, *args, **kwargs):
+        data = self.to_mongo()
+        data['project'] = self.project.to_mongo()
+        return json_util.dumps(data)
 
 
 class SprintTicketOrder(mongoengine.Document):

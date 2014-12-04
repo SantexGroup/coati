@@ -247,12 +247,30 @@ input.error {
 /* Optional CSS, default style for ng-sortable */
 /* ******************************************* */
 
+.as-sortable-item {
+  -ms-touch-action: none;
+  touch-action: none;
+}
+
 .as-sortable-item, .as-sortable-placeholder {
+  display: block;
   min-height: 20px;
   margin: 1px 2px 5px 1px;
 }
 
 .as-sortable-item-handle {
+  cursor: move;
+}
+
+.as-sortable-drag {
+  position: absolute;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: .8;
+}
+
+.as-sortable-hidden {
+  display: none !important;
 }
 
 .as-sortable-placeholder {
@@ -261,13 +279,7 @@ input.error {
   background-color: #f1fbe5;
 }
 
-.as-sortable-drag {
-  opacity: .8;
-}
-
-.as-sortable-hidden {
-}
-
+/* End Sortable */
 .task-content {
   margin: 0 !important;
 }
@@ -280,9 +292,8 @@ input.error {
   background: none !important;
 }
 
-.task-list .ticket-item,  .task-list .user-story{
+.task-list .ticket-item, .task-list .user-story {
   font-size: 12px;
-  border-left: 3px solid #78CD51;
   padding: 15px 0 15px 35px !important;
   position: relative;
   background: #f5f6f8;
@@ -290,12 +301,96 @@ input.error {
   border-bottom: none !important;
 }
 
-.ticket-item i, .user-story i{
+.ticket-item.U, .user-story.U {
+  border-left: 3px solid #78CD51;
+}
+
+.ticket-item.B, .user-story.B {
+  border-left: 3px solid #ff0000;
+}
+
+.ticket-item.F, .user-story.F {
+  border-left: 3px solid #ff8a01;
+}
+
+.ticket-item.I, .user-story.I {
+  border-left: 3px solid #20e4ff;
+}
+
+.ticket-item.E, .user-story.E {
+  border-left: 3px solid #9c3fff;
+}
+
+.ticket-item.T, .user-story.T {
+  border-left: 3px solid #fffe15;
+}
+
+.ticket-item i, .user-story i {
   position: absolute;
   left: 6px;
   padding: 4px 10px 0 10px;
   cursor: pointer;
 }
-.handler{
+
+.handler {
   cursor: pointer;
+}
+
+.spinner {
+  margin: 100px auto;
+  width: 50px;
+  height: 30px;
+  text-align: center;
+  font-size: 10px;
+}
+
+/** Spinner **/
+.spinner > div {
+  background-color: #333;
+  height: 100%;
+  width: 6px;
+  display: inline-block;
+
+  -webkit-animation: stretchdelay 1.2s infinite ease-in-out;
+  animation: stretchdelay 1.2s infinite ease-in-out;
+}
+
+.spinner .rect2 {
+  -webkit-animation-delay: -1.1s;
+  animation-delay: -1.1s;
+}
+
+.spinner .rect3 {
+  -webkit-animation-delay: -1.0s;
+  animation-delay: -1.0s;
+}
+
+.spinner .rect4 {
+  -webkit-animation-delay: -0.9s;
+  animation-delay: -0.9s;
+}
+
+.spinner .rect5 {
+  -webkit-animation-delay: -0.8s;
+  animation-delay: -0.8s;
+}
+
+@-webkit-keyframes stretchdelay {
+  0%, 40%, 100% {
+    -webkit-transform: scaleY(0.4)
+  }
+  20% {
+    -webkit-transform: scaleY(1.0)
+  }
+}
+
+@keyframes stretchdelay {
+  0%, 40%, 100% {
+    transform: scaleY(0.4);
+    -webkit-transform: scaleY(0.4);
+  }
+  20% {
+    transform: scaleY(1.0);
+    -webkit-transform: scaleY(1.0);
+  }
 }

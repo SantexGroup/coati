@@ -10,6 +10,18 @@
     }
 
     // Filters
+    function sumValue() {
+        return function (items, field) {
+            var total = 0, i = 0;
+            if(items !== undefined) {
+                for (i = 0; i < items.length; i++) {
+                    total += items[i][field] || 0;
+                }
+            }
+            return total;
+        };
+    }
+
     function filterGetByProperty() {
         return function (propertyName, propertyValue, collection) {
             for (var i = 0; i < collection.length; i++) {
@@ -41,7 +53,7 @@
                 scope.pageTitle = toState.data.pageTitle + ' | Coati';
             }
             scope.actual_path = toState.name;
-            rootScope.state_name  = toState.name;
+            rootScope.state_name = toState.name;
         });
 
         rootScope.$on('$stateChangeSuccess', function (event) {
@@ -57,7 +69,7 @@
 
     // Injections
     ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider'];
-    AppController.$inject = ['$scope', '$rootScope','$state', '$stateParams', 'tokens'];
+    AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', 'tokens'];
 
     angular.module('Coati', [
         'templates-app', 'templates-common',
@@ -68,6 +80,7 @@
         .config(ConfigApp)
         .filter('getByProperty', filterGetByProperty)
         .filter('getIndexByProperty', filterGetIndexByProperty)
+        .filter('sumValue', sumValue)
         .controller('AppCtrl', AppController);
 
 }(angular));

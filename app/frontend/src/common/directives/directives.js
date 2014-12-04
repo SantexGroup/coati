@@ -201,19 +201,29 @@ angular.module('Coati.Directives', ['Coati.ApiServices'])
             replace: true,
             templateUrl: 'ticket/ticket_detail_view.tpl.html',
             link: function (scope, elem, attrs, ctrl) {
-                scope.$watch('$parent.ticket_detail', function(new_val, old_val){
-                    if(new_val){
-                        scope.model = new_val;
+                scope.$watch('$parent.loaded', function (new_val, old_val) {
+                    scope.loaded = new_val;
+                });
+
+                scope.$watch('$parent.ticket_detail', function (new_val, old_val) {
+                    scope.model = new_val;
+                });
+                scope.$watch('$parent.ticket_clicked', function (new_val) {
+                    if (new_val) {
                         $(elem).show("fold", 500);
                         $(scope.reduceItem).addClass('col-md-' + scope.sizeReducedItem, 500);
-                    }else{
-                        $(elem).hide("fold", 500);
-                        $(scope.reduceItem).removeClass('col-md-' + scope.sizeReducedItem, 500);
+                        $(window.opera ? 'html' : 'html, body').animate({
+                            scrollTop: 0
+                        }, 'slow');
                     }
                 });
-                scope.close = function(){
+                scope.close = function () {
                     scope.$parent.ticket_detail = null;
+                    scope.$parent.ticket_clicked = false;
+                    $(elem).hide("fold", 500);
+                    $(scope.reduceItem).removeClass('col-md-' + scope.sizeReducedItem, 500);
                 };
+                $(elem).css('display', 'none');
             }
         };
     });

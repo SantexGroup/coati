@@ -117,8 +117,39 @@
                 scope.data.tickets = tkts;
             });
         };
-        scope.showDetail = function(tkt){
-            scope.ticket_detail = tkt;
+
+        scope.add_or_edit = function (tkt) {
+            if(tkt){
+                tkt = angular.copy(tkt);
+                tkt.pk = tkt._id.$oid;
+
+            }
+            var modal_instance = modal.open({
+                controller: 'TicketFormController',
+                templateUrl: 'ticket/ticket_form.tpl.html',
+                resolve: {
+                    item: function(){
+                        return {
+                            'editing': (tkt !== undefined ? true : false),
+                            'project': scope.project._id.$oid,
+                            'ticket': tkt
+                        };
+                    }
+                }
+            });
+            modal_instance.result.then(function(){
+                getSprintsWithTickets(scope.project._id.$oid);
+                getTicketsForProject(scope.project._id.$oid);
+            });
+        };
+
+        scope.showDetail = function (tkt) {
+            scope.loaded = false;
+            scope.ticket_clicked = true;
+            TicketService.get(tkt._id.$oid).then(function (tkt_item) {
+                scope.ticket_detail = tkt_item;
+                scope.loaded = true;
+            });
         };
 
         scope.sortBacklog = {
@@ -245,7 +276,7 @@
             });
         };
 
-        scope.update_sprint_name = function(sprint){
+        scope.update_sprint_name = function (sprint) {
             SprintService.update(sprint);
         };
 

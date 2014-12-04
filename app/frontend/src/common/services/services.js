@@ -106,6 +106,9 @@ angular.module('Coati.ApiServices', ['Coati.Utils', 'Coati.Config'])
     })
     .factory('TicketService', function ($requests) {
         return {
+            'get': function(tkt_id){
+              return $requests.$do('/ticket/' + tkt_id, $requests.METHODS.GET);
+            },
             'query': function (project_pk) {
                 return $requests.$do('/tickets/' + project_pk, $requests.METHODS.GET);
             },

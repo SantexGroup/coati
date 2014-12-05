@@ -108,6 +108,7 @@ class Sprint(mongoengine.Document):
     project = mongoengine.ReferenceField('Project',
                                          reverse_delete_rule=mongoengine.CASCADE)
     order = mongoengine.IntField(min_value=0)
+    started = mongoengine.BooleanField(default=False)
 
     meta = {
         'queryset_class': CustomQuerySet

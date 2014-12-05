@@ -2,7 +2,7 @@
     <[ project.name ]>
     <a class="btn btn-success btn-sm pull-right" href="#"
        ng-click="add_or_edit();">Add New
-        Task</a>
+        Ticket</a>
 </h3>
 <p><[ project.description ]></p>
 
@@ -13,7 +13,7 @@
             ng-model="data.sprints">
             <li ng-repeat="sprint in data.sprints" as-sortable-item
                 class="sprint-item">
-                <section class="panel tasks-widget sprint-item">
+                <section class="panel tasks-widget sprint-item" ng-class="{started:sprint.started}">
                     <header class="panel-heading">
                         <i class="icon-ellipsis-vertical handler"
                            as-sortable-item-handle></i>
@@ -21,8 +21,10 @@
                         <span class="badge"><[ sprint.tickets.length ]></span>
                         <div class="options pull-right">
                             <span class="badge bg-inverse">Total Points: <[ sprint.tickets | sumValue:'points' ]></span>
-                            <a ng-if="$index == 0" class="btn btn-primary btn-sm" href="#"
-                               ng-click="start_sprint();">Start Sprint</a>
+                            <a ng-if="$index == 0 && data.no_started_sprint" class="btn btn-primary btn-sm" href="#"
+                               ng-click="startSprint(sprint);">Start Sprint</a>
+                            <a ng-if="sprint.started" class="btn btn-danger btn-sm" href="#"
+                               ng-click="stopSprint(sprint);">Stop Sprint</a>
                             <a class="btn btn-sm btn-danger"
                                ng-click="remove_sprint(sprint._id.$oid)">
                                 <i class="icon-remove"></i> Remove

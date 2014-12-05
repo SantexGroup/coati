@@ -4,3 +4,4 @@ flask-restful==0.2.12
 flask-oauth==0.12
 mongoengine==0.8.7
 mongoengine-extras==0.0.1
+python-dateutil==2.3

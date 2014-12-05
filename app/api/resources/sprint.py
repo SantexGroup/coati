@@ -1,5 +1,6 @@
 __author__ = 'gastonrobledo'
 
+from dateutil import parser
 from flask import jsonify, request
 from flask.ext.restful import Resource
 
@@ -53,6 +54,10 @@ class SprintInstance(Resource):
         if data:
             sp = Sprint.objects.get(pk=sp_id)
             sp.name = data.get('name')
+            if data.get('for_starting'):
+                sp.start_date = parser.parse(data.get('start_date'))
+                sp.end_date = parser.parse(data.get('end_date'))
+                sp.started = True
             sp.save()
             return sp.to_json(), 200
         return jsonify({"error": 'Bad Request'}), 400

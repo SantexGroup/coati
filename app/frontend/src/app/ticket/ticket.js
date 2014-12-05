@@ -34,7 +34,7 @@
 
     TicketFormController.$inject = ['$scope', '$modalInstance', 'TicketService', 'item'];
 
-    angular.module('Coati.Tickets', ['ui.router','ngTagsInput',
+    angular.module('Coati.Ticket', ['ui.router','ngTagsInput',
         'Coati.Directives',
         'Coati.ApiServices'])
         .controller('TicketFormController', TicketFormController);

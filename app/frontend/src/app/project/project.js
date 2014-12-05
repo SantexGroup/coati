@@ -109,6 +109,11 @@
         var getSprintsWithTickets = function (project_id) {
             SprintService.query(project_id).then(function (sprints) {
                 scope.data.sprints = sprints;
+                angular.forEach(sprints, function(key, val){
+                    if(val.started){
+                        scope.data.no_started_sprint = true;
+                    }
+                });
             });
         };
 
@@ -149,6 +154,22 @@
             TicketService.get(tkt._id.$oid).then(function (tkt_item) {
                 scope.ticket_detail = tkt_item;
                 scope.loaded = true;
+            });
+        };
+
+        scope.startSprint = function(sprint){
+          var modal_instance = modal.open({
+                controller: 'StartSprintController',
+                templateUrl: 'sprint/start_sprint.tpl.html',
+                resolve: {
+                    sprint: function(){
+                        return angular.copy(sprint);
+                    }
+                }
+            });
+            modal_instance.result.then(function(){
+                //TODO: When sprint started see how to handle that no other sprint can started and this one must be stopped.
+
             });
         };
 
@@ -288,13 +309,11 @@
     }
 
     function ProjectFormCtrl(scope, state, ProjectService) {
-
         scope.form = {};
         scope.project = {};
         scope.save = function () {
             if (scope.form.project_form.$valid) {
                 ProjectService.save(scope.project).then(function (project) {
-                    //ver aca
                     state.go('project.overview', {slug: project.slug});
                 }, function (err) {
                     console.log(err);
@@ -329,7 +348,7 @@
     ProjectCtrlSettings.$inject = ['$scope', '$state', 'ProjectService'];
     ProjectFormCtrl.$inject = ['$scope', '$state', 'ProjectService'];
 
-    angular.module('Coati.Projects', ['ui.router', 'ui.sortable',
+    angular.module('Coati.Project', ['ui.router', 'ui.sortable',
         'Coati.Directives',
         'Coati.ApiServices'])
         .config(ConfigModule)

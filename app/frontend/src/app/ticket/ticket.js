@@ -4,7 +4,7 @@
 
         scope.form = {};
         scope.ticket = item.ticket || {};
-        if(item !== undefined) {
+        if(item.ticket !== undefined) {
             scope.labels = item.ticket.labels || [];
         }else{
             scope.labels = [];

@@ -74,7 +74,7 @@
                                    class="form-control col-lg-10 input-small"
                                    type="text">
                             <button class="btn btn-primary pull-right"
-                                    ng-click="add_new_col();">Add
+                                    ng-click="add_or_edit();">Add
                                 New
                                 Column
                             </button>
@@ -104,15 +104,29 @@
                                                     <span class="task-title-sp">
                                                       <[ col.title ]>
                                                     </span>
+
                                                     <div class="pull-right hidden-phone">
-                                                        <span ng-if="col.done_column" class="badge bg-success">
+                                                        <span class="badge bg-important"
+                                                              title="Alert when exceed this number of tickets"><[ col.max_cards ]></span>
+                                                        <span ng-if="col.done_column"
+                                                              class="badge bg-success">
                                                             <span class="icon-ok"></span>
                                                         </span>
+                                                        <button class="btn btn-primary btn-xs icon-pencil"
+                                                                ng-click="add_or_edit(col);"></button>
+                                                        <button class="btn btn-danger btn-xs icon-trash" ng-click="delete_col(col);"></button>
                                                     </div>
                                                 </div>
                                             </li>
                                         </ul>
                                     </div>
+                                    <p>
+                                    <div class="badge bg-important">Alert when
+                                        exceed this number of tickets
+                                    </div>
+                                    <div class="badge bg-success">Done Column
+                                    </div>
+                                    </p>
                                 </div>
                             </section>
                         </div>

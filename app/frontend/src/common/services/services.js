@@ -102,8 +102,17 @@ angular.module('Coati.ApiServices', ['Coati.Utils', 'Coati.Config'])
             'save': function (data) {
                 return $requests.$do('/projects', $requests.METHODS.POST, data);
             },
+            'get_columns': function (project_id) {
+                return $requests.$do('/project/' + project_id + '/columns', $requests.METHODS.GET);
+            },
+            'update_column': function(col_id, data){
+                 return $requests.$do('/project/column/' + col_id, $requests.METHODS.UPDATE, data);
+            },
+            'delete_column': function (col_id) {
+                return $requests.$do('/project/column/' + col_id, $requests.METHODS.DELETE);
+            },
             'add_column': function (project_id, data) {
-                return $requests.$do('/project/' + project_id + '/add_column', $requests.METHODS.POST, data);
+                return $requests.$do('/project/' + project_id + '/columns', $requests.METHODS.POST, data);
             },
             'order_columns': function (project_id, data) {
                 return $requests.$do('/project/' + project_id + '/order_columns', $requests.METHODS.POST, data);
@@ -129,6 +138,12 @@ angular.module('Coati.ApiServices', ['Coati.Utils', 'Coati.Config'])
             },
             'movement': function (data) {
                 return $requests.$do('/ticket/movement', $requests.METHODS.POST, data);
+            },
+            'update': function(tkt_id, data){
+                return $requests.$do('/ticket/' + tkt_id, $requests.METHODS.UPDATE, data);
+            },
+            'delete_ticket': function(tkt_id){
+                return $requests.$do('/ticket/' + tkt_id, $requests.METHODS.DELETE);
             }
         };
     })

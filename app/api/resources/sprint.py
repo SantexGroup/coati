@@ -4,7 +4,7 @@ from dateutil import parser
 from flask import jsonify, request
 from flask.ext.restful import Resource
 
-from app.schemas import Sprint, Project, SprintTicketOrder
+from app.schemas import Sprint, Project
 
 
 class SprintOrder(Resource):

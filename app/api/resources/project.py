@@ -92,29 +92,60 @@ class ProjectColumns(Resource):
     def __init__(self):
         super(ProjectColumns, self).__init__()
 
+    def get(self, project_pk):
+        return Column.objects(project=project_pk).order_by('order').to_json()
+
     def post(self, project_pk):
         data = request.get_json(force=True, silent=True)
         if not data:
             msg = "payload must be a valid json"
             return jsonify({"error": msg}), 400
         project = Project.objects.get(pk=project_pk)
+
         col = Column()
-        col.project = project
         col.order = Column.objects.count()
+        col.project = project
         col.title = data.get('title')
         col.color_max_cards = data.get('color_max_cards', '#FF0000')
         col.done_column = data.get('done_column', False)
         col.max_cards = data.get('max_cards', 9999)
 
         # Check if already exists one Done column
-        columns = Column.objects(project=project)
-        for c in columns:
-            if c.done_column:
-                c.done_column = False
-                c.update()
-
+        if col.done_column:
+            columns = Column.objects(project=project)
+            for c in columns:
+                if c.done_column:
+                    c.done_column = False
+                    c.update()
         col.save()
-        return col.to_json(), 201
+        return col.to_json(), 200
+
+
+class ProjectColumn(Resource):
+    def __init__(self):
+        super(ProjectColumn, self).__init__()
+
+    def get(self, column_pk):
+        return Column.objects.get(pk=column_pk).to_json()
+
+    def put(self, column_pk):
+        col = Column.objects.get(pk=column_pk)
+        data = request.get_json(force=True, silent=True)
+        if col and data:
+            col.title = data.get('title')
+            col.color_max_cards = data.get('color_max_cards', '#FF0000')
+            col.done_column = data.get('done_column', False)
+            col.max_cards = data.get('max_cards', 9999)
+            col.save()
+            return col.to_json(), 200
+        return jsonify({"error": 'Bad Request'}), 400
+
+    def delete(self, column_pk):
+        col = Column.objects.get(pk=column_pk)
+        if col:
+            col.delete()
+            return jsonify({"success": True}), 200
+        return jsonify({"error": 'Bad Request'}), 400
 
 
 class ProjectColumnsOrder(Resource):

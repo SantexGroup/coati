@@ -123,7 +123,7 @@
             });
         };
 
-        scope.add_or_edit = function (tkt) {
+        scope.add_or_edit = function (e, tkt) {
             if (tkt) {
                 tkt = angular.copy(tkt);
                 tkt.pk = tkt._id.$oid;
@@ -146,6 +146,7 @@
                 getSprintsWithTickets(scope.project._id.$oid);
                 getTicketsForProject(scope.project._id.$oid);
             });
+            e.stopPropagation();
         };
 
         scope.showDetail = function (tkt) {
@@ -155,6 +156,26 @@
                 scope.ticket_detail = tkt_item;
                 scope.loaded = true;
             });
+        };
+
+        scope.delete_ticket = function (e, tkt) {
+            var ticket = angular.copy(tkt);
+            ticket.pk = tkt._id.$oid;
+            ticket.prefix = scope.project.prefix;
+            var modal_instance = modal.open({
+                controller: 'TicketDeleteController',
+                templateUrl: 'ticket/delete_ticket.tpl.html',
+                resolve: {
+                    item: function () {
+                        return ticket;
+                    }
+                }
+            });
+            modal_instance.result.then(function () {
+                getSprintsWithTickets(scope.project._id.$oid);
+                getTicketsForProject(scope.project._id.$oid);
+            });
+            e.stopPropagation();
         };
 
         scope.startSprint = function (sprint) {
@@ -282,18 +303,9 @@
         };
 
         scope.remove_sprint = function (sprint_id) {
-            SprintService.erase(sprint_id).then(function (sprint) {
-                var index = -1;
-                angular.forEach(scope.data.sprints, function (item, key) {
-                    if (item._id.$oid == sprint_id) {
-                        index = key;
-                    }
-                });
-                if (index != -1) {
-                    scope.data.sprints.splice(index, 1);
-                }
+            SprintService.erase(sprint_id).then(function () {
+                getSprintsWithTickets(scope.project._id.$oid);
                 getTicketsForProject(scope.project._id.$oid);
-
             });
         };
 
@@ -338,18 +350,43 @@
 
     function ProjectCtrlSettings(scope, state, modal, ProjectService) {
         scope.data = {};
-        scope.add_new_col = function () {
+
+        scope.delete_col = function(item){
+            var col = angular.copy(item);
+            col.pk = item._id.$oid;
+            var modalInstance = modal.open({
+                controller: 'ColumnDeleteController',
+                templateUrl: 'settings/delete_column.tpl.html',
+                resolve: {
+                    column: function(){
+                        return col;
+                    }
+                }
+            });
+            modalInstance.result.then(function () {
+                getColumnConfiguration(scope.project._id.$oid);
+            });
+        };
+
+        scope.add_or_edit = function (item) {
+            if (item) {
+                item = angular.copy(item);
+                item.pk = item._id.$oid;
+            }
             var modalInstance = modal.open({
                 controller: 'ColumnFormController',
                 templateUrl: 'settings/new_column_form.tpl.html',
                 resolve: {
                     project: function () {
                         return scope.project._id.$oid;
+                    },
+                    column: function(){
+                        return item;
                     }
                 }
             });
-            modalInstance.result.then(function (col) {
-                scope.data.columns.push(col);
+            modalInstance.result.then(function () {
+                getColumnConfiguration(scope.project._id.$oid);
             });
         };
 
@@ -370,9 +407,15 @@
             containerPositioning: 'relative'
         };
 
+        var getColumnConfiguration = function(project_id){
+            ProjectService.get_columns(project_id).then(function(cols){
+                scope.data.columns = cols;
+            });
+        };
+
         ProjectService.get(state.params.slug).then(function (prj) {
             scope.project = prj;
-            scope.data.columns = prj.columns;
+            getColumnConfiguration(prj._id.$oid);
         });
     }
 

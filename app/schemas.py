@@ -82,11 +82,6 @@ class Project(mongoengine.Document):
         data = self.to_mongo()
         data["owner"] = self.owner.to_mongo()
         data["owner"]["id"] = str(self.owner.pk)
-        columns = Column.objects(project=self).order_by('order')
-        col_list = []
-        for col in columns:
-            col_list.append(col.to_mongo())
-        data["columns"] = col_list
         del data["owner"]["_id"]
         return json_util.dumps(data)
 
@@ -115,6 +110,8 @@ class Sprint(mongoengine.Document):
                                          reverse_delete_rule=mongoengine.CASCADE)
     order = mongoengine.IntField(min_value=0)
     started = mongoengine.BooleanField(default=False)
+    finalized = mongoengine.BooleanField(default=False)
+    total_points_when_started = mongoengine.IntField()
 
     meta = {
         'queryset_class': CustomQuerySet
@@ -195,6 +192,31 @@ class Column(mongoengine.Document):
         'queryset_class': CustomQuerySet
     }
 
+    def to_json(self, *args, **kwargs):
+        data = self.to_mongo()
+        ticket_column = TicketColumnTransition.objects(column=self)
+        tickets = []
+        for t in ticket_column:
+            value = {
+                'ticket': t.ticket.to_mongo(),
+                'order': t.order,
+                'who': t.user.to_mongo(),
+                'when': t.when
+            }
+            tickets.append(value)
+        data['tickets'] = tickets
+        return json_util.dumps(data)
+
     def clean(self):
         if self.project is None:
             raise mongoengine.ValidationError('Project must be provided')
+
+
+class TicketColumnTransition(mongoengine.Document):
+    ticket = mongoengine.ReferenceField('Ticket',
+                                        reverse_delete_rule=mongoengine.CASCADE)
+    column = mongoengine.ReferenceField('Column',
+                                        reverse_delete_rule=mongoengine.CASCADE)
+    when = mongoengine.DateTimeField(default=datetime.now())
+    order = mongoengine.IntField()
+    who = mongoengine.ReferenceField('User')

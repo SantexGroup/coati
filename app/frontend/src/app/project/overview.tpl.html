@@ -1,7 +1,7 @@
 <h3>
     <[ project.name ]>
     <a class="btn btn-success btn-sm pull-right" href="#"
-       ng-click="add_or_edit();">Add New
+       ng-click="add_or_edit($event);">Add New
         Ticket</a>
 </h3>
 <p><[ project.description ]></p>
@@ -13,17 +13,21 @@
             ng-model="data.sprints">
             <li ng-repeat="sprint in data.sprints" as-sortable-item
                 class="sprint-item">
-                <section class="panel tasks-widget sprint-item" ng-class="{started:sprint.started}">
+                <section class="panel tasks-widget sprint-item"
+                         ng-class="{started:sprint.started}">
                     <header class="panel-heading">
                         <i class="icon-ellipsis-vertical handler"
                            as-sortable-item-handle></i>
                         <span><[ sprint.name ]></span>
                         <span class="badge"><[ sprint.tickets.length ]></span>
+
                         <div class="options pull-right">
                             <span class="badge bg-inverse">Total Points: <[ sprint.tickets | sumValue:'points' ]></span>
-                            <a ng-if="$index == 0 && data.no_started_sprint" class="btn btn-primary btn-sm" href="#"
+                            <a ng-if="$index == 0 && data.no_started_sprint"
+                               class="btn btn-primary btn-sm" href="#"
                                ng-click="startSprint(sprint);">Start Sprint</a>
-                            <a ng-if="sprint.started" class="btn btn-danger btn-sm" href="#"
+                            <a ng-if="sprint.started"
+                               class="btn btn-danger btn-sm" href="#"
                                ng-click="stopSprint(sprint);">Stop Sprint</a>
                             <a class="btn btn-sm btn-danger"
                                ng-click="remove_sprint(sprint._id.$oid)">
@@ -38,7 +42,7 @@
                                 is-enabled="true" ng-model="sprint.tickets">
                                 <li ng-repeat="tkt in sprint.tickets track by tkt._id.$oid"
                                     as-sortable-item
-                                    class="ticket-item <[ tkt.type ]>">
+                                    class="ticket-item <[ tkt.type ]>" ng-click="showDetail(tkt);">
                                     <i class="icon-ellipsis-vertical handler"
                                        as-sortable-item-handle></i>
 
@@ -51,11 +55,10 @@
 
                                         <div class="pull-right hidden-phone">
                                             <span class="badge bg-info"><[ tkt.points ]></span>
-                                            <button class="btn btn-success btn-xs  icon-eye-open"
-                                                    ng-click="showDetail(tkt);"></button>
                                             <button class="btn btn-primary btn-xs icon-pencil"
-                                                    ng-click="add_or_edit(tkt);"></button>
-                                            <button class="btn btn-danger btn-xs icon-trash"></button>
+                                                    ng-click="add_or_edit($event, tkt);"></button>
+                                            <button class="btn btn-danger btn-xs icon-trash"
+                                                    ng-click="delete_ticket($event,tkt);"></button>
                                         </div>
                                     </div>
                                 </li>
@@ -70,6 +73,7 @@
             <header class="panel-heading">
                 <span>Backlog</span>
                 <span class="badge"><[ data.tickets.length ]></span>
+
                 <div class="add-task-row pull-right">
                     <span class="badge bg-inverse">Total Points: <[ data.tickets | sumValue:'points' ]></span>
                     <a class="btn btn-primary btn-sm" href="#"
@@ -83,7 +87,7 @@
                     <ul class="task-list" as-sortable="sortBacklog"
                         ng-model="data.tickets" is-enabled="true">
                         <li ng-repeat="tkt in data.tickets track by tkt._id.$oid"
-                            as-sortable-item class="user-story <[ tkt.type ]>">
+                            as-sortable-item class="user-story <[ tkt.type ]>" ng-click="showDetail(tkt);">
                             <i class="icon-ellipsis-vertical"
                                as-sortable-item-handle></i>
 
@@ -96,11 +100,10 @@
 
                                 <div class="pull-right hidden-phone">
                                     <span class="badge bg-info"><[ tkt.points ]></span>
-                                    <button class="btn btn-success btn-xs icon-eye-open"
-                                            ng-click="showDetail(tkt);"></button>
                                     <button class="btn btn-primary btn-xs icon-pencil"
-                                            ng-click="add_or_edit(tkt);"></button>
-                                    <button class="btn btn-danger btn-xs icon-trash"></button>
+                                            ng-click="add_or_edit($event, tkt);"></button>
+                                    <button class="btn btn-danger btn-xs icon-trash"
+                                            ng-click="delete_ticket($event,tkt);"></button>
                                 </div>
                             </div>
                         </li>

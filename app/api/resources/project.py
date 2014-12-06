@@ -40,7 +40,22 @@ class ProjectList(Resource):
         prj.private = data.get('private')
         prj.prefix = data.get('prefix') or data.get('name')[3:0]
         prj.description = data.get('description')
+
+        # Add initial config
+        prj.sprint_duration = 15
         prj.save()
+
+        # Add 3 columns states
+        col_names = ['ToDo', 'In Progress', 'Done']
+        for index, c in enumerate(col_names):
+            col = Column()
+            col.title = c
+            col.project = prj
+            if index == len(col_names) - 1:
+                col.done_column = True
+            col.save()
+
+
         return prj.to_json(), 201
 
 
@@ -73,9 +88,9 @@ class ProjectInstance(Resource):
         return {}, 204
 
 
-class ProjectSettings(Resource):
+class ProjectColumns(Resource):
     def __init__(self):
-        super(ProjectSettings, self).__init__()
+        super(ProjectColumns, self).__init__()
 
     def post(self, project_pk):
         data = request.get_json(force=True, silent=True)
@@ -102,3 +117,16 @@ class ProjectSettings(Resource):
         return col.to_json(), 201
 
 
+class ProjectColumnsOrder(Resource):
+    def __init__(self):
+        super(ProjectColumnsOrder, self).__init__()
+
+    def post(self, project_pk):
+        data = request.get_json(force=True, silent=True)
+        if data:
+            for index, c in enumerate(data):
+                col = Column.objects.get(pk=c, project=project_pk)
+                col.order = index
+                col.save()
+            return jsonify({'success': True}), 200
+        return jsonify({"error": 'Bad Request'}), 400

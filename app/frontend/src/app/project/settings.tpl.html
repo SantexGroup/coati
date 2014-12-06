@@ -92,7 +92,7 @@
                                     <div class="task-content">
                                         <ul class="task-list"
                                             as-sortable="sortColumns"
-                                            ng-model="project.columns"
+                                            ng-model="data.columns"
                                             is-enabled="true">
                                             <li ng-repeat="col in data.columns track by col._id.$oid"
                                                 as-sortable-item
@@ -104,6 +104,11 @@
                                                     <span class="task-title-sp">
                                                       <[ col.title ]>
                                                     </span>
+                                                    <div class="pull-right hidden-phone">
+                                                        <span ng-if="col.done_column" class="badge bg-success">
+                                                            <span class="icon-ok"></span>
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </li>
                                         </ul>

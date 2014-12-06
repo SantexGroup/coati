@@ -353,6 +353,23 @@
             });
         };
 
+        //order_columns
+        scope.sortColumns = {
+            accept: function (sourceItem, destItem) {
+                return true;
+            },
+            orderChanged: function (event) {
+                //do something
+                var new_order = [];
+                angular.forEach(scope.data.columns, function (val, key) {
+                    new_order.push(val._id.$oid);
+                });
+                ProjectService.order_columns(scope.project._id.$oid, new_order);
+            },
+            containment: '#overview',
+            containerPositioning: 'relative'
+        };
+
         ProjectService.get(state.params.slug).then(function (prj) {
             scope.project = prj;
             scope.data.columns = prj.columns;

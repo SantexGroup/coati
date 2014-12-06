@@ -1,1 +1,128 @@
-<h2>Settings View</h2>
+<div class="col-md-12">
+    <div class="alert alert-block alert-danger fade in"
+         data-ng-repeat="alert in alerts">
+        <button data-dismiss="alert" data-ng-click="closeAlert($index)"
+                class="close close-sm" type="button">
+            <i class="icon-remove"></i>
+        </button>
+        <[ alert.msg ]>
+    </div>
+
+    <form name="form.project_form" class="form-horizontal" ng-submit="save()"
+          novalidate>
+        <div class="row">
+            <div class="col-md-4">
+                <section class="panel">
+                    <header class="panel-heading">
+                        Project Data
+                    </header>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input ng-model="project.name"
+                                   required
+                                   name="name"
+                                   data-ng-class="{'error': form.project_form.name.$invalid && submitted}"
+                                   class="form-control input-small"
+                                   type="text">
+                            <label for="name" class="error"
+                                   data-ng-show="form.project_form.name.$invalid && submitted">Please
+                                enter a project name</label>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea class="form-control" rows="3"
+                                      name="description"
+                                      data-ng-model="project.description"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Prefix</label>
+                            <input class="form-control"
+                                   data-ng-class="{'error': form.project_form.prefix.$invalid && submitted}"
+                                   autocomplete="off"
+                                   placeholder="Prefix"
+                                   data-ng-model="project.prefix"
+                                   name="prefix" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label>Is Private</label>
+                            <input type="checkbox" name="private"
+                                   ng-model="project.private">
+                        </div>
+                        <div class="form-group">
+                            <label>Active</label>
+                            <input type="checkbox" name="active"
+                                   ng-model="project.active">
+                        </div>
+                    </div>
+
+                </section>
+            </div>
+            <div class="col-md-8">
+                <section class="panel">
+                    <header class="panel-heading">
+                        Board Settings
+                    </header>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label class="col-lg-2 col-sm-2 control-label">Sprint
+                                Duration</label>
+                            <input ng-model="project.sprint_duration"
+                                   required
+                                   name="sprint_duration"
+                                   data-ng-class="{'error': form.settings_form.sprint_duration.$invalid && submitted}"
+                                   class="form-control col-lg-10 input-small"
+                                   type="text">
+                            <button class="btn btn-primary pull-right"
+                                    ng-click="add_new_col();">Add
+                                New
+                                Column
+                            </button>
+                            <label for="sprint_duration" class="error"
+                                   data-ng-show="form.settings_form.sprint_duration.$invalid && submitted">Please
+                                enter a sprint duration in days</label>
+                        </div>
+
+                        <div class="columns-in-project">
+                            <section class="panel tasks-widget backlog">
+                                <header class="panel-heading">
+                                    <span>Column Configuration</span>
+                                </header>
+                                <div class="panel-body">
+                                    <div class="task-content">
+                                        <ul class="task-list"
+                                            as-sortable="sortColumns"
+                                            ng-model="project.columns"
+                                            is-enabled="true">
+                                            <li ng-repeat="col in data.columns track by col._id.$oid"
+                                                as-sortable-item
+                                                class="user-story">
+                                                <i class="icon-ellipsis-vertical"
+                                                   as-sortable-item-handle></i>
+
+                                                <div class="task-title">
+                                                    <span class="task-title-sp">
+                                                      <[ col.title ]>
+                                                    </span>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+
+        <button class="btn btn-primary"
+                type="submit">Update Settings
+        </button>
+        <button class="btn btn-warning"
+                data-ng-click="cancel();">Cancel
+        </button>
+
+    </form>
+</div>

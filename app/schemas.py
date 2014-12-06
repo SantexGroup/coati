@@ -81,6 +81,11 @@ class Project(mongoengine.Document):
         data = self.to_mongo()
         data["owner"] = self.owner.to_mongo()
         data["owner"]["id"] = str(self.owner.pk)
+        columns = Column.objects(project=self)
+        col_list = []
+        for col in columns:
+            col_list.append(col.to_mongo())
+        data["columns"] = col_list
         del data["owner"]["_id"]
         return json_util.dumps(data)
 
@@ -178,10 +183,12 @@ class Comment(mongoengine.Document):
 
 class Column(mongoengine.Document):
     title = mongoengine.StringField(max_length=100, required=True)
-    max_cards = mongoengine.IntField()
-    min_cards = mongoengine.IntField()
+    max_cards = mongoengine.IntField(default=9999)
+    color_max_cards = mongoengine.StringField(u'#FF0000')
     project = mongoengine.ReferenceField('Project',
                                          reverse_delete_rule=mongoengine.CASCADE)
+    done_column = mongoengine.BooleanField(default=False)
+    order = mongoengine.IntField()
 
     meta = {
         'queryset_class': CustomQuerySet

@@ -109,8 +109,8 @@
         var getSprintsWithTickets = function (project_id) {
             SprintService.query(project_id).then(function (sprints) {
                 scope.data.sprints = sprints;
-                angular.forEach(sprints, function(key, val){
-                    if(val.started){
+                angular.forEach(sprints, function (key, val) {
+                    if (val.started) {
                         scope.data.no_started_sprint = true;
                     }
                 });
@@ -124,7 +124,7 @@
         };
 
         scope.add_or_edit = function (tkt) {
-            if(tkt){
+            if (tkt) {
                 tkt = angular.copy(tkt);
                 tkt.pk = tkt._id.$oid;
 
@@ -133,7 +133,7 @@
                 controller: 'TicketFormController',
                 templateUrl: 'ticket/ticket_form.tpl.html',
                 resolve: {
-                    item: function(){
+                    item: function () {
                         return {
                             'editing': (tkt !== undefined ? true : false),
                             'project': scope.project._id.$oid,
@@ -142,7 +142,7 @@
                     }
                 }
             });
-            modal_instance.result.then(function(){
+            modal_instance.result.then(function () {
                 getSprintsWithTickets(scope.project._id.$oid);
                 getTicketsForProject(scope.project._id.$oid);
             });
@@ -157,17 +157,17 @@
             });
         };
 
-        scope.startSprint = function(sprint){
-          var modal_instance = modal.open({
+        scope.startSprint = function (sprint) {
+            var modal_instance = modal.open({
                 controller: 'StartSprintController',
                 templateUrl: 'sprint/start_sprint.tpl.html',
                 resolve: {
-                    sprint: function(){
+                    sprint: function () {
                         return angular.copy(sprint);
                     }
                 }
             });
-            modal_instance.result.then(function(){
+            modal_instance.result.then(function () {
                 //TODO: When sprint started see how to handle that no other sprint can started and this one must be stopped.
 
             });
@@ -336,8 +336,27 @@
 
     }
 
-    function ProjectCtrlSettings(scope, state, ProjectService) {
+    function ProjectCtrlSettings(scope, state, modal, ProjectService) {
+        scope.data = {};
+        scope.add_new_col = function () {
+            var modalInstance = modal.open({
+                controller: 'ColumnFormController',
+                templateUrl: 'settings/new_column_form.tpl.html',
+                resolve: {
+                    project: function () {
+                        return scope.project._id.$oid;
+                    }
+                }
+            });
+            modalInstance.result.then(function (col) {
+                scope.data.columns.push(col);
+            });
+        };
 
+        ProjectService.get(state.params.slug).then(function (prj) {
+            scope.project = prj;
+            scope.data.columns = prj.columns;
+        });
     }
 
     ConfigModule.$inject = ['$stateProvider'];
@@ -345,10 +364,11 @@
     ProjectCtrlOverview.$inject = ['$scope', '$state', '$modal', 'ProjectService', 'TicketService', 'SprintService'];
     ProjectCtrlBoard.$inject = ['$scope', '$state', 'ProjectService'];
     ProjectCtrlReports.$inject = ['$scope', '$state', 'ProjectService'];
-    ProjectCtrlSettings.$inject = ['$scope', '$state', 'ProjectService'];
+    ProjectCtrlSettings.$inject = ['$scope', '$state', '$modal', 'ProjectService'];
     ProjectFormCtrl.$inject = ['$scope', '$state', 'ProjectService'];
 
     angular.module('Coati.Project', ['ui.router', 'ui.sortable',
+        'Coati.Settings',
         'Coati.Directives',
         'Coati.ApiServices'])
         .config(ConfigModule)

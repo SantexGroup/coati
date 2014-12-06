@@ -1,6 +1,6 @@
 from flask.ext.restful import Api
 from resources.sprint import SprintList, SprintInstance, SprintOrder
-from resources.project import ProjectList, ProjectInstance
+from resources.project import ProjectList, ProjectInstance, ProjectSettings
 from resources.ticket import TicketOrderProject, TicketOrderSprint, TicketProjectList, \
     TicketMovement, TicketInstance
 from resources.user import UsersList, UserInstance
@@ -14,6 +14,7 @@ def init_app(app, decorators=None):
 
     api.add_resource(ProjectList, '/api/projects')
     api.add_resource(ProjectInstance, '/api/project/<string:slug>')
+    api.add_resource(ProjectSettings, '/api/project/<string:project_pk>/add_column')
 
     api.add_resource(UsersList, '/api/users')
     api.add_resource(UserInstance, '/api/user/<string:pk>')

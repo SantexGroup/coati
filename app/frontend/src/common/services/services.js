@@ -101,6 +101,9 @@ angular.module('Coati.ApiServices', ['Coati.Utils', 'Coati.Config'])
             },
             'save': function(data){
                 return $requests.$do('/projects', $requests.METHODS.POST, data);
+            },
+            'add_column': function(project_id, data){
+                return $requests.$do('/project/' + project_id + '/add_column', $requests.METHODS.POST, data);
             }
         };
     })

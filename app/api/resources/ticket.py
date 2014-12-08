@@ -91,7 +91,7 @@ class TicketOrderProject(Resource):
                 tkt_order = Ticket.objects.get(pk=tkt_id,
                                                project=project_pk)
                 tkt_order.order = index
-                tkt_order.update()
+                tkt_order.save()
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400
 
@@ -110,7 +110,7 @@ class TicketOrderSprint(Resource):
                 tkt_order = SprintTicketOrder.objects.get(ticket=tkt_id,
                                                           sprint=sprint_pk)
                 tkt_order.order = index
-                tkt_order.update()
+                tkt_order.save()
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400
 

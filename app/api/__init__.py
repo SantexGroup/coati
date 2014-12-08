@@ -14,7 +14,7 @@ def init_app(app, decorators=None):
               decorators=decorators)
 
     api.add_resource(ProjectList, '/api/projects')
-    api.add_resource(ProjectInstance, '/api/project/<string:slug>')
+    api.add_resource(ProjectInstance, '/api/project/<string:project_pk>')
     api.add_resource(ProjectColumns, '/api/project/<string:project_pk>/columns')
     api.add_resource(ProjectColumnsOrder, '/api/project/<string:project_pk>/order_columns')
     api.add_resource(ProjectColumn, '/api/project/column/<string:column_pk>')

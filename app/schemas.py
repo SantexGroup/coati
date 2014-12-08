@@ -70,11 +70,10 @@ class Project(mongoengine.Document):
                                        dbref=True,
                                        reverse_delete_rule=mongoengine.CASCADE)
     prefix = mongoengine.StringField()
-    slug = SlugField()
     sprint_duration = mongoengine.IntField()
 
     meta = {
-        'indexes': ['name', 'slug'],
+        'indexes': ['name'],
         'queryset_class': CustomQuerySet
     }
 
@@ -88,8 +87,6 @@ class Project(mongoengine.Document):
     def clean(self):
         if self.owner is None:
             raise mongoengine.ValidationError('Owner must be provided')
-        if self.slug is None:
-            self.slug = slugify(self.name)
 
     def get_tickets(self):
         tickets = []

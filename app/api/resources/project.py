@@ -63,27 +63,29 @@ class ProjectInstance(Resource):
     def __init__(self):
         super(ProjectInstance, self).__init__()
 
-    def get(self, slug):
-        prj = Project.objects.get(slug=slug).select_related(max_depth=2)
+    def get(self, project_pk):
+        prj = Project.objects.get(pk=project_pk).select_related(max_depth=2)
         return prj.to_json(), 200
 
-    def put(self, slug):
-        project = Project.objects.get(slug=slug)
+    def put(self, project_pk):
+        project = Project.objects.get(pk=project_pk)
         data = request.get_json(force=True, silent=True)
         if not data:
             msg = "payload must be a valid json"
             return jsonify({"error": msg}), 400
-        project.active = data.get('active', project.active)
-        project.description = data.get('description', project.description)
-        project.name = data.get('name', project.name)
-        owner = User.objects.get(id=data.get('owner'))
-        project.owner = owner or project.owner
-        project.private = data.get('private', project.private)
+        project.active = data.get('active')
+        project.description = data.get('description')
+        project.name = data.get('name')
+        owner = User.objects.get(id=data.get('owner_id'))
+        project.owner = owner.to_dbref()
+        project.private = data.get('private')
+        project.sprint_duration = data.get('sprint_duration')
+        project.prefix = data.get('prefix')
         project.save()
         return project.to_json(), 200
 
-    def delete(self, slug):
-        project = Project.objects.get(slug=slug)
+    def delete(self, project_pk):
+        project = Project.objects.get(pk=project_pk)
         project.delete()
         return {}, 204
 

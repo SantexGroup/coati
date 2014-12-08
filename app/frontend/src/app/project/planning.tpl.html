@@ -23,7 +23,7 @@
 
                         <div class="options pull-right">
                             <span class="badge bg-inverse">Total Points: <[ sprint.tickets | sumValue:'points' ]></span>
-                            <a ng-if="$index == 0 && data.no_started_sprint"
+                            <a ng-if="$index == 0 && !data.one_started"
                                class="btn btn-primary btn-sm" href="#"
                                ng-click="startSprint(sprint);">Start Sprint</a>
                             <a ng-if="sprint.started"

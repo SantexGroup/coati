@@ -15,7 +15,7 @@
                 }
             })
             .state('project', {
-                url: '/project/:slug/',
+                url: '/project/:project_pk/',
                 views: {
                     "main": {
                         controller: 'ProjectCtrl',
@@ -27,17 +27,17 @@
                 },
                 reload: true
             })
-            .state('project.overview', {
-                url: 'overview',
+            .state('project.planning', {
+                url: 'planning',
                 views: {
-                    "project-overview": {
-                        controller: 'ProjectCtrlOverview',
-                        templateUrl: 'project/overview.tpl.html'
+                    "project-planning": {
+                        controller: 'ProjectCtrlPlanning',
+                        templateUrl: 'project/planning.tpl.html'
                     }
                 },
-                tab_active: 'overview',
+                tab_active: 'planning',
                 data: {
-                    pageTitle: 'Project Overview'
+                    pageTitle: 'Project Planning'
                 },
                 reload: true
             })
@@ -89,18 +89,17 @@
     function ProjectCtrl(scope, state) {
 
         scope.switchView = function (view) {
-            state.go(view, {slug: state.params.slug}, {reload: true});
+            state.go(view, {project_pk: state.params.project_pk}, {reload: true});
         };
         if (state.current.tab_active) {
             scope.tab_active = state.current.tab_active;
             scope[scope.tab_active] = true;
-            scope.slug = state.params.slug;
         } else {
-            state.go('project.overview', {slug: state.params.slug}, {reload: true});
+            state.go('project.planning', {project_pk: state.params.project_pk}, {reload: true});
         }
     }
 
-    function ProjectCtrlOverview(scope, state, modal, ProjectService, TicketService, SprintService) {
+    function ProjectCtrlPlanning(scope, state, modal, ProjectService, TicketService, SprintService) {
 
         scope.data = {};
         scope.ticket_detail = null;
@@ -109,9 +108,9 @@
         var getSprintsWithTickets = function (project_id) {
             SprintService.query(project_id).then(function (sprints) {
                 scope.data.sprints = sprints;
-                angular.forEach(sprints, function (key, val) {
+                angular.forEach(sprints, function (val, key) {
                     if (val.started) {
-                        scope.data.no_started_sprint = true;
+                        scope.data.one_started = true;
                     }
                 });
             });
@@ -184,6 +183,7 @@
                 templateUrl: 'sprint/start_sprint.tpl.html',
                 resolve: {
                     sprint: function () {
+                        sprint.sprint_duration = scope.project.sprint_duration || 15;
                         return angular.copy(sprint);
                     }
                 }
@@ -209,7 +209,7 @@
                 var data = {
                     source: {
                         ticket_id: source._id.$oid,
-                        project_id: source.project.$oid,
+                        project_id: source.project._id.$oid,
                         number: source.number
                     },
                     dest: {
@@ -227,7 +227,7 @@
                 });
                 TicketService.update_backlog_order(scope.project._id.$oid, new_order);
             },
-            containment: '#overview',
+            containment: '#planning',
             containerPositioning: 'relative',
             type_sortable: 'project'
         };
@@ -274,7 +274,7 @@
                 var sprint = event.source.sortableScope.$parent.modelValue;
                 TicketService.update_sprint_order(sprint._id.$oid, new_order);
             },
-            containment: '#overview',
+            containment: '#planning',
             containerPositioning: 'relative',
             type_sortable: 'sprint'
         };
@@ -291,7 +291,7 @@
                 });
                 SprintService.update_order(scope.project._id.$oid, new_order);
             },
-            containment: '#overview',
+            containment: '#planning',
             containerPositioning: 'relative'
         };
 
@@ -313,7 +313,7 @@
             SprintService.update(sprint);
         };
 
-        ProjectService.get(state.params.slug).then(function (prj) {
+        ProjectService.get(state.params.project_pk).then(function (prj) {
             scope.project = prj;
             getTicketsForProject(prj._id.$oid);
             getSprintsWithTickets(prj._id.$oid);
@@ -326,7 +326,7 @@
         scope.save = function () {
             if (scope.form.project_form.$valid) {
                 ProjectService.save(scope.project).then(function (project) {
-                    state.go('project.overview', {slug: project.slug});
+                    state.go('project.planning', {project_pk: project._id.$oid});
                 }, function (err) {
                     console.log(err);
                 });
@@ -348,17 +348,17 @@
 
     }
 
-    function ProjectCtrlSettings(scope, state, modal, ProjectService) {
+    function ProjectCtrlSettings(scope, rootScope, state, modal, ProjectService) {
         scope.data = {};
 
-        scope.delete_col = function(item){
+        scope.delete_col = function (item) {
             var col = angular.copy(item);
             col.pk = item._id.$oid;
             var modalInstance = modal.open({
                 controller: 'ColumnDeleteController',
                 templateUrl: 'settings/delete_column.tpl.html',
                 resolve: {
-                    column: function(){
+                    column: function () {
                         return col;
                     }
                 }
@@ -380,7 +380,7 @@
                     project: function () {
                         return scope.project._id.$oid;
                     },
-                    column: function(){
+                    column: function () {
                         return item;
                     }
                 }
@@ -388,6 +388,20 @@
             modalInstance.result.then(function () {
                 getColumnConfiguration(scope.project._id.$oid);
             });
+        };
+
+        scope.save = function () {
+            if (scope.form.project_form.$valid) {
+                scope.project.owner_id = scope.project.owner.id;
+                ProjectService.update(scope.project._id.$oid, scope.project).then(function(){
+                    rootScope.$broadcast('notify', {
+                        'title': 'Updated',
+                        'description': 'The project settings were saved'
+                    });
+                });
+            } else {
+                scope.submitted = true;
+            }
         };
 
         //order_columns
@@ -403,17 +417,17 @@
                 });
                 ProjectService.order_columns(scope.project._id.$oid, new_order);
             },
-            containment: '#overview',
+            containment: '#planning',
             containerPositioning: 'relative'
         };
 
-        var getColumnConfiguration = function(project_id){
-            ProjectService.get_columns(project_id).then(function(cols){
+        var getColumnConfiguration = function (project_id) {
+            ProjectService.get_columns(project_id).then(function (cols) {
                 scope.data.columns = cols;
             });
         };
 
-        ProjectService.get(state.params.slug).then(function (prj) {
+        ProjectService.get(state.params.project_pk).then(function (prj) {
             scope.project = prj;
             getColumnConfiguration(prj._id.$oid);
         });
@@ -421,10 +435,10 @@
 
     ConfigModule.$inject = ['$stateProvider'];
     ProjectCtrl.$inject = ['$scope', '$state'];
-    ProjectCtrlOverview.$inject = ['$scope', '$state', '$modal', 'ProjectService', 'TicketService', 'SprintService'];
+    ProjectCtrlPlanning.$inject = ['$scope', '$state', '$modal', 'ProjectService', 'TicketService', 'SprintService'];
     ProjectCtrlBoard.$inject = ['$scope', '$state', 'ProjectService'];
     ProjectCtrlReports.$inject = ['$scope', '$state', 'ProjectService'];
-    ProjectCtrlSettings.$inject = ['$scope', '$state', '$modal', 'ProjectService'];
+    ProjectCtrlSettings.$inject = ['$scope', '$rootScope', '$state', '$modal', 'ProjectService'];
     ProjectFormCtrl.$inject = ['$scope', '$state', 'ProjectService'];
 
     angular.module('Coati.Project', ['ui.router', 'ui.sortable',
@@ -433,7 +447,7 @@
         'Coati.ApiServices'])
         .config(ConfigModule)
         .controller('ProjectCtrl', ProjectCtrl)
-        .controller('ProjectCtrlOverview', ProjectCtrlOverview)
+        .controller('ProjectCtrlPlanning', ProjectCtrlPlanning)
         .controller('ProjectCtrlBoard', ProjectCtrlBoard)
         .controller('ProjectCtrlReports', ProjectCtrlReports)
         .controller('ProjectCtrlSettings', ProjectCtrlSettings)

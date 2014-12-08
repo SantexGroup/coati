@@ -95,12 +95,15 @@ angular.module('Coati.ApiServices', ['Coati.Utils', 'Coati.Config'])
             'query': function () {
                 return $requests.$do('/projects', $requests.METHODS.GET);
             },
-            'get': function (slug) {
-                var url = '/project/' + slug;
+            'get': function (project_pk) {
+                var url = '/project/' + project_pk;
                 return $requests.$do(url, $requests.METHODS.GET);
             },
             'save': function (data) {
                 return $requests.$do('/projects', $requests.METHODS.POST, data);
+            },
+            'update': function(project_pk, data){
+                return $requests.$do('/project/' + project_pk, $requests.METHODS.UPDATE, data);
             },
             'get_columns': function (project_id) {
                 return $requests.$do('/project/' + project_id + '/columns', $requests.METHODS.GET);

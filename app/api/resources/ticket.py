@@ -139,7 +139,7 @@ class TicketMovement(Resource):
                     tkt_order = SprintTicketOrder.objects.get(ticket=tkt_id,
                                                               sprint=sprint)
                     tkt_order.order = index
-                    tkt_order.update()
+                    tkt_order.save()
 
             elif source.get('sprint_id') and dest.get('sprint_id'):
                 # From sprint to sprint
@@ -154,7 +154,7 @@ class TicketMovement(Resource):
                     tkt_order = SprintTicketOrder.objects.get(ticket=tkt_id,
                                                               sprint=sprint)
                     tkt_order.order = index
-                    tkt_order.update()
+                    tkt_order.save()
 
                 sto = SprintTicketOrder.objects.get(ticket=ticket,
                                                     sprint=source.get(
@@ -172,7 +172,7 @@ class TicketMovement(Resource):
                 for index, tkt_id in enumerate(dest.get('order')):
                     tkt_order = Ticket.objects.get(pk=tkt_id)
                     tkt_order.order = index
-                    tkt_order.update()
+                    tkt_order.save()
 
             return jsonify({'success': True}), 200
         return jsonify({'error': 'Bad Request'}), 400

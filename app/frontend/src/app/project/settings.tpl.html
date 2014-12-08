@@ -8,15 +8,17 @@
         <[ alert.msg ]>
     </div>
 
-    <form name="form.project_form" class="form-horizontal" ng-submit="save()"
-          novalidate>
-        <div class="row">
-            <div class="col-md-4">
-                <section class="panel">
-                    <header class="panel-heading">
-                        Project Data
-                    </header>
-                    <div class="panel-body">
+
+    <div class="row">
+        <div class="col-md-4">
+            <section class="panel tasks-widget backlog">
+                <header class="panel-heading">
+                    Project Data
+                </header>
+                <div class="panel-body">
+                    <form name="form.project_form"
+                          ng-submit="save()"
+                          novalidate>
                         <div class="form-group">
                             <label>Name</label>
                             <input ng-model="project.name"
@@ -54,94 +56,89 @@
                             <input type="checkbox" name="active"
                                    ng-model="project.active">
                         </div>
-                    </div>
-
-                </section>
-            </div>
-            <div class="col-md-8">
-                <section class="panel">
-                    <header class="panel-heading">
-                        Board Settings
-                    </header>
-                    <div class="panel-body">
                         <div class="form-group">
-                            <label class="col-lg-2 col-sm-2 control-label">Sprint
-                                Duration</label>
+                            <label>Sprint Duration</label>
                             <input ng-model="project.sprint_duration"
                                    required
                                    name="sprint_duration"
                                    data-ng-class="{'error': form.settings_form.sprint_duration.$invalid && submitted}"
-                                   class="form-control col-lg-10 input-small"
+                                   class="form-control input-small"
                                    type="text">
-                            <button class="btn btn-primary pull-right"
-                                    ng-click="add_or_edit();">Add
-                                New
-                                Column
-                            </button>
                             <label for="sprint_duration" class="error"
                                    data-ng-show="form.settings_form.sprint_duration.$invalid && submitted">Please
                                 enter a sprint duration in days</label>
                         </div>
+                        <button class="btn btn-primary"
+                                type="submit">Update Settings
+                        </button>
+                    </form>
+                </div>
+            </section>
+        </div>
+        <div class="col-md-8">
+            <section class="panel backlog">
+                <header class="panel-heading">
+                    Board Settings
+                    <button class="btn btn-primary pull-right" style="margin-top:-5px;"
+                            ng-click="add_or_edit();" type="button">Add
+                        New Column
+                    </button>
+                </header>
+                <div class="panel-body">
+                    <div class="columns-in-project">
+                        <section class="panel">
+                            <header class="panel-heading">
+                                <span>Column Configuration</span>
+                            </header>
+                            <div class="panel-body">
+                                <div class="task-content">
+                                    <ul class="task-list"
+                                        as-sortable="sortColumns"
+                                        ng-model="data.columns"
+                                        is-enabled="true">
+                                        <li ng-repeat="col in data.columns track by col._id.$oid"
+                                            as-sortable-item
+                                            class="user-story">
+                                            <i class="icon-ellipsis-vertical"
+                                               as-sortable-item-handle></i>
 
-                        <div class="columns-in-project">
-                            <section class="panel tasks-widget backlog">
-                                <header class="panel-heading">
-                                    <span>Column Configuration</span>
-                                </header>
-                                <div class="panel-body">
-                                    <div class="task-content">
-                                        <ul class="task-list"
-                                            as-sortable="sortColumns"
-                                            ng-model="data.columns"
-                                            is-enabled="true">
-                                            <li ng-repeat="col in data.columns track by col._id.$oid"
-                                                as-sortable-item
-                                                class="user-story">
-                                                <i class="icon-ellipsis-vertical"
-                                                   as-sortable-item-handle></i>
-
-                                                <div class="task-title">
+                                            <div class="task-title">
                                                     <span class="task-title-sp">
                                                       <[ col.title ]>
                                                     </span>
 
-                                                    <div class="pull-right hidden-phone">
+                                                <div class="pull-right hidden-phone">
                                                         <span class="badge bg-important"
                                                               title="Alert when exceed this number of tickets"><[ col.max_cards ]></span>
                                                         <span ng-if="col.done_column"
                                                               class="badge bg-success">
                                                             <span class="icon-ok"></span>
                                                         </span>
-                                                        <button class="btn btn-primary btn-xs icon-pencil"
-                                                                ng-click="add_or_edit(col);"></button>
-                                                        <button class="btn btn-danger btn-xs icon-trash" ng-click="delete_col(col);"></button>
-                                                    </div>
+                                                    <button class="btn btn-primary btn-xs icon-pencil"
+                                                            ng-click="add_or_edit(col);"
+                                                            type="button"></button>
+                                                    <button class="btn btn-danger btn-xs icon-trash"
+                                                            type="button"
+                                                            ng-click="delete_col(col);"></button>
                                                 </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <p>
-                                    <div class="badge bg-important">Alert when
-                                        exceed this number of tickets
-                                    </div>
-                                    <div class="badge bg-success">Done Column
-                                    </div>
-                                    </p>
+                                            </div>
+                                        </li>
+                                    </ul>
                                 </div>
-                            </section>
-                        </div>
+                                <p>
+
+                                <div class="badge bg-important">Alert when
+                                    exceed this number of tickets
+                                </div>
+                                <div class="badge bg-success">Done Column
+                                </div>
+                                </p>
+                            </div>
+                        </section>
                     </div>
-                </section>
-            </div>
+                </div>
+            </section>
         </div>
+    </div>
 
-
-        <button class="btn btn-primary"
-                type="submit">Update Settings
-        </button>
-        <button class="btn btn-warning"
-                data-ng-click="cancel();">Cancel
-        </button>
-
-    </form>
 </div>

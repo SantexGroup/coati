@@ -8,7 +8,7 @@
         var today = new Date();
 
         scope.min_date = today;
-        scope.max_date = addDays(today, 15);
+        scope.max_date = addDays(today, sprint.sprint_duration);
 
         //set defaults
         scope.sprint.start_date = scope.min_date;
@@ -16,7 +16,8 @@
 
         //check change of start date
         scope.$watch('sprint.start_date',function(){
-          scope.max_date = addDays(scope.sprint.start_date, 15);
+          scope.max_date = addDays(scope.sprint.start_date,
+              sprint.sprint_duration);
           scope.sprint.end_date = scope.max_date;
         });
 

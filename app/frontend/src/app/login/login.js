@@ -1,4 +1,4 @@
-(function () {
+(function (angular) {
 
     function Config(stateProvider) {
         stateProvider.state('login', {
@@ -14,7 +14,7 @@
             }
         })
             .state('login_auth', {
-                url: '/login/auth?token',
+                url: '/login/auth?token&expire',
                 views: {
                     "master_view": {
                         controller: 'LoginAuthController'
@@ -39,9 +39,9 @@
         };
     }
 
-    function LoginAuthController(scope, state) {
+    function LoginAuthController(scope, state, tokens) {
         if (state.params.token) {
-            window.sessionStorage.setItem('token', state.params.token);
+            tokens.store_token(state.params.token, state.params.expire);
             state.go('home');
         } else {
             state.go('login');
@@ -50,15 +50,16 @@
 
     Config.$inject = ['$stateProvider'];
     LoginController.$inject = ['$scope', '$state', 'LoginService'];
-    LoginAuthController.$inject = ['$scope', '$state'];
+    LoginAuthController.$inject = ['$scope', '$state', 'tokens'];
 
-    angular.module('KoalaApp.Login',
+    angular.module('Coati.Login',
         ['ui.router', 'ui.bootstrap',
-            'KoalaApp.Directives',
-            'KoalaApp.ApiServices'])
+            'Coati.Directives',
+            'Coati.Utils',
+            'Coati.ApiServices'])
         .config(Config)
         .controller('LoginController', LoginController)
         .controller('LoginAuthController', LoginAuthController);
 
 
-}());
+}(angular));

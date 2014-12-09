@@ -1,4 +1,4 @@
-(function () {
+(function (angular) {
 
     /**
      * Configuration module users
@@ -52,26 +52,20 @@
     }
 
     function UserController(rootScope, scope, state, UserService) {
-        UserService.me().then(function (user_data) {
-            rootScope.userGlobal = user_data;
-        }, function (data) {
-            if (data.code == 404) {
-                state.go('not_found');
-            }
-        });
+        //To Do
     }
 
     ConfigModule.$inject = ['$stateProvider'];
     UserController.$inject = ['$rootScope', '$scope', '$state', 'UserService'];
     UserProfileController.$inject = ['$rootScope', '$scope', 'UserService'];
 
-    angular.module('KoalaApp.User', ['ui.router',
-        'KoalaApp.Directives',
-        'KoalaApp.ApiServices'])
+    angular.module('Coati.User', ['ui.router',
+        'Coati.Directives',
+        'Coati.ApiServices'])
         .config(ConfigModule)
         .controller('UserCtrl', UserController)
         .controller('UserProfileCtrl', UserProfileController);
 
-}());
+}(angular));
 
 

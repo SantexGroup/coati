@@ -64,27 +64,25 @@ module.exports = {
     vendor_files: {
         js: [
             'vendor/angular/angular.js',
+            'vendor/jquery/dist/jquery.min.js',
+            'vendor/jquery-ui/ui/minified/jquery-ui.min.js',
             'vendor/angular-ui-router/release/angular-ui-router.js',
             'vendor/angular-ui-utils/modules/route/route.js',
             'vendor/angular-bootstrap/ui-bootstrap.min.js',
             'vendor/angular-bootstrap/ui-bootstrap-tpls.min.js',
-            'vendor/jquery/dist/jquery.min.js',
-            'vendor/jquery-ui/ui/minified/jquery-ui.min.js',
             'vendor/angular-cookies/angular-cookies.min.js',
             'vendor/bootstrap/dist/js/bootstrap.min.js',
             'vendor/html5shiv/dist/html5shiv.min.js',
             'vendor/ng-tags-input/ng-tags-input.min.js',
-            'vendor/ng-sortable/dist/ng-sortable.min.js'
+            'vendor/ng-sortable/dist/ng-sortable.js'
         ],
         maps: [
-            'vendor/jquery/dist/jquery.min.map',
-            'vendor/angular-cookies/angular-cookies.min.js.map'
+            'vendor/jquery/dist/jquery.min.map'
         ],
         css: [
             'vendor/angular-notifications/notification.min.css',
             'vendor/ng-tags-input/ng-tags-input.min.css',
-            'vendor/ng-sortable/dist/ng-sortable.min.css',
-            'v'
+            'vendor/ng-sortable/ng-sortable.min.css'
         ],
         assets: [],
         fonts: [

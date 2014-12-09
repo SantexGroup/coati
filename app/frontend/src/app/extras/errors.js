@@ -1,6 +1,6 @@
-angular.module('KoalaApp.Errors',
-        ['ui.router', 'KoalaApp.Directives',
-            'KoalaApp.ApiServices', 'KoalaApp.SocketIO'])
+angular.module('Coati.Errors',
+        ['ui.router', 'Coati.Directives',
+            'Coati.ApiServices', 'Coati.SocketIO'])
     .config(function ($stateProvider) {
         $stateProvider.state('not_found', {
             url: '/error/404/',

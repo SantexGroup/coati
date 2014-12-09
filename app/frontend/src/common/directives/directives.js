@@ -1,137 +1,6 @@
-angular.module('KoalaApp.Directives', ['KoalaApp.ApiServices'])
+angular.module('Coati.Directives', ['Coati.ApiServices'])
 
-    .directive('customDatepicker',function () {
-        return {
-            restrict: 'A',
-            require: 'ngModel',
-            link: function (scope, element, attrs, ngModelCtrl) {
-                $(element).datepicker({
-                    format: 'mm/dd/yyyy'
-                }).on('changeDate', function (object) {
-                    scope.$apply(function () {
-                        ngModelCtrl.$setViewValue(object.date);
-                    });
-                });
-            }
-        };
-    })
-    .directive('sortableCard',function (Board) {
-        return {
-            restrict: 'A',
-            link: function (scope, element, attrs, ngModelCtrl) {
-                sortcards(element, Board);
-                scope.$watch('last_changed', function () {
-                    $(element).sortable('refresh');
-                });
-            }
-        };
-    })
-    .directive('sortableCol',function () {
-        return {
-            restrict: 'A',
-            scope: true,
-            link: function (scope, element, attrs, ngModelCtrl) {
-                var started = false;
-                $(element).sortable({
-                    connectWith: '.connected-cols',
-                    placeholder: "column_placeholder",
-                    revert: true,
-                    axis: 'x',
-                    items: '>li',
-                    cursor: 'move',
-                    tolerance: 'pointer',
-                    opacity: 0.7,
-                    forcePlaceholderSize: true,
-                    start: function (e, ui) {
-                        ui.placeholder.height(ui.helper.outerHeight());
-                        ui.placeholder.width(ui.helper.outerWidth());
-                        started = true;
-                    },
-                    stop: function (e, ui) {
-                        var new_order;
-                        if (started) {
-                            new_order = $(element).sortable("toArray");
-                            scope.$emit('update_order', new_order);
-                            $(ui.item).css('z-index', 'auto');
-                            started = false;
-                        }
-                    }
-                });
-                $(element).disableSelection();
-            }
-        };
-    }).directive('updateProfile',function () {
-        return {
-            link: function (scope, elem, attrs, ctrl) {
-                scope.$on('updateProfile', function (ev, user) {
-                    if (user.profile) {
-                        elem.find('img').attr('src', user.profile.picture);
-                    }
-                    elem.find('small').html(user.username);
-                });
-            }
-        };
-    }).directive('validDateFormat',function ($filter) {
-        return {
-            require: "ngModel",
-            link: function (scope, elm, attrs, ctrl) {
-                var regex, validator;
-                regex = /^(0?[1-9]|1[012])[\/](0?[1-9]|[12][0-9]|3[01])[\/](\d{4})$/;
-                validator = function (value) {
-                    if (value) {
-                        value = $filter('date')(value, 'MM/dd/yyyy');
-                        ctrl.$setValidity('valid_date_format', regex.test(value));
-                    } else {
-                        ctrl.$setValidity('valid_date_format', true);
-                    }
-                    return value;
-                };
-                ctrl.$parsers.unshift(validator);
-                ctrl.$formatters.unshift(validator);
-            }
-        };
-    }).directive('prepareBoard', [
-        '$timeout', function ($timeout) {
-            return {
-                restrict: 'A',
-                link: function ($scope, element, attrs) {
-                    $scope.$on('dataloaded', function () {
-                        var calculateWidth = function () {
-                            var list_width = 0;
-                            var total_columns = $('.cols').length;
-                            var w_width = $('.list-area-wrapper').width();
-                            var new_width = Math.floor(w_width / total_columns);
-                            // rest border and margins
-                            var margin = parseInt($('.cols').css('margin-right'), 10);
-                            var border = parseInt($('.cols').css('border'), 10);
-                            var delta = 4;
-                            new_width -= margin;
-                            new_width -= border;
-                            new_width -= delta;
-
-                            var minimum_width = parseInt($('.cols').css('min-width'), 10);
-                            if(new_width > minimum_width){
-                                $('.cols').css('width', new_width + 'px');
-                            }else{
-                                $('.cols').css('width', '250px');
-                            }
-                            list_width = $('.cols').width() * total_columns;
-
-                            //Set the area with the summatory of the cols width
-                            if(list_width > w_width){
-                                $('.list-area').width(list_width + 100);
-                            }else{
-                                $('.list-area').width(w_width);
-                            }
-
-
-                        };
-                        $timeout(calculateWidth, 0);
-                    });
-                }
-            };
-        }
-    ]).directive('image',function ($q) {
+    .directive('image', function ($q) {
         'use strict';
         var URL, createImage, getResizeArea, resizeImage;
         URL = window.URL || window.webkitURL;
@@ -243,7 +112,7 @@ angular.module('KoalaApp.Directives', ['KoalaApp.ApiServices'])
                 });
             }
         };
-    }).directive('chart',function () {
+    }).directive('chart', function () {
         return {
             restrict: 'E',
             template: '<div></div>',
@@ -274,7 +143,7 @@ angular.module('KoalaApp.Directives', ['KoalaApp.ApiServices'])
                 });
             }
         };
-    }).directive('onEsc',function () {
+    }).directive('onEsc', function () {
         return function (scope, elm, attr) {
             elm.bind('keydown', function (e) {
                 if (e.keyCode === 27) {
@@ -300,7 +169,7 @@ angular.module('KoalaApp.Directives', ['KoalaApp.ApiServices'])
             },
             link: function (scope, elm, attr) {
                 var previousValue;
-
+                scope.editMode = false;
                 scope.edit = function () {
                     scope.editMode = true;
                     previousValue = scope.model;
@@ -318,47 +187,43 @@ angular.module('KoalaApp.Directives', ['KoalaApp.ApiServices'])
                     scope.handleCancel({value: scope.model});
                 };
             },
-            templateUrl: 'board/inline_edit.tpl.html'
+            template: '<input style="width: auto" class="form-control" type="text" on-enter="save()" on-esc="cancel()" ng-model="model" ng-show="editMode"><span ng-hide="editMode" ng-click="edit()"><[ model ]></span>'
         };
-    })
-    .directive('uiDraggable', function () {
+    }).
+    directive('ticketDetailView', function () {
         return {
-            restrict:'A',
-            link:function (scope, element, attrs) {
-                $(element).draggable({
-                    revert:true
+            restrict: 'E',
+            scope: {
+                reduceItem: '@reducedItem',
+                sizeReducedItem: '@sizeReducedItem'
+            },
+            transclude: true,
+            replace: true,
+            templateUrl: 'ticket/ticket_detail_view.tpl.html',
+            link: function (scope, elem, attrs, ctrl) {
+                scope.$watch('$parent.loaded', function (new_val, old_val) {
+                    scope.loaded = new_val;
                 });
-            }
-        };
-    })
-    .directive('uiDropListener', function () {
-        return {
-            restrict:'A',
-            link:function (scope, eDroppable, attrs) {
-                $(eDroppable).droppable({
-                    drop:function (event, ui) {
-                        ui.draggable.draggable('option','revert',false);
-                        var fnDropListener = scope.$eval(attrs.uiDropListener);
-                        if (fnDropListener && angular.isFunction(fnDropListener)) {
-                            var eDraggable = angular.element(ui.draggable);
-                            fnDropListener(eDraggable, eDroppable, event, ui);
-                        }
-                    },
-                    tolerance:'touch',
-                    accept:'.col-lg-12',
-                    out:function (event, ui) {
-                        var dropArea = $(this);
-                        var title = dropArea.find('.card-hover-class');
-                        title.removeClass('card-hover-class');
-                        title.addClass('green-bg');
-                    },
-                    over:function (event, ui) {
-                        var dropArea = $(this);
-                        var title = dropArea.find('.green-bg');
-                        title.removeClass('green-bg');
-                        title.addClass('card-hover-class');
+
+                scope.$watch('$parent.ticket_detail', function (new_val, old_val) {
+                    scope.model = new_val;
+                });
+                scope.$watch('$parent.ticket_clicked', function (new_val) {
+                    if (new_val) {
+                        $(elem).show("fold", 500);
+                        $(scope.reduceItem).addClass('col-md-' + scope.sizeReducedItem, 500);
+                        $(window.opera ? 'html' : 'html, body').animate({
+                            scrollTop: 0
+                        }, 'slow');
                     }
                 });
+                scope.close = function () {
+                    scope.$parent.ticket_detail = null;
+                    scope.$parent.ticket_clicked = false;
+                    $(elem).hide("fold", 500);
+                    $(scope.reduceItem).removeClass('col-md-' + scope.sizeReducedItem, 500);
+                };
+                $(elem).css('display', 'none');
             }
         };
     });

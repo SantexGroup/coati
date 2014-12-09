@@ -1,4 +1,4 @@
-(function () {
+(function (angular) {
 
     function ConfigApp(interpolate, location, urlRoute) {
         urlRoute.when('/', '/home/');
@@ -10,6 +10,18 @@
     }
 
     // Filters
+    function sumValue() {
+        return function (items, field) {
+            var total = 0, i = 0;
+            if(items !== undefined) {
+                for (i = 0; i < items.length; i++) {
+                    total += items[i][field] || 0;
+                }
+            }
+            return total;
+        };
+    }
+
     function filterGetByProperty() {
         return function (propertyName, propertyValue, collection) {
             for (var i = 0; i < collection.length; i++) {
@@ -34,23 +46,19 @@
         };
     }
 
-    function AppController(scope, rootScope, stateParams, LoginService) {
-
-        scope.search = function ($event) {
-            // do noting yet
-        };
+    function AppController(scope, rootScope, state, stateParams, tokens) {
 
         rootScope.$on('$stateChangeStart', function (event, toState) {
             if (angular.isDefined(toState.data.pageTitle)) {
                 scope.pageTitle = toState.data.pageTitle + ' | Coati';
             }
             scope.actual_path = toState.name;
-            rootScope.state_name  = toState.name;
+            rootScope.state_name = toState.name;
         });
 
         rootScope.$on('$stateChangeSuccess', function (event) {
-            if (rootScope.state_name !== "login") {
-                if (window.sessionStorage.getItem('token') == null) {
+            if (rootScope.state_name !== "login" && rootScope.state_name !== 'login_auth') {
+                if (tokens.get_token() == null) {
                     event.preventDefault();
                     state.go('login', stateParams);
                 }
@@ -61,19 +69,20 @@
 
     // Injections
     ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider'];
-    AppController.$inject = ['$scope', '$rootScope', '$stateParams', 'LoginService'];
+    AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', 'tokens'];
 
-    angular.module('KoalaApp', [
+    angular.module('Coati', [
         'templates-app', 'templates-common',
-        'ui.router', 'ui.bootstrap', 'ngCookies',
-        'Koala.Config', 'KoalaApp.Directives', 'KoalaApp.Home',
-        'KoalaApp.Login',
-        'KoalaApp.User', 'Koala.Projects', 'Koala.Tickets', 'KoalaApp.Errors'])
+        'ui.router', 'ui.bootstrap',
+        'Coati.Config', 'Coati.Directives', 'Coati.Home',
+        'Coati.Login',
+        'Coati.User', 'Coati.Projects', 'Coati.Tickets', 'Coati.Errors'])
         .config(ConfigApp)
         .filter('getByProperty', filterGetByProperty)
         .filter('getIndexByProperty', filterGetIndexByProperty)
+        .filter('sumValue', sumValue)
         .controller('AppCtrl', AppController);
 
-}());
+}(angular));
 
 

@@ -1,36 +1,25 @@
-(function () {
+(function (angular) {
 
-    function Config(stateProvider){
-        stateProvider
-            .state('new_ticket', {
-                url: '/tickets-for/:project_pk/new-ticket',
-                views: {
-                    "main":{
-                        controller: 'TicketFormController',
-                        templateUrl: 'ticket/ticket_form.tpl.html'
-                    }
-                },
-                data: {
-                    pageTitle: 'Adding New Ticket'
-                }
-            });
-    }
-
-
-    function TicketFormController(scope, state, TicketService) {
+    function TicketFormController(scope, modalInstance, TicketService, item) {
 
         scope.form = {};
-        scope.ticket = {};
-        scope.labels = [];
+        scope.ticket = item.ticket || {};
+        if(item !== undefined) {
+            scope.labels = item.ticket.labels || [];
+        }else{
+            scope.labels = [];
+        }
         scope.save = function () {
             if (scope.form.ticket_form.$valid) {
                 scope.ticket.labels = [];
                 scope.labels.forEach(function(item){
                    scope.ticket.labels.push(item.text);
                 });
-                TicketService.save(state.params.project_pk, scope.ticket).then(function (tkt) {
-                    //ver aca
+
+                TicketService.save(item.project, scope.ticket).then(function (tkt) {
+                    modalInstance.close();
                 }, function(err){
+                    modalInstance.dismiss('error');
                     console.log(err);
                 });
             } else {
@@ -39,18 +28,16 @@
         };
 
         scope.cancel = function () {
-            state.go('project.overview', {slug: Project.slug});
+            modalInstance.dismiss('cancelled');
         };
     }
 
-    Config.$inject = ['$stateProvider'];
-    TicketFormController.$inject = ['$scope', '$state', 'TicketService'];
+    TicketFormController.$inject = ['$scope', '$modalInstance', 'TicketService', 'item'];
 
-    angular.module('Koala.Tickets', ['ui.router','ngTagsInput',
-        'KoalaApp.Directives',
-        'KoalaApp.ApiServices'])
-        .config(Config)
+    angular.module('Coati.Tickets', ['ui.router','ngTagsInput',
+        'Coati.Directives',
+        'Coati.ApiServices'])
         .controller('TicketFormController', TicketFormController);
 
 
-}());
+}(angular));

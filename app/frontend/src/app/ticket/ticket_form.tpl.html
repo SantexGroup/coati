@@ -44,6 +44,26 @@
                                 replace-spaces-with-dashes="false"
                                 placeholder="Add Label"></tags-input>
                 </div>
+                <div class="form-group">
+                    <label>Points</label>
+                    <input class="form-control"
+                           autocomplete="off"
+                           placeholder="Points" data-ng-model="ticket.points"
+                           name="points" type="text">
+                </div>
+                <div class="form-group">
+                    <label>Ticket Type</label>
+                    <select class="form-control"
+                            data-ng-model="ticket.type"
+                            name="type">
+                        <option value="U">User Story</option>
+                        <option value="B">Bug</option>
+                        <option value="F">Feature</option>
+                        <option value="I">Improvement</option>
+                        <option value="E">Epic</option>
+                        <option value="T">Task</option>
+                    </select>
+                </div>
 
                 <button class="btn btn-primary"
                         type="submit">Save

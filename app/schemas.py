@@ -3,6 +3,13 @@ from datetime import datetime, timedelta
 from mongoengine_extras.fields import slugify, SlugField
 from bson import json_util
 
+TICKET_TYPE = (('U', 'User Story'),
+               ('F', 'Feature'),
+               ('B', 'Bug'),
+               ('I', 'Improvement'),
+               ('E', 'Epic'),
+               ('T', 'Task'))
+
 
 class CustomQuerySet(mongoengine.QuerySet):
     def to_json(self):
@@ -21,7 +28,8 @@ class User(mongoengine.Document):
 class Token(mongoengine.Document):
     token = mongoengine.StringField()
     provider = mongoengine.StringField()
-    user = mongoengine.ReferenceField(User)
+    user = mongoengine.ReferenceField('User',
+                                      reverse_delete_rule=mongoengine.CASCADE)
     expire = mongoengine.DateTimeField()
 
     @staticmethod
@@ -58,7 +66,7 @@ class Project(mongoengine.Document):
     description = mongoengine.StringField(max_length=500)
     private = mongoengine.BooleanField(default=True)
     active = mongoengine.BooleanField(default=True)
-    owner = mongoengine.ReferenceField(User,
+    owner = mongoengine.ReferenceField('User',
                                        dbref=True,
                                        reverse_delete_rule=mongoengine.CASCADE)
     prefix = mongoengine.StringField()
@@ -82,71 +90,102 @@ class Project(mongoengine.Document):
         if self.slug is None:
             self.slug = slugify(self.name)
 
+    def get_tickets(self):
+        tickets = []
+        sprints = Sprint.objects(project=self)
+        for s in sprints:
+            for spo in SprintTicketOrder.objects(sprint=s):
+                tickets.append(str(spo.ticket.pk))
+        result = Ticket.objects(project=self, id__nin=tickets).order_by(
+            'order')
+        return result
+
+
+class Sprint(mongoengine.Document):
+    name = mongoengine.StringField(max_length=100, required=True)
+    start_date = mongoengine.DateTimeField()
+    end_date = mongoengine.DateTimeField()
+    project = mongoengine.ReferenceField('Project',
+                                         reverse_delete_rule=mongoengine.CASCADE)
+    order = mongoengine.IntField(min_value=0)
+
+    meta = {
+        'queryset_class': CustomQuerySet
+    }
+
+    def to_json(self):
+        data = self.to_mongo()
+        tickets = SprintTicketOrder.objects(sprint=self.pk).order_by('order')
+        ticket_list = []
+        for t in tickets:
+            tkt = t.ticket.to_mongo()
+            tkt.order = t.order
+            ticket_list.append(tkt)
+        data["tickets"] = ticket_list
+        return json_util.dumps(data)
+
+    def clean(self):
+        if self.project is None:
+            raise mongoengine.ValidationError('Project must be provided')
+
 
 class Ticket(mongoengine.Document):
     title = mongoengine.StringField(max_length=200, required=True)
     description = mongoengine.StringField()
     labels = mongoengine.ListField(mongoengine.StringField())
-    project = mongoengine.ReferenceField(Project)
     number = mongoengine.IntField()
+    project = mongoengine.ReferenceField('Project',
+                                         reverse_delete_rule=mongoengine.CASCADE)
+    order = mongoengine.IntField()
+    points = mongoengine.IntField()
+    type = mongoengine.StringField(max_length=1, choices=TICKET_TYPE)
 
-    def clean(self):
-        try:
-            if self.project is None:
-                raise mongoengine.ValidationError('Project must be provided')
-            ticket_max = \
-                Ticket.objects(project=self.project).order_by('-number').limit(
-                    1)[0]
-            self.number = ticket_max.number + 1
-        except Exception as ex:
-            self.number = 1
+    meta = {
+        'queryset_class': CustomQuerySet
+    }
+
+    def to_json(self, *args, **kwargs):
+        data = self.to_mongo()
+        data['project'] = self.project.to_mongo()
+        return json_util.dumps(data)
+
+
+class SprintTicketOrder(mongoengine.Document):
+    ticket = mongoengine.ReferenceField('Ticket')
+    order = mongoengine.IntField()
+    sprint = mongoengine.ReferenceField('Sprint',
+                                        reverse_delete_rule=mongoengine.CASCADE)
 
 
 class Comment(mongoengine.Document):
     comment = mongoengine.StringField()
-    who = mongoengine.ReferenceField(User)
-    ticket = mongoengine.ReferenceField(Ticket)
+    who = mongoengine.ReferenceField('User',
+                                     reverse_delete_rule=mongoengine.NULLIFY)
+    ticket = mongoengine.ReferenceField('Ticket',
+                                        reverse_delete_rule=mongoengine.CASCADE)
+
+    meta = {
+        'queryset_class': CustomQuerySet
+    }
 
     def clean(self):
         if self.who is None:
             raise mongoengine.ValidationError('User must be provided')
         if self.ticket is None:
             raise mongoengine.ValidationError('Ticket must be provided')
-
-
-class Sprint(mongoengine.Document):
-    name = mongoengine.StringField(max_length=100, required=True)
-    tickets = mongoengine.ListField(mongoengine.ReferenceField(Ticket))
-    start_date = mongoengine.DateTimeField()
-    end_date = mongoengine.DateTimeField()
-    project = mongoengine.ReferenceField(Project)
-
-    def clean(self):
-        if self.project is None:
-            raise mongoengine.ValidationError('Project must be provided')
 
 
 class Column(mongoengine.Document):
     title = mongoengine.StringField(max_length=100, required=True)
     max_cards = mongoengine.IntField()
     min_cards = mongoengine.IntField()
-    project = mongoengine.ReferenceField(Project)
+    project = mongoengine.ReferenceField('Project',
+                                         reverse_delete_rule=mongoengine.CASCADE)
+
+    meta = {
+        'queryset_class': CustomQuerySet
+    }
 
     def clean(self):
         if self.project is None:
             raise mongoengine.ValidationError('Project must be provided')
-
-
-class TicketTransition(mongoengine.Document):
-    column = mongoengine.ReferenceField(Column)
-    ticket = mongoengine.ReferenceField(Ticket)
-    date = mongoengine.DateTimeField()
-    who = mongoengine.ReferenceField(User)
-
-    def clean(self):
-        if self.column is None:
-            raise mongoengine.ValidationError('Column must be provided')
-        if self.ticket is None:
-            raise mongoengine.ValidationError('Ticket must be provided')
-        if self.who is None:
-            raise mongoengine.ValidationError('User must be provided')

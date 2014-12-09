@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import session, redirect, url_for, blueprints, request
 
 from app.schemas import Token
@@ -27,9 +28,11 @@ def authenticate():
     if user is None:
         return redirect(url_for('auth.login'))
     else:
-        access_token = Token.get_token_by_user(user)
-        return redirect(
-            session.get('callback_url') + '?token=' + access_token)
+        access_token = Token.get_token_by_user(user['_id']['$oid'])
+        expire_in = (access_token.expire - datetime.now()).seconds
+        return redirect('%s?token=%s&expire=%s' % (session.get('callback_url'),
+                                                   access_token.token,
+                                                   expire_in))
 
 
 @blueprint.route('/login')
@@ -57,7 +60,10 @@ def authorized():
                               access_token=access_token,
                               provider=provider.name,
                               expire_in=data['expires_in'])
-    return redirect('%s?token=%s' % (session.get('callback_url'), access_token))
+    session['user'] = user
+    return redirect('%s?token=%s&expire=%s' % (session.get('callback_url'),
+                                               access_token,
+                                               data['expires_in']))
 
 
 @blueprint.route('/logout')

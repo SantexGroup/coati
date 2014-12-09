@@ -17,15 +17,17 @@
         });
     };
 
-    var ProjectCtrlReports = function (scope, state) {
+    var ProjectCtrlReports = function (scope, state, SprintService) {
+
 
     };
 
     Config.$inject = ['$stateProvider'];
-    ProjectCtrlReports.$inject = ['$scope', '$state'];
+    ProjectCtrlReports.$inject = ['$scope', '$state', 'SprintService'];
 
     angular.module('Coati.Report', ['ui.router',
-        'Coati.Directives'])
+        'Coati.Directives',
+        'Coati.Services.Sprint'])
         .config(Config)
         .controller('ProjectCtrlReports', ProjectCtrlReports);
 

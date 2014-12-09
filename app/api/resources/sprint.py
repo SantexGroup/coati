@@ -4,7 +4,7 @@ from dateutil import parser
 from flask import jsonify, request
 from flask.ext.restful import Resource
 
-from app.schemas import Sprint, Project, Column
+from app.schemas import Sprint, Project, Column, SprintTicketOrder
 
 
 class SprintOrder(Resource):
@@ -55,6 +55,14 @@ class SprintInstance(Resource):
             sp = Sprint.objects.get(pk=sp_id)
             sp.name = data.get('name')
             if data.get('for_starting'):
+
+                # sum all the ticket for the initial planning value
+                sto = SprintTicketOrder.objects(sprint=sp)
+                total_planned_points = 0
+                for s in sto:
+                    total_planned_points += s.ticket.points
+
+                sp.total_points_when_started = total_planned_points
                 sp.start_date = parser.parse(data.get('start_date'))
                 sp.end_date = parser.parse(data.get('end_date'))
                 sp.started = True

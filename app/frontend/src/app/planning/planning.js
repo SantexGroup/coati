@@ -107,8 +107,7 @@
                 }
             });
             modal_instance.result.then(function () {
-                //TODO: When sprint started see how to handle that no other sprint can started and this one must be stopped.
-
+                scope.data.one_started = true;
             });
         };
 

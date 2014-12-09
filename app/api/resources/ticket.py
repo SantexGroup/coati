@@ -13,6 +13,26 @@ class TicketInstance(Resource):
     def get(self, tkt_id):
         return Ticket.objects.get(pk=tkt_id).to_json()
 
+    def put(self, tkt_id):
+        tkt = Ticket.objects.get(pk=tkt_id)
+        data = request.get_json(force=True, silent=True)
+        if tkt and data:
+            tkt.description = data.get('description')
+            tkt.points = data.get('points')
+            tkt.title = data.get('title')
+            tkt.labels = data.get('labels')
+            tkt.type = data.get('type')
+            tkt.save()
+            return tkt.to_json(), 200
+        return jsonify({'error': 'Bad Request'}), 400
+
+    def delete(self, tkt_id):
+        tkt = Ticket.objects.get(pk=tkt_id)
+        if tkt:
+            tkt.delete()
+            return jsonify({'success': True}), 200
+        return jsonify({'error': 'Bad Request'}), 400
+
 
 class TicketProjectList(Resource):
     def __init__(self):
@@ -35,23 +55,17 @@ class TicketProjectList(Resource):
         except Project.DoesNotExist, e:
             return jsonify({"error": 'project does not exist'}), 400
 
-        tkt = Ticket.objects.get(pk=data.get('pk'))
-        if not tkt:
-            code = 201
-            tkt = Ticket()
-            try:
-                last_tkt = Ticket.objects(project=project).order_by('-number')
-                if last_tkt:
-                    number = last_tkt[0].number + 1
-                else:
-                    number = 1
-            except Exception as ex:
+        tkt = Ticket()
+        try:
+            last_tkt = Ticket.objects(project=project).order_by('-number')
+            if last_tkt:
+                number = last_tkt[0].number + 1
+            else:
                 number = 1
-            tkt.number = number
-            tkt.order = Ticket.objects.count()
-        else:
-            code = 200
-
+        except Exception as ex:
+            number = 1
+        tkt.number = number
+        tkt.order = Ticket.objects.count()
         tkt.project = project
         tkt.description = data.get('description')
         tkt.points = data.get('points')
@@ -60,7 +74,7 @@ class TicketProjectList(Resource):
         tkt.type = data.get('type')
         tkt.save()
 
-        return tkt.to_json(), code
+        return tkt.to_json(), 201
 
 
 class TicketOrderProject(Resource):
@@ -77,7 +91,7 @@ class TicketOrderProject(Resource):
                 tkt_order = Ticket.objects.get(pk=tkt_id,
                                                project=project_pk)
                 tkt_order.order = index
-                tkt_order.update()
+                tkt_order.save()
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400
 
@@ -96,7 +110,7 @@ class TicketOrderSprint(Resource):
                 tkt_order = SprintTicketOrder.objects.get(ticket=tkt_id,
                                                           sprint=sprint_pk)
                 tkt_order.order = index
-                tkt_order.update()
+                tkt_order.save()
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400
 
@@ -125,7 +139,7 @@ class TicketMovement(Resource):
                     tkt_order = SprintTicketOrder.objects.get(ticket=tkt_id,
                                                               sprint=sprint)
                     tkt_order.order = index
-                    tkt_order.update()
+                    tkt_order.save()
 
             elif source.get('sprint_id') and dest.get('sprint_id'):
                 # From sprint to sprint
@@ -140,7 +154,7 @@ class TicketMovement(Resource):
                     tkt_order = SprintTicketOrder.objects.get(ticket=tkt_id,
                                                               sprint=sprint)
                     tkt_order.order = index
-                    tkt_order.update()
+                    tkt_order.save()
 
                 sto = SprintTicketOrder.objects.get(ticket=ticket,
                                                     sprint=source.get(
@@ -158,7 +172,7 @@ class TicketMovement(Resource):
                 for index, tkt_id in enumerate(dest.get('order')):
                     tkt_order = Ticket.objects.get(pk=tkt_id)
                     tkt_order.order = index
-                    tkt_order.update()
+                    tkt_order.save()
 
             return jsonify({'success': True}), 200
         return jsonify({'error': 'Bad Request'}), 400

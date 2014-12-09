@@ -1,6 +1,6 @@
-angular.module('Coati.Directives', ['Coati.ApiServices'])
+(function (angular) {
 
-    .directive('image', function ($q) {
+    var ImageFunction = function (q) {
         'use strict';
         var URL, createImage, getResizeArea, resizeImage;
         URL = window.URL || window.webkitURL;
@@ -81,7 +81,7 @@ angular.module('Coati.Directives', ['Coati.ApiServices'])
                 };
                 fileToDataURL = function (file, scope) {
                     var deferred, reader;
-                    deferred = $q.defer();
+                    deferred = q.defer();
                     reader = new FileReader();
                     reader.onload = function (e) {
                         var imageResult;
@@ -112,7 +112,9 @@ angular.module('Coati.Directives', ['Coati.ApiServices'])
                 });
             }
         };
-    }).directive('chart', function () {
+    };
+
+    var Chart = function () {
         return {
             restrict: 'E',
             template: '<div></div>',
@@ -143,7 +145,9 @@ angular.module('Coati.Directives', ['Coati.ApiServices'])
                 });
             }
         };
-    }).directive('onEsc', function () {
+    };
+
+    var OnEscape = function () {
         return function (scope, elm, attr) {
             elm.bind('keydown', function (e) {
                 if (e.keyCode === 27) {
@@ -151,7 +155,9 @@ angular.module('Coati.Directives', ['Coati.ApiServices'])
                 }
             });
         };
-    }).directive('onEnter', function () {
+    };
+
+    var OnEnter = function(){
         return function (scope, elm, attr) {
             elm.bind('keypress', function (e) {
                 if (e.keyCode === 13) {
@@ -159,8 +165,9 @@ angular.module('Coati.Directives', ['Coati.ApiServices'])
                 }
             });
         };
-    })
-    .directive('inlineEdit', function ($timeout) {
+    };
+
+    var InlineEdit = function(timeout){
         return {
             scope: {
                 model: '=inlineEdit',
@@ -173,7 +180,7 @@ angular.module('Coati.Directives', ['Coati.ApiServices'])
                 scope.edit = function () {
                     scope.editMode = true;
                     previousValue = scope.model;
-                    $timeout(function () {
+                    timeout(function () {
                         elm.find('input')[0].focus();
                     }, 0, false);
                 };
@@ -189,8 +196,9 @@ angular.module('Coati.Directives', ['Coati.ApiServices'])
             },
             template: '<input style="width: auto" class="form-control" type="text" on-enter="save()" on-esc="cancel()" ng-model="model" ng-show="editMode"><span ng-hide="editMode" ng-click="edit()"><[ model ]></span>'
         };
-    }).
-    directive('ticketDetailView', function () {
+    };
+
+    var TicketDetailView = function(){
         return {
             restrict: 'E',
             scope: {
@@ -226,4 +234,41 @@ angular.module('Coati.Directives', ['Coati.ApiServices'])
                 $(elem).css('display', 'none');
             }
         };
-    });
+    };
+
+    var Notify = function(rootScope){
+        return {
+            link: function (scope, elem, attrs, ctrl) {
+                rootScope.$on('notify', function (event, data) {
+                    $.gritter.add({
+                        // (string | mandatory) the heading of the notification
+                        title: data.title,
+                        // (string | mandatory) the text inside the notification
+                        text: data.description,
+                        image: data.image || '',
+                        class_name: data.class || '',
+                        sticky: false,
+                        // (int | optional) the time you want it to be alive for before fading out
+                        time: 15000
+                    });
+                });
+            }
+        };
+    };
+
+    ImageFunction.$inject = ['$q'];
+    InlineEdit.$inject = ['$timeout'];
+    Notify.$inject = ['$rootScope'];
+
+    angular.module('Coati.Directives', [])
+        .directive('image', ImageFunction)
+        .directive('chart', Chart)
+        .directive('onEsc', OnEscape)
+        .directive('onEnter', OnEnter)
+        .directive('inlineEdit', InlineEdit)
+        .directive('ticketDetailView', TicketDetailView)
+        .directive('notify', Notify);
+
+
+
+}(angular));

@@ -10,7 +10,8 @@
         var globals = {
             BASE_API_URL: '/api',
             CALLBACK_URL: '/login/auth',
-            DEFAULT_CONTENT_TYPE: 'application/json; charset=utf-8'
+            DEFAULT_CONTENT_TYPE: 'application/json; charset=utf-8',
+            SOCKET_URL: 'http://localhost:9000'
         };
         return {
             getItem: function (key) {

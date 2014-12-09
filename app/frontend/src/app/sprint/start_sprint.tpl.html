@@ -1,0 +1,93 @@
+<section class="panel">
+    <header class="panel-heading">
+        <h4 class="modal-title">
+            Start Sprint
+        </h4>
+    </header>
+    <div class="panel-body">
+        <div class="col-md-12">
+            <div class="alert alert-block alert-danger fade in"
+                 data-ng-repeat="alert in alerts">
+                <button data-dismiss="alert" data-ng-click="closeAlert($index)"
+                        class="close close-sm" type="button">
+                    <i class="icon-remove"></i>
+                </button>
+                <[ alert.msg ]>
+            </div>
+
+            <form name="form.sprint_form" class="form-horizontal"
+                  ng-submit="save()"
+                  novalidate>
+
+                <div class="form-group">
+                    <label>Sprint</label>
+                    <input ng-model="sprint.name"
+                           required
+                           name="name"
+                           data-ng-class="{'error': form.sprint_form.name.$invalid && submitted}"
+                           class="form-control form-control-inline input-medium default-date-picker"
+                           type="text">
+                    <label for="name" class="error"
+                           data-ng-show="form.sprint_form.name.$invalid && submitted">Please
+                        enter a sprint name</label>
+                </div>
+                <div class="form-group">
+                    <label>Start Date</label>
+
+                    <p class="input-group">
+                        <input type="text" class="form-control"
+                               data-ng-class="{'error': form.sprint_form.start_date.$invalid && submitted}"
+                               datepicker-popup="<[ format ]>"
+                               datepicker-options="dateOptions"
+                               ng-model="sprint.start_date"
+                               min="min_date"
+                               is-open="startDateOpened"
+                               ng-required="true" close-text="Close"/>
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-danger"
+                                    ng-click="openStartDate($event)"><i
+                                    class="icon-calendar"></i>
+                            </button>
+                        </span>
+                    </p>
+                    <label for="start_date" class="error"
+                           data-ng-show="form.sprint_form.start_date.$invalid && submitted">Please
+                        enter a start date</label>
+                </div>
+                <div class="form-group">
+                    <label>End Date</label>
+
+                    <p class="input-group">
+                        <input type="text" class="form-control"
+                               data-ng-class="{'error': form.sprint_form.end_date.$invalid && submitted}"
+                               datepicker-popup="<[ format ]>"
+                               datepicker-options="dateOptions"
+                               ng-model="sprint.end_date"
+                               min="sprint.start_date"
+                               max="max_date"
+                               is-open="endDateOpened"
+                               ng-required="true" close-text="Close"/>
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-danger"
+                                ng-click="openEndDate($event)"><i
+                                class="icon-calendar"></i>
+                        </button>
+                    </span>
+                    </p>
+                    <label for="end_date" class="error"
+                           data-ng-show="form.sprint_form.end_date.$invalid && submitted">Please
+                        enter a end date</label>
+                </div>
+
+
+                <button class="btn btn-primary"
+                        type="submit">Save
+                </button>
+                <button class="btn btn-warning"
+                        data-ng-click="cancel();">Cancel
+                </button>
+
+            </form>
+        </div>
+    </div>
+</section>

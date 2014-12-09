@@ -70,10 +70,10 @@ class Project(mongoengine.Document):
                                        dbref=True,
                                        reverse_delete_rule=mongoengine.CASCADE)
     prefix = mongoengine.StringField()
-    slug = SlugField()
+    sprint_duration = mongoengine.IntField()
 
     meta = {
-        'indexes': ['name', 'slug'],
+        'indexes': ['name'],
         'queryset_class': CustomQuerySet
     }
 
@@ -87,8 +87,6 @@ class Project(mongoengine.Document):
     def clean(self):
         if self.owner is None:
             raise mongoengine.ValidationError('Owner must be provided')
-        if self.slug is None:
-            self.slug = slugify(self.name)
 
     def get_tickets(self):
         tickets = []
@@ -108,6 +106,9 @@ class Sprint(mongoengine.Document):
     project = mongoengine.ReferenceField('Project',
                                          reverse_delete_rule=mongoengine.CASCADE)
     order = mongoengine.IntField(min_value=0)
+    started = mongoengine.BooleanField(default=False)
+    finalized = mongoengine.BooleanField(default=False)
+    total_points_when_started = mongoengine.IntField()
 
     meta = {
         'queryset_class': CustomQuerySet
@@ -177,15 +178,42 @@ class Comment(mongoengine.Document):
 
 class Column(mongoengine.Document):
     title = mongoengine.StringField(max_length=100, required=True)
-    max_cards = mongoengine.IntField()
-    min_cards = mongoengine.IntField()
+    max_cards = mongoengine.IntField(default=9999)
+    color_max_cards = mongoengine.StringField(default='#FF0000')
     project = mongoengine.ReferenceField('Project',
                                          reverse_delete_rule=mongoengine.CASCADE)
+    done_column = mongoengine.BooleanField(default=False)
+    order = mongoengine.IntField()
 
     meta = {
         'queryset_class': CustomQuerySet
     }
 
+    def to_json(self, *args, **kwargs):
+        data = self.to_mongo()
+        ticket_column = TicketColumnTransition.objects(column=self)
+        tickets = []
+        for t in ticket_column:
+            value = {
+                'ticket': t.ticket.to_mongo(),
+                'order': t.order,
+                'who': t.user.to_mongo(),
+                'when': t.when
+            }
+            tickets.append(value)
+        data['tickets'] = tickets
+        return json_util.dumps(data)
+
     def clean(self):
         if self.project is None:
             raise mongoengine.ValidationError('Project must be provided')
+
+
+class TicketColumnTransition(mongoengine.Document):
+    ticket = mongoengine.ReferenceField('Ticket',
+                                        reverse_delete_rule=mongoengine.CASCADE)
+    column = mongoengine.ReferenceField('Column',
+                                        reverse_delete_rule=mongoengine.CASCADE)
+    when = mongoengine.DateTimeField(default=datetime.now())
+    order = mongoengine.IntField()
+    who = mongoengine.ReferenceField('User')

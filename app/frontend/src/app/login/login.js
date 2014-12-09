@@ -55,8 +55,8 @@
     angular.module('Coati.Login',
         ['ui.router', 'ui.bootstrap',
             'Coati.Directives',
-            'Coati.Utils',
-            'Coati.ApiServices'])
+            'Coati.Helpers',
+            'Coati.Services.Login'])
         .config(Config)
         .controller('LoginController', LoginController)
         .controller('LoginAuthController', LoginAuthController);

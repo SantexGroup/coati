@@ -1,0 +1,64 @@
+<section class="panel">
+    <header class="panel-heading">
+        <h4 class="modal-title">
+            New Column
+        </h4>
+    </header>
+    <div class="panel-body">
+        <div class="col-md-12">
+
+            <div class="alert alert-block alert-danger fade in"
+                 data-ng-repeat="alert in alerts">
+                <button data-dismiss="alert" data-ng-click="closeAlert($index)"
+                        class="close close-sm" type="button">
+                    <i class="icon-remove"></i>
+                </button>
+                <[ alert.msg ]>
+            </div>
+
+            <form name="form.column_form" class="form-horizontal"
+                  ng-submit="save()"
+                  novalidate>
+
+                <div class="form-group">
+                    <label>Title</label>
+                    <input class="form-control"
+                           data-ng-class="{'error': form.column_form.title.$invalid && submitted}"
+                           autocomplete="off"
+                           placeholder="Title" data-ng-model="column.title"
+                           name="title" type="text" required>
+                    <label for="title" class="error"
+                           data-ng-show="form.column_form.title.$invalid && submitted">Please
+                        enter a title</label>
+                </div>
+                <div class="form-group">
+                    <label>Maximum Cards Number</label>
+                    <input class="form-control"
+                           autocomplete="off"
+                           placeholder="9999" data-ng-model="column.max_cards"
+                           name="max_cards" type="text">
+                </div>
+                <div class="form-group">
+                    <label>Color Alert</label>
+                    <input class="form-control"
+                           autocomplete="off"
+                           placeholder="#FF0000" data-ng-model="column.color_max_cards"
+                           name="color_max_cards" type="text">
+                </div>
+
+                <div class="form-group">
+                    <label>Is Done Column</label>
+                    <input type="checkbox" name="done_column" ng-model="column.done_column">
+                </div>
+
+                <button class="btn btn-primary"
+                        type="submit">Save
+                </button>
+                <button class="btn btn-warning"
+                        data-ng-click="cancel();">Cancel
+                </button>
+
+            </form>
+        </div>
+    </div>
+</section>

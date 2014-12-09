@@ -4,24 +4,33 @@
 
         scope.form = {};
         scope.ticket = item.ticket || {};
-        if(item !== undefined) {
+        if(item.ticket !== undefined) {
             scope.labels = item.ticket.labels || [];
         }else{
             scope.labels = [];
         }
+
         scope.save = function () {
             if (scope.form.ticket_form.$valid) {
                 scope.ticket.labels = [];
                 scope.labels.forEach(function(item){
                    scope.ticket.labels.push(item.text);
                 });
-
-                TicketService.save(item.project, scope.ticket).then(function (tkt) {
-                    modalInstance.close();
-                }, function(err){
-                    modalInstance.dismiss('error');
-                    console.log(err);
-                });
+                if(item.ticket){
+                    TicketService.update(scope.ticket.pk, scope.ticket).then(function (tkt) {
+                        modalInstance.close();
+                    }, function (err) {
+                        modalInstance.dismiss('error');
+                        console.log(err);
+                    });
+                }else {
+                    TicketService.save(item.project, scope.ticket).then(function (tkt) {
+                        modalInstance.close();
+                    }, function (err) {
+                        modalInstance.dismiss('error');
+                        console.log(err);
+                    });
+                }
             } else {
                 scope.submitted = true;
             }
@@ -32,12 +41,28 @@
         };
     }
 
-    TicketFormController.$inject = ['$scope', '$modalInstance', 'TicketService', 'item'];
+    var TicketDeleteController = function(scope, modalInstance, TicketService, item){
+        scope.ticket = item;
+        scope.erase = function(){
+            TicketService.delete_ticket(scope.ticket.pk).then(function(){
+                modalInstance.close('delete');
+            });
+        };
 
-    angular.module('Coati.Tickets', ['ui.router','ngTagsInput',
+        scope.cancel = function(){
+            modalInstance.dismiss('cancelled');
+        };
+
+    };
+
+    TicketFormController.$inject = ['$scope', '$modalInstance', 'TicketService', 'item'];
+    TicketDeleteController.$inject = ['$scope', '$modalInstance', 'TicketService', 'item'];
+
+    angular.module('Coati.Ticket', ['ui.router','ngTagsInput',
         'Coati.Directives',
-        'Coati.ApiServices'])
-        .controller('TicketFormController', TicketFormController);
+        'Coati.Services.Ticket'])
+        .controller('TicketFormController', TicketFormController)
+        .controller('TicketDeleteController', TicketDeleteController);
 
 
 }(angular));

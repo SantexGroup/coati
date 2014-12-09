@@ -2,7 +2,6 @@
 
     function ConfigApp(interpolate, location, urlRoute) {
         urlRoute.when('/', '/home/');
-        //urlRoute.otherwise('/error/404/');
         location.html5Mode(true);
         location.hashPrefix('!');
         interpolate.startSymbol('<[');
@@ -76,7 +75,7 @@
         'ui.router', 'ui.bootstrap',
         'Coati.Config', 'Coati.Directives', 'Coati.Home',
         'Coati.Login',
-        'Coati.User', 'Coati.Projects', 'Coati.Tickets', 'Coati.Errors'])
+        'Coati.User', 'Coati.Project', 'Coati.Ticket', 'Coati.Sprint'])
         .config(ConfigApp)
         .filter('getByProperty', filterGetByProperty)
         .filter('getIndexByProperty', filterGetIndexByProperty)

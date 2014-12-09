@@ -54,7 +54,7 @@
     angular.module('Coati.Home',
         ['ui.router', 'ui.bootstrap',
             'Coati.Directives',
-            'Coati.ApiServices'])
+            'Coati.Services.Project'])
         .config(ConfigModule)
         .controller('MainController', MainController);
 

@@ -16,3 +16,7 @@ var predicatBy = function (prop) {
         return 0;
     };
 };
+
+var addDays = function(theDate, days) {
+    return new Date(theDate.getTime() + days*24*60*60*1000);
+};

@@ -3,8 +3,8 @@
         <section class="panel">
             <header class="panel-heading tab-bg-dark-navy-blue ">
                 <ul class="nav nav-tabs">
-                    <li ng-class="{active:overview}">
-                        <a data-toggle="tab" ng-click="switchView('project.overview');">Overview</a>
+                    <li ng-class="{active:planning}">
+                        <a data-toggle="tab" ng-click="switchView('project.planning');">Planning</a>
                     </li>
                     <li ng-class="{active:board}">
                         <a data-toggle="tab"  ng-click="switchView('project.board');">Board</a>
@@ -13,14 +13,14 @@
                         <a data-toggle="tab" ng-click="switchView('project.reports');">Reports</a>
                     </li>
                     <li ng-class="{active:settings}">
-                        <a data-toggle="tab" ng-click="switchView('project.settings');">Settings</a>
+                        <a data-toggle="tab" ng-click="switchView('project.settings');">Project Settings</a>
                     </li>
                 </ul>
             </header>
             <div class="panel-body">
                 <div class="tab-content">
-                    <div id="overview" ui-view="project-overview"
-                         class="tab-pane" ng-class="{active:overview}"></div>
+                    <div id="planning-overview" ui-view="project-planning"
+                         class="tab-pane" ng-class="{active:planning}"></div>
                     <div id="board" ui-view="project-board" class="tab-pane"
                          ng-class="{active:board}">Board View
                     </div>
@@ -28,7 +28,7 @@
                          ng-class="{active:reports}">Reports
                     </div>
                     <div id="settings" ui-view="project-settings"
-                         class="tab-pane" ng-class="{active:settings}">Settings
+                         class="tab-pane" ng-class="{active:settings}">Project Settings
                     </div>
                 </div>
             </div>

@@ -66,3 +66,18 @@ class SprintInstance(Resource):
         sp = Sprint.objects.get(pk=sp_id)
         sp.delete()
         return sp.to_json(), 204
+
+
+class SprintActive(Resource):
+    def __init__(self):
+        super(SprintActive, self).__init__()
+
+    def get(self, project_pk):
+        sprints = Sprint.objects(project=project_pk, started=True,
+                                 finalized=False)
+        sprint = None
+        if sprints:
+            sprint = sprints[0]
+        if sprint:
+            return sprint.to_json(), 200
+        return jsonify({'started': False}), 404

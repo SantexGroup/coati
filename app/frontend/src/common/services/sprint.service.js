@@ -16,6 +16,9 @@
             },
             'update_order': function (project_pk, data) {
                 return req.$do('/sprints/' + project_pk + '/order', req.METHODS.POST, data);
+            },
+            'get_started': function(project_pk){
+                return req.$do('/sprints/' + project_pk + '/started', req.METHODS.GET);
             }
         };
     };

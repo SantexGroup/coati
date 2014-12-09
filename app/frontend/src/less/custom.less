@@ -407,3 +407,19 @@ input.error {
     -webkit-transform: scaleY(1.0);
   }
 }
+.board-area-wrapper{
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+}
+
+.board-area .columns > li {
+  padding-right: 2px;
+  padding-left: 0px;
+  width:240px;
+  float:left;
+}
+
+.board-area .columns li:last-child {
+  clear: right;
+}

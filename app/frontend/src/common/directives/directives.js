@@ -157,7 +157,7 @@
         };
     };
 
-    var OnEnter = function(){
+    var OnEnter = function () {
         return function (scope, elm, attr) {
             elm.bind('keypress', function (e) {
                 if (e.keyCode === 13) {
@@ -167,7 +167,7 @@
         };
     };
 
-    var InlineEdit = function(timeout){
+    var InlineEdit = function (timeout) {
         return {
             scope: {
                 model: '=inlineEdit',
@@ -198,7 +198,7 @@
         };
     };
 
-    var TicketDetailView = function(){
+    var TicketDetailView = function () {
         return {
             restrict: 'E',
             scope: {
@@ -236,7 +236,7 @@
         };
     };
 
-    var Notify = function(rootScope){
+    var Notify = function (rootScope) {
         return {
             link: function (scope, elem, attrs, ctrl) {
                 rootScope.$on('notify', function (event, data) {
@@ -256,9 +256,28 @@
         };
     };
 
+    var CalculateWithBoard = function (timeout) {
+        return {
+            link: function (scope, elem, attrs, ctrl) {
+                scope.$on('dataloaded', function () {
+                    var calculateWidth = function () {
+                        var list_width = 0;
+                        var total_columns = $('.column').length;
+                        list_width = $('.column').width() * total_columns;
+                        list_width += parseInt($('.column').css('padding-right'), 2) * total_columns;
+                        //Set the area with the summatory of the cols width
+                        $('.board-area').width(list_width);
+                    };
+                    timeout(calculateWidth, 0);
+                });
+            }
+        };
+    };
+
     ImageFunction.$inject = ['$q'];
     InlineEdit.$inject = ['$timeout'];
     Notify.$inject = ['$rootScope'];
+    CalculateWithBoard.$inject = ['$timeout'];
 
     angular.module('Coati.Directives', [])
         .directive('image', ImageFunction)
@@ -267,8 +286,8 @@
         .directive('onEnter', OnEnter)
         .directive('inlineEdit', InlineEdit)
         .directive('ticketDetailView', TicketDetailView)
-        .directive('notify', Notify);
-
+        .directive('notify', Notify)
+        .directive('prepareBoard', CalculateWithBoard);
 
 
 }(angular));

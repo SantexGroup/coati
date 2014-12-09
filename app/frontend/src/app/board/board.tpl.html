@@ -1,1 +1,63 @@
-<h2>Board view</h2>
+<div class="row">
+    <div class="col-md-12" ng-hide="sprint.started"></h3>
+        <h3>No sprint was started, please start a sprint to see the board!</h3>
+    </div>
+    <div class="col-md-12" ng-show="sprint.started" prepare-board>
+
+        <h3>Active Sprint: <[ sprint.name ]></h3>
+
+        <div class="board-area-wrapper" id="board-area-wrapper">
+            <div class="board-area">
+                <ul class="columns">
+                    <li class="panel tasks-widget backlog col-md-3 column">
+                        <header class="panel-heading">Backlog</header>
+                        <div class="panel-body">
+                            <div class="task-content">
+                                <ul class="task-list" as-sortable="sortTickets"
+                                    is-enabled="true"
+                                    ng-model="data.tickets">
+                                    <li ng-repeat="tkt in data.tickets track by tkt._id.$oid"
+                                        class="card ticket-item <[ tkt.type ]>"
+                                        as-sortable-item>
+                                        <i class="icon-ellipsis-vertical handler"
+                                           as-sortable-item-handle></i>
+
+                                        <div class="task-title">
+                                            <span class="task-title-sp">
+                                              <[ project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
+                                            </span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="panel backlog col-md-3 column"
+                        ng-repeat="col in data.columns">
+                        <header class="panel-heading"><[ col.title ]></header>
+                        <div class="panel-body">
+                            <div class="task-content">
+                                <ul class="task-list" as-sortable="sortTickets"
+                                    is-enabled="true"
+                                    ng-model="col.tickets">
+                                    <li ng-repeat="tkt in col.tickets"
+                                        class="card ticket-item <[ tkt.type ]>"
+                                        as-sortable-item>
+                                        <i class="icon-ellipsis-vertical handler"
+                                           as-sortable-item-handle></i>
+
+                                        <div class="task-title">
+                                            <span class="task-title-sp">
+                                              <[ project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
+                                            </span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

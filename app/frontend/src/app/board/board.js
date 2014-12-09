@@ -40,6 +40,12 @@
             });
         };
 
+        scope.checkAlert = function(col){
+            if(col.max_cards <= col.tickets.length){
+                return {backgroundColor: col.color_max_cards};
+            }
+        };
+
         scope.sortTickets = {
             accept: function (sourceItem, destItem) {
                 return sourceItem.element.hasClass('ticket-item');
@@ -51,14 +57,19 @@
 
                 var new_order = [];
                 angular.forEach(event.dest.sortableScope.modelValue, function (val, key) {
-                    new_order.push(val._id.$oid);
+                   new_order.push(val._id.$oid);
                 });
 
                 var data = {
                     ticket: source._id.$oid,
-                    column: target._id.$oid,
                     order: new_order
                 };
+
+                if(target){
+                    data.column = target._id.$oid;
+                }else{
+                    data.backlog = scope.sprint._id.$oid;
+                }
                 TicketService.transition(data);
             },
             orderChanged: function (event) {

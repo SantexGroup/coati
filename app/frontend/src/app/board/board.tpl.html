@@ -35,7 +35,7 @@
                     <li class="panel backlog col-md-3 column"
                         ng-repeat="col in data.columns">
                         <header class="panel-heading"><[ col.title ]></header>
-                        <div class="panel-body">
+                        <div class="panel-body" ng-style="checkAlert(col)">
                             <div class="task-content">
                                 <ul class="task-list" as-sortable="sortTickets"
                                     is-enabled="true"

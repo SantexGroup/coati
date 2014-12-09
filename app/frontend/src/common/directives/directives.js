@@ -260,7 +260,7 @@
     InlineEdit.$inject = ['$timeout'];
     Notify.$inject = ['$rootScope'];
 
-    angular.module('Coati.Directives', ['Coati.ApiServices'])
+    angular.module('Coati.Directives', [])
         .directive('image', ImageFunction)
         .directive('chart', Chart)
         .directive('onEsc', OnEscape)

@@ -64,7 +64,7 @@
 
     angular.module('Coati.Sprint', ['ui.router', 'ui.sortable',
         'Coati.Directives',
-        'Coati.ApiServices'])
+        'Coati.Services.Sprint'])
         .controller('StartSprintController', StartSprintController);
 
 }(angular));

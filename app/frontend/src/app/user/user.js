@@ -61,7 +61,7 @@
 
     angular.module('Coati.User', ['ui.router',
         'Coati.Directives',
-        'Coati.ApiServices'])
+        'Coati.Services.User'])
         .config(ConfigModule)
         .controller('UserCtrl', UserController)
         .controller('UserProfileCtrl', UserProfileController);

@@ -60,7 +60,7 @@
 
     angular.module('Coati.Ticket', ['ui.router','ngTagsInput',
         'Coati.Directives',
-        'Coati.ApiServices'])
+        'Coati.Services.Ticket'])
         .controller('TicketFormController', TicketFormController)
         .controller('TicketDeleteController', TicketDeleteController);
 

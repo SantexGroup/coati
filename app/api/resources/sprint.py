@@ -4,7 +4,7 @@ from dateutil import parser
 from flask import jsonify, request
 from flask.ext.restful import Resource
 
-from app.schemas import Sprint, Project
+from app.schemas import Sprint, Project, Column
 
 
 class SprintOrder(Resource):
@@ -81,3 +81,14 @@ class SprintActive(Resource):
         if sprint:
             return sprint.to_json(), 200
         return jsonify({'started': False}), 404
+
+
+class SprintTickets(Resource):
+    def __init__(self):
+        super(SprintTickets, self).__init__()
+
+    def get(self, sprint_id):
+        sprint = Sprint.objects.get(pk=sprint_id)
+        if sprint:
+            return sprint.get_tickets_board_backlog()
+        return jsonify({'error': 'Bad Request'}), 400

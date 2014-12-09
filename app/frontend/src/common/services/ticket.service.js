@@ -20,6 +20,12 @@
             'movement': function (data) {
                 return req.$do('/ticket/movement', req.METHODS.POST, data);
             },
+            'transition': function(data){
+                return req.$do('/ticket/transition', req.METHODS.POST, data);
+            },
+            'order_ticket_column': function(column, data){
+                return req.$do('/ticket/column/' + column + '/order', req.METHODS.POST, data);
+            },
             'update': function(tkt_id, data){
                 return req.$do('/ticket/' + tkt_id, req.METHODS.UPDATE, data);
             },

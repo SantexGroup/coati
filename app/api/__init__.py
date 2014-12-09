@@ -1,10 +1,10 @@
 from flask.ext.restful import Api
 from resources.sprint import SprintList, SprintInstance, SprintOrder, \
-    SprintActive
+    SprintActive, SprintTickets
 from resources.project import ProjectList, ProjectInstance, ProjectColumns, \
     ProjectColumnsOrder, ProjectColumn
 from resources.ticket import TicketOrderProject, TicketOrderSprint, TicketProjectList, \
-    TicketMovement, TicketInstance
+    TicketMovement, TicketInstance, TicketTransition, TicketColumnOrder
 from resources.user import UsersList, UserInstance
 from app.utils import output_json
 
@@ -27,6 +27,7 @@ def init_app(app, decorators=None):
     api.add_resource(SprintActive, '/api/sprints/<string:project_pk>/started')
     api.add_resource(SprintOrder, '/api/sprints/<string:project_pk>/order')
     api.add_resource(SprintInstance, '/api/sprint/<string:sp_id>')
+    api.add_resource(SprintTickets, '/api/sprint/<string:sprint_id>/tickets')
 
     api.add_resource(TicketProjectList, '/api/tickets/<string:project_pk>')
     api.add_resource(TicketOrderProject, '/api/tickets/<string:project_pk>/order')
@@ -34,5 +35,7 @@ def init_app(app, decorators=None):
     api.add_resource(TicketInstance, '/api/ticket/<string:tkt_id>')
 
     api.add_resource(TicketMovement, '/api/ticket/movement')
+    api.add_resource(TicketTransition, '/api/ticket/transition')
+    api.add_resource(TicketColumnOrder, '/api/ticket/column/<string:column>/order')
 
     api.representations = {'application/json': output_json}

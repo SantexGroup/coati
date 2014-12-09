@@ -264,7 +264,7 @@
                         var list_width = 0;
                         var total_columns = $('.column').length;
                         list_width = $('.column').width() * total_columns;
-                        list_width += parseInt($('.column').css('padding-right'), 2) * total_columns;
+                        list_width += 2 * total_columns;
                         //Set the area with the summatory of the cols width
                         $('.board-area').width(list_width);
                     };

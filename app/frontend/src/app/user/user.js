@@ -20,29 +20,24 @@
         });
     }
 
-    function UserProfileController(rootScope, scope, UserService) {
-
+    function UserProfileController(rootScope, UserService) {
+        var vm = this;
         rootScope.$watch('userGlobal', function (user) {
             if (user != null) {
-                scope.user = rootScope.userGlobal;
-                if (scope.user.profile && scope.user.profile.picture !== '') {
-                    scope.image = {
+                vm.user = rootScope.userGlobal;
+                if (vm.user.profile && vm.user.profile.picture !== '') {
+                    vm.image = {
                         resized: {
-                            dataURL: scope.user.profile.picture
+                            dataURL: vm.user.profile.picture
                         }
                     };
                 }
-                scope.alerts = [];
-                scope.closeAlert = function (index) {
-                    scope.alerts.splice(index, 1);
-                };
-                scope.save = function (image, form) {
-                    scope.user.profile = {
+                vm.save = function (image, form) {
+                    vm.user.profile = {
                         id: scope.user.id,
                         picture: image ? image.resized.dataURL : ''
                     };
-                    scope.alerts = [];
-                    UserService.save(scope.user).then(function (data) {
+                    UserService.save(vm.user).then(function (data) {
                         console.log('USER UPDATED');
                     });
                 };
@@ -51,13 +46,13 @@
 
     }
 
-    function UserController(rootScope, scope, state, UserService) {
+    function UserController(rootScope, state, UserService) {
         //To Do
     }
 
     ConfigModule.$inject = ['$stateProvider'];
-    UserController.$inject = ['$rootScope', '$scope', '$state', 'UserService'];
-    UserProfileController.$inject = ['$rootScope', '$scope', 'UserService'];
+    UserController.$inject = ['$rootScope', '$state', 'UserService'];
+    UserProfileController.$inject = ['$rootScope', 'UserService'];
 
     angular.module('Coati.User', ['ui.router',
         'Coati.Directives',

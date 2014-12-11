@@ -14,6 +14,7 @@
             views: {
                 "main": {
                     controller: 'MainController',
+                    controllerAs: 'vm',
                     templateUrl: 'home/home.tpl.html'
                 }
             },
@@ -29,26 +30,28 @@
      * @param ProjectService - API Service for Projects
      * @constructor
      */
-    function MainController(scope, state, ProjectService) {
-        scope.user = window.username;
+    function MainController(state, ProjectService) {
+        var vm = this;
 
-        scope.getDashboard = function () {
+        vm.user = window.username;
+
+        vm.getDashboard = function () {
 
             ProjectService.query().then(function(projects){
-               scope.projects = projects;
+               vm.projects = projects;
             });
         };
 
-        scope.create_project = function(){
+        vm.create_project = function(){
             state.go('project-new');
         };
 
-        scope.getDashboard();
+        vm.getDashboard();
     }
 
     //Injections
     ConfigModule.$inject = ['$stateProvider'];
-    MainController.$inject = ['$scope', '$state', 'ProjectService'];
+    MainController.$inject = ['$state', 'ProjectService'];
 
 
     angular.module('Coati.Home',

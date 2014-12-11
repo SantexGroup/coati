@@ -6,6 +6,7 @@
             views: {
                 "master_view": {
                     controller: 'LoginController',
+                    controllerAs: 'vm',
                     templateUrl: 'login/login.tpl.html'
                 }
             },
@@ -26,18 +27,18 @@
             });
     }
 
-    function LoginController(scope, state, LoginService) {
-
+    function LoginController(state, LoginService) {
+        var vm = this;
         if (state.params && state.params.logout) {
             window.sessionStorage.clear();
         }
 
-        scope.authenticate = function (provider) {
+        vm.authenticate = function (provider) {
             LoginService.auth(provider);
         };
     }
 
-    function LoginAuthController(scope, state, tokens) {
+    function LoginAuthController(state, tokens) {
         if (state.params.token) {
             tokens.store_token(state.params.token, state.params.expire);
             state.go('home', {reload: true});
@@ -47,8 +48,8 @@
     }
 
     Config.$inject = ['$stateProvider'];
-    LoginController.$inject = ['$scope', '$state', 'LoginService'];
-    LoginAuthController.$inject = ['$scope', '$state', 'tokens'];
+    LoginController.$inject = ['$state', 'LoginService'];
+    LoginAuthController.$inject = ['$state', 'tokens'];
 
     angular.module('Coati.Login',
         ['ui.router', 'ui.bootstrap',

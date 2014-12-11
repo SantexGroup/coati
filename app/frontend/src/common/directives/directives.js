@@ -137,6 +137,7 @@
                 }, function (value) {
                     var newSettings;
                     if (!value) {
+                        $(element).empty();
                         return;
                     }
                     newSettings = {};
@@ -256,10 +257,10 @@
         };
     };
 
-    var CalculateWithBoard = function (timeout) {
+    var CalculateWithBoard = function (rootScope, timeout) {
         return {
-            link: function (scope, elem, attrs, ctrl) {
-                scope.$on('dataloaded', function () {
+            link: function () {
+                rootScope.$on('board-loaded', function () {
                     var calculateWidth = function () {
                         var list_width = 0;
                         var total_columns = $('.column').length;
@@ -277,7 +278,7 @@
     ImageFunction.$inject = ['$q'];
     InlineEdit.$inject = ['$timeout'];
     Notify.$inject = ['$rootScope'];
-    CalculateWithBoard.$inject = ['$timeout'];
+    CalculateWithBoard.$inject = ['$rootScope','$timeout'];
 
     angular.module('Coati.Directives', [])
         .directive('image', ImageFunction)

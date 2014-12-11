@@ -1,5 +1,5 @@
- - Change all controllers to use vm instead of scope.
  - Add translation to all the application.
  - Show the ticket details in the board view.
  - Add comments to a ticket.
- 
+ - Add users to the project
+ - Add Realtime

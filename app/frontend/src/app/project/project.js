@@ -19,9 +19,9 @@
                 url: '/project/:project_pk/',
                 views: {
                     "main": {
+                        templateUrl: 'project/project.tpl.html',
                         controller: 'ProjectCtrl',
-                        controllerAs: 'vm',
-                        templateUrl: 'project/project.tpl.html'
+                        controllerAs: 'vm'
                     }
                 },
                 data: {

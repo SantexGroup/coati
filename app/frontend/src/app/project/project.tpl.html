@@ -3,19 +3,19 @@
         <section class="panel">
             <header class="panel-heading tab-bg-dark-navy-blue ">
                 <ul class="nav nav-tabs">
-                    <li ng-class="{active:vm.planning}">
+                    <li ng-class="{active: vm.planning}">
                         <a data-toggle="tab"
                            ng-click="vm.switchView('project.planning');">Planning</a>
                     </li>
-                    <li ng-class="{active:vm.board}">
+                    <li ng-class="{active: vm.board}">
                         <a data-toggle="tab"
                            ng-click="vm.switchView('project.board');">Board</a>
                     </li>
-                    <li ng-class="{active:vm.reports}">
+                    <li ng-class="{active: vm.reports}">
                         <a data-toggle="tab"
                            ng-click="vm.switchView('project.reports');">Reports</a>
                     </li>
-                    <li ng-class="{active:vm.settings}">
+                    <li ng-class="{active: vm.settings}">
                         <a data-toggle="tab"
                            ng-click="vm.switchView('project.settings');">Project
                             Settings</a>
@@ -24,17 +24,18 @@
             </header>
             <div class="panel-body">
                 <div class="tab-content">
-                    <div id="planning-overview" ui-view="project-planning"
-                         class="tab-pane" ng-class="{active:vm.planning}"></div>
-                    <div id="board" ui-view="project-board" class="tab-pane"
-                         ng-class="{active:vm.board}">Board View
+                    <div id="planning-overview"
+                         class="tab-pane" ng-class="{active: vm.planning}">
+                        <div ui-view="project-planning"></div>
                     </div>
-                    <div id="reports" ui-view="project-reports" class="tab-pane"
-                         ng-class="{active:vm.reports}">Reports
+                    <div id="board" class="tab-pane" ng-class="{active: vm.board}">
+                        <div ui-view="project-board"></div>
                     </div>
-                    <div id="settings" ui-view="project-settings"
-                         class="tab-pane" ng-class="{active:vm.settings}">Project
-                        Settings
+                    <div id="reports" class="tab-pane" ng-class="{active: vm.reports}">
+                        <div ui-view="project-reports"></div>
+                    </div>
+                    <div id="settings" class="tab-pane" ng-class="{active: vm.settings}">
+                        <div ui-view="project-settings"></div>
                     </div>
                 </div>
             </div>

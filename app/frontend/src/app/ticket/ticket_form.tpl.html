@@ -6,41 +6,30 @@
     </header>
     <div class="panel-body">
         <div class="col-md-12">
-
-
-            <div class="alert alert-block alert-danger fade in"
-                 data-ng-repeat="alert in alerts">
-                <button data-dismiss="alert" data-ng-click="closeAlert($index)"
-                        class="close close-sm" type="button">
-                    <i class="icon-remove"></i>
-                </button>
-                <[ alert.msg ]>
-            </div>
-
             <form name="form.ticket_form" class="form-horizontal"
-                  ng-submit="save()"
+                  ng-submit="vm.save()"
                   novalidate>
 
                 <div class="form-group">
                     <label>Title</label>
                     <input class="form-control"
-                           data-ng-class="{'error': form.ticket_form.title.$invalid && submitted}"
+                           data-ng-class="{'error': vm.form.ticket_form.title.$invalid && vm.submitted}"
                            autocomplete="off"
-                           placeholder="Title" data-ng-model="ticket.title"
+                           placeholder="Title" data-ng-model="vm.ticket.title"
                            name="title" type="text" required>
                     <label for="title" class="error"
-                           data-ng-show="form.ticket_form.title.$invalid && submitted">Please
+                           data-ng-show="vm.form.ticket_form.title.$invalid && vm.submitted">Please
                         enter a title</label>
                 </div>
                 <div class="form-group">
                     <label>Description</label>
                     <textarea class="form-control" rows="3"
                               name="description"
-                              data-ng-model="ticket.description"></textarea>
+                              data-ng-model="vm.ticket.description"></textarea>
                 </div>
                 <div class="form-group">
                     <label>Labels</label>
-                    <tags-input ng-model="labels"
+                    <tags-input ng-model="vm.labels"
                                 replace-spaces-with-dashes="false"
                                 placeholder="Add Label"></tags-input>
                 </div>
@@ -48,13 +37,13 @@
                     <label>Points</label>
                     <input class="form-control"
                            autocomplete="off"
-                           placeholder="Points" data-ng-model="ticket.points"
+                           placeholder="Points" data-ng-model="vm.ticket.points"
                            name="points" type="text">
                 </div>
                 <div class="form-group">
                     <label>Ticket Type</label>
                     <select class="form-control"
-                            data-ng-model="ticket.type"
+                            data-ng-model="vm.ticket.type"
                             name="type">
                         <option value="U">User Story</option>
                         <option value="B">Bug</option>
@@ -69,7 +58,7 @@
                         type="submit">Save
                 </button>
                 <button class="btn btn-warning"
-                        data-ng-click="cancel();">Cancel
+                        data-ng-click="vm.cancel();">Cancel
                 </button>
 
             </form>

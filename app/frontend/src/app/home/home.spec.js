@@ -7,7 +7,6 @@ describe('Home Test', function () {
         $rootScope = $injector.get('$rootScope');
         $controller = $injector.get('$controller');
         httpBackend = $injector.get('$httpBackend');
-        $scope = $rootScope.$new();
 
     }));
 
@@ -26,13 +25,11 @@ describe('Home Test', function () {
         ];
         httpBackend.when('GET', '/api/projects').respond(200, projects);
         httpBackend.expectGET('/api/projects');
-        $controller('MainController', {
-            '$scope': $scope
-        });
+        var ctrl = $controller('MainController');
         httpBackend.flush();
-        expect($scope.user).toEqual(window.username);
-        expect($scope.getDashboard).not.toBe(undefined);
-        expect($scope.projects).toEqual(projects);
+        expect(ctrl.user).toEqual(window.username);
+        expect(ctrl.getDashboard).not.toBe(undefined);
+        expect(ctrl.projects).toEqual(projects);
     });
 
 

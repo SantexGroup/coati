@@ -1,30 +1,30 @@
 (function (angular) {
 
-    function TicketFormController(scope, modalInstance, TicketService, item) {
-
-        scope.form = {};
-        scope.ticket = item.ticket || {};
+    var TicketFormController = function(modalInstance, TicketService, item) {
+        var vm = this;
+        vm.form = {};
+        vm.ticket = item.ticket || {};
         if(item.ticket !== undefined) {
-            scope.labels = item.ticket.labels || [];
+            vm.labels = item.ticket.labels || [];
         }else{
-            scope.labels = [];
+            vm.labels = [];
         }
 
-        scope.save = function () {
-            if (scope.form.ticket_form.$valid) {
-                scope.ticket.labels = [];
-                scope.labels.forEach(function(item){
-                   scope.ticket.labels.push(item.text);
+        vm.save = function () {
+            if (vm.form.ticket_form.$valid) {
+                vm.ticket.labels = [];
+                vm.labels.forEach(function(item){
+                   vm.ticket.labels.push(item.text);
                 });
                 if(item.ticket){
-                    TicketService.update(scope.ticket.pk, scope.ticket).then(function (tkt) {
+                    TicketService.update(vm.ticket.pk, vm.ticket).then(function (tkt) {
                         modalInstance.close();
                     }, function (err) {
                         modalInstance.dismiss('error');
                         console.log(err);
                     });
                 }else {
-                    TicketService.save(item.project, scope.ticket).then(function (tkt) {
+                    TicketService.save(item.project, vm.ticket).then(function (tkt) {
                         modalInstance.close();
                     }, function (err) {
                         modalInstance.dismiss('error');
@@ -32,31 +32,32 @@
                     });
                 }
             } else {
-                scope.submitted = true;
+                vm.submitted = true;
             }
         };
 
-        scope.cancel = function () {
+        vm.cancel = function () {
             modalInstance.dismiss('cancelled');
         };
-    }
+    };
 
-    var TicketDeleteController = function(scope, modalInstance, TicketService, item){
-        scope.ticket = item;
-        scope.erase = function(){
-            TicketService.delete_ticket(scope.ticket.pk).then(function(){
+    var TicketDeleteController = function(modalInstance, TicketService, item){
+        var vm = this;
+        vm.ticket = item;
+        vm.erase = function(){
+            TicketService.delete_ticket(vm.ticket.pk).then(function(){
                 modalInstance.close('delete');
             });
         };
 
-        scope.cancel = function(){
+        vm.cancel = function(){
             modalInstance.dismiss('cancelled');
         };
 
     };
 
-    TicketFormController.$inject = ['$scope', '$modalInstance', 'TicketService', 'item'];
-    TicketDeleteController.$inject = ['$scope', '$modalInstance', 'TicketService', 'item'];
+    TicketFormController.$inject = ['$modalInstance', 'TicketService', 'item'];
+    TicketDeleteController.$inject = ['$modalInstance', 'TicketService', 'item'];
 
     angular.module('Coati.Ticket', ['ui.router','ngTagsInput',
         'Coati.Directives',

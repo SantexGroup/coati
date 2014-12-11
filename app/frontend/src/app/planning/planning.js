@@ -5,8 +5,9 @@
             url: 'planning',
             views: {
                 "project-planning": {
+                    templateUrl: 'planning/planning.tpl.html',
                     controller: 'ProjectCtrlPlanning',
-                    templateUrl: 'planning/planning.tpl.html'
+                    controllerAs: 'vm'
                 }
             },
             tab_active: 'planning',
@@ -17,18 +18,17 @@
         });
     };
 
-    var ProjectCtrlPlanning = function (scope, state, modal, ProjectService, TicketService, SprintService) {
-
-        scope.data = {};
-        scope.ticket_detail = null;
+    var ProjectCtrlPlanning = function (state, modal, ProjectService, TicketService, SprintService) {
+        var vm = this;
+        vm.ticket_detail = null;
 
 
         var getSprintsWithTickets = function (project_id) {
             SprintService.query(project_id).then(function (sprints) {
-                scope.data.sprints = sprints;
+                vm.sprints = sprints;
                 angular.forEach(sprints, function (val, key) {
                     if (val.started) {
-                        scope.data.one_started = true;
+                        vm.one_started = true;
                     }
                 });
             });
@@ -36,11 +36,11 @@
 
         var getTicketsForProject = function (project_id) {
             TicketService.query(project_id).then(function (tkts) {
-                scope.data.tickets = tkts;
+                vm.tickets = tkts;
             });
         };
 
-        scope.add_or_edit = function (e, tkt) {
+        vm.add_or_edit = function (e, tkt) {
             if (tkt) {
                 tkt = angular.copy(tkt);
                 tkt.pk = tkt._id.$oid;
@@ -48,39 +48,41 @@
             }
             var modal_instance = modal.open({
                 controller: 'TicketFormController',
+                controllerAs: 'vm',
                 templateUrl: 'ticket/ticket_form.tpl.html',
                 resolve: {
                     item: function () {
                         return {
                             'editing': (tkt !== undefined ? true : false),
-                            'project': scope.project._id.$oid,
+                            'project': vm.project._id.$oid,
                             'ticket': tkt
                         };
                     }
                 }
             });
             modal_instance.result.then(function () {
-                getSprintsWithTickets(scope.project._id.$oid);
-                getTicketsForProject(scope.project._id.$oid);
+                getSprintsWithTickets(vm.project._id.$oid);
+                getTicketsForProject(vm.project._id.$oid);
             });
             e.stopPropagation();
         };
 
-        scope.showDetail = function (tkt) {
-            scope.loaded = false;
-            scope.ticket_clicked = true;
+        vm.showDetail = function (tkt) {
+            vm.loaded = false;
+            vm.ticket_clicked = true;
             TicketService.get(tkt._id.$oid).then(function (tkt_item) {
-                scope.ticket_detail = tkt_item;
-                scope.loaded = true;
+                vm.ticket_detail = tkt_item;
+                vm.loaded = true;
             });
         };
 
-        scope.delete_ticket = function (e, tkt) {
+        vm.delete_ticket = function (e, tkt) {
             var ticket = angular.copy(tkt);
             ticket.pk = tkt._id.$oid;
-            ticket.prefix = scope.project.prefix;
+            ticket.prefix = vm.project.prefix;
             var modal_instance = modal.open({
                 controller: 'TicketDeleteController',
+                controllerAs: 'vm',
                 templateUrl: 'ticket/delete_ticket.tpl.html',
                 resolve: {
                     item: function () {
@@ -89,29 +91,31 @@
                 }
             });
             modal_instance.result.then(function () {
-                getSprintsWithTickets(scope.project._id.$oid);
-                getTicketsForProject(scope.project._id.$oid);
+                getSprintsWithTickets(vm.project._id.$oid);
+                getTicketsForProject(vm.project._id.$oid);
             });
             e.stopPropagation();
         };
 
-        scope.startSprint = function (sprint) {
+        vm.startSprint = function (sprint) {
             var modal_instance = modal.open({
                 controller: 'StartSprintController',
+                controllerAs: 'vm',
                 templateUrl: 'sprint/start_sprint.tpl.html',
                 resolve: {
                     sprint: function () {
-                        sprint.sprint_duration = scope.project.sprint_duration || 15;
+                        //TODO: Use config to get the sprint default duration
+                        sprint.sprint_duration = vm.project.sprint_duration || 10;
                         return angular.copy(sprint);
                     }
                 }
             });
             modal_instance.result.then(function () {
-                scope.data.one_started = true;
+                vm.one_started = true;
             });
         };
 
-        scope.sortBacklog = {
+        vm.sortBacklog = {
             accept: function (sourceItem, destItem) {
                 return sourceItem.element.hasClass('user-story') || sourceItem.element.hasClass('ticket-item');
             },
@@ -139,17 +143,17 @@
             orderChanged: function (event) {
                 // This happens when a ticket is sorted in the backlog
                 var new_order = [];
-                angular.forEach(scope.data.tickets, function (val, key) {
+                angular.forEach(vm.tickets, function (val, key) {
                     new_order.push(val._id.$oid);
                 });
-                TicketService.update_backlog_order(scope.project._id.$oid, new_order);
+                TicketService.update_backlog_order(vm.project._id.$oid, new_order);
             },
             containment: '#planning',
             containerPositioning: 'relative',
             type_sortable: 'project'
         };
 
-        scope.sortTickets = {
+        vm.sortTickets = {
             accept: function (sourceItem, destItem) {
                 return sourceItem.element.hasClass('user-story') || sourceItem.element.hasClass('ticket-item');
             },
@@ -196,49 +200,49 @@
             type_sortable: 'sprint'
         };
 
-        scope.sortSprints = {
+        vm.sortSprints = {
             accept: function (sourceItem, destItem) {
                 return sourceItem.element.hasClass('sprint-item');
             },
             orderChanged: function (event) {
                 //do something
                 var new_order = [];
-                angular.forEach(scope.data.sprints, function (val, key) {
+                angular.forEach(vm.sprints, function (val, key) {
                     new_order.push(val._id.$oid);
                 });
-                SprintService.update_order(scope.project._id.$oid, new_order);
+                SprintService.update_order(vm.project._id.$oid, new_order);
             },
             containment: '#planning',
             containerPositioning: 'relative'
         };
 
 
-        scope.create_sprint = function () {
-            SprintService.save(scope.project._id.$oid).then(function (sprint) {
-                scope.data.sprints.push(sprint);
+        vm.create_sprint = function () {
+            SprintService.save(vm.project._id.$oid).then(function (sprint) {
+                vm.sprints.push(sprint);
             });
         };
 
-        scope.remove_sprint = function (sprint_id) {
+        vm.remove_sprint = function (sprint_id) {
             SprintService.erase(sprint_id).then(function () {
-                getSprintsWithTickets(scope.project._id.$oid);
-                getTicketsForProject(scope.project._id.$oid);
+                getSprintsWithTickets(vm.project._id.$oid);
+                getTicketsForProject(vm.project._id.$oid);
             });
         };
 
-        scope.update_sprint_name = function (sprint) {
+        vm.update_sprint_name = function (sprint) {
             SprintService.update(sprint);
         };
 
         ProjectService.get(state.params.project_pk).then(function (prj) {
-            scope.project = prj;
+            vm.project = prj;
             getTicketsForProject(prj._id.$oid);
             getSprintsWithTickets(prj._id.$oid);
         });
     };
 
     Config.$inject = ['$stateProvider'];
-    ProjectCtrlPlanning.$inject = ['$scope', '$state', '$modal', 'ProjectService', 'TicketService', 'SprintService'];
+    ProjectCtrlPlanning.$inject = ['$state', '$modal', 'ProjectService', 'TicketService', 'SprintService'];
 
     angular.module('Coati.Planning', ['ui.router',
         'Coati.Directives',

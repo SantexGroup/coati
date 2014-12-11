@@ -6,6 +6,7 @@
             views: {
                 "project-settings": {
                     controller: 'ProjectCtrlSettings',
+                    controllerAs: 'vm',
                     templateUrl: 'settings/settings.tpl.html'
                 }
             },
@@ -18,14 +19,16 @@
     };
 
 
-    var ProjectCtrlSettings = function (scope, rootScope, state, modal, ProjectService) {
-        scope.data = {};
+    var ProjectCtrlSettings = function (rootScope, state, modal, ProjectService) {
+        var vm = this;
+        vm.form = {};
 
-        scope.delete_col = function (item) {
+        vm.delete_col = function (item) {
             var col = angular.copy(item);
             col.pk = item._id.$oid;
             var modalInstance = modal.open({
                 controller: 'ColumnDeleteController',
+                controllerAs: 'vm',
                 templateUrl: 'settings/delete_column.tpl.html',
                 resolve: {
                     column: function () {
@@ -34,21 +37,22 @@
                 }
             });
             modalInstance.result.then(function () {
-                getColumnConfiguration(scope.project._id.$oid);
+                getColumnConfiguration(vm.project._id.$oid);
             });
         };
 
-        scope.add_or_edit = function (item) {
+        vm.add_or_edit = function (item) {
             if (item) {
                 item = angular.copy(item);
                 item.pk = item._id.$oid;
             }
             var modalInstance = modal.open({
                 controller: 'ColumnFormController',
+                controllerAs: 'vm',
                 templateUrl: 'settings/new_column_form.tpl.html',
                 resolve: {
                     project: function () {
-                        return scope.project._id.$oid;
+                        return vm.project._id.$oid;
                     },
                     column: function () {
                         return item;
@@ -56,36 +60,36 @@
                 }
             });
             modalInstance.result.then(function () {
-                getColumnConfiguration(scope.project._id.$oid);
+                getColumnConfiguration(vm.project._id.$oid);
             });
         };
 
-        scope.save = function () {
-            if (scope.form.project_form.$valid) {
-                scope.project.owner_id = scope.project.owner.id;
-                ProjectService.update(scope.project._id.$oid, scope.project).then(function () {
+        vm.save = function () {
+            if (vm.form.project_form.$valid) {
+                vm.project.owner_id = vm.project.owner.id;
+                ProjectService.update(vm.project._id.$oid, vm.project).then(function () {
                     rootScope.$broadcast('notify', {
                         'title': 'Updated',
                         'description': 'The project settings were saved'
                     });
                 });
             } else {
-                scope.submitted = true;
+                vm.submitted = true;
             }
         };
 
         //order_columns
-        scope.sortColumns = {
+        vm.sortColumns = {
             accept: function (sourceItem, destItem) {
                 return true;
             },
             orderChanged: function (event) {
                 //do something
                 var new_order = [];
-                angular.forEach(scope.data.columns, function (val, key) {
+                angular.forEach(vm.columns, function (val, key) {
                     new_order.push(val._id.$oid);
                 });
-                ProjectService.order_columns(scope.project._id.$oid, new_order);
+                ProjectService.order_columns(vm.project._id.$oid, new_order);
             },
             containment: '#planning',
             containerPositioning: 'relative'
@@ -93,31 +97,31 @@
 
         var getColumnConfiguration = function (project_id) {
             ProjectService.get_columns(project_id).then(function (cols) {
-                scope.data.columns = cols;
+                vm.columns = cols;
             });
         };
 
         ProjectService.get(state.params.project_pk).then(function (prj) {
-            scope.project = prj;
+            vm.project = prj;
             getColumnConfiguration(prj._id.$oid);
         });
     };
 
-    var ColumnFormController = function (scope, modalInstance, ProjectService, project, column) {
-
-        scope.column = column || {};
-        scope.form = {};
-        scope.save = function () {
-            if (scope.form.column_form.$valid) {
+    var ColumnFormController = function (modalInstance, ProjectService, project, column) {
+        var vm = this;
+        vm.column = column || {};
+        vm.form = {};
+        vm.save = function () {
+            if (vm.form.column_form.$valid) {
                 if (column) {
-                    ProjectService.update_column(column.pk, scope.column).then(function () {
+                    ProjectService.update_column(column.pk, vm.column).then(function () {
                         modalInstance.close('ok');
                     }, function (err) {
                         modalInstance.dismiss('error');
                         console.log(err);
                     });
                 } else {
-                    ProjectService.add_column(project, scope.column).then(function () {
+                    ProjectService.add_column(project, vm.column).then(function () {
                         modalInstance.close('ok');
                     }, function (err) {
                         modalInstance.dismiss('error');
@@ -125,32 +129,33 @@
                     });
                 }
             } else {
-                scope.submitted = true;
+                vm.submitted = true;
             }
         };
 
-        scope.cancel = function () {
+        vm.cancel = function () {
             modalInstance.dismiss('cancelled');
         };
     };
 
-    var ColumnDeleteController = function (scope, modalInstance, ProjectService, column) {
-        scope.column = column;
-        scope.erase = function () {
-            ProjectService.delete_column(column.pk).then(function () {
+    var ColumnDeleteController = function (modalInstance, ProjectService, column) {
+        var vm = this;
+        vm.column = column;
+        vm.erase = function () {
+            ProjectService.delete_column(vm.column.pk).then(function () {
                 modalInstance.close('delete');
             });
         };
 
-        scope.cancel = function () {
+        vm.cancel = function () {
             modalInstance.dismiss('cancelled');
         };
     };
 
     Config.$inject = ['$stateProvider'];
-    ProjectCtrlSettings.$inject = ['$scope', '$rootScope', '$state', '$modal', 'ProjectService'];
-    ColumnFormController.$inject = ['$scope', '$modalInstance', 'ProjectService', 'project', 'column'];
-    ColumnDeleteController.$inject = ['$scope', '$modalInstance', 'ProjectService', 'column'];
+    ProjectCtrlSettings.$inject = ['$rootScope', '$state', '$modal', 'ProjectService'];
+    ColumnFormController.$inject = ['$modalInstance', 'ProjectService', 'project', 'column'];
+    ColumnDeleteController.$inject = ['$modalInstance', 'ProjectService', 'column'];
 
     angular.module('Coati.Settings', ['ui.router',
         'Coati.Directives',

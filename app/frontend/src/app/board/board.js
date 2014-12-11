@@ -6,6 +6,7 @@
             views: {
                 "project-board": {
                     controller: 'ProjectCtrlBoard',
+                    controllerAs: 'vm',
                     templateUrl: 'board/board.tpl.html'
                 }
             },
@@ -17,36 +18,37 @@
         });
     };
 
-    var ProjectCtrlBoard = function (scope, state, SprintService, ProjectService, TicketService) {
-        scope.project_pk = state.params.project_pk;
-        scope.data = {};
+    var ProjectCtrlBoard = function (rootScope, state, SprintService, ProjectService, TicketService) {
+        var vm = this;
+
+        vm.project_pk = state.params.project_pk;
 
         var getSprintTickets = function(sprint_id){
             SprintService.get_tickets(sprint_id).then(function(tickets){
-                scope.data.tickets = tickets;
+                vm.tickets = tickets;
             });
         };
 
         var getColumnConfiguration = function (project_pk) {
             ProjectService.get_columns(project_pk).then(function (cols) {
-                scope.data.columns = cols;
-                scope.$broadcast('dataloaded');
+                vm.columns = cols;
+                rootScope.$broadcast('board-loaded');
             });
         };
 
         var getProjectData = function (project_pk) {
             ProjectService.get(project_pk).then(function (prj) {
-                scope.project = prj;
+                vm.project = prj;
             });
         };
 
-        scope.checkAlert = function(col){
+        vm.checkAlert = function(col){
             if(col.max_cards <= col.tickets.length){
                 return {backgroundColor: col.color_max_cards};
             }
         };
 
-        scope.sortTickets = {
+        vm.sortTickets = {
             accept: function (sourceItem, destItem) {
                 return sourceItem.element.hasClass('ticket-item');
             },
@@ -68,7 +70,7 @@
                 if(target){
                     data.column = target._id.$oid;
                 }else{
-                    data.backlog = scope.sprint._id.$oid;
+                    data.backlog = vm.sprint._id.$oid;
                 }
                 TicketService.transition(data);
             },
@@ -91,19 +93,19 @@
             scrollableContainer: '#board-area'
         };
 
-        SprintService.get_started(scope.project_pk).then(function (sprint) {
-            scope.sprint = sprint;
-            if (sprint.started) {
-                getColumnConfiguration(scope.project_pk);
-                getProjectData(scope.project_pk);
-                getSprintTickets(scope.sprint._id.$oid);
+        SprintService.get_started(vm.project_pk).then(function (sprint) {
+            vm.sprint = sprint;
+            if (vm.sprint.started) {
+                getColumnConfiguration(vm.project_pk);
+                getProjectData(vm.project_pk);
+                getSprintTickets(vm.sprint._id.$oid);
             }
         });
 
     };
 
     Config.$inject = ['$stateProvider'];
-    ProjectCtrlBoard.$inject = ['$scope', '$state', 'SprintService', 'ProjectService', 'TicketService'];
+    ProjectCtrlBoard.$inject = ['$rootScope', '$state', 'SprintService', 'ProjectService', 'TicketService'];
 
     angular.module('Coati.Board', ['ui.router',
         'Coati.Directives',

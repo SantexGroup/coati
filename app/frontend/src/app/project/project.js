@@ -31,13 +31,14 @@
 
 
     function ProjectCtrl(scope, state) {
-
         scope.switchView = function (view) {
             state.go(view, {project_pk: state.params.project_pk}, {reload: true});
         };
         if (state.current.tab_active) {
+            //get project
             scope.tab_active = state.current.tab_active;
             scope[scope.tab_active] = true;
+
         } else {
             state.go('project.planning', {project_pk: state.params.project_pk}, {reload: true});
         }
@@ -62,8 +63,6 @@
             state.go('home');
         };
     }
-
-
 
 
     ConfigModule.$inject = ['$stateProvider'];

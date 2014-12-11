@@ -1,6 +1,6 @@
 from flask.ext.restful import Api
 from resources.sprint import SprintList, SprintInstance, SprintOrder, \
-    SprintActive, SprintTickets
+    SprintActive, SprintTickets, SprintChart
 from resources.project import ProjectList, ProjectInstance, ProjectColumns, \
     ProjectColumnsOrder, ProjectColumn
 from resources.ticket import TicketOrderProject, TicketOrderSprint, TicketProjectList, \
@@ -28,6 +28,7 @@ def init_app(app, decorators=None):
     api.add_resource(SprintOrder, '/api/sprints/<string:project_pk>/order')
     api.add_resource(SprintInstance, '/api/sprint/<string:sp_id>')
     api.add_resource(SprintTickets, '/api/sprint/<string:sprint_id>/tickets')
+    api.add_resource(SprintChart, '/api/sprint/<string:sprint_id>/chart')
 
     api.add_resource(TicketProjectList, '/api/tickets/<string:project_pk>')
     api.add_resource(TicketOrderProject, '/api/tickets/<string:project_pk>/order')

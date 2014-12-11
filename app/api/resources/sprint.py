@@ -1,10 +1,12 @@
 __author__ = 'gastonrobledo'
-
+import math
 from dateutil import parser
+from datetime import timedelta, datetime
 from flask import jsonify, request
 from flask.ext.restful import Resource
 
-from app.schemas import Sprint, Project, Column, SprintTicketOrder
+from app.schemas import (Sprint, Project, SprintTicketOrder,
+                         Column, TicketColumnTransition)
 
 
 class SprintOrder(Resource):
@@ -99,4 +101,66 @@ class SprintTickets(Resource):
         sprint = Sprint.objects.get(pk=sprint_id)
         if sprint:
             return sprint.get_tickets_board_backlog()
+        return jsonify({'error': 'Bad Request'}), 400
+
+
+class SprintChart(Resource):
+    def __init__(self):
+        super(SprintChart, self).__init__()
+
+    def get(self, sprint_id):
+        sprint = Sprint.objects.get(pk=sprint_id)
+        if sprint:
+            duration = sprint.project.sprint_duration
+            planned = sprint.total_points_when_started
+            # get done column
+            col = Column.objects.get(project=sprint.project,
+                                     done_column=True)
+            sd = sprint.start_date
+            days = []
+
+            starting_points = 0
+
+            tickets_sprint = SprintTicketOrder.objects(sprint=sprint)
+            for tkt in tickets_sprint:
+                starting_points += tkt.ticket.points
+
+            points_remaining = []
+            ideal = [planned]
+            planned_counter = planned
+
+            days.append(sd)
+            counter = 1
+            while len(days) <= duration:
+                d = sd + timedelta(days=counter)
+                if d.weekday() != 5 and d.weekday() != 6:
+                    days.append(d)
+                counter += 1
+
+            for day in days:
+                planned_counter = (planned_counter - planned / duration)
+                if planned_counter > -1:
+                    ideal.append(planned_counter)
+                start_date = day
+                end_date = start_date + timedelta(days=1)
+
+                if start_date.date() <= datetime.now().date():
+
+                    tct_list = TicketColumnTransition.objects(column=col,
+                                                              when__gte=start_date.date(),
+                                                              when__lte=end_date.date(),
+                                                              latest_state=True)
+                    points_burned_for_date = 0
+                    for tct in tct_list:
+                        points_burned_for_date += tct.ticket.points
+                    starting_points -= points_burned_for_date
+                    points_remaining.append(starting_points)
+
+            #days.insert(0, 'Start')
+            data = {
+                'points_remaining': points_remaining,
+                'dates': days,
+                'ideal': ideal
+            }
+            return jsonify(data), 200
         return jsonify({'error': 'Bad Request'}), 400

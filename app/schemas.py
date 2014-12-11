@@ -167,6 +167,7 @@ class Ticket(mongoengine.Document):
     def to_json(self, *args, **kwargs):
         data = self.to_mongo()
         data['project'] = self.project.to_mongo()
+        data['comments'] = Comment.objects(ticket=self).all()
         return json_util.dumps(data)
 
 

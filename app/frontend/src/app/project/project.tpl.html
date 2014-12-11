@@ -4,16 +4,21 @@
             <header class="panel-heading tab-bg-dark-navy-blue ">
                 <ul class="nav nav-tabs">
                     <li ng-class="{active:planning}">
-                        <a data-toggle="tab" ng-click="switchView('project.planning');">Planning</a>
+                        <a data-toggle="tab"
+                           ng-click="switchView('project.planning');">Planning</a>
                     </li>
                     <li ng-class="{active:board}">
-                        <a data-toggle="tab"  ng-click="switchView('project.board');">Board</a>
+                        <a data-toggle="tab"
+                           ng-click="switchView('project.board');">Board</a>
                     </li>
                     <li ng-class="{active:reports}">
-                        <a data-toggle="tab" ng-click="switchView('project.reports');">Reports</a>
+                        <a data-toggle="tab"
+                           ng-click="switchView('project.reports');">Reports</a>
                     </li>
                     <li ng-class="{active:settings}">
-                        <a data-toggle="tab" ng-click="switchView('project.settings');">Project Settings</a>
+                        <a data-toggle="tab"
+                           ng-click="switchView('project.settings');">Project
+                            Settings</a>
                     </li>
                 </ul>
             </header>
@@ -28,7 +33,8 @@
                          ng-class="{active:reports}">Reports
                     </div>
                     <div id="settings" ui-view="project-settings"
-                         class="tab-pane" ng-class="{active:settings}">Project Settings
+                         class="tab-pane" ng-class="{active:settings}">Project
+                        Settings
                     </div>
                 </div>
             </div>

@@ -1,6 +1,17 @@
 <h2>Burndown Chart</h2>
 <div class="row">
     <div class="col-md-12">
-        <chart value="chart_data" type="line" height="400" chart-obj="chartObj"></chart>
+        <div class="form-group">
+            <label>Sprint</label>
+            <select class="form-control"
+                    name="sprint"
+                    data-ng-model="sprint_selected"
+                    data-ng-options="s._id.$oid as s.name for s in sprints"
+                    data-ng-change="getReport();">
+                <option value="">Select a Sprint</option>
+            </select>
+        </div>
+        <chart value="chartData" type="line" height="400"
+               chart-obj="chartObj"></chart>
     </div>
 </div>

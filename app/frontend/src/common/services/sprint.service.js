@@ -22,6 +22,9 @@
             },
             'get_tickets': function(sprint_id){
                return req.$do('/sprint/' + sprint_id + '/tickets', req.METHODS.GET);
+            },
+            'get_chart': function(sprint_id){
+                return req.$do('/sprint/' + sprint_id + '/chart', req.METHODS.GET);
             }
         };
     };

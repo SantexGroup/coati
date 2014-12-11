@@ -3,21 +3,21 @@
         <section class="panel">
             <header class="panel-heading tab-bg-dark-navy-blue ">
                 <ul class="nav nav-tabs">
-                    <li ng-class="{active:planning}">
+                    <li ng-class="{active:vm.planning}">
                         <a data-toggle="tab"
-                           ng-click="switchView('project.planning');">Planning</a>
+                           ng-click="vm.switchView('project.planning');">Planning</a>
                     </li>
-                    <li ng-class="{active:board}">
+                    <li ng-class="{active:vm.board}">
                         <a data-toggle="tab"
-                           ng-click="switchView('project.board');">Board</a>
+                           ng-click="vm.switchView('project.board');">Board</a>
                     </li>
-                    <li ng-class="{active:reports}">
+                    <li ng-class="{active:vm.reports}">
                         <a data-toggle="tab"
-                           ng-click="switchView('project.reports');">Reports</a>
+                           ng-click="vm.switchView('project.reports');">Reports</a>
                     </li>
-                    <li ng-class="{active:settings}">
+                    <li ng-class="{active:vm.settings}">
                         <a data-toggle="tab"
-                           ng-click="switchView('project.settings');">Project
+                           ng-click="vm.switchView('project.settings');">Project
                             Settings</a>
                     </li>
                 </ul>
@@ -25,15 +25,15 @@
             <div class="panel-body">
                 <div class="tab-content">
                     <div id="planning-overview" ui-view="project-planning"
-                         class="tab-pane" ng-class="{active:planning}"></div>
+                         class="tab-pane" ng-class="{active:vm.planning}"></div>
                     <div id="board" ui-view="project-board" class="tab-pane"
-                         ng-class="{active:board}">Board View
+                         ng-class="{active:vm.board}">Board View
                     </div>
                     <div id="reports" ui-view="project-reports" class="tab-pane"
-                         ng-class="{active:reports}">Reports
+                         ng-class="{active:vm.reports}">Reports
                     </div>
                     <div id="settings" ui-view="project-settings"
-                         class="tab-pane" ng-class="{active:settings}">Project
+                         class="tab-pane" ng-class="{active:vm.settings}">Project
                         Settings
                     </div>
                 </div>

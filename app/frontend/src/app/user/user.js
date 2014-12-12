@@ -20,7 +20,7 @@
         });
     }
 
-    function UserProfileController(rootScope, UserService) {
+    var UserProfileController = function(rootScope, UserService) {
         var vm = this;
         rootScope.$watch('userGlobal', function (user) {
             if (user != null) {
@@ -44,11 +44,11 @@
             }
         });
 
-    }
+    };
 
-    function UserController(rootScope, state, UserService) {
+    var UserController = function(rootScope, state, UserService) {
         //To Do
-    }
+    };
 
     ConfigModule.$inject = ['$stateProvider'];
     UserController.$inject = ['$rootScope', '$state', 'UserService'];

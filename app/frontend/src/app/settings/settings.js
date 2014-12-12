@@ -64,6 +64,23 @@
             });
         };
 
+        vm.add_new_member = function(){
+            var modalInstance = modal.open({
+                controller: 'MembersController',
+                controllerAs: 'vm',
+                templateUrl: 'settings/new_project_member.tpl.html',
+                resolve: {
+                    project: function () {
+                        return vm.project._id.$oid;
+                    }
+                }
+            });
+            modalInstance.result.then(function () {
+                //TODO: see what we need to do here!
+                //maybe load the members from other call.
+            });
+        };
+
         vm.save = function () {
             if (vm.form.project_form.$valid) {
                 vm.project.owner_id = vm.project.owner.id;
@@ -152,17 +169,28 @@
         };
     };
 
+    var MembersController = function(modalInstance, UserService, ProjectService, project){
+        var vm = this;
+
+        vm.loadMembers = function(query){
+            return UserService.search(query);
+        };
+    };
+
     Config.$inject = ['$stateProvider'];
     ProjectCtrlSettings.$inject = ['$rootScope', '$state', '$modal', 'ProjectService'];
     ColumnFormController.$inject = ['$modalInstance', 'ProjectService', 'project', 'column'];
     ColumnDeleteController.$inject = ['$modalInstance', 'ProjectService', 'column'];
+    MembersController.$inject = ['$modalInstance', 'UserService', 'ProjectService', 'project'];
 
     angular.module('Coati.Settings', ['ui.router',
         'Coati.Directives',
+        'Coati.Services.User',
         'Coati.Services.Project'])
         .config(Config)
         .controller('ProjectCtrlSettings', ProjectCtrlSettings)
         .controller('ColumnFormController', ColumnFormController)
-        .controller('ColumnDeleteController', ColumnDeleteController);
+        .controller('ColumnDeleteController', ColumnDeleteController)
+        .controller('MembersController', MembersController);
 
 }(angular));

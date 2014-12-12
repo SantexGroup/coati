@@ -2,6 +2,7 @@
 
     var TicketFormController = function(modalInstance, TicketService, item) {
         var vm = this;
+
         vm.form = {};
         vm.ticket = item.ticket || {};
         if(item.ticket !== undefined) {

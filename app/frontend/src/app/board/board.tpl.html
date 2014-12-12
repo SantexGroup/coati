@@ -15,7 +15,7 @@
                             <div class="task-content">
                                 <ul class="task-list" as-sortable="vm.sortTickets"
                                     is-enabled="true"
-                                    ng-model="data.tickets">
+                                    ng-model="vm.tickets">
                                     <li ng-repeat="tkt in vm.tickets track by tkt._id.$oid"
                                         class="card ticket-item <[ tkt.type ]>"
                                         as-sortable-item>

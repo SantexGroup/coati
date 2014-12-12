@@ -1,5 +1,6 @@
 __author__ = 'gastonrobledo'
 
+import json
 from flask.ext.restful import Resource
 from mongoengine import Q
 from app.schemas import User
@@ -21,7 +22,13 @@ class UserSearch(Resource):
         users = User.objects(Q(email__istartswith=query) |
                              Q(first_name__istartswith=query) |
                              Q(last_name__istartswith=query))
-        return users.to_json(), 200
+        data = []
+        for u in users:
+            val = dict(
+                text=u'%s %s (%s)' % (u.first_name, u.last_name, u.email),
+                value=str(u.pk))
+            data.append(val)
+        return json.dumps(data), 200
 
 
 class UserInstance(Resource):

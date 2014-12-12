@@ -210,14 +210,14 @@
             replace: true,
             templateUrl: 'ticket/ticket_detail_view.tpl.html',
             link: function (scope, elem, attrs, ctrl) {
-                scope.$watch('$parent.loaded', function (new_val, old_val) {
+                scope.$watch('$parent.vm.loaded', function (new_val, old_val) {
                     scope.loaded = new_val;
                 });
 
-                scope.$watch('$parent.ticket_detail', function (new_val, old_val) {
+                scope.$watch('$parent.vm.ticket_detail', function (new_val, old_val) {
                     scope.model = new_val;
                 });
-                scope.$watch('$parent.ticket_clicked', function (new_val) {
+                scope.$watch('$parent.vm.ticket_clicked', function (new_val) {
                     if (new_val) {
                         $(elem).show("fold", 500);
                         $(scope.reduceItem).addClass('col-md-' + scope.sizeReducedItem, 500);

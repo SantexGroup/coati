@@ -6,7 +6,7 @@
     </header>
     <div class="panel-body">
         <div class="col-md-12">
-            <form name="form.column_form" class="form-horizontal"
+            <form name="vm.form.column_form" class="form-horizontal"
                   ng-submit="vm.save()"
                   novalidate>
 
@@ -17,7 +17,7 @@
                            autocomplete="off"
                            placeholder="Title" data-ng-model="vm.column.title"
                            name="title" type="text" required>
-                    <label for="title" class="error"
+                    <label class="error"
                            data-ng-show="vm.form.column_form.title.$invalid && vm.submitted">Please
                         enter a title</label>
                 </div>

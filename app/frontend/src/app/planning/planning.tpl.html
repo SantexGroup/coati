@@ -1,7 +1,7 @@
 <h3>
     <[ vm.project.name ]>
     <a class="btn btn-success btn-sm pull-right" href="#"
-       ng-click="add_or_edit($event);">Add New
+       ng-click="vm.add_or_edit($event);">Add New
         Ticket</a>
 </h3>
 <p><[ vm.project.description ]></p>
@@ -57,7 +57,7 @@
                                             <button class="btn btn-primary btn-xs icon-pencil"
                                                     ng-click="vm.add_or_edit($event, tkt);"></button>
                                             <button class="btn btn-danger btn-xs icon-trash"
-                                                    ng-click="vm.delete_ticket($event,tkt);"></button>
+                                                    ng-click="vm.delete_ticket($event, tkt);"></button>
                                         </div>
                                     </div>
                                 </li>

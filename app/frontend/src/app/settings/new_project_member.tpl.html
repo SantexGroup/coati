@@ -6,13 +6,23 @@
     </header>
     <div class="panel-body">
         <div class="col-md-12">
-            <div class="form-group">
-                <lable>Select Members</lable>
-                <tags-input ng-model="vm.members" class="form-control">
-                    <auto-complete
-                            source="vm.loadMembers($query)"></auto-complete>
-                </tags-input>
-            </div>
+            <form name="vm.form.members" class="form-horizontal"
+                  ng-submit="vm.save()"
+                  novalidate>
+                <div class="form-group">
+                    <lable>Select Members</lable>
+                    <tags-input ng-model="vm.members" type="email" placeholder="someone@gmail.com">
+                        <auto-complete
+                                source="vm.loadMembers($query)"></auto-complete>
+                    </tags-input>
+                </div>
+                <button class="btn btn-primary"
+                        type="submit">Save
+                </button>
+                <button class="btn btn-warning"
+                        data-ng-click="vm.cancel();">Cancel
+                </button>
+            </form>
         </div>
     </div>
 </section>

@@ -47,8 +47,7 @@
 
             }
             var modal_instance = modal.open({
-                controller: 'TicketFormController',
-                controllerAs: 'vm',
+                controller: 'TicketFormController as vm',
                 templateUrl: 'ticket/ticket_form.tpl.html',
                 resolve: {
                     item: function () {
@@ -81,8 +80,7 @@
             ticket.pk = tkt._id.$oid;
             ticket.prefix = vm.project.prefix;
             var modal_instance = modal.open({
-                controller: 'TicketDeleteController',
-                controllerAs: 'vm',
+                controller: 'TicketDeleteController as vm',
                 templateUrl: 'ticket/delete_ticket.tpl.html',
                 resolve: {
                     item: function () {
@@ -99,8 +97,7 @@
 
         vm.startSprint = function (sprint) {
             var modal_instance = modal.open({
-                controller: 'StartSprintController',
-                controllerAs: 'vm',
+                controller: 'StartSprintController as vm',
                 templateUrl: 'sprint/start_sprint.tpl.html',
                 resolve: {
                     sprint: function () {

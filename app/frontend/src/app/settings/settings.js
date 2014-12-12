@@ -27,8 +27,7 @@
             var col = angular.copy(item);
             col.pk = item._id.$oid;
             var modalInstance = modal.open({
-                controller: 'ColumnDeleteController',
-                controllerAs: 'vm',
+                controller: 'ColumnDeleteController as vm',
                 templateUrl: 'settings/delete_column.tpl.html',
                 resolve: {
                     column: function () {
@@ -47,8 +46,7 @@
                 item.pk = item._id.$oid;
             }
             var modalInstance = modal.open({
-                controller: 'ColumnFormController',
-                controllerAs: 'vm',
+                controller: 'ColumnFormController as vm',
                 templateUrl: 'settings/new_column_form.tpl.html',
                 resolve: {
                     project: function () {
@@ -66,8 +64,7 @@
 
         vm.add_new_member = function(){
             var modalInstance = modal.open({
-                controller: 'MembersController',
-                controllerAs: 'vm',
+                controller: 'MembersController as vm',
                 templateUrl: 'settings/new_project_member.tpl.html',
                 resolve: {
                     project: function () {
@@ -174,6 +171,10 @@
 
         vm.loadMembers = function(query){
             return UserService.search(query);
+        };
+
+        vm.cancel = function(){
+            modalInstance.dismiss('close');
         };
     };
 

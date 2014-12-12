@@ -1,1 +1,20 @@
-<h2>Reports View</h2>
+<h2>Burndown Chart</h2>
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-group">
+            <label>Sprint</label>
+            <select class="form-control"
+                    name="sprint"
+                    data-ng-model="vm.sprint_selected"
+                    data-ng-options="s.name for s in vm.sprints"
+                    data-ng-change="vm.getReport();">
+                <option value="">Select a Sprint</option>
+            </select>
+        </div>
+        <p ng-show="vm.is_not_started">
+            The Sprint wasn't ever started.
+        </p>
+        <chart value="vm.chartData" type="line" width="800" height="600"
+               chart-obj="chartObj"></chart>
+    </div>
+</div>

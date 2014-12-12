@@ -137,6 +137,7 @@
                 }, function (value) {
                     var newSettings;
                     if (!value) {
+                        $(element).empty();
                         return;
                     }
                     newSettings = {};
@@ -157,7 +158,7 @@
         };
     };
 
-    var OnEnter = function(){
+    var OnEnter = function () {
         return function (scope, elm, attr) {
             elm.bind('keypress', function (e) {
                 if (e.keyCode === 13) {
@@ -167,7 +168,7 @@
         };
     };
 
-    var InlineEdit = function(timeout){
+    var InlineEdit = function (timeout) {
         return {
             scope: {
                 model: '=inlineEdit',
@@ -198,7 +199,7 @@
         };
     };
 
-    var TicketDetailView = function(){
+    var TicketDetailView = function () {
         return {
             restrict: 'E',
             scope: {
@@ -209,14 +210,14 @@
             replace: true,
             templateUrl: 'ticket/ticket_detail_view.tpl.html',
             link: function (scope, elem, attrs, ctrl) {
-                scope.$watch('$parent.loaded', function (new_val, old_val) {
+                scope.$watch('$parent.vm.loaded', function (new_val, old_val) {
                     scope.loaded = new_val;
                 });
 
-                scope.$watch('$parent.ticket_detail', function (new_val, old_val) {
+                scope.$watch('$parent.vm.ticket_detail', function (new_val, old_val) {
                     scope.model = new_val;
                 });
-                scope.$watch('$parent.ticket_clicked', function (new_val) {
+                scope.$watch('$parent.vm.ticket_clicked', function (new_val) {
                     if (new_val) {
                         $(elem).show("fold", 500);
                         $(scope.reduceItem).addClass('col-md-' + scope.sizeReducedItem, 500);
@@ -236,7 +237,7 @@
         };
     };
 
-    var Notify = function(rootScope){
+    var Notify = function (rootScope) {
         return {
             link: function (scope, elem, attrs, ctrl) {
                 rootScope.$on('notify', function (event, data) {
@@ -256,9 +257,28 @@
         };
     };
 
+    var CalculateWithBoard = function (rootScope, timeout) {
+        return {
+            link: function () {
+                rootScope.$on('board-loaded', function () {
+                    var calculateWidth = function () {
+                        var list_width = 0;
+                        var total_columns = $('.column').length;
+                        list_width = $('.column').width() * total_columns;
+                        list_width += 2 * total_columns;
+                        //Set the area with the summatory of the cols width
+                        $('.board-area').width(list_width);
+                    };
+                    timeout(calculateWidth, 0);
+                });
+            }
+        };
+    };
+
     ImageFunction.$inject = ['$q'];
     InlineEdit.$inject = ['$timeout'];
     Notify.$inject = ['$rootScope'];
+    CalculateWithBoard.$inject = ['$rootScope','$timeout'];
 
     angular.module('Coati.Directives', [])
         .directive('image', ImageFunction)
@@ -267,8 +287,8 @@
         .directive('onEnter', OnEnter)
         .directive('inlineEdit', InlineEdit)
         .directive('ticketDetailView', TicketDetailView)
-        .directive('notify', Notify);
-
+        .directive('notify', Notify)
+        .directive('prepareBoard', CalculateWithBoard);
 
 
 }(angular));

@@ -125,6 +125,25 @@ class Sprint(mongoengine.Document):
         data["tickets"] = ticket_list
         return json_util.dumps(data)
 
+    def get_tickets_board_backlog(self):
+        # first get all the columns
+        columns = Column.objects(project=self.project)
+        ticket_transitions = TicketColumnTransition.objects(column__in=columns,
+                                                            latest_state=True)
+        tickets_in_cols = []
+        for tt in ticket_transitions:
+            tickets_in_cols.append(tt.ticket)
+
+        # exclude from sprint
+        tickets = SprintTicketOrder.objects(sprint=self,
+                                            ticket__nin=tickets_in_cols).order_by('order')
+        ticket_list = []
+        for t in tickets:
+            tkt = t.ticket.to_mongo()
+            tkt.order = t.order
+            ticket_list.append(tkt)
+        return json_util.dumps(ticket_list)
+
     def clean(self):
         if self.project is None:
             raise mongoengine.ValidationError('Project must be provided')
@@ -148,6 +167,7 @@ class Ticket(mongoengine.Document):
     def to_json(self, *args, **kwargs):
         data = self.to_mongo()
         data['project'] = self.project.to_mongo()
+        data['comments'] = Comment.objects(ticket=self).all()
         return json_util.dumps(data)
 
 
@@ -191,14 +211,18 @@ class Column(mongoengine.Document):
 
     def to_json(self, *args, **kwargs):
         data = self.to_mongo()
-        ticket_column = TicketColumnTransition.objects(column=self)
+        ticket_column = TicketColumnTransition.objects(column=self,
+                                                       latest_state=True).order_by('order')
         tickets = []
         for t in ticket_column:
             value = {
-                'ticket': t.ticket.to_mongo(),
+                'number': t.ticket.number,
                 'order': t.order,
-                'who': t.user.to_mongo(),
-                'when': t.when
+                'title': t.ticket.title,
+                '_id': t.ticket.id,
+                'who': t.who.to_mongo(),
+                'when': t.when,
+                'type': t.ticket.type
             }
             tickets.append(value)
         data['tickets'] = tickets
@@ -217,3 +241,4 @@ class TicketColumnTransition(mongoengine.Document):
     when = mongoengine.DateTimeField(default=datetime.now())
     order = mongoengine.IntField()
     who = mongoengine.ReferenceField('User')
+    latest_state = mongoengine.BooleanField(default=True)

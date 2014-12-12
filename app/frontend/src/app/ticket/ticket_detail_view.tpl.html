@@ -13,10 +13,26 @@
     </div>
     <section class="panel" ng-show="loaded">
         <div class="panel-heading">
-           <[ model.project.prefix]>-<[ model.number ]> : <[ model.title ]>
+            <[ model.project.prefix]>-<[ model.number ]> : <[ model.title ]>
         </div>
         <div class="panel-body">
-            <[ model.description ]>
+            <div class="labels-ticket">
+                <span class="badge bg-info" ng-repeat="lbl in model.labels">
+                    <[ lbl ]>
+                </span>
+            </div>
+            <p>
+                <[ model.description ]>
+            </p>
+            <div class="commets" ng-show="model.comments.length">
+                <h4>Comments</h4>
+                <div class="comment-item" ng-repeat="comment in model.comments">
+                    <span><[ comment.who ]></span>
+                    <p>
+                        <[ comment.comment ]>
+                    </p>
+                </div>
+            </div>
         </div>
     </section>
 </div>

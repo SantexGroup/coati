@@ -1,9 +1,11 @@
 __author__ = 'gastonrobledo'
 
-from flask import jsonify
+from datetime import datetime
+from flask import jsonify, session
 from flask.ext.restful import Resource, request
 
-from app.schemas import Project, Ticket, SprintTicketOrder, Sprint
+from app.schemas import (Project, Ticket, SprintTicketOrder,
+                         Sprint, TicketColumnTransition, Column, User)
 
 
 class TicketInstance(Resource):
@@ -175,4 +177,92 @@ class TicketMovement(Resource):
                     tkt_order.save()
 
             return jsonify({'success': True}), 200
+        return jsonify({'error': 'Bad Request'}), 400
+
+
+class TicketTransition(Resource):
+    def __init__(self):
+        super(TicketTransition, self).__init__()
+
+    def post(self):
+        data = request.get_json(force=True, silent=True)
+        if data:
+            if data.get('backlog'):
+                tkt = Ticket.objects.get(pk=data.get('ticket'))
+                latest_state = TicketColumnTransition.objects(ticket=tkt,
+                                                              latest_state=True)
+                if latest_state:
+                    tct = latest_state[0]
+                    tct.latest_state = False
+                    tct.save()
+
+                for index, s in enumerate(data.get('order')):
+                    sto = SprintTicketOrder.objects.get(
+                        sprint=data.get('backlog'),
+                        ticket=s)
+                    sto.order = index
+                    sto.save()
+
+                return jsonify({'success': True})
+            else:
+                # Search already state
+                tkt = Ticket.objects.get(pk=data.get('ticket'))
+                col = Column.objects.get(pk=data.get('column'))
+                if tkt and col:
+
+                    latest_state = TicketColumnTransition.objects(ticket=tkt,
+                                                                  latest_state=True)
+                    if latest_state:
+                        tct = latest_state[0]
+                        tct.latest_state = False
+                        tct.save()
+
+                    transition = TicketColumnTransition()
+                    transition.ticket = tkt
+                    transition.column = col
+                    transition.order = TicketColumnTransition.objects(
+                        column=col).count()
+                    transition.latest_state = True
+                    transition.when = datetime.now()
+                    user = session.get('user')
+                    transition.who = User.objects.get(pk=user['_id']['$oid'])
+                    transition.save()
+
+                    # execute order
+                    for index, tkt_id in enumerate(data.get('order')):
+                        tkt_trans_order = TicketColumnTransition.objects.get(
+                            ticket=tkt_id,
+                            column=col,
+                            latest_state=True)
+                        tkt_trans_order.order = index
+                        tkt_trans_order.save()
+
+                    return transition.to_json(), 201
+                else:
+                    return jsonify({'error': 'Bad Request'}), 400
+        return jsonify({'error': 'Bad Request'}), 400
+
+
+class TicketColumnOrder(Resource):
+    def __init__(self):
+        super(TicketColumnOrder, self).__init__()
+
+    def post(self, column):
+        data = request.get_json(force=True, silent=True)
+        if data:
+            # Search already state
+            col = Column.objects.get(pk=column)
+            if col:
+                # execute order
+                for index, tkt_id in enumerate(data.get('order')):
+                    tkt_trans_order = TicketColumnTransition.objects.get(
+                        ticket=tkt_id,
+                        column=col,
+                        latest_state=True)
+                    tkt_trans_order.order = index
+                    tkt_trans_order.save()
+
+                return jsonify({'success': True}), 200
+            else:
+                return jsonify({'error': 'Bad Request'}), 400
         return jsonify({'error': 'Bad Request'}), 400

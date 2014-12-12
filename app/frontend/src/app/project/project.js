@@ -7,6 +7,7 @@
                 views: {
                     "main": {
                         controller: 'ProjectFormCtrl',
+                        controllerAs: 'vm',
                         templateUrl: 'project/new_project.tpl.html'
                     }
                 },
@@ -18,8 +19,9 @@
                 url: '/project/:project_pk/',
                 views: {
                     "main": {
+                        templateUrl: 'project/project.tpl.html',
                         controller: 'ProjectCtrl',
-                        templateUrl: 'project/project.tpl.html'
+                        controllerAs: 'vm'
                     }
                 },
                 data: {
@@ -30,46 +32,48 @@
     }
 
 
-    function ProjectCtrl(scope, state) {
+    function ProjectCtrl(state) {
+        var vm = this;
 
-        scope.switchView = function (view) {
+        vm.switchView = function (view) {
             state.go(view, {project_pk: state.params.project_pk}, {reload: true});
         };
         if (state.current.tab_active) {
-            scope.tab_active = state.current.tab_active;
-            scope[scope.tab_active] = true;
+            //get project
+            vm.tab_active = state.current.tab_active;
+            vm[vm.tab_active] = true;
+
         } else {
             state.go('project.planning', {project_pk: state.params.project_pk}, {reload: true});
         }
     }
 
-    function ProjectFormCtrl(scope, state, ProjectService) {
-        scope.form = {};
-        scope.project = {};
-        scope.save = function () {
-            if (scope.form.project_form.$valid) {
-                ProjectService.save(scope.project).then(function (project) {
+    function ProjectFormCtrl(state, ProjectService) {
+        var vm = this;
+        vm.form = {};
+        vm.project = {};
+        vm.save = function () {
+            if (vm.form.project_form.$valid) {
+                ProjectService.save(vm.project).then(function (project) {
                     state.go('project.planning', {project_pk: project._id.$oid});
                 }, function (err) {
                     console.log(err);
                 });
             } else {
-                scope.submitted = true;
+                vm.submitted = true;
             }
         };
 
-        scope.cancel = function () {
+        vm.cancel = function () {
             state.go('home');
         };
     }
 
 
-
-
     ConfigModule.$inject = ['$stateProvider'];
-    ProjectCtrl.$inject = ['$scope', '$state'];
+    ProjectCtrl.$inject = ['$state'];
 
-    ProjectFormCtrl.$inject = ['$scope', '$state', 'ProjectService'];
+    ProjectFormCtrl.$inject = ['$state', 'ProjectService'];
 
     angular.module('Coati.Project', ['ui.router', 'ui.sortable',
         'Coati.Settings',

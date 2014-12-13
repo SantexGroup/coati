@@ -14,7 +14,7 @@ class ProjectList(Resource):
 
 
     def get(self, *args, **kwargs):
-        return Project.objects.all().to_json(), 200
+        return ProjectMember.get_projects_for_member(kwargs['user_id']['pk']), 200
 
     def post(self, *args, **kwargs):
         """

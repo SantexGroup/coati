@@ -74,6 +74,7 @@
         if (UserService.is_logged()) {
             UserService.me().then(function (user) {
                 vm.user = user;
+                rootScope.user = vm.user;
             });
         }
     };

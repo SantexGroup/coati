@@ -12,10 +12,10 @@ class TicketInstance(Resource):
     def __init__(self):
         super(TicketInstance, self).__init__()
 
-    def get(self, tkt_id):
+    def get(self, tkt_id, *args, **kwargs):
         return Ticket.objects.get(pk=tkt_id).to_json()
 
-    def put(self, tkt_id):
+    def put(self, tkt_id, *args, **kwargs):
         tkt = Ticket.objects.get(pk=tkt_id)
         data = request.get_json(force=True, silent=True)
         if tkt and data:
@@ -28,7 +28,7 @@ class TicketInstance(Resource):
             return tkt.to_json(), 200
         return jsonify({'error': 'Bad Request'}), 400
 
-    def delete(self, tkt_id):
+    def delete(self, tkt_id, *args, **kwargs):
         tkt = Ticket.objects.get(pk=tkt_id)
         if tkt:
             tkt.delete()
@@ -40,10 +40,10 @@ class TicketProjectList(Resource):
     def __init__(self):
         super(TicketProjectList, self).__init__()
 
-    def get(self, project_pk):
+    def get(self, project_pk, *args, **kwargs):
         return Project.objects.get(pk=project_pk).get_tickets().to_json()
 
-    def post(self, project_pk):
+    def post(self, project_pk, *args, **kwargs):
         """
         Create or Update Ticket
         """
@@ -83,7 +83,7 @@ class TicketOrderProject(Resource):
     def __init__(self):
         super(TicketOrderProject, self).__init__()
 
-    def post(self, project_pk):
+    def post(self, project_pk, *args, **kwargs):
         """
         update backlog order
         """
@@ -102,7 +102,7 @@ class TicketOrderSprint(Resource):
     def __init__(self):
         super(TicketOrderSprint, self).__init__()
 
-    def post(self, sprint_pk):
+    def post(self, sprint_pk, *args, **kwargs):
         """
         update order
         """
@@ -121,7 +121,7 @@ class TicketMovement(Resource):
     def __init__(self):
         super(TicketMovement, self).__init__()
 
-    def post(self):
+    def post(self, *args, **kwargs):
 
         data = request.get_json(force=True, silent=True)
         if data:
@@ -184,7 +184,7 @@ class TicketTransition(Resource):
     def __init__(self):
         super(TicketTransition, self).__init__()
 
-    def post(self):
+    def post(self, *args, **kwargs):
         data = request.get_json(force=True, silent=True)
         if data:
             if data.get('backlog'):
@@ -247,7 +247,7 @@ class TicketColumnOrder(Resource):
     def __init__(self):
         super(TicketColumnOrder, self).__init__()
 
-    def post(self, column):
+    def post(self, column, *args, **kwargs):
         data = request.get_json(force=True, silent=True)
         if data:
             # Search already state

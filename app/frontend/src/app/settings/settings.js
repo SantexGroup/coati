@@ -1,6 +1,6 @@
 (function (angular) {
 
-    var Config = function (stateProvider) {
+    var Config = function (stateProvider, tagsInputProvider) {
         stateProvider.state('project.settings', {
             url: 'settings',
             views: {
@@ -15,6 +15,13 @@
                 pageTitle: 'Project Settings'
             },
             reload: true
+        });
+
+        tagsInputProvider.setDefaults('tagsInput', {
+            allowedTagsPattern: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        }).setDefaults('autoComplete', {
+            maxResultsToShow: 20,
+            debounceDelay: 300
         });
     };
 
@@ -62,7 +69,7 @@
             });
         };
 
-        vm.add_new_member = function(){
+        vm.add_new_member = function () {
             var modalInstance = modal.open({
                 controller: 'MembersController as vm',
                 templateUrl: 'settings/new_project_member.tpl.html',
@@ -115,9 +122,16 @@
             });
         };
 
+        var getMembers = function (project_id) {
+            ProjectService.get_members(project_id).then(function (members) {
+                vm.members = members;
+            });
+        };
+
         ProjectService.get(state.params.project_pk).then(function (prj) {
             vm.project = prj;
             getColumnConfiguration(prj._id.$oid);
+            getMembers(prj._id.$oid);
         });
     };
 
@@ -166,25 +180,34 @@
         };
     };
 
-    var MembersController = function(modalInstance, UserService, ProjectService, project){
+    var MembersController = function (modalInstance, UserService, ProjectService, project) {
         var vm = this;
 
-        vm.loadMembers = function(query){
+
+        vm.loadMembers = function (query) {
             return UserService.search(query);
         };
 
-        vm.cancel = function(){
+        vm.save = function () {
+            if (vm.members.length > 0) {
+                ProjectService.add_members(project, vm.members).then(function (rta) {
+                    modalInstance.close(rta);
+                });
+            }
+        };
+
+        vm.cancel = function () {
             modalInstance.dismiss('close');
         };
     };
 
-    Config.$inject = ['$stateProvider'];
+    Config.$inject = ['$stateProvider', 'tagsInputConfigProvider'];
     ProjectCtrlSettings.$inject = ['$rootScope', '$state', '$modal', 'ProjectService'];
     ColumnFormController.$inject = ['$modalInstance', 'ProjectService', 'project', 'column'];
     ColumnDeleteController.$inject = ['$modalInstance', 'ProjectService', 'column'];
     MembersController.$inject = ['$modalInstance', 'UserService', 'ProjectService', 'project'];
 
-    angular.module('Coati.Settings', ['ui.router',
+    angular.module('Coati.Settings', ['ui.router', 'ngTagsInput',
         'Coati.Directives',
         'Coati.Services.User',
         'Coati.Services.Project'])

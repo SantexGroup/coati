@@ -8,11 +8,12 @@
         interpolate.endSymbol(']>');
     }
 
+
     // Filters
     function sumValue() {
         return function (items, field) {
             var total = 0, i = 0;
-            if(items !== undefined) {
+            if (items !== undefined) {
                 for (i = 0; i < items.length; i++) {
                     total += items[i][field] || 0;
                 }
@@ -48,6 +49,7 @@
     function AppController(scope, rootScope, state, stateParams, tokens) {
 
         rootScope.$on('$stateChangeStart', function (event, toState) {
+
             if (angular.isDefined(toState.data.pageTitle)) {
                 scope.pageTitle = toState.data.pageTitle + ' | Coati';
             }

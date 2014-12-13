@@ -29,7 +29,7 @@ PROVIDERS = {
         'base_url': 'https://github.com/login',
         'authorize_url': 'https://github.com/login/oauth/authorize',
         'request_token_url': None,
-        'request_token_params': {'scope': 'user'},
+        'request_token_params': {'scope': 'user:email,public_repo'},
         'access_token_url': 'https://github.com/login/oauth/access_token',
         'consumer_key': 'eb6e366244235f181f59',
         'consumer_secret': 'f47d7ec2bfc4a1d81d2d705a59430d8e1d537ff2'

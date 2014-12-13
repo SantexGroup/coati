@@ -86,6 +86,7 @@ class Project(mongoengine.Document):
         data = self.to_mongo()
         data["owner"] = self.owner.to_mongo()
         data["owner"]["id"] = str(self.owner.pk)
+        data['members'] = ProjectMember.get_members_for_project(self)
         del data["owner"]["_id"]
         return json_util.dumps(data)
 
@@ -265,3 +266,20 @@ class ProjectMember(mongoengine.Document):
         data = self.to_mongo()
         data['member'] = self.member.to_mongo()
         return json_util.dumps(data)
+
+    @staticmethod
+    def get_projects_for_member(member_pk):
+        prj_mem = ProjectMember.objects(member=member_pk)
+        projects = []
+        for pm in prj_mem:
+            projects.append(pm.project.to_mongo())
+        return json_util.dumps(projects)
+
+    @staticmethod
+    def get_members_for_project(project):
+        prj_mem = ProjectMember.objects(project=project)
+        members = []
+        for pm in prj_mem:
+            val = dict(member=pm.member.to_mongo(), is_owner=pm.is_owner)
+            members.append(val)
+        return members

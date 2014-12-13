@@ -18,7 +18,7 @@
         });
     };
 
-    var ProjectCtrlPlanning = function (state, modal, ProjectService, TicketService, SprintService) {
+    var ProjectCtrlPlanning = function (scope, state, modal, ProjectService, TicketService, SprintService) {
         var vm = this;
         vm.ticket_detail = null;
 
@@ -231,15 +231,14 @@
             SprintService.update(sprint);
         };
 
-        ProjectService.get(state.params.project_pk).then(function (prj) {
-            vm.project = prj;
-            getTicketsForProject(prj._id.$oid);
-            getSprintsWithTickets(prj._id.$oid);
-        });
+        // get the project from the parent controller.
+        vm.project = scope.$parent.project;
+        getTicketsForProject(vm.project._id.$oid);
+        getSprintsWithTickets(vm.project._id.$oid);
     };
 
     Config.$inject = ['$stateProvider'];
-    ProjectCtrlPlanning.$inject = ['$state', '$modal', 'ProjectService', 'TicketService', 'SprintService'];
+    ProjectCtrlPlanning.$inject = ['$scope', '$state', '$modal', 'ProjectService', 'TicketService', 'SprintService'];
 
     angular.module('Coati.Planning', ['ui.router',
         'Coati.Directives',

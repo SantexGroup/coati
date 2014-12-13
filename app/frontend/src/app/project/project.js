@@ -1,6 +1,10 @@
 (function (angular) {
 
-    function ConfigModule(stateProvider) {
+    var ResolveProject = function(stateParams, ProjectService){
+        return ProjectService.get(stateParams.project_pk);
+    };
+
+    var Config = function(stateProvider) {
         stateProvider
             .state('project-new', {
                 url: '/project/new-project/',
@@ -21,7 +25,10 @@
                     "main": {
                         templateUrl: 'project/project.tpl.html',
                         controller: 'ProjectCtrl',
-                        controllerAs: 'vm'
+                        controllerAs: 'vm',
+                        resolve: {
+                            project: ResolveProject
+                        }
                     }
                 },
                 data: {
@@ -29,15 +36,23 @@
                 },
                 reload: true
             });
-    }
+    };
 
 
-    function ProjectCtrl(state) {
+    var ProjectCtrl = function(scope, rootScope, state, project) {
+        //Keep the project in this scope so any child can access it without re-call.
+        scope.project = project;
+
         var vm = this;
 
         vm.switchView = function (view) {
             state.go(view, {project_pk: state.params.project_pk}, {reload: true});
         };
+
+        vm.check_permission = function(){
+            return project.owner.id === rootScope.user._id.$oid;
+        };
+
         if (state.current.tab_active) {
             //get project
             vm.tab_active = state.current.tab_active;
@@ -46,9 +61,9 @@
         } else {
             state.go('project.planning', {project_pk: state.params.project_pk}, {reload: true});
         }
-    }
+    };
 
-    function ProjectFormCtrl(state, ProjectService) {
+    var ProjectFormCtrl = function(state, ProjectService) {
         var vm = this;
         vm.form = {};
         vm.project = {};
@@ -67,11 +82,12 @@
         vm.cancel = function () {
             state.go('home');
         };
-    }
+    };
 
 
-    ConfigModule.$inject = ['$stateProvider'];
-    ProjectCtrl.$inject = ['$state'];
+    ResolveProject.$inject = ['$stateParams', 'ProjectService'];
+    Config.$inject = ['$stateProvider'];
+    ProjectCtrl.$inject = ['$scope', '$rootScope', '$state', 'project'];
 
     ProjectFormCtrl.$inject = ['$state', 'ProjectService'];
 
@@ -82,7 +98,7 @@
         'Coati.Report',
         'Coati.Directives',
         'Coati.Services.Project'])
-        .config(ConfigModule)
+        .config(Config)
         .controller('ProjectCtrl', ProjectCtrl)
         .controller('ProjectFormCtrl', ProjectFormCtrl);
 

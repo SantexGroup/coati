@@ -26,7 +26,7 @@
     };
 
 
-    var ProjectCtrlSettings = function (rootScope, state, modal, ProjectService) {
+    var ProjectCtrlSettings = function (scope, rootScope, state, modal, ProjectService) {
         var vm = this;
         vm.form = {};
 
@@ -128,11 +128,10 @@
             });
         };
 
-        ProjectService.get(state.params.project_pk).then(function (prj) {
-            vm.project = prj;
-            getColumnConfiguration(prj._id.$oid);
-            getMembers(prj._id.$oid);
-        });
+        // get the project from the parent controller.
+        vm.project = scope.$parent.project;
+        getColumnConfiguration(vm.project._id.$oid);
+        getMembers(vm.project._id.$oid);
     };
 
     var ColumnFormController = function (modalInstance, ProjectService, project, column) {
@@ -202,7 +201,7 @@
     };
 
     Config.$inject = ['$stateProvider', 'tagsInputConfigProvider'];
-    ProjectCtrlSettings.$inject = ['$rootScope', '$state', '$modal', 'ProjectService'];
+    ProjectCtrlSettings.$inject = ['$scope', '$rootScope', '$state', '$modal', 'ProjectService'];
     ColumnFormController.$inject = ['$modalInstance', 'ProjectService', 'project', 'column'];
     ColumnDeleteController.$inject = ['$modalInstance', 'ProjectService', 'column'];
     MembersController.$inject = ['$modalInstance', 'UserService', 'ProjectService', 'project'];

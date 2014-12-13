@@ -30,10 +30,6 @@ api.init_app(app, decorators=[decorators.require_authentication])
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def index(path):
-    if session.get('user'):
-        user = session.get('user')
-    else:
-        user = ''
-    return render_template('index.html', user=user)
+    return render_template('index.html')
 
 

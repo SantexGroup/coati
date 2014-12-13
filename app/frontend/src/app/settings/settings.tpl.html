@@ -79,7 +79,11 @@
                     </button>
                 </header>
                 <div class="panel-body">
-                    TODO
+                    <div class="member col-md-1" ng-repeat="m in vm.members" tooltip="<[ m.member.first_name ? m.member.first_name + ' ' + m.member.last_name : m.member.email ]>">
+                        <img ng-if="m.member.picture" src="<[ m.member.picture ]>" />
+                        <img ng-if="!m.member.picture" src="/static/assets/img/koala.png"  />
+                        <div class="badge bg-success" ng-if="m.is_owner">Owner</div>
+                    </div>
                 </div>
             </section>
             <section class="panel backlog">

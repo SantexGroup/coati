@@ -1,14 +1,17 @@
-import json
+import json, time
+from itsdangerous import JSONWebSignatureSerializer
 from flask import session, current_app, redirect, url_for
 from flask.ext.oauth import OAuth
+from mongoengine import DoesNotExist
 from app.schemas import User
 
 
-def get_provider(oauth_provider, authorized_handler):
+def get_provider(oauth_provider, authorized_handler=None):
     oauth = OAuth()
     conf = current_app.config['PROVIDERS'].get(oauth_provider or 'google')
     prov = oauth.remote_app(oauth_provider, register=True, **conf)
-    prov.authorized_handler(authorized_handler)
+    if authorized_handler:
+        prov.authorized_handler(authorized_handler)
     return prov
 
 
@@ -40,29 +43,47 @@ def get_user_data(access_token):
 
 
 def extract_data(data):
-    user, created = None, False
+    u = None
     provider = session.get('provider')
     if provider == 'google' and data['verified_email']:
-        user, created = User.objects.get_or_create(email=data.get('email'),
-                                                   first_name=data.get(
-                                                       'given_name'),
-                                                   last_name=data.get(
-                                                       'family_name'))
-    if provider == 'facebook' and data['verified']:
-        user, created = User.objects.get_or_create(email=data.get('email'),
-                                                   first_name=data.get(
-                                                       'first_name'),
-                                                   last_name=data.get(
-                                                       'last_name'))
-    if provider == 'github' and data is not None:
-        prov = get_provider(provider)
-        url = current_app.config['PROVIDERS_INFO'].get(session.get('provider'))
-        emails = prov.get(url + '/emails').data
-        if emails is not None:
-            em = emails[0]
-            names = data.get('name').split(' ')
-            user, created = User.objects.get_or_create(email=em.get('email'),
-                                                       first_name=names[0],
-                                                       last_name=names[1])
+        if data.get('email'):
+            try:
+                u = User.objects.get(email=data.get('email'))
+            except DoesNotExist, e:
+                u = User(email=data.get('email'))
+                u.first_name = data.get('given_name')
+                u.last_name = data.get('family_name')
+                u.save()
 
-    return user
+    if provider == 'facebook' and data['verified']:
+        if data.get('email'):
+            try:
+                u = User.objects.get(email=data.get('email'))
+            except DoesNotExist, e:
+                u = User(email=data.get('email'))
+                u.first_name = data.get('first_name')
+                u.last_name = data.get('last_name')
+                u.save()
+    if provider == 'github' and data is not None:
+        names = data.get('name').split(' ')
+        email = data.get('email')
+        if email:
+            try:
+                u = User.objects.get(email=data.get('email'))
+            except DoesNotExist, e:
+                u = User(email=data.get('email'))
+                if names:
+                    u.first_name = names[0]
+                    u.last_name = names[1]
+                    u.save()
+    return u
+
+
+def generate_token(user_id):
+    s = JSONWebSignatureSerializer(current_app.config['SECRET_KEY'])
+    return s.dumps({'pk': user_id, 'time': time.time()})
+
+
+def get_data_from_token(token):
+    s = JSONWebSignatureSerializer(current_app.config['SECRET_KEY'])
+    return s.loads(token)

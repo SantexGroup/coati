@@ -234,12 +234,15 @@ input.error {
 .backlog header, .sprint-item header {
   background: #eee;
 }
-.sprint-item.started header{
+
+.sprint-item.started header {
   background: #a9d86e !important;
 }
-.input-small{
-  width:120px;
+
+.input-small {
+  width: 120px;
 }
+
 .backlog .panel-body, .sprint-item .panel-body {
   border-right: 1px solid #eee;
   border-left: 1px solid #eee;
@@ -342,11 +345,12 @@ input.error {
   cursor: move !important;
 }
 
-.columns-in-project header{
+.columns-in-project header {
   background: none;
 }
-.columns-in-project .panel-body{
-  border:none;
+
+.columns-in-project .panel-body {
+  border: none;
 }
 
 .spinner {
@@ -407,29 +411,74 @@ input.error {
     -webkit-transform: scaleY(1.0);
   }
 }
-.board-area-wrapper{
+
+.board-area-wrapper {
   overflow-x: auto;
   overflow-y: hidden;
   width: 100%;
 }
-.board-area .panel-body{
+
+.board-area .panel-body {
   min-height: 300px;
 }
 
 .board-area .columns > li {
   padding-right: 2px;
   padding-left: 0px;
-  width:240px;
-  float:left;
+  width: 240px;
+  float: left;
 }
 
 .board-area .columns li:last-child {
   clear: right;
 }
 
-.labels-ticket{
-  margin:10px 0px;
+.labels-ticket {
+  margin: 10px 0px;
 }
-.labels-ticket .badge{
+
+.labels-ticket .badge {
   margin-right: 3px;
+}
+
+.member {
+  padding: 0px;
+}
+
+.member img {
+  width: 54px;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  display: block;
+  margin: 0px auto;
+  height: 54px;
+  object-fit: cover;
+}
+
+.member div {
+  margin: 3px auto;
+  width: 62px;
+}
+
+.user-profile img {
+  display: block;
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+}
+
+.dropdown-menu.extended.logout > li {
+  float: left;
+  width: 100%;
+  background: #00CCFF;
+  text-align: center;
+}
+
+.dropdown-menu.extended.logout > li > a,
+.dropdown-menu.extended.logout > li > a:hover {
+  color: #FFFFFF;
+}
+
+.dropdown-menu.extended.logout > li > a:hover i {
+  color: #FFFFFF;
 }

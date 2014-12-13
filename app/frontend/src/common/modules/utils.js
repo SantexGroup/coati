@@ -51,7 +51,7 @@
                     results.resolve(body);
                 }).error(function (data, status) {
                     if (status == 401) {
-                        state.go('login');
+                        //state.go('login');
                     }
                     results.reject({
                         'message': data,

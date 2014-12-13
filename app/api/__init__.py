@@ -2,10 +2,10 @@ from flask.ext.restful import Api
 from resources.sprint import SprintList, SprintInstance, SprintOrder, \
     SprintActive, SprintTickets, SprintChart
 from resources.project import ProjectList, ProjectInstance, ProjectColumns, \
-    ProjectColumnsOrder, ProjectColumn
+    ProjectColumnsOrder, ProjectColumn, ProjectMembers
 from resources.ticket import TicketOrderProject, TicketOrderSprint, TicketProjectList, \
     TicketMovement, TicketInstance, TicketTransition, TicketColumnOrder
-from resources.user import UsersList, UserInstance, UserSearch
+from resources.user import UsersList, UserInstance, UserSearch, UserLogged
 from app.utils import output_json
 
 
@@ -18,11 +18,13 @@ def init_app(app, decorators=None):
     api.add_resource(ProjectInstance, '/api/project/<string:project_pk>')
     api.add_resource(ProjectColumns, '/api/project/<string:project_pk>/columns')
     api.add_resource(ProjectColumnsOrder, '/api/project/<string:project_pk>/order_columns')
+    api.add_resource(ProjectMembers, '/api/project/<string:project_pk>/members')
     api.add_resource(ProjectColumn, '/api/project/column/<string:column_pk>')
 
     api.add_resource(UsersList, '/api/users')
     api.add_resource(UserSearch, '/api/users/search/<string:query>')
     api.add_resource(UserInstance, '/api/user/<string:pk>')
+    api.add_resource(UserLogged, '/api/user/me')
 
     api.add_resource(SprintList, '/api/sprints/<string:project_pk>')
     api.add_resource(SprintActive, '/api/sprints/<string:project_pk>/started')

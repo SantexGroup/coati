@@ -20,13 +20,17 @@ class User(mongoengine.Document):
     email = mongoengine.StringField(required=True)
     first_name = mongoengine.StringField(max_length=50)
     last_name = mongoengine.StringField(max_length=50)
+    active = mongoengine.BooleanField(default=True)
+    picture = mongoengine.StringField()
+
     meta = {
         'indexes': [{'fields': ['email'], 'sparse': True, 'unique': True}]
     }
 
 
 class Token(mongoengine.Document):
-    token = mongoengine.StringField()
+    app_token = mongoengine.StringField()
+    social_token = mongoengine.StringField()
     provider = mongoengine.StringField()
     user = mongoengine.ReferenceField('User',
                                       reverse_delete_rule=mongoengine.CASCADE)
@@ -35,7 +39,7 @@ class Token(mongoengine.Document):
     @staticmethod
     def verify_token(token):
         try:
-            token = Token.objects.get(token=token)
+            token = Token.objects.get(app_token=token)
             if token is None or token.expire <= datetime.now():
                 return False
             return True
@@ -55,7 +59,8 @@ class Token(mongoengine.Document):
         Token.objects(user=user.to_dbref()).delete()
         # store token in db
         token = Token(user=user.to_dbref())
-        token.token = kwargs['access_token']
+        token.app_token = kwargs['app_token']
+        token.social_token = kwargs['social_token']
         token.provider = kwargs['provider']
         token.expire = datetime.now() + timedelta(seconds=kwargs['expire_in'])
         return token.save()
@@ -136,7 +141,8 @@ class Sprint(mongoengine.Document):
 
         # exclude from sprint
         tickets = SprintTicketOrder.objects(sprint=self,
-                                            ticket__nin=tickets_in_cols).order_by('order')
+                                            ticket__nin=tickets_in_cols).order_by(
+            'order')
         ticket_list = []
         for t in tickets:
             tkt = t.ticket.to_mongo()
@@ -212,7 +218,8 @@ class Column(mongoengine.Document):
     def to_json(self, *args, **kwargs):
         data = self.to_mongo()
         ticket_column = TicketColumnTransition.objects(column=self,
-                                                       latest_state=True).order_by('order')
+                                                       latest_state=True).order_by(
+            'order')
         tickets = []
         for t in ticket_column:
             value = {
@@ -242,3 +249,19 @@ class TicketColumnTransition(mongoengine.Document):
     order = mongoengine.IntField()
     who = mongoengine.ReferenceField('User')
     latest_state = mongoengine.BooleanField(default=True)
+
+
+class ProjectMember(mongoengine.Document):
+    member = mongoengine.ReferenceField('User')
+    project = mongoengine.ReferenceField('Project')
+    since = mongoengine.DateTimeField(default=datetime.now())
+    is_owner = mongoengine.BooleanField(default=False)
+
+    meta = {
+        'queryset_class': CustomQuerySet
+    }
+
+    def to_json(self, *args, **kwargs):
+        data = self.to_mongo()
+        data['member'] = self.member.to_mongo()
+        return json_util.dumps(data)

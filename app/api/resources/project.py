@@ -5,7 +5,7 @@ from flask import jsonify, session
 from flask.ext.restful import Resource, request
 from mongoengine import DoesNotExist
 
-from app.schemas import User, Project, Column
+from app.schemas import User, Project, Column, ProjectMember
 
 
 class ProjectList(Resource):
@@ -13,10 +13,10 @@ class ProjectList(Resource):
         super(ProjectList, self).__init__()
 
 
-    def get(self):
+    def get(self, *args, **kwargs):
         return Project.objects.all().to_json(), 200
 
-    def post(self):
+    def post(self, *args, **kwargs):
         """
         Create Project
         """
@@ -45,6 +45,11 @@ class ProjectList(Resource):
         prj.sprint_duration = 15
         prj.save()
 
+        # add owner as member
+        pm = ProjectMember(project=prj)
+        pm.member = prj.owner
+        pm.save()
+
         # Add 3 columns states
         col_names = ['ToDo', 'In Progress', 'Done']
         for index, c in enumerate(col_names):
@@ -63,11 +68,11 @@ class ProjectInstance(Resource):
     def __init__(self):
         super(ProjectInstance, self).__init__()
 
-    def get(self, project_pk):
+    def get(self, project_pk, *args, **kwargs):
         prj = Project.objects.get(pk=project_pk).select_related(max_depth=2)
         return prj.to_json(), 200
 
-    def put(self, project_pk):
+    def put(self, project_pk, *args, **kwargs):
         project = Project.objects.get(pk=project_pk)
         data = request.get_json(force=True, silent=True)
         if not data:
@@ -94,10 +99,10 @@ class ProjectColumns(Resource):
     def __init__(self):
         super(ProjectColumns, self).__init__()
 
-    def get(self, project_pk):
+    def get(self, project_pk, *args, **kwargs):
         return Column.objects(project=project_pk).order_by('order').to_json()
 
-    def post(self, project_pk):
+    def post(self, project_pk, *args, **kwargs):
         data = request.get_json(force=True, silent=True)
         if not data:
             msg = "payload must be a valid json"
@@ -127,10 +132,10 @@ class ProjectColumn(Resource):
     def __init__(self):
         super(ProjectColumn, self).__init__()
 
-    def get(self, column_pk):
+    def get(self, column_pk, *args, **kwargs):
         return Column.objects.get(pk=column_pk).to_json()
 
-    def put(self, column_pk):
+    def put(self, column_pk, *args, **kwargs):
         col = Column.objects.get(pk=column_pk)
         data = request.get_json(force=True, silent=True)
         if col and data:
@@ -142,7 +147,7 @@ class ProjectColumn(Resource):
             return col.to_json(), 200
         return jsonify({"error": 'Bad Request'}), 400
 
-    def delete(self, column_pk):
+    def delete(self, column_pk, *args, **kwargs):
         col = Column.objects.get(pk=column_pk)
         if col:
             col.delete()
@@ -154,12 +159,40 @@ class ProjectColumnsOrder(Resource):
     def __init__(self):
         super(ProjectColumnsOrder, self).__init__()
 
-    def post(self, project_pk):
+    def post(self, project_pk, *args, **kwargs):
         data = request.get_json(force=True, silent=True)
         if data:
             for index, c in enumerate(data):
                 col = Column.objects.get(pk=c, project=project_pk)
                 col.order = index
                 col.save()
+            return jsonify({'success': True}), 200
+        return jsonify({"error": 'Bad Request'}), 400
+
+
+class ProjectMembers(Resource):
+    def __init__(self):
+        super(ProjectMembers, self).__init__()
+
+    def get(self, project_pk, *args, **kwargs):
+        return ProjectMember.objects(project=project_pk).to_json()
+
+    def post(self, project_pk, *args, **kwargs):
+        data = request.get_json(force=True, silent=True)
+        if data:
+            project = Project.objects.get(pk=project_pk)
+            for member in data:
+                if str(project.owner.pk) != member.get('value'):
+                    m = ProjectMember(project=project_pk)
+                    if member.get('value'):
+                        m.member = User.objects.get(pk=member.get('value'))
+                    else:
+                        u = User(email=member.get('text'))
+                        u.active = False
+                        u.save()
+
+                        # Send an email with the invitation
+                        m.member = u
+                    m.save()
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400

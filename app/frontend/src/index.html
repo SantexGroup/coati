@@ -37,22 +37,17 @@
                            placeholder="Search">
                 </li>
                 <!-- user login dropdown start-->
-                <li dropdown data-ng-controller="UserCtrl" update-profile>
+                <li dropdown ng-controller="UserCtrl as vm" update-profile>
                     <a class="dropdown-toggle user_picture" href="#">
-                        <img alt=""
-                             src="{{ url_for('static', filename='assets/img/koala.png')}}">
-                        <span class="username">{{ user.email }}</span>
+                        <img ng-if="!vm.user.picture" alt="" src="{{ url_for('static', filename='assets/img/koala.png')}}">
+                        <img ng-if="vm.user.picture" alt="" src="<[ vm.user.picture ]>">
+                        <span class="username"><[ vm.user.email ]></span>
                         <b class="caret"></b>
                     </a>
-                    <ul class="dropdown-menu extended logout">
+                    <ul class="dropdown-menu logout">
                         <div class="log-arrow-up"></div>
-                        <li><a href="/profile/me/"><i
-                                class=" icon-suitcase"></i>Profile</a>
-                        </li>
-                        <li><a href="#"><i class="icon-cog"></i> Settings</a>
-                        </li>
-                        <li><a href="#"><i class="icon-bell-alt"></i>
-                            Notification</a>
+                        <li><a href="#" ng-click="vm.show_profile();"><i
+                                class=" icon-suitcase"></i> Profile</a>
                         </li>
                         <li><a ng-href="/auth/logout" href="/logout"
                                target="_self"><i
@@ -91,15 +86,5 @@
 <script src="{{ url_for('static', filename='assets/js/jquery.gritter.min.js')}}"></script>
 <!--<script type="text/javascript"
         src="http://localhost:9000/socket.io/socket.io.js"></script> -->
-<script>
-    {% if user %}
-        var username = {
-            email: '{{ user.email }}',
-            first_name: '{{ user.first_name }}',
-            last_name: '{{ user.last_name }}',
-            id: '{{ user._id["$oid"] }}'
-        };
-    {% endif %}
-</script>
 </body>
 </html>

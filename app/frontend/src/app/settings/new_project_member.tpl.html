@@ -11,7 +11,7 @@
                   novalidate>
                 <div class="form-group">
                     <lable>Select Members</lable>
-                    <tags-input ng-model="vm.members" type="email" placeholder="someone@gmail.com">
+                    <tags-input ng-model="vm.members" type="email" placeholder="Enter an Email" on-tag-added="vm.check_tag($tag);">
                         <auto-complete
                                 source="vm.loadMembers($query)"></auto-complete>
                     </tags-input>

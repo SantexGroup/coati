@@ -28,6 +28,12 @@
             },
             'order_columns': function (project_id, data) {
                 return req.$do('/project/' + project_id + '/order_columns', req.METHODS.POST, data);
+            },
+            'get_members': function(project_id){
+                return req.$do('/project/' + project_id + '/members', req.METHODS.GET);
+            },
+            'add_members': function(project_id, members){
+                return req.$do('/project/' + project_id + '/members', req.METHODS.POST, members);
             }
         };
     };

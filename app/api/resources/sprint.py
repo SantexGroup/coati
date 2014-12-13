@@ -13,7 +13,7 @@ class SprintOrder(Resource):
     def __init__(self):
         super(SprintOrder, self).__init__()
 
-    def post(self, project_pk):
+    def post(self, project_pk, *args, **kwargs):
         data = request.get_json(force=True, silent=True)
         if data:
             for index, s in enumerate(data):
@@ -28,10 +28,10 @@ class SprintList(Resource):
     def __init__(self):
         super(SprintList, self).__init__()
 
-    def get(self, project_pk):
+    def get(self, project_pk, *args, **kwargs):
         return Sprint.objects(project=project_pk).order_by('order').to_json()
 
-    def post(self, project_pk):
+    def post(self, project_pk, *args, **kwargs):
         """
         Create Sprint
         """
@@ -47,11 +47,15 @@ class SprintList(Resource):
 
 
 class SprintInstance(Resource):
-    def get(self, sp_id):
+    
+    def __init__(self):
+        super(SprintInstance, self).__init__()
+    
+    def get(self, sp_id, *args, **kwargs):
         sp = Sprint.objects.get(pk=sp_id)
         return sp.to_json, 200
 
-    def put(self, sp_id):
+    def put(self, sp_id, *args, **kwargs):
         data = request.get_json(force=True, silent=True)
         if data:
             sp = Sprint.objects.get(pk=sp_id)
@@ -72,7 +76,7 @@ class SprintInstance(Resource):
             return sp.to_json(), 200
         return jsonify({"error": 'Bad Request'}), 400
 
-    def delete(self, sp_id):
+    def delete(self, sp_id, *args, **kwargs):
         sp = Sprint.objects.get(pk=sp_id)
         sp.delete()
         return sp.to_json(), 204
@@ -82,7 +86,7 @@ class SprintActive(Resource):
     def __init__(self):
         super(SprintActive, self).__init__()
 
-    def get(self, project_pk):
+    def get(self, project_pk, *args, **kwargs):
         sprints = Sprint.objects(project=project_pk, started=True,
                                  finalized=False)
         sprint = None
@@ -94,10 +98,11 @@ class SprintActive(Resource):
 
 
 class SprintTickets(Resource):
+
     def __init__(self):
         super(SprintTickets, self).__init__()
 
-    def get(self, sprint_id):
+    def get(self, sprint_id, *args, **kwargs):
         sprint = Sprint.objects.get(pk=sprint_id)
         if sprint:
             return sprint.get_tickets_board_backlog()
@@ -105,10 +110,11 @@ class SprintTickets(Resource):
 
 
 class SprintChart(Resource):
+
     def __init__(self):
         super(SprintChart, self).__init__()
 
-    def get(self, sprint_id):
+    def get(self, sprint_id, *args, **kwargs):
         sprint = Sprint.objects.get(pk=sprint_id)
         if sprint:
             duration = sprint.project.sprint_duration

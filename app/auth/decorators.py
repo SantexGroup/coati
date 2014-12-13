@@ -1,7 +1,8 @@
 import json
 from functools import wraps
 
-from flask import request, session
+from flask import request
+from app.auth.tools import get_data_from_token
 
 from app.utils import output_json
 from app.schemas import Token
@@ -22,9 +23,9 @@ def require_authentication(view_function):
             return res
         token = header.split(' ')[1]
         if Token.verify_token(token):
+            kwargs['user_id'] = get_data_from_token(token)
             return view_function(*args, **kwargs)
         else:
-            session.clear()
             res = output_json(
                 json.dumps({'error': 'Authorization token invalid'}),
                 code=401)

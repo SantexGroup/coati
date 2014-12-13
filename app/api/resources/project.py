@@ -123,7 +123,7 @@ class ProjectColumns(Resource):
             for c in columns:
                 if c.done_column:
                     c.done_column = False
-                    c.update()
+                    c.save()
         col.save()
         return col.to_json(), 200
 
@@ -143,6 +143,13 @@ class ProjectColumn(Resource):
             col.color_max_cards = data.get('color_max_cards', '#FF0000')
             col.done_column = data.get('done_column', False)
             col.max_cards = data.get('max_cards', 9999)
+
+            # check if there is another done column
+            if col.done_column:
+                columns = Column.objects(project=col.project, done_column=True)
+                for c in columns:
+                    c.done_column = False
+                    c.save()
             col.save()
             return col.to_json(), 200
         return jsonify({"error": 'Bad Request'}), 400

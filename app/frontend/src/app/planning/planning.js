@@ -66,13 +66,37 @@
             e.stopPropagation();
         };
 
-        vm.showDetail = function (tkt) {
+        vm.showQuickDetail = function (tkt) {
             vm.loaded = false;
             vm.ticket_clicked = true;
             TicketService.get(tkt._id.$oid).then(function (tkt_item) {
                 vm.ticket_detail = tkt_item;
                 vm.loaded = true;
             });
+        };
+
+        vm.showDetails = function (e, tkt) {
+            if (tkt) {
+                tkt = angular.copy(tkt);
+                tkt.pk = tkt._id.$oid;
+
+            }
+            var modal_instance = modal.open({
+                controller: 'TicketDetailController as vm',
+                templateUrl: 'ticket/ticket_detail_view.tpl.html',
+                resolve: {
+                    item: function () {
+                        return {
+                            'project': vm.project,
+                            'ticket_id': tkt._id.$oid
+                        };
+                    }
+                }
+            });
+            modal_instance.result.then(function () {
+                //see here
+            });
+            e.stopPropagation();
         };
 
         vm.delete_ticket = function (e, tkt) {

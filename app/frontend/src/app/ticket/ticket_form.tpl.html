@@ -44,13 +44,8 @@
                     <label>Ticket Type</label>
                     <select class="form-control"
                             data-ng-model="vm.ticket.type"
-                            name="type">
-                        <option value="U">User Story</option>
-                        <option value="B">Bug</option>
-                        <option value="F">Feature</option>
-                        <option value="I">Improvement</option>
-                        <option value="E">Epic</option>
-                        <option value="T">Task</option>
+                            name="type"
+                            ng-options="t.value as t.name for t in vm.types">
                     </select>
                 </div>
 

@@ -12,7 +12,15 @@
             CALLBACK_URL: '/login/auth',
             DEFAULT_CONTENT_TYPE: 'application/json; charset=utf-8',
             SOCKET_URL: 'http://localhost:9000',
-            STATE_401: 'login'
+            STATE_401: 'login',
+            TICKET_TYPES: [
+                {value:"U", name: 'User Story'},
+                {value:"B", name: 'Bug'},
+                {value:"F", name: 'Feature'},
+                {value:"I", name: 'Improvement'},
+                {value:"E", name: 'Epic'},
+                {value:"T", name: 'Task'}
+            ]
         };
         return {
             getItem: function (key) {

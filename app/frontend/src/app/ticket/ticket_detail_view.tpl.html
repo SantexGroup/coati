@@ -1,38 +1,79 @@
-<div class="col-md-4">
-    <div class="pull-right">
-        <button class="btn btn-xs btn-primary" ng-click="close();">
-            <i class="icon-remove"></i>
-        </button>
-    </div>
-    <div class="spinner" ng-hide="loaded">
-        <div class="rect1"></div>
-        <div class="rect2"></div>
-        <div class="rect3"></div>
-        <div class="rect4"></div>
-        <div class="rect5"></div>
-    </div>
-    <section class="panel" ng-show="loaded">
-        <div class="panel-heading">
-           <a ng-href="#"><[ model.project.prefix]>-<[ model.number ]> : <[ model.title ]></a>
+<section class="panel">
+    <header class="panel-heading">
+        <h4 class="modal-title pull-left">
+            <span><[ vm.project.prefix]>-<[ vm.ticket.number ]></span>: <span><[ vm.ticket.title ]></span>
+        </h4>
+
+        <div class="pull-right">
+
         </div>
-        <div class="panel-body">
-            <div class="labels-ticket">
-                <span class="badge bg-info" ng-repeat="lbl in model.labels">
-                    <[ lbl ]>
-                </span>
-            </div>
-            <p>
-                <[ model.description ]>
-            </p>
-            <div class="commets" ng-show="model.comments.length">
-                <h4>Comments</h4>
-                <div class="comment-item" ng-repeat="comment in model.comments">
-                    <span><[ comment.who ]></span>
-                    <p>
-                        <[ comment.comment ]>
-                    </p>
+        <div style="clear:both"></div>
+    </header>
+    <div class="panel-body">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>Points</label>
+                        <span class="badge bg-important">
+                            <[ vm.ticket.points ]>
+                        </span>
+                        <label>Ticket Type:</label>
+                        <span class="badge <[ vm.ticket.type]>">
+                            <[ vm.type ]>
+                        </span>
+                        <label>In Column:</label>
+                        <span ng-if="!vm.ticket.in_column"
+                              class="badge bg-warning">Backlog</span>
+                        <span ng-if="vm.ticket.in_column"
+                              class="badge bg-warning"><[ vm.ticket.in_column ]></span>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>Description:</label>
+
+                        <p><[ vm.ticket.description ]></p>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>Labels:</label>
+
+                        <p class="labels-ticket">
+                            <span class="badge bg-info"
+                                  ng-repeat="lbl in vm.ticket.labels">
+                                <[ lbl ]>
+                            </span>
+                        </p>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>Comments:</p>
+
+                        <div class="add_new_comment">
+                            <textarea class="form-control"
+                                      ng-model="vm.comment"></textarea>
+                            <br/>
+                            <button class="btn btn-success pull-right"
+                                    ng-click="vm.add_new_comment()">Add New
+                                Comment
+                            </button>
+                        </div>
+                        <div class="comments">
+                            <div ng-repeat="comment in vm.ticket.comments">
+                                <p><[ comment.comment ]></p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </section>
-</div>
+    </div>
+    </div>
+</section>

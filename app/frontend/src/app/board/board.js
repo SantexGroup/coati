@@ -18,7 +18,7 @@
         });
     };
 
-    var ProjectCtrlBoard = function (rootScope, state, SprintService, ProjectService, TicketService) {
+    var ProjectCtrlBoard = function (rootScope, state, modal, SprintService, ProjectService, TicketService) {
         var vm = this;
 
         vm.project_pk = state.params.project_pk;
@@ -46,6 +46,30 @@
             if(col.max_cards <= col.tickets.length){
                 return {backgroundColor: col.color_max_cards};
             }
+        };
+
+        vm.showDetails = function (e, tkt) {
+            if (tkt) {
+                tkt = angular.copy(tkt);
+                tkt.pk = tkt._id.$oid;
+
+            }
+            var modal_instance = modal.open({
+                controller: 'TicketDetailController as vm',
+                templateUrl: 'ticket/ticket_detail_view.tpl.html',
+                resolve: {
+                    item: function () {
+                        return {
+                            'project': vm.project,
+                            'ticket_id': tkt._id.$oid
+                        };
+                    }
+                }
+            });
+            modal_instance.result.then(function () {
+                //see here
+            });
+            e.stopPropagation();
         };
 
         vm.sortTickets = {
@@ -105,7 +129,7 @@
     };
 
     Config.$inject = ['$stateProvider'];
-    ProjectCtrlBoard.$inject = ['$rootScope', '$state', 'SprintService', 'ProjectService', 'TicketService'];
+    ProjectCtrlBoard.$inject = ['$rootScope', '$state', '$modal', 'SprintService', 'ProjectService', 'TicketService'];
 
     angular.module('Coati.Board', ['ui.router',
         'Coati.Directives',

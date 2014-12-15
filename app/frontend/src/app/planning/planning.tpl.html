@@ -43,14 +43,14 @@
                                 <li ng-repeat="tkt in sprint.tickets track by tkt._id.$oid"
                                     as-sortable-item
                                     class="ticket-item <[ tkt.type ]>"
-                                    ng-click="vm.showDetail(tkt);"
+                                    ng-click="vm.showQuickDetail(tkt);"
                                     title="Click to quick view">
                                     <i class="icon-ellipsis-vertical handler"
                                        as-sortable-item-handle></i>
 
                                     <div class="task-title">
                                         <span class="task-title-sp">
-                                          <a href=""><[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]></a>
+                                          <a href="javascript:;" ng-click="vm.showDetails($event, tkt);"><[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]></a>
                                         </span>
 
                                         <div class="pull-right hidden-phone">
@@ -88,14 +88,14 @@
                         ng-model="vm.tickets" is-enabled="true">
                         <li ng-repeat="tkt in vm.tickets track by tkt._id.$oid"
                             as-sortable-item class="user-story <[ tkt.type ]>"
-                            ng-click="showDetail(tkt);"
+                            ng-click="showQuickDetail(tkt);"
                                 title="Click to quick view">
                             <i class="icon-ellipsis-vertical"
                                as-sortable-item-handle></i>
 
                             <div class="task-title">
                                 <span class="task-title-sp">
-                                  <a href="#"><[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]></a>
+                                  <a href="javascript:;" ng-click="vm.showDetails($event, tkt);"><[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]></a>
                                 </span>
                                 <div class="pull-right hidden-phone">
                                     <span class="badge bg-info"><[ tkt.points ]></span>

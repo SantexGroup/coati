@@ -41,11 +41,6 @@
         };
 
         vm.add_or_edit = function (e, tkt) {
-            if (tkt) {
-                tkt = angular.copy(tkt);
-                tkt.pk = tkt._id.$oid;
-
-            }
             var modal_instance = modal.open({
                 controller: 'TicketFormController as vm',
                 templateUrl: 'ticket/ticket_form.tpl.html',
@@ -54,7 +49,7 @@
                         return {
                             'editing': (tkt !== undefined ? true : false),
                             'project': vm.project._id.$oid,
-                            'ticket': tkt
+                            'ticket': (tkt !== undefined ? tkt._id.$oid : null)
                         };
                     }
                 }

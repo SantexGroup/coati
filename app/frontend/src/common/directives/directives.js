@@ -216,12 +216,14 @@
 
                 scope.$watch('$parent.vm.ticket_detail', function (new_val, old_val) {
                     scope.model = new_val;
-                    angular.forEach(conf.TICKET_TYPES, function (val, key) {
-                        if (val.value === scope.model.type) {
-                            scope.model.type_name = val.name;
-                            return;
-                        }
-                    });
+                    if (scope.model) {
+                        angular.forEach(conf.TICKET_TYPES, function (val, key) {
+                            if (val.value === scope.model.type) {
+                                scope.model.type_name = val.name;
+                                return;
+                            }
+                        });
+                    }
                 });
                 scope.$watch('$parent.vm.ticket_clicked', function (new_val) {
                     if (new_val) {
@@ -284,7 +286,7 @@
     ImageFunction.$inject = ['$q'];
     InlineEdit.$inject = ['$timeout'];
     Notify.$inject = ['$rootScope'];
-    CalculateWithBoard.$inject = ['$rootScope','$timeout'];
+    CalculateWithBoard.$inject = ['$rootScope', '$timeout'];
     TicketDetailView.$inject = ['Conf'];
 
     angular.module('Coati.Directives', ['Coati.Config'])

@@ -182,6 +182,14 @@ class Ticket(mongoengine.Document):
                 data['in_column'] = tt.column.title
         except mongoengine.DoesNotExist:
             pass
+
+        try:
+            sp = SprintTicketOrder.objects.get(ticket=self)
+            if sp is not None:
+                data['sprint'] = sp.sprint.to_mongo()
+        except mongoengine.DoesNotExist:
+            pass
+
         return json_util.dumps(data)
 
 

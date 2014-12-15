@@ -48,6 +48,15 @@
                             ng-options="t.value as t.name for t in vm.types">
                     </select>
                 </div>
+                <div class="form-group">
+                    <label>Sprint</label>
+                    <select class="form-control"
+                            data-ng-model="vm.ticket.sprint"
+                            name="sprint"
+                            ng-options="s.name for s in vm.sprints track by s._id.$oid">
+                        <option value="">Choose a Sprint...</option>
+                    </select>
+                </div>
 
                 <button class="btn btn-primary"
                         type="submit">Save

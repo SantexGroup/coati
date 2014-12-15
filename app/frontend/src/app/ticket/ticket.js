@@ -1,15 +1,25 @@
 (function (angular) {
 
-    var TicketFormController = function (modalInstance, conf, TicketService, item) {
+    var TicketFormController = function (modalInstance, conf, TicketService, SprintService, item) {
         var vm = this;
 
         vm.form = {};
         vm.types = conf.TICKET_TYPES;
-        vm.ticket = item.ticket || {};
-        if (item.ticket !== undefined) {
-            vm.labels = item.ticket.labels || [];
+
+        if (item.ticket) {
+            SprintService.query(item.project).then(function (sprints) {
+                vm.sprints = sprints;
+                TicketService.get(item.ticket).then(function (tkt) {
+                    vm.ticket = tkt;
+                    vm.labels = item.ticket.labels || [];
+                });
+            });
         } else {
-            vm.labels = [];
+            SprintService.query(item.project).then(function (sprints) {
+                vm.sprints = sprints;
+                vm.ticket = {};
+                vm.labels = [];
+            });
         }
 
         vm.save = function () {
@@ -18,8 +28,13 @@
                 vm.labels.forEach(function (item) {
                     vm.ticket.labels.push(item.text);
                 });
+
+                if(vm.ticket.sprint) {
+                    vm.ticket.sprint.pk = vm.ticket.sprint._id.$oid;
+                }
+
                 if (item.ticket) {
-                    TicketService.update(vm.ticket.pk, vm.ticket).then(function (tkt) {
+                    TicketService.update(vm.ticket._id.$oid, vm.ticket).then(function (tkt) {
                         modalInstance.close();
                     }, function (err) {
                         modalInstance.dismiss('error');
@@ -85,13 +100,14 @@
     };
 
     TicketDetailController.$inject = ['$modalInstance', 'Conf', 'TicketService', 'item'];
-    TicketFormController.$inject = ['$modalInstance', 'Conf', 'TicketService', 'item'];
+    TicketFormController.$inject = ['$modalInstance', 'Conf', 'TicketService', 'SprintService', 'item'];
     TicketDeleteController.$inject = ['$modalInstance', 'TicketService', 'item'];
 
     angular.module('Coati.Ticket', ['ui.router', 'ngTagsInput',
         'Coati.Config',
         'Coati.Directives',
-        'Coati.Services.Ticket'])
+        'Coati.Services.Ticket',
+        'Coati.Services.Sprint'])
         .controller('TicketFormController', TicketFormController)
         .controller('TicketDeleteController', TicketDeleteController)
         .controller('TicketDetailController', TicketDetailController);

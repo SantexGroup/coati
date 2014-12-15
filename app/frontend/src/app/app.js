@@ -68,7 +68,21 @@
 
     }
 
+    var RunApp = function(rootScope, objects){
+        var user = null;
+        try{
+            user = JSON.parse(window.sessionStorage.getItem('user'));
+            if(objects.isObject(user)) {
+                rootScope.user = user;
+            }
+        }catch(err){
+
+        }
+
+    };
+
     // Injections
+    RunApp.$inject = ['$rootScope', '$objects'];
     ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider'];
     AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', 'tokens'];
 
@@ -76,9 +90,10 @@
         'templates-app', 'templates-common',
         'ui.router', 'ui.bootstrap',
         'Coati.Config', 'Coati.Directives', 'Coati.Home',
-        'Coati.Login',
+        'Coati.Login', 'Coati.Helpers',
         'Coati.User', 'Coati.Project', 'Coati.Ticket', 'Coati.Sprint'])
         .config(ConfigApp)
+        .run(RunApp)
         .filter('getByProperty', filterGetByProperty)
         .filter('getIndexByProperty', filterGetIndexByProperty)
         .filter('sumValue', sumValue)

@@ -1,7 +1,7 @@
 __author__ = 'gastonrobledo'
-import math
-from dateutil import parser
 from datetime import timedelta, datetime
+
+from dateutil import parser
 from flask import jsonify, request
 from flask.ext.restful import Resource
 
@@ -47,10 +47,9 @@ class SprintList(Resource):
 
 
 class SprintInstance(Resource):
-    
     def __init__(self):
         super(SprintInstance, self).__init__()
-    
+
     def get(self, sp_id, *args, **kwargs):
         sp = Sprint.objects.get(pk=sp_id)
         return sp.to_json, 200
@@ -98,7 +97,6 @@ class SprintActive(Resource):
 
 
 class SprintTickets(Resource):
-
     def __init__(self):
         super(SprintTickets, self).__init__()
 
@@ -110,7 +108,6 @@ class SprintTickets(Resource):
 
 
 class SprintChart(Resource):
-
     def __init__(self):
         super(SprintChart, self).__init__()
 
@@ -125,18 +122,16 @@ class SprintChart(Resource):
             sd = sprint.start_date
             days = []
 
-            starting_points = 0
-
-            tickets_sprint = SprintTicketOrder.objects(sprint=sprint)
-            for tkt in tickets_sprint:
-                starting_points += tkt.ticket.points
+            starting_points = planned
 
             points_remaining = []
+            tickets_per_day = []
             ideal = [planned]
             planned_counter = planned
 
             days.append(sd)
             counter = 1
+
             while len(days) <= duration:
                 d = sd + timedelta(days=counter)
                 if d.weekday() != 5 and d.weekday() != 6:
@@ -157,15 +152,34 @@ class SprintChart(Resource):
                                                               when__lte=end_date.date(),
                                                               latest_state=True)
                     points_burned_for_date = 0
+                    tickets = []
                     for tct in tct_list:
+                        tickets.append(
+                            u'- %s-%s (%s)' % (tct.ticket.project.prefix,
+                                               tct.ticket.number,
+                                               tct.ticket.points))
                         points_burned_for_date += tct.ticket.points
                     starting_points -= points_burned_for_date
+
+                    # tickets after started sprint
+                    spt_list = SprintTicketOrder.objects(sprint=sprint,
+                                                         when__gte=start_date.date(),
+                                                         when__lte=end_date.date())
+                    for spt in spt_list:
+                        tickets.append(
+                            u'+ %s-%s  (%s)' % (spt.ticket.project.prefix,
+                                                spt.ticket.number,
+                                                spt.ticket.points))
+                        starting_points += spt.ticket.points
+
+                    tickets_per_day.append(tickets)
                     points_remaining.append(starting_points)
 
-            #days.insert(0, 'Start')
+            # days.insert(0, 'Start')
             data = {
                 'points_remaining': points_remaining,
                 'dates': days,
+                'tickets': tickets_per_day,
                 'ideal': ideal
             }
             return jsonify(data), 200

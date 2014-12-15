@@ -35,8 +35,41 @@
                         text: 'BurnDown Chart',
                         x: -20 //center
                     },
+                    tooltip: {
+                        useHTML: true,
+                        headerFormat: '<span style="color:#ff0000;font-size: 10px">{point.key}</span><br/>',
+                        formatter: function () {
+                            if (this.series.name == 'Remaining') {
+                                var tickets = chart_data.tickets[this.point.index];
+                                var ul = $('<ul />');
+                                angular.forEach(tickets, function (val, key) {
+                                    if(val.indexOf('-') === 0){
+                                        val = '<span style="color:#1dff41">' + val + '</span>';
+                                    }else{
+                                        val = '<span style="color:#ff0000">' + val + '</span>';
+                                    }
+                                    var li = $('<li />').html(val);
+                                    ul.append(li);
+                                });
+                                var div = $('<div />');
+                                var points = $('<p />').html('<b>Points</b>:' + this.y);
+                                div.append(points);
+                                if(tickets.length > 0) {
+                                    var p = $('<p />').html('<b>Tickets</b>');
+                                    div.append(p);
+                                    div.append(ul);
+                                }
+                                return div.get(0).outerHTML;
+                            }else{
+                                return 'Points:' + this.y;
+                            }
+                        }
+                    },
                     xAxis: {
-                        categories: chart_data.dates
+                        categories: chart_data.dates,
+                        labels: {
+                            overflow: 'justify'
+                        }
                     },
                     yAxis: {
                         title: {
@@ -68,10 +101,10 @@
         vm.getReport = function () {
             if (vm.sprint_selected && vm.sprint_selected.started) {
                 getSprintReport(vm.sprint_selected._id.$oid);
-            }else{
-                if(vm.sprint_selected) {
+            } else {
+                if (vm.sprint_selected) {
                     vm.is_not_started = true;
-                }else{
+                } else {
                     vm.is_not_started = false;
                 }
                 vm.chartData = null;

@@ -227,8 +227,8 @@
                     }
                 });
                 scope.close = function () {
-                    scope.$parent.ticket_detail = null;
-                    scope.$parent.ticket_clicked = false;
+                    scope.$parent.vm.ticket_detail = null;
+                    scope.$parent.vm.ticket_clicked = false;
                     $(elem).hide("fold", 500);
                     $(scope.reduceItem).removeClass('col-md-' + scope.sizeReducedItem, 500);
                 };

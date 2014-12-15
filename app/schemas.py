@@ -183,6 +183,7 @@ class SprintTicketOrder(mongoengine.Document):
     order = mongoengine.IntField()
     sprint = mongoengine.ReferenceField('Sprint',
                                         reverse_delete_rule=mongoengine.CASCADE)
+    when = mongoengine.DateTimeField(default=datetime.now())
 
 
 class Comment(mongoengine.Document):

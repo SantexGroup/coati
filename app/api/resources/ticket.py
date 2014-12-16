@@ -247,8 +247,7 @@ class TicketTransition(Resource):
                         column=col).count()
                     transition.latest_state = True
                     transition.when = datetime.now()
-                    user = session.get('user')
-                    transition.who = User.objects.get(pk=user['_id']['$oid'])
+                    transition.who = User.objects.get(pk=kwargs['user_id']['pk'])
                     transition.save()
 
                     # execute order

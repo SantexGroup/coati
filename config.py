@@ -33,15 +33,6 @@ PROVIDERS = {
         'access_token_url': 'https://github.com/login/oauth/access_token',
         'consumer_key': 'eb6e366244235f181f59',
         'consumer_secret': 'f47d7ec2bfc4a1d81d2d705a59430d8e1d537ff2'
-    },
-    'bitbucket': {
-        'base_url': 'https://bitbucket.org/api/1.0/oauth',
-        'authorize_url': 'https://bitbucket.org/api/1.0/oauth/request_token',
-        'request_token_url': None,
-        'request_token_params': {'scope': 'user'},
-        'access_token_url': 'https://bitbucket.org/api/1.0/oauth/authenticate',
-        'consumer_key': 'zudHGL66HCmbRABuYS',
-        'consumer_secret': 'sE42FX9mqhdDrdc9Y2qxv573LNTHwZXF'
     }
 }
 

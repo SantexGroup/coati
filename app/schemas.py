@@ -175,6 +175,21 @@ class Ticket(mongoengine.Document):
         data = self.to_mongo()
         data['project'] = self.project.to_mongo()
         data['comments'] = Comment.objects(ticket=self).all()
+        try:
+            tt = TicketColumnTransition.objects.get(ticket=self,
+                                                    latest_state=True)
+            if tt is not None:
+                data['in_column'] = tt.column.title
+        except mongoengine.DoesNotExist:
+            pass
+
+        try:
+            sp = SprintTicketOrder.objects.get(ticket=self)
+            if sp is not None:
+                data['sprint'] = sp.sprint.to_mongo()
+        except mongoengine.DoesNotExist:
+            pass
+
         return json_util.dumps(data)
 
 
@@ -183,6 +198,7 @@ class SprintTicketOrder(mongoengine.Document):
     order = mongoengine.IntField()
     sprint = mongoengine.ReferenceField('Sprint',
                                         reverse_delete_rule=mongoengine.CASCADE)
+    when = mongoengine.DateTimeField(default=datetime.now())
 
 
 class Comment(mongoengine.Document):

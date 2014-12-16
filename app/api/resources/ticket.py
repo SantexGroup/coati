@@ -1,3 +1,5 @@
+from mongoengine import DoesNotExist
+
 __author__ = 'gastonrobledo'
 
 from datetime import datetime
@@ -25,6 +27,21 @@ class TicketInstance(Resource):
             tkt.labels = data.get('labels')
             tkt.type = data.get('type')
             tkt.save()
+
+            if data.get('sprint'):
+                sprint = Sprint.objects.get(pk=data.get('sprint')['pk'])
+                try:
+                    spo = SprintTicketOrder.objects.get(sprint=sprint,
+                                                        ticket=tkt)
+                except DoesNotExist:
+                    # remove old data if this already exists
+                    spo_old = SprintTicketOrder.objects(ticket=tkt)
+                    spo_old.delete()
+                    spo = SprintTicketOrder(sprint=sprint, ticket=tkt)
+                    spo.order = SprintTicketOrder.objects(sprint=sprint).count()
+                spo.save()
+
+
             return tkt.to_json(), 200
         return jsonify({'error': 'Bad Request'}), 400
 
@@ -75,6 +92,12 @@ class TicketProjectList(Resource):
         tkt.labels = data.get('labels')
         tkt.type = data.get('type')
         tkt.save()
+
+        if data.get('sprint'):
+            sprint = Sprint.objects.get(pk=data.get('sprint')['pk'])
+            spo = SprintTicketOrder(sprint=sprint, ticket=tkt)
+            spo.order = SprintTicketOrder.objects(sprint=sprint).count()
+            spo.save()
 
         return tkt.to_json(), 201
 
@@ -224,8 +247,7 @@ class TicketTransition(Resource):
                         column=col).count()
                     transition.latest_state = True
                     transition.when = datetime.now()
-                    user = session.get('user')
-                    transition.who = User.objects.get(pk=user['_id']['$oid'])
+                    transition.who = User.objects.get(pk=kwargs['user_id']['pk'])
                     transition.save()
 
                     # execute order

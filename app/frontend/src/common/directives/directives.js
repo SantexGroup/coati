@@ -199,7 +199,7 @@
         };
     };
 
-    var TicketDetailView = function () {
+    var TicketDetailView = function (conf) {
         return {
             restrict: 'E',
             scope: {
@@ -208,7 +208,7 @@
             },
             transclude: true,
             replace: true,
-            templateUrl: 'ticket/ticket_detail_view.tpl.html',
+            templateUrl: 'ticket/ticket_quick_detail_view.tpl.html',
             link: function (scope, elem, attrs, ctrl) {
                 scope.$watch('$parent.vm.loaded', function (new_val, old_val) {
                     scope.loaded = new_val;
@@ -216,6 +216,14 @@
 
                 scope.$watch('$parent.vm.ticket_detail', function (new_val, old_val) {
                     scope.model = new_val;
+                    if (scope.model) {
+                        angular.forEach(conf.TICKET_TYPES, function (val, key) {
+                            if (val.value === scope.model.type) {
+                                scope.model.type_name = val.name;
+                                return;
+                            }
+                        });
+                    }
                 });
                 scope.$watch('$parent.vm.ticket_clicked', function (new_val) {
                     if (new_val) {
@@ -227,8 +235,8 @@
                     }
                 });
                 scope.close = function () {
-                    scope.$parent.ticket_detail = null;
-                    scope.$parent.ticket_clicked = false;
+                    scope.$parent.vm.ticket_detail = null;
+                    scope.$parent.vm.ticket_clicked = false;
                     $(elem).hide("fold", 500);
                     $(scope.reduceItem).removeClass('col-md-' + scope.sizeReducedItem, 500);
                 };
@@ -278,9 +286,10 @@
     ImageFunction.$inject = ['$q'];
     InlineEdit.$inject = ['$timeout'];
     Notify.$inject = ['$rootScope'];
-    CalculateWithBoard.$inject = ['$rootScope','$timeout'];
+    CalculateWithBoard.$inject = ['$rootScope', '$timeout'];
+    TicketDetailView.$inject = ['Conf'];
 
-    angular.module('Coati.Directives', [])
+    angular.module('Coati.Directives', ['Coati.Config'])
         .directive('image', ImageFunction)
         .directive('chart', Chart)
         .directive('onEsc', OnEscape)

@@ -1,10 +1,10 @@
 (function (angular) {
 
-    var ResolveProject = function(stateParams, ProjectService){
+    var ResolveProject = function (stateParams, ProjectService) {
         return ProjectService.get(stateParams.project_pk);
     };
 
-    var Config = function(stateProvider) {
+    var Config = function (stateProvider) {
         stateProvider
             .state('project-new', {
                 url: '/project/new-project/',
@@ -39,7 +39,7 @@
     };
 
 
-    var ProjectCtrl = function(scope, rootScope, state, project) {
+    var ProjectCtrl = function (scope, rootScope, state, project) {
         //Keep the project in this scope so any child can access it without re-call.
         scope.project = project;
 
@@ -49,7 +49,7 @@
             state.go(view, {project_pk: state.params.project_pk}, {reload: true});
         };
 
-        vm.check_permission = function(){
+        vm.check_permission = function () {
             return project.owner.id === rootScope.user._id.$oid;
         };
 
@@ -61,9 +61,15 @@
         } else {
             state.go('project.planning', {project_pk: state.params.project_pk}, {reload: true});
         }
+
+        rootScope.$on("$stateChangeSuccess", function (event, toState, toParams, fromState, fromParams) {
+            vm.tab_active = state.current.tab_active;
+            vm[vm.tab_active] = true;
+            vm[fromState.tab_active] = false;
+        });
     };
 
-    var ProjectFormCtrl = function(state, ProjectService) {
+    var ProjectFormCtrl = function (state, ProjectService) {
         var vm = this;
         vm.form = {};
         vm.project = {};

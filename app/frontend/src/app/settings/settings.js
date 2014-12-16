@@ -17,9 +17,7 @@
             reload: true
         });
 
-        tagsInputProvider.setDefaults('tagsInput', {
-            allowedTagsPattern: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-        }).setDefaults('autoComplete', {
+        tagsInputProvider.setDefaults('autoComplete', {
             maxResultsToShow: 20,
             debounceDelay: 300
         });

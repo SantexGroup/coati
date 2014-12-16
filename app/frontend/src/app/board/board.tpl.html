@@ -18,7 +18,8 @@
                                     ng-model="vm.tickets">
                                     <li ng-repeat="tkt in vm.tickets track by tkt._id.$oid"
                                         class="card ticket-item <[ tkt.type ]>"
-                                        as-sortable-item>
+                                        as-sortable-item
+                                        ng-click="vm.showDetails($event, tkt._id.$oid);">
                                         <i class="icon-ellipsis-vertical handler"
                                            as-sortable-item-handle></i>
 
@@ -42,7 +43,8 @@
                                     ng-model="col.tickets">
                                     <li ng-repeat="tkt in col.tickets"
                                         class="card ticket-item <[ tkt.type ]>"
-                                        as-sortable-item>
+                                        as-sortable-item
+                                        ng-click="vm.showDetails($event, tkt._id.$oid);">
                                         <i class="icon-ellipsis-vertical handler"
                                            as-sortable-item-handle></i>
 

@@ -1,6 +1,6 @@
-(function(angular){
+(function (angular) {
 
-    var Tokens = function(){
+    var Tokens = function () {
         return {
             'get_token': function () {
                 var token_data = window.sessionStorage.getItem('token_data');
@@ -26,7 +26,7 @@
         };
     };
 
-    var RequestHelper = function(http, q, state, conf, tokens){
+    var RequestHelper = function (http, q, state, conf, tokens) {
         return {
             METHODS: {
                 UPDATE: 'PUT',
@@ -51,7 +51,7 @@
                     results.resolve(body);
                 }).error(function (data, status) {
                     if (status == 401) {
-                        //state.go('login');
+                        state.go(conf.STATE_401);
                     }
                     results.reject({
                         'message': data,
@@ -63,11 +63,48 @@
         };
     };
 
+    /**
+     * Function that add utils to javascript objects
+     * @returns {{isEmpty: 'isEmpty', cleanArray: cleanArray, toUrlString: 'toUrlString'}}
+     * @constructor
+     */
+    var ObjectUtils = function () {
+        return {
+            'isEmpty': function (obj) {
+                return Object.keys(obj).length === 0;
+            },
+            'isObject': function (val) {
+                if (val === null || val === undefined) {
+                    return false;
+                }
+                return ( (typeof val === 'function') || (typeof val === 'object') );
+            },
+            'cleanArray': function cleanArray(actual) {
+                var newArray = [];
+                for (var i = 0; i < actual.length; i++) {
+                    if (actual[i]) {
+                        newArray.push(actual[i]);
+                    }
+                }
+                return newArray;
+            },
+            'toUrlString': function (obj) {
+                var url = this.cleanArray(Object.keys(obj).map(function (k) {
+                    if (!angular.isUndefined(obj[k]) && obj[k] !== null && obj[k] !== "") {
+                        return encodeURIComponent(k) + '=' + encodeURIComponent(obj[k]);
+                    }
+                })).join('&');
+                return url;
+            }
+        };
+    };
+
     RequestHelper.$inject = ['$http', '$q', '$state', 'Conf', 'tokens'];
 
     angular.module('Coati.Helpers', ['Coati.Config'])
         .factory('tokens', Tokens)
-        .factory('$requests', RequestHelper);
+        .factory('$requests', RequestHelper)
+        .factory('$objects', ObjectUtils);
 
 }(angular));
 

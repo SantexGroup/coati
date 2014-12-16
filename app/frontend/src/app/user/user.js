@@ -22,18 +22,7 @@
 
     var UserProfileController = function (rootScope, modalInstance, UserService) {
         var vm = this;
-        if (UserService.is_logged()) {
-            UserService.me().then(function (user) {
-                vm.user = user;
-                if (vm.user && vm.user.picture && vm.user.picture !== '') {
-                    vm.image = {
-                        resized: {
-                            dataURL: vm.user.picture
-                        }
-                    };
-                }
-            });
-        }
+        vm.user = rootScope.user;
 
         vm.save = function () {
             if (vm.form.user_form.$valid) {
@@ -56,9 +45,15 @@
 
     };
 
-    var UserController = function (rootScope, modal, UserService) {
+    var UserController = function (rootScope, modal) {
 
         var vm = this;
+
+        rootScope.$watch('user', function(new_value){
+            if(new_value !== undefined && new_value !== null) {
+                vm.user = new_value;
+            }
+        });
 
 
         vm.show_profile = function () {
@@ -71,16 +66,11 @@
             });
 
         };
-        if (UserService.is_logged()) {
-            UserService.me().then(function (user) {
-                vm.user = user;
-                rootScope.user = vm.user;
-            });
-        }
+
     };
 
     ConfigModule.$inject = ['$stateProvider'];
-    UserController.$inject = ['$rootScope', '$modal', 'UserService'];
+    UserController.$inject = ['$rootScope', '$modal'];
     UserProfileController.$inject = ['$rootScope', '$modalInstance', 'UserService'];
 
     angular.module('Coati.User', ['ui.router',

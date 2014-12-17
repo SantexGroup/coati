@@ -195,7 +195,7 @@
                     scope.handleCancel({value: scope.model});
                 };
             },
-            template: '<input style="width: auto" class="form-control" type="text" on-enter="save()" on-esc="cancel()" ng-model="model" ng-show="editMode"><span ng-hide="editMode" ng-click="edit()"><[ model ]></span>'
+            template: '<input style="width: auto; display:inline-block;" class="form-control" type="text" on-enter="save()" on-esc="cancel()" ng-model="model" ng-show="editMode"><span ng-hide="editMode" ng-click="edit()"><[ model ]></span>'
         };
     };
 

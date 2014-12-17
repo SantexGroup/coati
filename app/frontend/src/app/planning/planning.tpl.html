@@ -17,7 +17,7 @@
                     <header class="panel-heading">
                         <i class="icon-ellipsis-vertical handler"
                            as-sortable-item-handle></i>
-                        <span><[ sprint.name ]></span>
+                        <span inline-edit="sprint.name" on-save="vm.renameSprint(sprint);"><[ sprint.name ]></span>
                         <span class="badge"><[ sprint.tickets.length ]></span>
 
                         <div class="options pull-right">

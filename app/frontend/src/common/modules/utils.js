@@ -26,7 +26,7 @@
         };
     };
 
-    var RequestHelper = function (http, q, state, conf, tokens) {
+    var RequestHelper = function (rootScope, http, q, state, conf, tokens) {
         return {
             METHODS: {
                 UPDATE: 'PUT',
@@ -53,6 +53,14 @@
                     if (status == 401) {
                         state.go(conf.STATE_401);
                     }
+
+                    //Notify
+                    rootScope.$broadcast('notify', {
+                       'title': 'Error',
+                       'description': data,
+                       'class': 'error-notification'
+                    });
+
                     results.reject({
                         'message': data,
                         'code': status
@@ -99,7 +107,7 @@
         };
     };
 
-    RequestHelper.$inject = ['$http', '$q', '$state', 'Conf', 'tokens'];
+    RequestHelper.$inject = ['$rootScope','$http', '$q', '$state', 'Conf', 'tokens'];
 
     angular.module('Coati.Helpers', ['Coati.Config'])
         .factory('tokens', Tokens)

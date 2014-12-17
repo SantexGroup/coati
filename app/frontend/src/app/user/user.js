@@ -28,10 +28,7 @@
             if (vm.form.user_form.$valid) {
                 vm.user.picture = vm.image ? vm.image.resized.dataURL : '';
                 UserService.update(vm.user.id, vm.user).then(function (data) {
-                    rootScope.$broadcast('notify', {
-                        'title': 'Profile Updated',
-                        'description': 'The profile was updated'
-                    });
+                    modalInstance.close(data);
                 });
             } else {
                 vm.submitted = true;
@@ -62,7 +59,11 @@
                 templateUrl: 'user/user.tpl.html'
             });
             modalInstance.result.then(function () {
-                //see here!
+                rootScope.$broadcast('notify', {
+                    'title': 'Succeed',
+                    'description': 'The user was updated successfully',
+                    'class': 'success-notification'
+                });
             });
 
         };

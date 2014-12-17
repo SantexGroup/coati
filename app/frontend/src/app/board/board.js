@@ -40,7 +40,6 @@
         var getProjectData = function (project_pk) {
             ProjectService.get(project_pk).then(function (prj) {
                 vm.project = prj;
-
                 if (state.params.ticket) {
                     showTicketDetails(state.params.ticket);
                 }

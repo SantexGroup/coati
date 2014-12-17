@@ -54,21 +54,25 @@
                 <hr/>
                 <div class="row">
                     <div class="col-md-12">
-                        <p>Comments:</p>
-
-                        <div class="add_new_comment">
-                            <textarea class="form-control"
-                                      ng-model="vm.comment"></textarea>
+                        <div class="add_new_comment" comment-flow>
+                            <textarea class="form-control" rows="1"
+                                      ng-model="vm.comment"
+                                    placeholder="Write a comment..."></textarea>
                             <br/>
-                            <button class="btn btn-success pull-right"
-                                    ng-click="vm.add_new_comment()">Add New
+                            <button id="add-comment" style="display: none;" class="btn btn-success pull-right"
+                                    ng-click="vm.add_new_comment($event)">Add New
                                 Comment
                             </button>
+                            <div style="clear:both"></div>
                         </div>
                         <div class="comments">
-                            <div ng-repeat="comment in vm.ticket.comments">
-                                <p><[ comment.comment ]></p>
-                            </div>
+                            <ul>
+                                <li ng-repeat="c in vm.comments track by c._id.$oid">
+                                    <div class="comment-box">
+                                        <p><[ c.comment ]></p>
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>

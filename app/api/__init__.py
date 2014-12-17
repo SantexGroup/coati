@@ -4,7 +4,8 @@ from resources.sprint import SprintList, SprintInstance, SprintOrder, \
 from resources.project import ProjectList, ProjectInstance, ProjectColumns, \
     ProjectColumnsOrder, ProjectColumn, ProjectMembers
 from resources.ticket import TicketOrderProject, TicketOrderSprint, TicketProjectList, \
-    TicketMovement, TicketInstance, TicketTransition, TicketColumnOrder
+    TicketMovement, TicketInstance, TicketTransition, TicketColumnOrder, \
+    TicketComments
 from resources.user import UsersList, UserInstance, UserSearch, UserLogged
 from app.utils import output_json
 
@@ -37,6 +38,7 @@ def init_app(app, decorators=None):
     api.add_resource(TicketOrderProject, '/api/tickets/<string:project_pk>/order')
     api.add_resource(TicketOrderSprint, '/api/tickets/sprint/<string:sprint_pk>/order')
     api.add_resource(TicketInstance, '/api/ticket/<string:tkt_id>')
+    api.add_resource(TicketComments, '/api/ticket/<string:tkt_id>/comments')
 
     api.add_resource(TicketMovement, '/api/ticket/movement')
     api.add_resource(TicketTransition, '/api/ticket/transition')

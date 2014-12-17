@@ -174,7 +174,6 @@ class Ticket(mongoengine.Document):
     def to_json(self, *args, **kwargs):
         data = self.to_mongo()
         data['project'] = self.project.to_mongo()
-        data['comments'] = Comment.objects(ticket=self).all()
         try:
             tt = TicketColumnTransition.objects.get(ticket=self,
                                                     latest_state=True)
@@ -208,10 +207,16 @@ class Comment(mongoengine.Document):
                                      reverse_delete_rule=mongoengine.NULLIFY)
     ticket = mongoengine.ReferenceField('Ticket',
                                         reverse_delete_rule=mongoengine.CASCADE)
+    when = mongoengine.DateTimeField(default=datetime.now())
 
     meta = {
         'queryset_class': CustomQuerySet
     }
+
+    def to_json(self, *args, **kwargs):
+        data = self.to_mongo()
+        data['who'] = self.who.to_mongo()
+        return json_util.dumps(data)
 
     def clean(self):
         if self.who is None:

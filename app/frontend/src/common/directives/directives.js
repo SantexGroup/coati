@@ -283,9 +283,40 @@
         };
     };
 
+    var commentFlow = function (rootScope) {
+        return {
+            restrict: 'A',
+            link: function (scope, elem, attrs, ctrl) {
+                var txt = $(elem).find('textarea');
+                var btn = $(elem).find('button');
+
+                var restore = function () {
+                    txt.attr('rows', 1);
+                    txt.val('');
+                    btn.hide();
+                };
+
+                $(txt).on('focus', function (e) {
+                    txt.attr('rows', 5);
+                    btn.show();
+                }).on('blur', function (e) {
+                    var rt = $(e.relatedTarget);
+                    if (rt.attr('id') !== 'add-comment') {
+                        restore();
+                    }
+                });
+
+                rootScope.$on('comment_saved', function (params) {
+                    restore();
+                });
+            }
+        };
+    };
+
     ImageFunction.$inject = ['$q'];
     InlineEdit.$inject = ['$timeout'];
     Notify.$inject = ['$rootScope'];
+    commentFlow.$inject = ['$rootScope'];
     CalculateWithBoard.$inject = ['$rootScope', '$timeout'];
     TicketDetailView.$inject = ['Conf'];
 
@@ -297,7 +328,8 @@
         .directive('inlineEdit', InlineEdit)
         .directive('ticketDetailView', TicketDetailView)
         .directive('notify', Notify)
-        .directive('prepareBoard', CalculateWithBoard);
+        .directive('prepareBoard', CalculateWithBoard)
+        .directive('commentFlow', commentFlow);
 
 
 }(angular));

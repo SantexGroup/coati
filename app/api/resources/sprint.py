@@ -149,7 +149,7 @@ class SprintChart(Resource):
 
                     tct_list = TicketColumnTransition.objects(column=col,
                                                               when__gte=start_date.date(),
-                                                              when__lte=end_date.date(),
+                                                              when__lt=end_date.date(),
                                                               latest_state=True)
                     points_burned_for_date = 0
                     tickets = []
@@ -164,7 +164,7 @@ class SprintChart(Resource):
                     # tickets after started sprint
                     spt_list = SprintTicketOrder.objects(sprint=sprint,
                                                          when__gte=start_date.date(),
-                                                         when__lte=end_date.date())
+                                                         when__lt=end_date.date())
                     for spt in spt_list:
                         tickets.append(
                             u'+ %s-%s  (%s)' % (spt.ticket.project.prefix,

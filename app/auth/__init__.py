@@ -1,7 +1,5 @@
-from datetime import datetime
-from flask import session, redirect, url_for, blueprints, request, g
+from flask import session, redirect, url_for, blueprints, request
 
-from app.schemas import Token
 from tools import get_provider, get_user_data, generate_token, authorize_data
 
 
@@ -16,16 +14,20 @@ def init_app(app):
 # # Routes
 @blueprint.route('/authenticate')
 def authenticate():
-    oauth_provider = request.args.get('provider', 'google')
-    session['provider'] = oauth_provider
-    session['callback_url'] = request.args.get('callback')
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('auth.login',
+                            provider=request.args.get('provider'),
+                            client_callback=request.args.get('callback')))
 
 
 @blueprint.route('/login')
 def login():
     callback = url_for('auth.authorized', _external=True)
-    prov = get_provider(session.get('provider'))
+    prov = get_provider(request.args.get('provider'))
+    extra_params = {'state': tools.serialize_data({
+        'provider': request.args.get('provider'),
+        'callback': request.args.get('client_callback')
+    })}
+    prov.request_token_params.update(extra_params)
     return prov.authorize(callback=callback)
 
 

@@ -194,7 +194,8 @@ class Ticket(mongoengine.Document):
 
 
 class SprintTicketOrder(mongoengine.Document):
-    ticket = mongoengine.ReferenceField('Ticket')
+    ticket = mongoengine.ReferenceField('Ticket',
+                                        reverse_delete_rule=mongoengine.CASCADE)
     order = mongoengine.IntField()
     sprint = mongoengine.ReferenceField('Sprint',
                                         reverse_delete_rule=mongoengine.CASCADE)

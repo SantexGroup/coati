@@ -61,6 +61,10 @@
             e.stopPropagation();
         };
 
+        vm.renameSprint = function (sprint) {
+            SprintService.update(sprint);
+        };
+
         vm.showQuickDetail = function (tkt) {
             vm.loaded = false;
             vm.ticket_clicked = true;
@@ -244,10 +248,6 @@
                 getSprintsWithTickets(vm.project._id.$oid);
                 getTicketsForProject(vm.project._id.$oid);
             });
-        };
-
-        vm.update_sprint_name = function (sprint) {
-            SprintService.update(sprint);
         };
 
         // get the project from the parent controller.

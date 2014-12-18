@@ -1,8 +1,6 @@
-from datetime import datetime
 from flask import session, redirect, url_for, blueprints, request
 
-from app.schemas import Token
-from tools import get_provider, get_user_data, generate_token
+from tools import get_provider, get_user_data, generate_token, authorize_data
 
 
 __author__ = 'gastonrobledo'
@@ -16,46 +14,26 @@ def init_app(app):
 # # Routes
 @blueprint.route('/authenticate')
 def authenticate():
-    oauth_provider = request.args.get('provider', 'google')
-    session['provider'] = oauth_provider
-    session['callback_url'] = request.args.get('callback')
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('auth.login',
+                            provider=request.args.get('provider'),
+                            client_callback=request.args.get('callback')))
 
 
 @blueprint.route('/login')
 def login():
     callback = url_for('auth.authorized', _external=True)
-    prov = get_provider(session.get('provider'),
-                        authorized_handler=authorized)
+    prov = get_provider(request.args.get('provider'))
+    extra_params = {'state': tools.serialize_data({
+        'provider': request.args.get('provider'),
+        'callback': request.args.get('client_callback')
+    })}
+    prov.request_token_params.update(extra_params)
     return prov.authorize(callback=callback)
 
 
 @blueprint.route('/authorized')
 def authorized():
-    provider = get_provider(session.get('provider'),
-                            authorized_handler=authorized)
-    if 'oauth_verifier' in request.args:
-        data = provider.handle_oauth1_response()
-    elif 'code' in request.args:
-        data = provider.handle_oauth2_response()
-    else:
-        data = provider.handle_unknown_response()
-    provider.free_request_token()
-    access_token = data['access_token']
-    user = get_user_data(access_token)
-    if user:
-        token = generate_token(str(user.pk))
-        Token.save_token_for_user(user,
-                                  app_token=token,
-                                  social_token=access_token,
-                                  provider=provider.name,
-                                  expire_in=10000)
-
-        return redirect('%s?token=%s&expire=%s' % (session.get('callback_url'),
-                                                   token,
-                                                   10000))
-    else:
-        return redirect(session.get('callback_url'))
+    return redirect(authorize_data())
 
 
 @blueprint.route('/logout')

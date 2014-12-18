@@ -24,7 +24,7 @@
     };
 
 
-    var ProjectCtrlSettings = function (scope, rootScope, state, modal, ProjectService) {
+    var ProjectCtrlSettings = function (scope, state, modal, growl, ProjectService) {
         var vm = this;
         vm.form = {};
 
@@ -42,11 +42,7 @@
             });
             modalInstance.result.then(function () {
                 getColumnConfiguration(vm.project._id.$oid);
-                rootScope.$broadcast('notify', {
-                   'title': 'Succeed',
-                   'description': 'The column was removed successfully',
-                   'class': 'success-notification'
-                });
+                growl.addSuccessMessage('The column was removed successfully');
             });
         };
 
@@ -69,11 +65,7 @@
             });
             modalInstance.result.then(function () {
                 getColumnConfiguration(vm.project._id.$oid);
-                rootScope.$broadcast('notify', {
-                   'title': 'Succeed',
-                   'description': 'The column was saved successfully',
-                   'class': 'success-notification'
-                });
+                growl.addSuccessMessage('The column was saved successfully');
             });
         };
 
@@ -88,11 +80,7 @@
                 }
             });
             modalInstance.result.then(function () {
-                rootScope.$broadcast('notify', {
-                   'title': 'Succeed',
-                   'description': 'The user was added as member successfully',
-                   'class': 'success-notification'
-                });
+                growl.addSuccessMessage('The user was added as member successfully');
             });
         };
 
@@ -100,11 +88,7 @@
             if (vm.form.project_form.$valid) {
                 vm.project.owner_id = vm.project.owner.id;
                 ProjectService.update(vm.project._id.$oid, vm.project).then(function () {
-                    rootScope.$broadcast('notify', {
-                       'title': 'Succeed',
-                       'description': 'The project was updated successfully',
-                       'class': 'success-notification'
-                    });
+                    growl.addSuccessMessage('The project was updated successfully');
                 });
             } else {
                 vm.submitted = true;
@@ -213,7 +197,7 @@
     };
 
     Config.$inject = ['$stateProvider', 'tagsInputConfigProvider'];
-    ProjectCtrlSettings.$inject = ['$scope', '$rootScope', '$state', '$modal', 'ProjectService'];
+    ProjectCtrlSettings.$inject = ['$scope', '$state', '$modal', 'growl', 'ProjectService'];
     ColumnFormController.$inject = ['$modalInstance', 'ProjectService', 'project', 'column'];
     ColumnDeleteController.$inject = ['$modalInstance', 'ProjectService', 'column'];
     MembersController.$inject = ['$modalInstance', 'UserService', 'ProjectService', 'project'];

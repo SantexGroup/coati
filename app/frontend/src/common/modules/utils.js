@@ -26,7 +26,7 @@
         };
     };
 
-    var RequestHelper = function (rootScope, http, q, state, conf, tokens) {
+    var RequestHelper = function (http, q, state, conf, tokens, growl) {
         return {
             METHODS: {
                 UPDATE: 'PUT',
@@ -55,11 +55,7 @@
                     }
 
                     //Notify
-                    rootScope.$broadcast('notify', {
-                       'title': 'Error',
-                       'description': data,
-                       'class': 'error-notification'
-                    });
+                    growl.addErrorMessage(data);
 
                     results.reject({
                         'message': data,
@@ -107,9 +103,9 @@
         };
     };
 
-    RequestHelper.$inject = ['$rootScope','$http', '$q', '$state', 'Conf', 'tokens'];
+    RequestHelper.$inject = ['$http', '$q', '$state', 'Conf', 'tokens', 'growl'];
 
-    angular.module('Coati.Helpers', ['Coati.Config'])
+    angular.module('Coati.Helpers', ['Coati.Config', 'angular-growl'])
         .factory('tokens', Tokens)
         .factory('$requests', RequestHelper)
         .factory('$objects', ObjectUtils);

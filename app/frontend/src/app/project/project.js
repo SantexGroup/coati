@@ -69,7 +69,7 @@
         });
     };
 
-    var ProjectFormCtrl = function (rootScope, state, ProjectService) {
+    var ProjectFormCtrl = function (state, ProjectService, growl) {
         var vm = this;
         vm.form = {};
         vm.project = {};
@@ -77,11 +77,7 @@
             if (vm.form.project_form.$valid) {
                 ProjectService.save(vm.project).then(function (project) {
                     state.go('project.planning', {project_pk: project._id.$oid});
-                    rootScope.$broadcast('notify', {
-                       'title': 'Succeed',
-                       'description': 'The project was created successfully',
-                       'class': 'success-notification'
-                    });
+                    growl.addSuccessMessage('The project was created successfully');
                 });
             } else {
                 vm.submitted = true;
@@ -98,7 +94,7 @@
     Config.$inject = ['$stateProvider'];
     ProjectCtrl.$inject = ['$scope', '$rootScope', '$state', 'project'];
 
-    ProjectFormCtrl.$inject = ['$rootScope', '$state', 'ProjectService'];
+    ProjectFormCtrl.$inject = ['$state', 'ProjectService', 'growl'];
 
     angular.module('Coati.Project', ['ui.router', 'ui.sortable',
         'Coati.Settings',

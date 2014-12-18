@@ -18,7 +18,7 @@
         });
     };
 
-    var ProjectCtrlPlanning = function (rootScope, scope, state, modal, ProjectService, TicketService, SprintService) {
+    var ProjectCtrlPlanning = function (scope, state, modal, growl, ProjectService, TicketService, SprintService) {
         var vm = this;
         vm.ticket_detail = null;
 
@@ -58,22 +58,14 @@
                 getSprintsWithTickets(vm.project._id.$oid);
                 getTicketsForProject(vm.project._id.$oid);
                 //Notify
-                rootScope.$broadcast('notify', {
-                   'title': 'Succeed',
-                   'description': 'The ticket was saved successfully',
-                   'class': 'success-notification'
-                });
+                growl.addSuccessMessage('The ticket was saved successfully');
             });
             e.stopPropagation();
         };
 
         vm.renameSprint = function (sprint) {
             SprintService.update(sprint).then(function(){
-                rootScope.$broadcast('notify', {
-                   'title': 'Succeed',
-                   'description': 'The sprint was renamed successfully',
-                   'class': 'success-notification'
-                });
+                growl.addSuccessMessage('The sprint was renamed successfully');
             });
         };
 
@@ -126,11 +118,7 @@
             modal_instance.result.then(function () {
                 getSprintsWithTickets(vm.project._id.$oid);
                 getTicketsForProject(vm.project._id.$oid);
-                rootScope.$broadcast('notify', {
-                   'title': 'Succeed',
-                   'description': 'The ticket was deleted successfully',
-                   'class': 'success-notification'
-                });
+                growl.addSuccessMessage('The ticket was deleted successfully');
             });
             e.stopPropagation();
         };
@@ -148,11 +136,7 @@
                 }
             });
             modal_instance.result.then(function () {
-                rootScope.$broadcast('notify', {
-                   'title': 'Succeed',
-                   'description': 'The sprint was started successfully',
-                   'class': 'success-notification'
-                });
+                growl.addSuccessMessage('The sprint was started successfully');
                 vm.one_started = true;
             });
         };
@@ -262,11 +246,7 @@
         vm.create_sprint = function () {
             SprintService.save(vm.project._id.$oid).then(function (sprint) {
                 vm.sprints.push(sprint);
-                rootScope.$broadcast('notify', {
-                   'title': 'Succeed',
-                   'description': 'The sprint was created successfully',
-                   'class': 'success-notification'
-                });
+                growl.addSuccessMessage('The sprint was created successfully');
             });
         };
 
@@ -274,13 +254,7 @@
             SprintService.erase(sprint_id).then(function () {
                 getSprintsWithTickets(vm.project._id.$oid);
                 getTicketsForProject(vm.project._id.$oid);
-
-                //Notify
-                rootScope.$broadcast('notify', {
-                   'title': 'Succeed',
-                   'description': 'The sprint was removed successfully',
-                   'class': 'success-notification'
-                });
+                growl.addSuccessMessage('The sprint was deleted successfully');
             });
         };
 
@@ -291,7 +265,7 @@
     };
 
     Config.$inject = ['$stateProvider'];
-    ProjectCtrlPlanning.$inject = ['$rootScope','$scope', '$state', '$modal', 'ProjectService', 'TicketService', 'SprintService'];
+    ProjectCtrlPlanning.$inject = ['$scope', '$state', '$modal', 'growl', 'ProjectService', 'TicketService', 'SprintService'];
 
     angular.module('Coati.Planning', ['ui.router',
         'Coati.Directives',

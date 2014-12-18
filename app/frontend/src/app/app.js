@@ -1,11 +1,13 @@
 (function (angular) {
 
-    function ConfigApp(interpolate, location, urlRoute) {
+    function ConfigApp(interpolate, location, urlRoute, growlProvider) {
         urlRoute.when('/', '/home/');
         location.html5Mode(true);
         location.hashPrefix('!');
         interpolate.startSymbol('<[');
         interpolate.endSymbol(']>');
+        growlProvider.globalTimeToLive(5000);
+        growlProvider.onlyUniqueMessages(true);
     }
 
 
@@ -83,12 +85,12 @@
 
     // Injections
     RunApp.$inject = ['$rootScope', '$objects'];
-    ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider'];
+    ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider'];
     AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', 'tokens'];
 
     angular.module('Coati', [
         'templates-app', 'templates-common',
-        'ui.router', 'ui.bootstrap',
+        'ui.router', 'ui.bootstrap', 'angular-growl',
         'Coati.Config', 'Coati.Directives', 'Coati.Home',
         'Coati.Login', 'Coati.Helpers',
         'Coati.User', 'Coati.Project', 'Coati.Ticket', 'Coati.Sprint'])

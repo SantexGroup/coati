@@ -75,7 +75,8 @@ module.exports = {
             'vendor/html5shiv/dist/html5shiv.min.js',
             'vendor/ng-tags-input/ng-tags-input.min.js',
             'vendor/ng-sortable/dist/ng-sortable.js',
-            'vendor/highcharts/highcharts.js'
+            'vendor/highcharts/highcharts.js',
+            'vendor/angular-growl/build/angular-growl.min.js'
         ],
         maps: [
             'vendor/jquery/dist/jquery.min.map'
@@ -83,7 +84,8 @@ module.exports = {
         css: [
             'vendor/angular-notifications/notification.min.css',
             'vendor/ng-tags-input/ng-tags-input.min.css',
-            'vendor/ng-sortable/ng-sortable.min.css'
+            'vendor/ng-sortable/ng-sortable.min.css',
+            'vendor/angular-growl/build/angular-growl.min.css'
         ],
         assets: [],
         fonts: [

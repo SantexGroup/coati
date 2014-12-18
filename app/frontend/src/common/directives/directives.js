@@ -245,35 +245,6 @@
         };
     };
 
-    var Notify = function (rootScope) {
-        return {
-            link: function (scope, elem, attrs, ctrl) {
-                var container = $('<div />');
-                container.addClass('notify_container');
-                $('body').append(container);
-                rootScope.$on('notify', function (event, data) {
-                    var message = $('<div />');
-                    message.addClass('message').addClass(data.class);
-                    var h3 = $('<h3 />');
-                    h3.html(data.title);
-                    var body = $('<div />');
-                    body.html(data.description);
-
-                    message.append(h3);
-                    message.append(body);
-                    message.hide();
-                    container.append(message);
-                    message.fadeIn(500);
-                    message.on('click', function(){
-                        message.fadeOut().remove();
-                    });
-                    setTimeout(function(){
-                        message.fadeOut().remove();
-                    }, 5000);
-                });
-            }
-        };
-    };
 
     var CalculateWithBoard = function (rootScope, timeout) {
         return {
@@ -325,7 +296,6 @@
 
     ImageFunction.$inject = ['$q'];
     InlineEdit.$inject = ['$timeout'];
-    Notify.$inject = ['$rootScope'];
     commentFlow.$inject = ['$rootScope'];
     CalculateWithBoard.$inject = ['$rootScope', '$timeout'];
     TicketDetailView.$inject = ['Conf'];
@@ -337,7 +307,6 @@
         .directive('onEnter', OnEnter)
         .directive('inlineEdit', InlineEdit)
         .directive('ticketDetailView', TicketDetailView)
-        .directive('notify', Notify)
         .directive('prepareBoard', CalculateWithBoard)
         .directive('commentFlow', commentFlow);
 

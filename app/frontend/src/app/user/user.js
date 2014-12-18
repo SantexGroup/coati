@@ -42,7 +42,7 @@
 
     };
 
-    var UserController = function (rootScope, modal) {
+    var UserController = function (rootScope, growl, modal) {
 
         var vm = this;
 
@@ -59,11 +59,7 @@
                 templateUrl: 'user/user.tpl.html'
             });
             modalInstance.result.then(function () {
-                rootScope.$broadcast('notify', {
-                    'title': 'Succeed',
-                    'description': 'The user was updated successfully',
-                    'class': 'success-notification'
-                });
+                growl.addSuccessMessage('The user was updated successfully');
             });
 
         };
@@ -71,7 +67,7 @@
     };
 
     ConfigModule.$inject = ['$stateProvider'];
-    UserController.$inject = ['$rootScope', '$modal'];
+    UserController.$inject = ['$rootScope', 'growl', '$modal'];
     UserProfileController.$inject = ['$rootScope', '$modalInstance', 'UserService'];
 
     angular.module('Coati.User', ['ui.router',

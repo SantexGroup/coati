@@ -31,6 +31,12 @@
             },
             'delete_ticket': function(tkt_id){
                 return req.$do('/ticket/' + tkt_id, req.METHODS.DELETE);
+            },
+            'get_comments': function(tkt_id){
+                return req.$do('/ticket/' + tkt_id + '/comments', req.METHODS.GET);
+            },
+            'add_comment': function(tkt_id, comment){
+                return req.$do('/ticket/' + tkt_id + '/comments', req.METHODS.POST, comment);
             }
         };
     };

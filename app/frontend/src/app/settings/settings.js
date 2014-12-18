@@ -42,6 +42,11 @@
             });
             modalInstance.result.then(function () {
                 getColumnConfiguration(vm.project._id.$oid);
+                rootScope.$broadcast('notify', {
+                   'title': 'Succeed',
+                   'description': 'The column was removed successfully',
+                   'class': 'success-notification'
+                });
             });
         };
 
@@ -64,6 +69,11 @@
             });
             modalInstance.result.then(function () {
                 getColumnConfiguration(vm.project._id.$oid);
+                rootScope.$broadcast('notify', {
+                   'title': 'Succeed',
+                   'description': 'The column was saved successfully',
+                   'class': 'success-notification'
+                });
             });
         };
 
@@ -78,8 +88,11 @@
                 }
             });
             modalInstance.result.then(function () {
-                //TODO: see what we need to do here!
-                //maybe load the members from other call.
+                rootScope.$broadcast('notify', {
+                   'title': 'Succeed',
+                   'description': 'The user was added as member successfully',
+                   'class': 'success-notification'
+                });
             });
         };
 
@@ -88,8 +101,9 @@
                 vm.project.owner_id = vm.project.owner.id;
                 ProjectService.update(vm.project._id.$oid, vm.project).then(function () {
                     rootScope.$broadcast('notify', {
-                        'title': 'Updated',
-                        'description': 'The project settings were saved'
+                       'title': 'Succeed',
+                       'description': 'The project was updated successfully',
+                       'class': 'success-notification'
                     });
                 });
             } else {

@@ -29,7 +29,7 @@
                     vm.ticket.labels.push(item.text);
                 });
 
-                if(vm.ticket.sprint) {
+                if (vm.ticket.sprint) {
                     vm.ticket.sprint.pk = vm.ticket.sprint._id.$oid;
                 }
 
@@ -73,11 +73,20 @@
 
     };
 
-    var TicketDetailController = function (modalInstance, conf, TicketService, item) {
+    var TicketDetailController = function (rootScope, modalInstance, conf, TicketService, item) {
         var vm = this;
+
+        var getComments = function (ticket_id) {
+            TicketService.get_comments(ticket_id).then(function (comments) {
+                vm.comments = comments;
+            });
+        };
 
         TicketService.get(item.ticket_id).then(function (tkt) {
             vm.ticket = tkt;
+
+            getComments(tkt._id.$oid);
+
             angular.forEach(conf.TICKET_TYPES, function (val, key) {
                 if (val.value === vm.ticket.type) {
                     vm.type = val.name;
@@ -89,8 +98,15 @@
         vm.project = item.project;
 
 
-        vm.update = function () {
-
+        vm.add_new_comment = function (e) {
+            if (vm.comment.length > 0) {
+                var comment = {'comment': vm.comment};
+                TicketService.add_comment(vm.ticket._id.$oid, comment).then(function (tkt) {
+                    rootScope.$broadcast('comment_saved');
+                    vm.comments.unshift(tkt);
+                });
+            }
+            e.stopPropagation();
         };
 
         vm.close = function () {
@@ -99,7 +115,7 @@
 
     };
 
-    TicketDetailController.$inject = ['$modalInstance', 'Conf', 'TicketService', 'item'];
+    TicketDetailController.$inject = ['$rootScope','$modalInstance', 'Conf', 'TicketService', 'item'];
     TicketFormController.$inject = ['$modalInstance', 'Conf', 'TicketService', 'SprintService', 'item'];
     TicketDeleteController.$inject = ['$modalInstance', 'TicketService', 'item'];
 

@@ -40,7 +40,6 @@
         var getProjectData = function (project_pk) {
             ProjectService.get(project_pk).then(function (prj) {
                 vm.project = prj;
-
                 if (state.params.ticket) {
                     showTicketDetails(state.params.ticket);
                 }
@@ -50,7 +49,10 @@
         var showTicketDetails = function (id) {
             vm.already_showed = true;
 
-            location.search('ticket', id);
+            var args = location.search();
+            if(!args.ticket) {
+                location.search('ticket', id);
+            }
 
             vm.modal_ticket_instance = modal.open({
                 controller: 'TicketDetailController as vm',
@@ -149,7 +151,9 @@
         }, function () {
             var params = location.search();
             if (params.ticket && !vm.already_showed) {
-                showTicketDetails(params.ticket);
+                if(vm.project) {
+                    showTicketDetails(params.ticket);
+                }
             } else {
                 if (vm.already_showed && vm.modal_ticket_instance && !params.ticket) {
                     vm.modal_ticket_instance.close();

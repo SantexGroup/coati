@@ -30,7 +30,7 @@
      * @param ProjectService - API Service for Projects
      * @constructor
      */
-    function MainController(state, ProjectService) {
+    function MainController(state, ProjectService, UserService) {
         var vm = this;
 
         vm.user = window.username;
@@ -46,18 +46,21 @@
             state.go('project-new');
         };
 
-        vm.getDashboard();
+        if(UserService.is_logged()) {
+            vm.getDashboard();
+        }
     }
 
     //Injections
     ConfigModule.$inject = ['$stateProvider'];
-    MainController.$inject = ['$state', 'ProjectService'];
+    MainController.$inject = ['$state', 'ProjectService', 'UserService'];
 
 
     angular.module('Coati.Home',
         ['ui.router', 'ui.bootstrap',
             'Coati.Directives',
-            'Coati.Services.Project'])
+            'Coati.Services.Project',
+            'Coati.Services.User'])
         .config(ConfigModule)
         .controller('MainController', MainController);
 

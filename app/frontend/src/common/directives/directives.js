@@ -248,18 +248,28 @@
     var Notify = function (rootScope) {
         return {
             link: function (scope, elem, attrs, ctrl) {
+                var container = $('<div />');
+                container.addClass('notify_container');
+                $('body').append(container);
                 rootScope.$on('notify', function (event, data) {
-                    $.gritter.add({
-                        // (string | mandatory) the heading of the notification
-                        title: data.title,
-                        // (string | mandatory) the text inside the notification
-                        text: data.description,
-                        image: data.image || '',
-                        class_name: data.class || '',
-                        sticky: false,
-                        // (int | optional) the time you want it to be alive for before fading out
-                        time: 15000
+                    var message = $('<div />');
+                    message.addClass('message').addClass(data.class);
+                    var h3 = $('<h3 />');
+                    h3.html(data.title);
+                    var body = $('<div />');
+                    body.html(data.description);
+
+                    message.append(h3);
+                    message.append(body);
+                    message.hide();
+                    container.append(message);
+                    message.fadeIn(500);
+                    message.on('click', function(){
+                        message.fadeOut().remove();
                     });
+                    setTimeout(function(){
+                        message.fadeOut().remove();
+                    }, 5000);
                 });
             }
         };
@@ -283,9 +293,40 @@
         };
     };
 
+    var commentFlow = function (rootScope) {
+        return {
+            restrict: 'A',
+            link: function (scope, elem, attrs, ctrl) {
+                var txt = $(elem).find('textarea');
+                var btn = $(elem).find('button');
+
+                var restore = function () {
+                    txt.attr('rows', 1);
+                    txt.val('');
+                    btn.hide();
+                };
+
+                $(txt).on('focus', function (e) {
+                    txt.attr('rows', 5);
+                    btn.show();
+                }).on('blur', function (e) {
+                    var rt = $(e.relatedTarget);
+                    if (rt.attr('id') !== 'add-comment') {
+                        restore();
+                    }
+                });
+
+                rootScope.$on('comment_saved', function (params) {
+                    restore();
+                });
+            }
+        };
+    };
+
     ImageFunction.$inject = ['$q'];
     InlineEdit.$inject = ['$timeout'];
     Notify.$inject = ['$rootScope'];
+    commentFlow.$inject = ['$rootScope'];
     CalculateWithBoard.$inject = ['$rootScope', '$timeout'];
     TicketDetailView.$inject = ['Conf'];
 
@@ -297,7 +338,8 @@
         .directive('inlineEdit', InlineEdit)
         .directive('ticketDetailView', TicketDetailView)
         .directive('notify', Notify)
-        .directive('prepareBoard', CalculateWithBoard);
+        .directive('prepareBoard', CalculateWithBoard)
+        .directive('commentFlow', commentFlow);
 
 
 }(angular));

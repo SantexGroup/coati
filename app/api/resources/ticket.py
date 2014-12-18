@@ -7,7 +7,7 @@ from flask import jsonify, session
 from flask.ext.restful import Resource, request
 
 from app.schemas import (Project, Ticket, SprintTicketOrder,
-                         Sprint, TicketColumnTransition, Column, User)
+                         Sprint, TicketColumnTransition, Column, User, Comment)
 
 
 class TicketInstance(Resource):
@@ -158,6 +158,7 @@ class TicketMovement(Resource):
                 tkt_ord_sprint = SprintTicketOrder()
                 tkt_ord_sprint.sprint = sprint
                 tkt_ord_sprint.ticket = ticket
+                tkt_ord_sprint.when = datetime.now()
                 tkt_ord_sprint.save()
 
                 for index, tkt_id in enumerate(dest.get('order')):
@@ -173,6 +174,7 @@ class TicketMovement(Resource):
                 tkt_ord_sprint = SprintTicketOrder()
                 tkt_ord_sprint.sprint = sprint
                 tkt_ord_sprint.ticket = ticket
+                tkt_ord_sprint.when = datetime.now()
                 tkt_ord_sprint.save()
 
                 for index, tkt_id in enumerate(dest.get('order')):
@@ -287,4 +289,24 @@ class TicketColumnOrder(Resource):
                 return jsonify({'success': True}), 200
             else:
                 return jsonify({'error': 'Bad Request'}), 400
+        return jsonify({'error': 'Bad Request'}), 400
+
+
+class TicketComments(Resource):
+
+    def __init__(self):
+        super(TicketComments, self).__init__()
+
+    def get(self, tkt_id, *args, **kwargs):
+        return Comment.objects(ticket=tkt_id).order_by('-when').to_json()
+
+    def post(self, tkt_id, *args, **kwargs):
+        data = request.get_json(force=True, silent=True)
+        if data:
+            c = Comment(ticket=tkt_id)
+            c.who = User.objects.get(pk=kwargs['user_id']['pk'])
+            c.comment = data.get('comment')
+            c.when = datetime.now()
+            c.save()
+            return c.to_json(), 201
         return jsonify({'error': 'Bad Request'}), 400

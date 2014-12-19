@@ -103,11 +103,34 @@
         };
     };
 
-    RequestHelper.$inject = ['$http', '$q', '$state', 'Conf', 'tokens', 'growl'];
+    var UploadHelper = function(up, tokens, conf){
+        return {
+            '$do': function(url, files, extra_data, not_default){
+                var token = tokens.get_token();
+                var headers = {};
+                if (token) {
+                    headers = {'Authorization':'Token ' + token};
+                }
+                var endpoint = (not_default ? url : conf.BASE_API_URL + url);
+                return up.upload({
+                    headers: headers,
+                    url: endpoint,
+                    data: extra_data,
+                    file: files
+                });
+            }
+        };
+    };
 
-    angular.module('Coati.Helpers', ['Coati.Config', 'angular-growl'])
+    RequestHelper.$inject = ['$http', '$q', '$state', 'Conf', 'tokens', 'growl'];
+    UploadHelper.$inject = ['$upload','tokens', 'Conf'];
+
+    angular.module('Coati.Helpers', ['Coati.Config',
+        'angular-growl',
+        'angularFileUpload'])
         .factory('tokens', Tokens)
         .factory('$requests', RequestHelper)
+        .factory('$file_uploads', UploadHelper)
         .factory('$objects', ObjectUtils);
 
 }(angular));

@@ -1,7 +1,9 @@
-import mongoengine
+import base64
 from datetime import datetime, timedelta
-from mongoengine_extras.fields import slugify, SlugField
+
+import mongoengine
 from bson import json_util
+
 
 TICKET_TYPE = (('U', 'User Story'),
                ('F', 'Feature'),
@@ -156,6 +158,13 @@ class Sprint(mongoengine.Document):
             raise mongoengine.ValidationError('Project must be provided')
 
 
+class Attachment(mongoengine.Document):
+    name = mongoengine.StringField()
+    size = mongoengine.IntField()
+    type = mongoengine.StringField()
+    data = mongoengine.FileField()
+
+
 class Ticket(mongoengine.Document):
     title = mongoengine.StringField(max_length=200, required=True)
     description = mongoengine.StringField()
@@ -166,6 +175,7 @@ class Ticket(mongoengine.Document):
     order = mongoengine.IntField()
     points = mongoengine.IntField()
     type = mongoengine.StringField(max_length=1, choices=TICKET_TYPE)
+    files = mongoengine.ListField(mongoengine.ReferenceField('Attachment'))
 
     meta = {
         'queryset_class': CustomQuerySet
@@ -174,6 +184,13 @@ class Ticket(mongoengine.Document):
     def to_json(self, *args, **kwargs):
         data = self.to_mongo()
         data['project'] = self.project.to_mongo()
+        files = []
+        for f in self.files:
+            file_att = f.to_mongo()
+            fd = f.data.read()
+            file_att['binary'] = base64.b64encode(fd)
+            files.append(file_att)
+        data['files'] = files
         try:
             tt = TicketColumnTransition.objects.get(ticket=self,
                                                     latest_state=True)

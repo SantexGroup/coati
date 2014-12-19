@@ -1,4 +1,4 @@
-from mongoengine import DoesNotExist
+from mongoengine import DoesNotExist, GridFSProxy
 
 __author__ = 'gastonrobledo'
 
@@ -7,7 +7,8 @@ from flask import jsonify, session
 from flask.ext.restful import Resource, request
 
 from app.schemas import (Project, Ticket, SprintTicketOrder,
-                         Sprint, TicketColumnTransition, Column, User, Comment)
+                         Sprint, TicketColumnTransition, Column, User, Comment,
+                         Attachment)
 
 
 class TicketInstance(Resource):
@@ -309,4 +310,30 @@ class TicketComments(Resource):
             c.when = datetime.now()
             c.save()
             return c.to_json(), 201
+        return jsonify({'error': 'Bad Request'}), 400
+
+
+class TicketAttachments(Resource):
+
+    def __init__(self):
+        super(TicketAttachments, self).__init__()
+
+    def get(self, tkt_id, *args, **kwargs):
+        pass
+
+    def post(self, tkt_id, *args, **kwargs):
+        files = request.files.getlist('file')
+        data = request.form
+        ticket = Ticket.objects.get(pk=tkt_id)
+        if files and ticket and data:
+            for f in files:
+                att = Attachment()
+                att.data.put(f)
+                att.name = data.get('name')
+                att.size = data.get('size')
+                att.type = data.get('type')
+                att.save()
+                ticket.files.append(att)
+            ticket.save()
+            return ticket.to_json(), 200
         return jsonify({'error': 'Bad Request'}), 400

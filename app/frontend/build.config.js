@@ -75,7 +75,9 @@ module.exports = {
             'vendor/html5shiv/dist/html5shiv.min.js',
             'vendor/ng-tags-input/ng-tags-input.min.js',
             'vendor/ng-sortable/dist/ng-sortable.js',
-            'vendor/highcharts/highcharts.js'
+            'vendor/highcharts/highcharts.js',
+            'vendor/ng-file-upload/angular-file-upload.min.js',
+            'vendor/ng-file-upload/angular-file-upload-shim.min.js'
         ],
         maps: [
             'vendor/jquery/dist/jquery.min.map'

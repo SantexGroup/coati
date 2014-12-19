@@ -54,13 +54,69 @@
                 <hr/>
                 <div class="row">
                     <div class="col-md-12">
+                        <div class="attachments">
+                            <div class="attachments_stored">
+                                <a href="javascript:;" ng-repeat="f in vm.ticket.files"  ng-click="vm.download(f);">
+                                    <i ng-class="vm.checkTypeIcon(f)"></i>
+                                    <span><[ f.name ]></span>
+                                    <span>(<[ f.size / 1024 |number:0 ]> Kb)</span>
+                                </a>
+                            </div>
+                            <button class="btn pull-left btn-sm btn-primary"
+                                    ng-file-select ng-model="vm.files"
+                                    ng-file-change="vm.prepare_upload()"
+                                    multiple="true">Select Files...
+                            </button>
+                            <button ng-show="vm.files.length" ng-click="vm.confirm_upload();"
+                                    class="btn pull-right btn-sm btn-success">
+                                Upload Files
+                            </button>
+                            <div class="files" ng-show="vm.files.length">
+                                <ul>
+                                    <li ng-repeat="f in vm.files"
+                                        ng-class="{aborted: f.aborted}">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <i ng-class="vm.checkTypeIcon(f)"></i>
+                                                <span><[ f.name ]></span>
+                                                <span>(<[ f.size / 1024 |number:0 ]> Kb)</span>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div ng-show="!f.aborted && f.progress >= 0"
+                                                     class="progress progress-striped">
+                                                    <div class="progress-bar progress-bar-info"
+                                                         role="progressbar"
+                                                         aria-valuenow="<[ f.progress ]>"
+                                                         aria-valuemin="0"
+                                                         aria-valuemax="100"
+                                                         ng-style="{width: f.progress + '%' }">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <button ng-hide="f.upload"
+                                                        ng-click="vm.removeFile($index)"
+                                                        class="btn btn-danger btn-xs pull-right icon-trash"></button>
+                                                <button class="btn btn-xs btn-danger"
+                                                        ng-show="f.upload != null && f.progress < 100 && !f.aborted"
+                                                        ng-click="vm.abort_upload(f);">
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                         <div class="add_new_comment" comment-flow>
                             <textarea class="form-control" rows="1"
                                       ng-model="vm.comment"
-                                    placeholder="Write a comment..."></textarea>
+                                      placeholder="Write a comment..."></textarea>
                             <br/>
-                            <button id="add-comment" style="display: none;" class="btn btn-success pull-right"
-                                    ng-click="vm.add_new_comment($event)">Add New
+                            <button id="add-comment" style="display: none;"
+                                    class="btn btn-success pull-right"
+                                    ng-click="vm.add_new_comment($event)">Add
+                                New
                                 Comment
                             </button>
                             <div style="clear:both"></div>

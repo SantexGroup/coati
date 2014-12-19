@@ -55,22 +55,37 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="attachments">
+                            <label>Attachements:</label>
                             <div class="attachments_stored">
-                                <a href="javascript:;" ng-repeat="f in vm.ticket.files"  ng-click="vm.download(f);">
-                                    <i ng-class="vm.checkTypeIcon(f)"></i>
-                                    <span><[ f.name ]></span>
-                                    <span>(<[ f.size / 1024 |number:0 ]> Kb)</span>
-                                </a>
+                                <div style="margin-right: 3px;margin-bottom:3px" ng-repeat="f in vm.ticket.files" class="btn-group" dropdown is-open="f.isopen">
+                                    <button class="btn btn-xs btn-info" dropdown-toggle>
+                                        <i ng-class="vm.checkTypeIcon(f)"></i>
+                                        <span><[ f.name ]></span>
+                                        <span>(<[ f.size / 1024 |number:0 ]> Kb)</span>
+                                    </button>
+                                    <ul role="menu" class="dropdown-menu">
+                                        <li><a href="#"
+                                               ng-click="vm.download(f);">
+                                            <i class="icon-download"></i> Download</a>
+                                        </li>
+                                        <li><a href="#"
+                                               ng-click="vm.delete(f);">
+                                            <i class="icon-trash"></i> Delete</a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                             <button class="btn pull-left btn-sm btn-primary"
                                     ng-file-select ng-model="vm.files"
                                     ng-file-change="vm.prepare_upload()"
                                     multiple="true">Select Files...
                             </button>
-                            <button ng-show="vm.files.length" ng-click="vm.confirm_upload();"
+                            <button ng-show="vm.files.length"
+                                    ng-click="vm.confirm_upload();"
                                     class="btn pull-right btn-sm btn-success">
                                 Upload Files
                             </button>
+                            <div style="clear:both"></div>
                             <div class="files" ng-show="vm.files.length">
                                 <ul>
                                     <li ng-repeat="f in vm.files"

@@ -162,7 +162,7 @@ class Attachment(mongoengine.Document):
     name = mongoengine.StringField()
     size = mongoengine.IntField()
     type = mongoengine.StringField()
-    data = mongoengine.FileField()
+    data = mongoengine.StringField()
 
 
 class Ticket(mongoengine.Document):
@@ -187,8 +187,6 @@ class Ticket(mongoengine.Document):
         files = []
         for f in self.files:
             file_att = f.to_mongo()
-            fd = f.data.read()
-            file_att['binary'] = base64.b64encode(fd)
             files.append(file_att)
         data['files'] = files
         try:

@@ -1,3 +1,4 @@
+import base64
 from mongoengine import DoesNotExist, GridFSProxy
 
 __author__ = 'gastonrobledo'
@@ -322,18 +323,17 @@ class TicketAttachments(Resource):
         pass
 
     def post(self, tkt_id, *args, **kwargs):
-        files = request.files.getlist('file')
+        file_item = request.files.get('file')
         data = request.form
         ticket = Ticket.objects.get(pk=tkt_id)
-        if files and ticket and data:
-            for f in files:
-                att = Attachment()
-                att.data.put(f)
-                att.name = data.get('name')
-                att.size = data.get('size')
-                att.type = data.get('type')
-                att.save()
-                ticket.files.append(att)
+        if file_item and ticket and data:
+            att = Attachment()
+            att.name = data.get('name')
+            att.size = data.get('size')
+            att.type = data.get('type')
+            att.data = base64.b64encode(file_item.stream.read())
+            att.save()
+            ticket.files.append(att)
             ticket.save()
-            return ticket.to_json(), 200
+            return att.to_json(), 200
         return jsonify({'error': 'Bad Request'}), 400

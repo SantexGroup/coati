@@ -337,3 +337,18 @@ class TicketAttachments(Resource):
             ticket.save()
             return att.to_json(), 200
         return jsonify({'error': 'Bad Request'}), 400
+
+
+class AttachmentInstance(Resource):
+
+    def __init__(self):
+        super(AttachmentInstance, self).__init__()
+
+    def get(self, tkt_id, att_id, *args, **kwargs):
+        return Attachment.objects.get(pk=att_id).to_json()
+
+    def delete(self,tkt_id, att_id, *args, **kwargs):
+        att = Attachment.objects.get(pk=att_id)
+        Ticket.objects(pk=tkt_id).update_one(pull__files=att)
+        att.delete()
+        return jsonify({}), 204

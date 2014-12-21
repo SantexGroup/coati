@@ -40,7 +40,11 @@
             },
             'upload_attachments': function(tkt_id, files, extra_data){
                return file_upload.$do('/ticket/' + tkt_id + '/attachments', files, extra_data);
+            },
+            'delete_attachment': function(tkt_id,att_id){
+               return req.$do('/ticket/' + tkt_id + '/attachments/' + att_id + '/delete', req.METHODS.DELETE);
             }
+
         };
     };
 

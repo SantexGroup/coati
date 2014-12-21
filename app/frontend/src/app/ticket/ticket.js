@@ -115,12 +115,26 @@
             });
         });
 
-        vm.removeFile = function (index) {
-            vm.files.splice(index, 1);
+        vm.removeFileFromQueue = function (f) {
+             _.pull(vm.files, f);
         };
+
+        vm.delete_file = function(f){
+            TicketService.delete_attachment(vm.ticket._id.$oid, f._id.$oid).then(function(){
+                _.pull(vm.ticket.files, f);
+            });
+        };
+
+
 
         vm.download = function (f) {
             downloader.download_file(f.name, f.type, f.data);
+        };
+
+        vm.checkMember = function(m){
+            if(vm.ticket !== undefined) {
+                return _.contains(vm.ticket.assigned_to, m);
+            }
         };
 
         vm.checkTypeIcon = function (f) {

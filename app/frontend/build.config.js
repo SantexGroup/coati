@@ -64,6 +64,7 @@ module.exports = {
     vendor_files: {
         js: [
             'vendor/angular/angular.js',
+            'vendor/lodash/dist/lodash.min.js',
             'vendor/jquery/dist/jquery.min.js',
             'vendor/jquery-ui/ui/minified/jquery-ui.min.js',
             'vendor/angular-ui-router/release/angular-ui-router.js',

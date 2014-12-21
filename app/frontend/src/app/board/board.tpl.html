@@ -5,7 +5,9 @@
     <div class="col-md-12" ng-show="vm.sprint.started" prepare-board>
 
         <h3>Active Sprint: <[ vm.sprint.name ]></h3>
-
+        <div class="pull-right">
+            <!-- aca van los usuarios -->
+        </div>
         <div class="board-area-wrapper" id="board-area-wrapper">
             <div class="board-area" id="board-area">
                 <ul class="columns">
@@ -19,10 +21,8 @@
                                     <li ng-repeat="tkt in vm.tickets track by tkt._id.$oid"
                                         class="card ticket-item <[ tkt.type ]>"
                                         as-sortable-item
+                                        as-sortable-item-handle
                                         ng-click="vm.showDetails($event, tkt._id.$oid);">
-                                        <i class="icon-ellipsis-vertical handler"
-                                           as-sortable-item-handle></i>
-
                                         <div class="task-title">
                                             <span class="task-title-sp">
                                               <[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
@@ -44,10 +44,8 @@
                                     <li ng-repeat="tkt in col.tickets"
                                         class="card ticket-item <[ tkt.type ]>"
                                         as-sortable-item
+                                        as-sortable-item-handle
                                         ng-click="vm.showDetails($event, tkt._id.$oid);">
-                                        <i class="icon-ellipsis-vertical handler"
-                                           as-sortable-item-handle></i>
-
                                         <div class="task-title">
                                             <span class="task-title-sp">
                                               <[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>

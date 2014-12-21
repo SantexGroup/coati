@@ -5,7 +5,7 @@ from resources.project import ProjectList, ProjectInstance, ProjectColumns, \
     ProjectColumnsOrder, ProjectColumn, ProjectMembers
 from resources.ticket import TicketOrderProject, TicketOrderSprint, TicketProjectList, \
     TicketMovement, TicketInstance, TicketTransition, TicketColumnOrder, \
-    TicketComments, TicketAttachments
+    TicketComments, TicketAttachments, AttachmentInstance
 from resources.user import UsersList, UserInstance, UserSearch, UserLogged
 from app.utils import output_json
 
@@ -40,6 +40,7 @@ def init_app(app, decorators=None):
     api.add_resource(TicketInstance, '/api/ticket/<string:tkt_id>')
     api.add_resource(TicketComments, '/api/ticket/<string:tkt_id>/comments')
     api.add_resource(TicketAttachments, '/api/ticket/<string:tkt_id>/attachments')
+    api.add_resource(AttachmentInstance, '/api/ticket/<string:tkt_id>/attachments/<string:att_id>/delete')
 
     api.add_resource(TicketMovement, '/api/ticket/movement')
     api.add_resource(TicketTransition, '/api/ticket/transition')

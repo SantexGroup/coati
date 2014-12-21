@@ -30,6 +30,12 @@
             });
         };
 
+        var getMembers = function(){
+            ProjectService.get_members(vm.project_pk).then(function(usrs){
+               vm.users = usrs;
+            });
+        };
+
         var getColumnConfiguration = function (project_pk) {
             ProjectService.get_columns(project_pk).then(function (cols) {
                 vm.columns = cols;
@@ -141,6 +147,7 @@
                 getColumnConfiguration(vm.project_pk);
                 getProjectData(vm.project_pk);
                 getSprintTickets(vm.sprint._id.$oid);
+                getMembers();
             }
         });
 

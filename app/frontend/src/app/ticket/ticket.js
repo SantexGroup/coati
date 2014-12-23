@@ -136,7 +136,7 @@
         vm.checkMember = function (m) {
             if (vm.ticket !== undefined) {
                 return _.find(vm.ticket.assigned_to, function (obj) {
-                    var valid = obj.$oid === m.member._id.$oid;
+                    var valid = obj._id.$oid === m.member._id.$oid;
                     m.checked = valid;
                     return valid;
                 });

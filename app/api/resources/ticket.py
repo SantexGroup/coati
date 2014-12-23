@@ -366,9 +366,11 @@ class MemberTicketInstance(Resource):
         try:
             tkt = Ticket.objects.get(pk=tkt_id)
             user = User.objects.get(pk=member_id)
-            tkt.assigned_to.append(user)
-            tkt.save()
-            return jsonify({'success': True}), 200
+            if user not in tkt.assigned_to:
+                tkt.assigned_to.append(user)
+                tkt.save()
+                return jsonify({'success': True}), 200
+            return jsonify({'fail': 'Already added'}), 200
         except DoesNotExist as ex:
             return jsonify({'error': 'Bad Request'}), 400
 

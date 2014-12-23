@@ -64,7 +64,7 @@
         };
 
         vm.renameSprint = function (sprint) {
-            SprintService.update(sprint).then(function(){
+            SprintService.update(sprint).then(function () {
                 growl.addSuccessMessage('The sprint was renamed successfully');
             });
         };
@@ -142,110 +142,111 @@
         };
 
         vm.sortSprintOptions = {
-
-        };
-
-        vm.sortBacklog = {
-            accept: function (sourceItem, destItem) {
-                return sourceItem.element.hasClass('user-story') || sourceItem.element.hasClass('ticket-item');
+            connectWith: '.sprint-section',
+            forcePlaceholderSize: true,
+            placeholder: 'placeholder-item',
+            start: function (e, ui) {
+                ui.placeholder.height(ui.helper.outerHeight());
             },
-            itemMoved: function (event) {
-                // This happens when a ticket is moved from the Backlog to a Sprint
-                var source = event.source.itemScope.modelValue;
-                var dest = event.dest.sortableScope.$parent.modelValue;
-                var new_order = [];
-                angular.forEach(event.dest.sortableScope.modelValue, function (val, key) {
-                    new_order.push(val._id.$oid);
-                });
-                var data = {
-                    source: {
-                        ticket_id: source._id.$oid,
-                        project_id: source.project._id.$oid,
-                        number: source.number
-                    },
-                    dest: {
-                        sprint_id: dest._id.$oid,
-                        order: new_order
-                    }
-                };
-                TicketService.movement(data);
+            update: function(e, ui){
+               this.updated = true;
             },
-            orderChanged: function (event) {
-                // This happens when a ticket is sorted in the backlog
-                var new_order = [];
-                angular.forEach(vm.tickets, function (val, key) {
-                    new_order.push(val._id.$oid);
-                });
-                TicketService.update_backlog_order(vm.project._id.$oid, new_order);
-            },
-            containment: '#planning',
-            containerPositioning: 'relative',
-            type_sortable: 'project'
-        };
-
-        vm.sortTickets = {
-            accept: function (sourceItem, destItem) {
-                return sourceItem.element.hasClass('user-story') || sourceItem.element.hasClass('ticket-item');
-            },
-            itemMoved: function (event) {
-                // This happens when a ticket is moved from one Sprint to another or backlog
-                var dest = {};
-                var new_order = [];
-                var tickets = event.dest.sortableScope.modelValue;
-                angular.forEach(tickets, function (val, key) {
-                    new_order.push(val._id.$oid);
-                });
-                if (event.dest.sortableScope.options.type_sortable === 'project') {
-                    dest = {
-                        project_id: event.dest.sortableScope.$parent.project._id.$oid,
-                        order: new_order
-                    };
-                } else {
-                    dest = {
-                        sprint_id: event.dest.sortableScope.$parent.modelValue._id.$oid,
-                        order: new_order
-                    };
+            stop: function (e, ui) {
+                if(this.updated) {
+                    var new_order = [];
+                    angular.forEach(ui.item.sortable.sourceModel, function (val, key) {
+                        new_order.push(val._id.$oid);
+                    });
+                    SprintService.update_order(vm.project._id.$oid, new_order);
                 }
-                var data = {
-                    source: {
-                        ticket_id: event.source.itemScope.modelValue._id.$oid,
-                        sprint_id: event.source.sortableScope.$parent.modelValue._id.$oid
-                    },
-                    dest: dest
-                };
-                TicketService.movement(data);
-            },
-            orderChanged: function (event) {
-                // This happens when a ticket is sorted withing the same Sprint
-                var new_order = [];
-                var tickets = event.source.sortableScope.modelValue;
-                angular.forEach(tickets, function (val, key) {
-                    new_order.push(val._id.$oid);
-                });
-                var sprint = event.source.sortableScope.$parent.modelValue;
-                TicketService.update_sprint_order(sprint._id.$oid, new_order);
-            },
-            containment: '#planning',
-            containerPositioning: 'relative',
-            type_sortable: 'sprint'
+            }
         };
 
-        vm.sortSprints = {
-            accept: function (sourceItem, destItem) {
-                return sourceItem.element.hasClass('sprint-item');
+        vm.sortTicketOptions = {
+            connectWith: '.task-list',
+            forcePlaceholderSize: true,
+            placeholder: 'placeholder-item',
+            start: function (e, ui) {
+                ui.placeholder.height(ui.helper.outerHeight());
             },
-            orderChanged: function (event) {
-                //do something
-                var new_order = [];
-                angular.forEach(vm.sprints, function (val, key) {
-                    new_order.push(val._id.$oid);
-                });
-                SprintService.update_order(vm.project._id.$oid, new_order);
+            update: function (e, ui) {
+                this.updated = true;
+                this.sender = ui.sender !== null ? ui.sender[0] : null;
             },
-            containment: '#planning',
-            containerPositioning: 'relative'
-        };
+            stop: function (e, ui) {
+                if (this.updated) {
+                    var target, sender, ticket;
+                    var new_order = [];
+                    target = angular.element(ui.item.sortable.droptarget).scope();
+                    sender = angular.element(ui.item.sortable.source).scope();
+                    ticket = ui.item.sortable.model;
+                    /* this happens with the order in the same sortable */
+                    if (this.sender == null) {
+                        if (target.sprint !== undefined) {
+                            angular.forEach(target.sprint.tickets, function (v, k) {
+                                new_order.push(v._id.$oid);
+                            });
+                            TicketService.update_sprint_order(target.sprint._id.$oid, new_order);
+                        } else {
+                            angular.forEach(target.tickets, function (v, k) {
+                                new_order.push(v._id.$oid);
+                            });
+                            TicketService.update_backlog_order(vm.project._id.$oid, new_order);
+                        }
 
+                    } else {
+                        var dest, source;
+
+                        //prepare destination
+                        if (target.sprint === undefined) {
+                            angular.forEach(target.vm.tickets, function (v, k) {
+                                new_order.push(v._id.$oid);
+                            });
+                            // goes to backlog
+                            dest = {
+                                project_id: target.vm.project._id.$oid,
+                                order: new_order
+                            };
+                        } else {
+                            //goes to sprint
+                            angular.forEach(target.sprint.tickets, function (v, k) {
+                                new_order.push(v._id.$oid);
+                            });
+                            // goes to backlog
+                            dest = {
+                                sprint_id: target.sprint._id.$oid,
+                                order: new_order
+                            };
+                        }
+
+                        //prepare source
+                        if (sender.sprint === undefined) {
+                            angular.forEach(target.vm.tickets, function (v, k) {
+                                new_order.push(v._id.$oid);
+                            });
+                            // goes from backlog to sprint
+                            source = {
+                                ticket_id: ticket._id.$oid,
+                                project_id: sender.vm.project._id.$oid,
+                                number: ticket.number
+                            };
+                        } else {
+                            //goes from sprint to sprint
+                            source = {
+                                ticket_id: ticket._id.$oid,
+                                sprint_id: sender.sprint._id.$oid
+                            };
+                        }
+
+                        var data = {
+                            source: source,
+                            dest: dest
+                        };
+                        TicketService.movement(data);
+                    }
+                }
+            }
+        };
 
         vm.create_sprint = function () {
             SprintService.save(vm.project._id.$oid).then(function (sprint) {

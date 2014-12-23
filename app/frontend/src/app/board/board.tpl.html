@@ -15,13 +15,10 @@
                         <header class="panel-heading">Sprint Backlog</header>
                         <div class="panel-body">
                             <div class="task-content">
-                                <ul class="task-list" as-sortable="vm.sortTickets"
-                                    is-enabled="true"
+                                <ul class="task-list" ui-sortable="vm.sortTicketOptions"
                                     ng-model="vm.tickets">
                                     <li ng-repeat="tkt in vm.tickets track by tkt._id.$oid"
                                         class="card ticket-item <[ tkt.type ]>"
-                                        as-sortable-item
-                                        as-sortable-item-handle
                                         ng-click="vm.showDetails($event, tkt._id.$oid);">
                                         <div class="task-title">
                                             <span class="task-title-sp">
@@ -38,13 +35,10 @@
                         <header class="panel-heading"><[ col.title ]></header>
                         <div class="panel-body" ng-style="vm.checkAlert(col)">
                             <div class="task-content">
-                                <ul class="task-list" as-sortable="vm.sortTickets"
-                                    is-enabled="true"
+                                <ul class="task-list" ui-sortable="vm.sortTicketOptions"
                                     ng-model="col.tickets">
                                     <li ng-repeat="tkt in col.tickets"
                                         class="card ticket-item <[ tkt.type ]>"
-                                        as-sortable-item
-                                        as-sortable-item-handle
                                         ng-click="vm.showDetails($event, tkt._id.$oid);">
                                         <div class="task-title">
                                             <span class="task-title-sp">

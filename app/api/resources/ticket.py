@@ -164,10 +164,13 @@ class TicketMovement(Resource):
                 tkt_ord_sprint.save()
 
                 for index, tkt_id in enumerate(dest.get('order')):
-                    tkt_order = SprintTicketOrder.objects.get(ticket=tkt_id,
-                                                              sprint=sprint)
-                    tkt_order.order = index
-                    tkt_order.save()
+                    try:
+                        tkt_order = SprintTicketOrder.objects.get(ticket=tkt_id,
+                                                                  sprint=sprint)
+                        tkt_order.order = index
+                        tkt_order.save()
+                    except DoesNotExist:
+                        pass
 
             elif source.get('sprint_id') and dest.get('sprint_id'):
                 # From sprint to sprint

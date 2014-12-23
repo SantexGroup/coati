@@ -104,14 +104,11 @@
                             <div class="panel-body">
                                 <div class="task-content">
                                     <ul class="task-list"
-                                        as-sortable="vm.sortColumns"
-                                        ng-model="vm.columns"
-                                        is-enabled="true">
+                                        ui-sortable="vm.sortColumnOptions"
+                                        ng-model="vm.columns">
                                         <li ng-repeat="col in vm.columns track by col._id.$oid"
-                                            as-sortable-item
                                             class="user-story">
-                                            <i class="icon-ellipsis-vertical"
-                                               as-sortable-item-handle></i>
+                                            <i class="icon-ellipsis-vertical"></i>
 
                                             <div class="task-title">
                                                     <span class="task-title-sp">

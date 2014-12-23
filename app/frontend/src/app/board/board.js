@@ -30,9 +30,9 @@
             });
         };
 
-        var getMembers = function(){
-            ProjectService.get_members(vm.project_pk).then(function(usrs){
-               vm.users = usrs;
+        var getMembers = function () {
+            ProjectService.get_members(vm.project_pk).then(function (usrs) {
+                vm.users = usrs;
             });
         };
 
@@ -56,7 +56,7 @@
             vm.already_showed = true;
 
             var args = location.search();
-            if(!args.ticket) {
+            if (!args.ticket) {
                 location.search('ticket', id);
             }
 
@@ -95,49 +95,53 @@
             }
         };
 
-        vm.sortTickets = {
-            accept: function (sourceItem, destItem) {
-                return sourceItem.element.hasClass('ticket-item');
+        vm.sortTicketOptions = {
+            connectWith: '.task-list',
+            forcePlaceholderSize: true,
+            placeholder: 'placeholder-item',
+            start: function (e, ui) {
+                ui.placeholder.height(ui.helper.outerHeight());
             },
-            itemMoved: function (event) {
-                // This happens when a ticket is moved from the Backlog to a Sprint
-                var source = event.source.itemScope.tkt;
-                var target = event.dest.sortableScope.$parent.col;
+            update: function (e, ui) {
+                this.updated = true;
+                this.sender = ui.sender !== null ? ui.sender[0] : null;
+            },
+            stop: function (e, ui) {
+                if (this.updated) {
+                    var target, sender, ticket;
+                    var new_order = [];
+                    target = angular.element(ui.item.sortable.droptarget).scope();
+                    sender = angular.element(ui.item.sortable.source).scope();
+                    ticket = ui.item.sortable.model;
+                    /* this happens with the order in the same sortable */
+                    if (this.sender == null) {
+                        if(target.col) {
+                            angular.forEach(ui.item.sortable.sourceModel, function (v, k) {
+                                new_order.push(v._id.$oid);
+                            });
+                            //update order
+                            TicketService.order_ticket_column(target.col._id.$oid, {'order': new_order});
+                        }
 
-                var new_order = [];
-                angular.forEach(event.dest.sortableScope.modelValue, function (val, key) {
-                    new_order.push(val._id.$oid);
-                });
+                    } else {
+                        angular.forEach(ui.item.sortable.droptargetModel, function (v, k) {
+                            new_order.push(v._id.$oid);
+                        });
+                        var data = {
+                            ticket: ticket._id.$oid,
+                            order: new_order
+                        };
 
-                var data = {
-                    ticket: source._id.$oid,
-                    order: new_order
-                };
+                        if (target.col) {
+                            data.column = target.col._id.$oid;
+                        } else {
+                            data.backlog = target.vm.sprint._id.$oid;
+                        }
+                        TicketService.transition(data);
 
-                if (target) {
-                    data.column = target._id.$oid;
-                } else {
-                    data.backlog = vm.sprint._id.$oid;
+                    }
                 }
-                TicketService.transition(data);
-            },
-            orderChanged: function (event) {
-                // This happens when a ticket is sorted in the column
-                var new_order = [];
-                angular.forEach(event.source.sortableScope.modelValue, function (val, key) {
-                    new_order.push(val._id.$oid);
-                });
-                var col_id = event.dest.sortableScope.$parent.col._id.$oid;
-                if (col_id) {
-                    var data = {
-                        order: new_order
-                    };
-                    TicketService.order_ticket_column(col_id, data);
-                }
-            },
-            containment: '#board-area-wrapper',
-            containerPositioning: 'relative',
-            scrollableContainer: '#board-area'
+            }
         };
 
 
@@ -158,7 +162,7 @@
         }, function () {
             var params = location.search();
             if (params.ticket && !vm.already_showed) {
-                if(vm.project) {
+                if (vm.project) {
                     showTicketDetails(params.ticket);
                 }
             } else {

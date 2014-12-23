@@ -96,7 +96,7 @@
 
     ProjectFormCtrl.$inject = ['$state', 'ProjectService', 'growl'];
 
-    angular.module('Coati.Project', ['ui.router', 'ui.sortable',
+    angular.module('Coati.Project', ['ui.router',
         'Coati.Settings',
         'Coati.Planning',
         'Coati.Board',

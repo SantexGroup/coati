@@ -7,16 +7,14 @@
 <p><[ vm.project.description ]></p>
 <div class="row" id="planning">
     <div class="col-md-12" id="planning-list">
-        <ul class="sprint-section" as-sortable="vm.sortSprints"
-            is-enabled="true"
+        <ul class="sprint-section" ui-sortable="vm.sortSprintOptions"
             ng-model="vm.sprints">
-            <li ng-repeat="sprint in vm.sprints" as-sortable-item
+            <li ng-repeat="sprint in vm.sprints"
                 class="sprint-item">
                 <section class="panel tasks-widget sprint-item"
                          ng-class="{started:vm.sprint.started}">
                     <header class="panel-heading">
-                        <i class="icon-ellipsis-vertical handler"
-                           as-sortable-item-handle></i>
+                        <i class="icon-ellipsis-vertical handler"></i>
                         <span inline-edit="sprint.name" on-save="vm.renameSprint(sprint);"><[ sprint.name ]></span>
                         <span class="badge"><[ sprint.tickets.length ]></span>
 
@@ -38,15 +36,13 @@
                     </header>
                     <div class="panel-body">
                         <div class="task-content">
-                            <ul class="task-list" as-sortable="vm.sortTickets"
-                                is-enabled="true" ng-model="sprint.tickets">
+                            <ul class="task-list" ui-sortable="vm.sortTicketOptions"
+                                ng-model="sprint.tickets">
                                 <li ng-repeat="tkt in sprint.tickets track by tkt._id.$oid"
-                                    as-sortable-item
                                     class="ticket-item <[ tkt.type ]>"
                                     ng-click="vm.showQuickDetail(tkt);"
                                     title="Click to quick view">
-                                    <i class="icon-ellipsis-vertical handler"
-                                       as-sortable-item-handle></i>
+                                    <i class="icon-ellipsis-vertical handler"></i>
 
                                     <div class="task-title">
                                         <span class="task-title-sp">
@@ -84,14 +80,13 @@
             </header>
             <div class="panel-body">
                 <div class="task-content">
-                    <ul class="task-list" as-sortable="vm.sortBacklog"
-                        ng-model="vm.tickets" is-enabled="true">
+                    <ul class="task-list" ui-sortable="vm.sortTicketOptions"
+                        ng-model="vm.tickets">
                         <li ng-repeat="tkt in vm.tickets track by tkt._id.$oid"
-                            as-sortable-item class="user-story <[ tkt.type ]>"
+                            class="user-story <[ tkt.type ]>"
                             ng-click="showQuickDetail(tkt);"
                                 title="Click to quick view">
-                            <i class="icon-ellipsis-vertical"
-                               as-sortable-item-handle></i>
+                            <i class="icon-ellipsis-vertical handler"></i>
 
                             <div class="task-title">
                                 <span class="task-title-sp">

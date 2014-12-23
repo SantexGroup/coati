@@ -141,6 +141,10 @@
             });
         };
 
+        vm.sortSprintOptions = {
+
+        };
+
         vm.sortBacklog = {
             accept: function (sourceItem, destItem) {
                 return sourceItem.element.hasClass('user-story') || sourceItem.element.hasClass('ticket-item');
@@ -267,7 +271,7 @@
     Config.$inject = ['$stateProvider'];
     ProjectCtrlPlanning.$inject = ['$scope', '$state', '$modal', 'growl', 'ProjectService', 'TicketService', 'SprintService'];
 
-    angular.module('Coati.Planning', ['ui.router',
+    angular.module('Coati.Planning', ['ui.router', 'ui.sortable',
         'Coati.Directives',
         'Coati.Services.Project',
         'Coati.Services.Sprint',

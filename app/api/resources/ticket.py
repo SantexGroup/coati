@@ -355,3 +355,26 @@ class AttachmentInstance(Resource):
         Ticket.objects(pk=tkt_id).update_one(pull__files=att)
         att.delete()
         return jsonify({}), 204
+
+
+class MemberTicketInstance(Resource):
+
+    def __init__(self):
+        super(MemberTicketInstance, self).__init__()
+
+    def put(self, tkt_id, member_id, *args, **kwargs):
+        try:
+            tkt = Ticket.objects.get(pk=tkt_id)
+            user = User.objects.get(pk=member_id)
+            tkt.assigned_to.append(user)
+            tkt.save()
+            return jsonify({'success': True}), 200
+        except DoesNotExist as ex:
+            return jsonify({'error': 'Bad Request'}), 400
+
+    def delete(self, tkt_id, member_id, *args, **kwargs):
+        try:
+            Ticket.objects(pk=tkt_id).update_one(pull__assigned_to=member_id)
+            return jsonify({'success': True}), 200
+        except DoesNotExist as ex:
+            return jsonify({'error': 'Bad Request'}), 400

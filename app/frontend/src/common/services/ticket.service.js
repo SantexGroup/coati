@@ -43,6 +43,12 @@
             },
             'delete_attachment': function(tkt_id,att_id){
                return req.$do('/ticket/' + tkt_id + '/attachments/' + att_id + '/delete', req.METHODS.DELETE);
+            },
+            'assign_member': function(tkt_id, member){
+                return req.$do('/ticket/' + tkt_id + '/assignments/' + member, req.METHODS.UPDATE);
+            },
+            'remove_member': function(tkt_id, member){
+                return req.$do('/ticket/' + tkt_id + '/assignments/' + member, req.METHODS.DELETE);
             }
 
         };

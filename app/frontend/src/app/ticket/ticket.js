@@ -85,6 +85,21 @@
             });
         };
 
+        var getTicket = function (ticket_id) {
+            TicketService.get(ticket_id).then(function (tkt) {
+                vm.ticket = tkt;
+
+                getComments(tkt._id.$oid);
+
+                angular.forEach(conf.TICKET_TYPES, function (val, key) {
+                    if (val.value === vm.ticket.type) {
+                        vm.type = val.name;
+                        return;
+                    }
+                });
+            });
+        };
+
         var do_upload = function (file) {
             file.upload = TicketService.upload_attachments(vm.ticket._id.$oid, file,
                 {'name': file.name, 'size': file.size, 'type': file.type})
@@ -101,39 +116,46 @@
         };
 
         vm.project = item.project;
-
-        TicketService.get(item.ticket_id).then(function (tkt) {
-            vm.ticket = tkt;
-
-            getComments(tkt._id.$oid);
-
-            angular.forEach(conf.TICKET_TYPES, function (val, key) {
-                if (val.value === vm.ticket.type) {
-                    vm.type = val.name;
-                    return;
-                }
-            });
-        });
+        getTicket(item.ticket_id);
 
         vm.removeFileFromQueue = function (f) {
-             _.pull(vm.files, f);
+            _.pull(vm.files, f);
         };
 
-        vm.delete_file = function(f){
-            TicketService.delete_attachment(vm.ticket._id.$oid, f._id.$oid).then(function(){
+        vm.delete_file = function (f) {
+            TicketService.delete_attachment(vm.ticket._id.$oid, f._id.$oid).then(function () {
                 _.pull(vm.ticket.files, f);
             });
         };
-
 
 
         vm.download = function (f) {
             downloader.download_file(f.name, f.type, f.data);
         };
 
-        vm.checkMember = function(m){
-            if(vm.ticket !== undefined) {
-                return _.contains(vm.ticket.assigned_to, m);
+        vm.checkMember = function (m) {
+            if (vm.ticket !== undefined) {
+                return _.find(vm.ticket.assigned_to, function (obj) {
+                    var valid = obj.$oid === m.member._id.$oid;
+                    m.checked = valid;
+                    return valid;
+                });
+            }
+        };
+
+        vm.assign_to_ticket = function (m) {
+            if (m.checked) {
+                TicketService.assign_member(vm.ticket._id.$oid, m.member._id.$oid).then(function () {
+                    getTicket(vm.ticket._id.$oid);
+                }, function () {
+                    m.checked = false;
+                });
+            } else {
+                TicketService.remove_member(vm.ticket._id.$oid, m.member._id.$oid).then(function () {
+                    getTicket(vm.ticket._id.$oid);
+                }, function () {
+                    m.checked = true;
+                });
             }
         };
 

@@ -312,7 +312,31 @@ input.error {
 }
 
 .board-area .ticket-item, .board-area .user-story{
-  padding: 9px 0 15px 5px !important;
+  padding: 9px 0 5px 5px !important;
+}
+.board-area .ticket-item .options,
+.board-area .user-story .options{
+  margin-top: 10px;
+}
+
+.board-area .members{
+  padding: 0px;
+  margin: 0px;
+  display:inline-block;
+}
+.board-area .members li{
+  float: left;
+}
+.board-area .members li > img{
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+  margin-right: 3px;
+  border: 1px solid gray;
+}
+
+.board-area .members li:last-child{
+  clear:right;
 }
 
 .ticket-item.U, .user-story.U {

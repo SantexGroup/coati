@@ -5,6 +5,7 @@
     <div class="col-md-12" ng-show="vm.sprint.started" prepare-board>
 
         <h3>Active Sprint: <[ vm.sprint.name ]></h3>
+
         <div class="pull-right">
             <!-- aca van los usuarios -->
         </div>
@@ -15,7 +16,8 @@
                         <header class="panel-heading">Sprint Backlog</header>
                         <div class="panel-body">
                             <div class="task-content">
-                                <ul class="task-list" ui-sortable="vm.sortTicketOptions"
+                                <ul class="task-list"
+                                    ui-sortable="vm.sortTicketOptions"
                                     ng-model="vm.tickets">
                                     <li ng-repeat="tkt in vm.tickets track by tkt._id.$oid"
                                         class="card ticket-item <[ tkt.type ]>"
@@ -24,6 +26,21 @@
                                             <span class="task-title-sp">
                                               <[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
                                             </span>
+
+                                        </div>
+                                        <div class="row options">
+                                            <div class="col-md-12">
+                                                <span class="badge bg-warning"><[ tkt.points ]></span>
+                                                <ul class="members pull-right">
+                                                    <li ng-repeat="m in tkt.assigned_to"
+                                                        title="<[ m.email ]>">
+                                                        <img ng-if="m.picture"
+                                                             src="<[ m.picture ]>"/>
+                                                        <img ng-if="!m.picture"
+                                                             src="/static/assets/img/koala.png"/>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </li>
                                 </ul>
@@ -35,7 +52,8 @@
                         <header class="panel-heading"><[ col.title ]></header>
                         <div class="panel-body" ng-style="vm.checkAlert(col)">
                             <div class="task-content">
-                                <ul class="task-list" ui-sortable="vm.sortTicketOptions"
+                                <ul class="task-list"
+                                    ui-sortable="vm.sortTicketOptions"
                                     ng-model="col.tickets">
                                     <li ng-repeat="tkt in col.tickets"
                                         class="card ticket-item <[ tkt.type ]>"
@@ -44,6 +62,20 @@
                                             <span class="task-title-sp">
                                               <[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
                                             </span>
+                                        </div>
+                                        <div class="row options">
+                                            <div class="col-md-12">
+                                                <span class="badge bg-warning"><[ tkt.points ]></span>
+                                                <ul class="members pull-right">
+                                                    <li ng-repeat="m in tkt.assigned_to"
+                                                        title="<[ m.email ]>">
+                                                        <img ng-if="m.picture"
+                                                             src="<[ m.picture ]>"/>
+                                                        <img ng-if="!m.picture"
+                                                             src="/static/assets/img/koala.png"/>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </li>
                                 </ul>

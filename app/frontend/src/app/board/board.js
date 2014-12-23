@@ -74,10 +74,14 @@
             });
             vm.modal_ticket_instance.result.then(function () {
                 vm.already_showed = false;
+                getColumnConfiguration(vm.project_pk);
+                getSprintTickets(vm.sprint._id.$oid);
                 location.search('');
 
             }, function () {
                 vm.already_showed = false;
+                getColumnConfiguration(vm.project_pk);
+                getSprintTickets(vm.sprint._id.$oid);
                 location.search('');
             });
 

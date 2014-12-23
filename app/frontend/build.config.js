@@ -21,8 +21,11 @@ module.exports = {
      */
     app_files: {
         js: [ 'src/**/*.js', '!src/**/*.spec.js', '!src/assets/**/*.js',
-            '!src/**/*.map.js' ],
+            '!src/**/*.map.js'],
         jsunit: [ 'src/**/*.spec.js' ],
+
+        lint: ['src/**/*.js', '!src/**/utils/*.js', '!src/assets/**/*.js',
+            '!src/**/*.map.js'],
 
         coffee: [ 'src/**/*.coffee', '!src/**/*.spec.coffee' ],
         coffeeunit: [ 'src/**/*.spec.coffee' ],
@@ -63,8 +66,9 @@ module.exports = {
      */
     vendor_files: {
         js: [
-            'vendor/angular/angular.js',
             'vendor/jquery/dist/jquery.min.js',
+            'vendor/angular/angular.min.js',
+            'vendor/lodash/dist/lodash.min.js',
             'vendor/jquery-ui/ui/minified/jquery-ui.min.js',
             'vendor/angular-ui-router/release/angular-ui-router.js',
             'vendor/angular-ui-utils/modules/route/route.js',
@@ -74,18 +78,19 @@ module.exports = {
             'vendor/bootstrap/dist/js/bootstrap.min.js',
             'vendor/html5shiv/dist/html5shiv.min.js',
             'vendor/ng-tags-input/ng-tags-input.min.js',
-            'vendor/ng-sortable/dist/ng-sortable.js',
-            'vendor/highcharts/highcharts.js',
-            'vendor/angular-growl/build/angular-growl.min.js'
+            'vendor/highcharts/highcharts-all.js',
+            'vendor/ng-file-upload/angular-file-upload.min.js',
+            'vendor/ng-file-upload/angular-file-upload-shim.min.js',
+            'vendor/angular-ui-sortable/sortable.min.js'
         ],
         maps: [
+            'vendor/angular/angular.min.js.map',
             'vendor/jquery/dist/jquery.min.map'
         ],
         css: [
+            'vendor/angular/angular-csp.css',
             'vendor/angular-notifications/notification.min.css',
-            'vendor/ng-tags-input/ng-tags-input.min.css',
-            'vendor/ng-sortable/ng-sortable.min.css',
-            'vendor/angular-growl/build/angular-growl.min.css'
+            'vendor/ng-tags-input/ng-tags-input.min.css'
         ],
         assets: [],
         fonts: [

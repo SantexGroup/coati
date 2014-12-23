@@ -1,4 +1,5 @@
-from mongoengine import DoesNotExist
+import base64
+from mongoengine import DoesNotExist, GridFSProxy
 
 __author__ = 'gastonrobledo'
 
@@ -7,7 +8,8 @@ from flask import jsonify, session
 from flask.ext.restful import Resource, request
 
 from app.schemas import (Project, Ticket, SprintTicketOrder,
-                         Sprint, TicketColumnTransition, Column, User, Comment)
+                         Sprint, TicketColumnTransition, Column, User, Comment,
+                         Attachment)
 
 
 class TicketInstance(Resource):
@@ -162,10 +164,13 @@ class TicketMovement(Resource):
                 tkt_ord_sprint.save()
 
                 for index, tkt_id in enumerate(dest.get('order')):
-                    tkt_order = SprintTicketOrder.objects.get(ticket=tkt_id,
-                                                              sprint=sprint)
-                    tkt_order.order = index
-                    tkt_order.save()
+                    try:
+                        tkt_order = SprintTicketOrder.objects.get(ticket=tkt_id,
+                                                                  sprint=sprint)
+                        tkt_order.order = index
+                        tkt_order.save()
+                    except DoesNotExist:
+                        pass
 
             elif source.get('sprint_id') and dest.get('sprint_id'):
                 # From sprint to sprint
@@ -310,3 +315,66 @@ class TicketComments(Resource):
             c.save()
             return c.to_json(), 201
         return jsonify({'error': 'Bad Request'}), 400
+
+
+class TicketAttachments(Resource):
+
+    def __init__(self):
+        super(TicketAttachments, self).__init__()
+
+    def get(self, tkt_id, *args, **kwargs):
+        pass
+
+    def post(self, tkt_id, *args, **kwargs):
+        file_item = request.files.get('file')
+        data = request.form
+        ticket = Ticket.objects.get(pk=tkt_id)
+        if file_item and ticket and data:
+            att = Attachment()
+            att.name = data.get('name')
+            att.size = data.get('size')
+            att.type = data.get('type')
+            att.data = base64.b64encode(file_item.stream.read())
+            att.save()
+            ticket.files.append(att)
+            ticket.save()
+            return att.to_json(), 200
+        return jsonify({'error': 'Bad Request'}), 400
+
+
+class AttachmentInstance(Resource):
+
+    def __init__(self):
+        super(AttachmentInstance, self).__init__()
+
+    def get(self, tkt_id, att_id, *args, **kwargs):
+        return Attachment.objects.get(pk=att_id).to_json()
+
+    def delete(self,tkt_id, att_id, *args, **kwargs):
+        att = Attachment.objects.get(pk=att_id)
+        Ticket.objects(pk=tkt_id).update_one(pull__files=att)
+        att.delete()
+        return jsonify({}), 204
+
+
+class MemberTicketInstance(Resource):
+
+    def __init__(self):
+        super(MemberTicketInstance, self).__init__()
+
+    def put(self, tkt_id, member_id, *args, **kwargs):
+        try:
+            tkt = Ticket.objects.get(pk=tkt_id)
+            user = User.objects.get(pk=member_id)
+            tkt.assigned_to.append(user)
+            tkt.save()
+            return jsonify({'success': True}), 200
+        except DoesNotExist as ex:
+            return jsonify({'error': 'Bad Request'}), 400
+
+    def delete(self, tkt_id, member_id, *args, **kwargs):
+        try:
+            Ticket.objects(pk=tkt_id).update_one(pull__assigned_to=member_id)
+            return jsonify({'success': True}), 200
+        except DoesNotExist as ex:
+            return jsonify({'error': 'Bad Request'}), 400

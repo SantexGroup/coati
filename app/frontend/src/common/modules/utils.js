@@ -103,11 +103,53 @@
         };
     };
 
-    RequestHelper.$inject = ['$http', '$q', '$state', 'Conf', 'tokens', 'growl'];
+    var UploadHelper = function (up, tokens, conf) {
+        return {
+            '$do': function (url, files, extra_data, not_default) {
+                var token = tokens.get_token();
+                var headers = {};
+                if (token) {
+                    headers = {'Authorization': 'Token ' + token};
+                }
+                var endpoint = (not_default ? url : conf.BASE_API_URL + url);
+                return up.upload({
+                    headers: headers,
+                    url: endpoint,
+                    data: extra_data,
+                    file: files
+                });
+            }
+        };
+    };
 
-    angular.module('Coati.Helpers', ['Coati.Config', 'angular-growl'])
+    var DownloaderHelper = function () {
+        return {
+            // for non-IE
+            'download_file': function (name, mime_type, base64_string) {
+                var byteString = atob(base64_string);
+
+                // Convert that text into a byte array.
+                var ab = new ArrayBuffer(byteString.length);
+                var ia = new Uint8Array(ab);
+                for (var i = 0; i < byteString.length; i++) {
+                    ia[i] = byteString.charCodeAt(i);
+                }
+                var blob = new Blob([ia], {type: mime_type + ";charset=utf-8"});
+                saveAs(blob, name);
+            }
+        };
+    };
+
+    RequestHelper.$inject = ['$http', '$q', '$state', 'Conf', 'tokens', 'growl'];
+    UploadHelper.$inject = ['$upload', 'tokens', 'Conf'];
+
+    angular.module('Coati.Helpers', ['Coati.Config',
+        'angular-growl',
+        'angularFileUpload'])
         .factory('tokens', Tokens)
         .factory('$requests', RequestHelper)
+        .factory('$file_uploads', UploadHelper)
+        .factory('$file_download', DownloaderHelper)
         .factory('$objects', ObjectUtils);
 
 }(angular));

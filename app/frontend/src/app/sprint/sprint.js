@@ -62,7 +62,7 @@
 
     StartSprintController.$inject = ['$modalInstance', 'SprintService', 'sprint'];
 
-    angular.module('Coati.Sprint', ['ui.router', 'ui.sortable',
+    angular.module('Coati.Sprint', ['ui.router',
         'Coati.Directives',
         'Coati.Services.Sprint'])
         .controller('StartSprintController', StartSprintController);

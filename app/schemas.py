@@ -1,7 +1,9 @@
-import mongoengine
+import base64
 from datetime import datetime, timedelta
-from mongoengine_extras.fields import slugify, SlugField
+
+import mongoengine
 from bson import json_util
+
 
 TICKET_TYPE = (('U', 'User Story'),
                ('F', 'Feature'),
@@ -126,7 +128,11 @@ class Sprint(mongoengine.Document):
         ticket_list = []
         for t in tickets:
             tkt = t.ticket.to_mongo()
-            tkt.order = t.order
+            tkt['order'] = t.order
+            assignments = []
+            for ass in t.ticket.assigned_to:
+                assignments.append(ass.to_mongo())
+            tkt['assigned_to'] = assignments
             ticket_list.append(tkt)
         data["tickets"] = ticket_list
         return json_util.dumps(data)
@@ -148,12 +154,23 @@ class Sprint(mongoengine.Document):
         for t in tickets:
             tkt = t.ticket.to_mongo()
             tkt.order = t.order
+            assignments = []
+            for ass in t.ticket.assigned_to:
+                assignments.append(ass.to_mongo())
+            tkt['assigned_to'] = assignments
             ticket_list.append(tkt)
         return json_util.dumps(ticket_list)
 
     def clean(self):
         if self.project is None:
             raise mongoengine.ValidationError('Project must be provided')
+
+
+class Attachment(mongoengine.Document):
+    name = mongoengine.StringField()
+    size = mongoengine.IntField()
+    type = mongoengine.StringField()
+    data = mongoengine.StringField()
 
 
 class Ticket(mongoengine.Document):
@@ -166,6 +183,9 @@ class Ticket(mongoengine.Document):
     order = mongoengine.IntField()
     points = mongoengine.IntField()
     type = mongoengine.StringField(max_length=1, choices=TICKET_TYPE)
+    files = mongoengine.ListField(mongoengine.ReferenceField('Attachment'))
+    assigned_to = mongoengine.ListField(mongoengine.ReferenceField('User'),
+                                        unique=True)
 
     meta = {
         'queryset_class': CustomQuerySet
@@ -174,6 +194,11 @@ class Ticket(mongoengine.Document):
     def to_json(self, *args, **kwargs):
         data = self.to_mongo()
         data['project'] = self.project.to_mongo()
+        files = []
+        for f in self.files:
+            file_att = f.to_mongo()
+            files.append(file_att)
+        data['files'] = files
         try:
             tt = TicketColumnTransition.objects.get(ticket=self,
                                                     latest_state=True)
@@ -188,6 +213,11 @@ class Ticket(mongoengine.Document):
                 data['sprint'] = sp.sprint.to_mongo()
         except mongoengine.DoesNotExist:
             pass
+
+        assignments = []
+        for ass in self.assigned_to:
+            assignments.append(ass.to_mongo())
+        data['assigned_to'] = assignments
 
         return json_util.dumps(data)
 
@@ -245,14 +275,21 @@ class Column(mongoengine.Document):
             'order')
         tickets = []
         for t in ticket_column:
+
+            assignments = []
+            for ass in t.ticket.assigned_to:
+                assignments.append(ass.to_mongo())
+
             value = {
+                'points': t.ticket.points,
                 'number': t.ticket.number,
                 'order': t.order,
                 'title': t.ticket.title,
                 '_id': t.ticket.id,
                 'who': t.who.to_mongo(),
                 'when': t.when,
-                'type': t.ticket.type
+                'type': t.ticket.type,
+                'assigned_to': assignments
             }
             tickets.append(value)
         data['tickets'] = tickets

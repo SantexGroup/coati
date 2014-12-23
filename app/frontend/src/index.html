@@ -11,11 +11,6 @@
     <link rel="stylesheet" type="text/css"
           href="{{ url_for('static', filename='<%= file %>')}}"/>
     <% }); %>
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 tooltipss and media queries -->
-    <!--[if lt IE 9]>
-    <script src="{{ url_for('static', filename='assets/js/html5shiv.js')}}"></script>
-    <script src="{{ url_for('static', filename='assets/js/respond.min.js')}}"></script>
-    <![endif]-->
 </head>
 
 <body ui-view="master_view"

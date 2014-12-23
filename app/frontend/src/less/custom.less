@@ -249,6 +249,7 @@ input.error {
   border-bottom: 1px solid #eee;
   border-bottom-right-radius: 5px;
   border-bottom-left-radius: 5px;
+  background-color: #FFFFFF;
 }
 
 /* ******************************************* */
@@ -308,6 +309,34 @@ input.error {
   margin-bottom: 2px;
   border-bottom: none !important;
   cursor: pointer;
+}
+
+.board-area .ticket-item, .board-area .user-story{
+  padding: 9px 0 5px 5px !important;
+}
+.board-area .ticket-item .options,
+.board-area .user-story .options{
+  margin-top: 10px;
+}
+
+.board-area .members{
+  padding: 0px;
+  margin: 0px;
+  display:inline-block;
+}
+.board-area .members li{
+  float: left;
+}
+.board-area .members li > img{
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+  margin-right: 3px;
+  border: 1px solid gray;
+}
+
+.board-area .members li:last-child{
+  clear:right;
 }
 
 .ticket-item.U, .user-story.U {
@@ -511,4 +540,61 @@ input.error {
   position: fixed;
   z-index: 10000;
   top: 70px;
+}
+.attachments{
+  margin-bottom: 10px;
+  clear:both;
+}
+.attachments .files {
+  margin: 5px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+  clear:both;
+}
+.attachments .files li{
+  margin-bottom: 5px;
+  border-bottom: 1px solid #ccc;
+}
+.attachments .files li.aborted{
+  background-color: #ff8a01;
+}
+.attachments .files .progress{
+  height: 10px;
+}
+
+.add_new_comment{
+  margin-top: 10px;
+}
+
+.members-menu {
+  min-width: 300px;
+}
+
+.member-item .img-container{
+  margin: 2px 8px;
+  padding: 5px;
+}
+.member-item img{
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border:1px solid #9c3fff;
+  border-radius: 5px;
+}
+.member-item .member-data{
+  margin:10px 0;
+}
+.member-item .member{
+
+}
+
+.ui-sortable > li{
+  padding: 0px !important;
+}
+
+
+.placeholder-item{
+  background-color: #00ffe6 !important;
+  border: 1px solid #e8e8e8;
 }

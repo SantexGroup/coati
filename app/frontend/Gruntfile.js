@@ -290,7 +290,7 @@ module.exports = function ( grunt ) {
      */
     jshint: {
       src: [ 
-        '<%= app_files.js %>'
+        '<%= app_files.lint %>'
       ],
       test: [
         '<%= app_files.jsunit %>'

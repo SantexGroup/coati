@@ -2,7 +2,10 @@
 
     function ConfigApp(interpolate, location, urlRoute, growlProvider) {
         urlRoute.when('/', '/home/');
-        location.html5Mode(true);
+        location.html5Mode({
+            enabled: true,
+            requireBase: false
+        });
         location.hashPrefix('!');
         interpolate.startSymbol('<[');
         interpolate.endSymbol(']>');

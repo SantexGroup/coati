@@ -17,7 +17,7 @@ module.exports = function ( karma ) {
     exclude: [
       'src/assets/**/*.js'
     ],
-    frameworks: [ 'jasmine', 'ng-scenario' ],
+    frameworks: [ 'jasmine'],
     plugins: [ 'karma-jasmine', 'karma-firefox-launcher', 'karma-chrome-launcher', 'karma-phantomjs-launcher', 'karma-coffee-preprocessor', 'karma-ng-scenario' ],
     preprocessors: {
       '**/*.coffee': 'coffee',
@@ -55,8 +55,7 @@ module.exports = function ( karma ) {
      */
     browsers: [
       'PhantomJS'
-    ],
-    logLevel: 'DEBUG'
+    ]
   });
 };
 

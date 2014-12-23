@@ -96,20 +96,25 @@
         };
 
         //order_columns
-        vm.sortColumns = {
-            accept: function (sourceItem, destItem) {
-                return true;
+        vm.sortColumnOptions = {
+            forcePlaceholderSize: true,
+            placeholder: 'placeholder-item',
+            start: function (e, ui) {
+                ui.placeholder.height(ui.helper.outerHeight());
             },
-            orderChanged: function (event) {
-                //do something
-                var new_order = [];
-                angular.forEach(vm.columns, function (val, key) {
-                    new_order.push(val._id.$oid);
-                });
-                ProjectService.order_columns(vm.project._id.$oid, new_order);
+            update: function (e, ui) {
+                this.updated = true;
             },
-            containment: '#planning',
-            containerPositioning: 'relative'
+            stop: function (e, ui) {
+                if (this.updated) {
+                    var new_order = [];
+                    angular.forEach(ui.item.sortable.sourceModel, function (v, k) {
+                        new_order.push(v._id.$oid);
+                    });
+                    //update order
+                    ProjectService.order_columns(vm.project._id.$oid, new_order);
+                }
+            }
         };
 
         var getColumnConfiguration = function (project_id) {

@@ -1,4 +1,5 @@
 __author__ = 'gastonrobledo'
+import json
 from datetime import timedelta, datetime
 
 from dateutil import parser
@@ -179,8 +180,9 @@ class SprintChart(Resource):
             data = {
                 'points_remaining': points_remaining,
                 'dates': days,
-                'tickets': tickets_per_day,
-                'ideal': ideal
+                'tickets_per_day': tickets_per_day,
+                'ideal': ideal,
+                'all_tickets': json.loads(sprint.get_tickets_with_latest_status())
             }
             return jsonify(data), 200
         return jsonify({'error': 'Bad Request'}), 400

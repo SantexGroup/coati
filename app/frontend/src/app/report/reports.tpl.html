@@ -14,7 +14,33 @@
         <p ng-show="vm.is_not_started">
             The Sprint wasn't ever started.
         </p>
-        <chart value="vm.chartData" type="line" width="800" height="600"
-               chart-obj="chartObj"></chart>
+
+        <div class="col-md-8">
+            <chart value="vm.chartData" type="line" width="800" height="600"
+                   chart-obj="chartObj"></chart>
+        </div>
+        <div class="col-md-4" ng-show="vm.sprint_selected && !vm.is_not_started">
+            <label>Done tickets</label>
+            <ul>
+                <li ng-repeat="tkt in vm.tickets|filter:{finished: true}">
+                    <span><[ tkt.title ]></span>
+                    <span class="badge bg-warning"><[ tkt.points ]></span>
+                </li>
+            </ul>
+            <label>Pending tickets</label>
+            <ul>
+                <li ng-repeat="tkt in vm.tickets|filter:{finished: false}">
+                    <span><[ tkt.title ]></span>
+                    <span class="badge bg-warning"><[ tkt.points ]></span>
+                </li>
+            </ul>
+            <label>Added after sprint started</label>
+            <ul>
+                <li ng-repeat="tkt in vm.tickets|filter:{added_after: true}">
+                    <span><[ tkt.title ]></span>
+                    <span class="badge bg-warning"><[ tkt.points ]></span>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>

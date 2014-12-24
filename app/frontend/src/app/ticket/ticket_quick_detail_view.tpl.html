@@ -1,4 +1,4 @@
-<div class="col-md-4">
+<div class="col-md-6">
     <div class="pull-right">
         <button class="btn btn-xs btn-primary" ng-click="close();">
             <i class="icon-remove"></i>
@@ -13,46 +13,101 @@
     </div>
     <section class="panel" ng-show="loaded">
         <div class="panel-heading">
-            <a ng-href="#"><[ model.project.prefix]>-<[ model.number ]> : <[
-                model.title ]></a>
+            <a ng-href="#"><[ ticket.project.prefix]>-<[ ticket.number ]> : <[
+                ticket.title ]></a>
         </div>
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-12">
                     <label>Points</label>
                         <span class="badge bg-important">
-                            <[ model.points ]>
+                            <[ ticket.points ]>
                         </span>
                     <label>Ticket Type:</label>
                         <span class="badge <[ model.type]>">
-                            <[ model.type_name ]>
+                            <[ ticket.type_name ]>
                         </span>
                     <label>In Column:</label>
-                        <span ng-if="!model.in_column"
+                        <span ng-if="!ticket.in_column"
                               class="badge bg-warning">Backlog</span>
-                        <span ng-if="model.in_column"
-                              class="badge bg-warning"><[ model.in_column ]></span>
+                        <span ng-if="ticket.in_column"
+                              class="badge bg-warning"><[ ticket.in_column ]></span>
                 </div>
             </div>
             <hr/>
-            <div class="labels-ticket">
-                <span class="badge bg-info" ng-repeat="lbl in model.labels">
-                    <[ lbl ]>
-                </span>
+            <div class="row">
+                <div class="col-md-12">
+                    <label>Description:</label>
+
+                    <p><[ ticket.description ]></p>
+                </div>
             </div>
-            <p>
-                <[ model.description ]>
-            </p>
+            <hr/>
+            <div class="row">
+                <div class="col-md-12">
+                    <label>Labels:</label>
 
-            <div class="commets" ng-show="model.comments.length">
-                <h4>Comments</h4>
-
-                <div class="comment-item" ng-repeat="comment in model.comments">
-                    <span><[ comment.who ]></span>
-
-                    <p>
-                        <[ comment.comment ]>
+                    <p class="labels-ticket">
+                            <span class="badge bg-info"
+                                  ng-repeat="lbl in ticket.labels">
+                                <[ lbl ]>
+                            </span>
                     </p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="attachments">
+                        <label>Attachements:</label>
+                        <div class="attachments_stored">
+                            <div style="margin-right: 3px;margin-bottom:3px"
+                                 ng-repeat="f in ticket.files"
+                                 class="btn-group" dropdown
+                                 is-open="f.isopen">
+                                <button class="btn btn-xs btn-info"
+                                        dropdown-toggle>
+                                    <i ng-class="vm.checkTypeIcon(f)"></i>
+                                    <span><[ f.name ]></span>
+                                    <span>(<[ f.size / 1024 |number:0 ]> Kb)</span>
+                                </button>
+                                <ul role="menu" class="dropdown-menu">
+                                    <li><a href="#"
+                                           ng-click="vm.download(f);">
+                                        <i class="icon-download"></i>
+                                        Download</a>
+                                    </li>
+                                    <li><a href="#"
+                                           ng-click="vm.delete_file(f);">
+                                        <i class="icon-trash"></i>
+                                        Delete</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="add_new_comment" comment-flow>
+                        <textarea class="form-control" rows="1"
+                                  ng-model="ticket.comment"
+                                  placeholder="Write a comment..."></textarea>
+                        <br/>
+                        <button id="add-comment" style="display: none;"
+                                class="btn btn-success pull-right"
+                                ng-click="vm.add_new_comment($event)">Add
+                            New
+                            Comment
+                        </button>
+                        <div style="clear:both"></div>
+                    </div>
+                    <div class="comments">
+                        <ul>
+                            <li ng-repeat="c in ticket.comments track by c._id.$oid">
+                                <div class="comment-box">
+                                    <p><[ c.comment ]></p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

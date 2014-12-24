@@ -29,7 +29,9 @@
         };
 
         var getSprintReport = function (sprint_id) {
+
             SprintService.get_chart(sprint_id).then(function (chart_data) {
+                vm.tickets = chart_data.all_tickets;
                 vm.chartData = {
                     title: {
                         text: 'BurnDown Chart',
@@ -40,7 +42,7 @@
                         headerFormat: '<span style="color:#ff0000;font-size: 10px">{point.key}</span><br/>',
                         formatter: function () {
                             if (this.series.name == 'Remaining') {
-                                var tickets = chart_data.tickets[this.point.index];
+                                var tickets = chart_data.tickets_per_day[this.point.index];
                                 var ul = $('<ul />');
                                 angular.forEach(tickets, function (val, key) {
                                     if(val.indexOf('-') === 0){

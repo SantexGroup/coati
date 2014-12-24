@@ -206,6 +206,7 @@
                 reduceItem: '@reducedItem',
                 sizeReducedItem: '@sizeReducedItem'
             },
+            controller: 'TicketDetailController',
             transclude: true,
             replace: true,
             templateUrl: 'ticket/ticket_quick_detail_view.tpl.html',
@@ -215,11 +216,11 @@
                 });
 
                 scope.$watch('$parent.vm.ticket_detail', function (new_val, old_val) {
-                    scope.model = new_val;
-                    if (scope.model) {
+                    scope.ticket = new_val;
+                    if (scope.ticket) {
                         angular.forEach(conf.TICKET_TYPES, function (val, key) {
-                            if (val.value === scope.model.type) {
-                                scope.model.type_name = val.name;
+                            if (val.value === scope.ticket.type) {
+                                scope.ticket.type_name = val.name;
                                 return;
                             }
                         });
@@ -257,6 +258,11 @@
                         list_width += 2 * total_columns;
                         //Set the area with the summatory of the cols width
                         $('.board-area').width(list_width);
+
+                        //set same height of content column
+                        $('.task-list').each(function(){
+                           $(this).css('min-height', $(this).parent().parent().height());
+                        });
                     };
                     timeout(calculateWidth, 0);
                 });

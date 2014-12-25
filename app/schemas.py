@@ -216,8 +216,7 @@ class Ticket(mongoengine.Document):
     points = mongoengine.IntField()
     type = mongoengine.StringField(max_length=1, choices=TICKET_TYPE)
     files = mongoengine.ListField(mongoengine.ReferenceField('Attachment'))
-    assigned_to = mongoengine.ListField(mongoengine.ReferenceField('User'),
-                                        unique=True)
+    assigned_to = mongoengine.ListField(mongoengine.ReferenceField('User'))
 
     meta = {
         'queryset_class': CustomQuerySet

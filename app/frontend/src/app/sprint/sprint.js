@@ -1,6 +1,6 @@
 (function (angular) {
 
-    var StartSprintController = function(modalInstance, SprintService, sprint) {
+    var StartSprintController = function (modalInstance, SprintService, sprint) {
         var vm = this;
         vm.sprint = sprint;
         vm.form = {};
@@ -16,9 +16,9 @@
         vm.sprint.end_date = vm.max_date;
 
         //check change of start date
-        vm.$watch('vm.sprint.start_date',function(){
-          vm.max_date = addDays(vm.sprint.start_date, vm.sprint.sprint_duration);
-          vm.sprint.end_date = vm.max_date;
+        vm.$watch('vm.sprint.start_date', function () {
+            vm.max_date = addDays(vm.sprint.start_date, vm.sprint.sprint_duration);
+            vm.sprint.end_date = vm.max_date;
         });
 
         // Datapicker options
@@ -41,12 +41,12 @@
         };
 
 
-        vm.save = function(){
+        vm.save = function () {
             if (vm.form.sprint_form.$valid) {
                 vm.sprint.for_starting = true;
                 SprintService.update(vm.sprint).then(function (sp) {
                     modalInstance.close();
-                }, function(err){
+                }, function (err) {
                     modalInstance.dismiss('error');
                     console.log(err);
                 });
@@ -55,16 +55,37 @@
             }
         };
 
-        vm.cancel = function(){
+        vm.cancel = function () {
+            modalInstance.dismiss('cancelled');
+        };
+    };
+
+    var StopSprintController = function (modalInstance, SprintService, sprint) {
+        var vm = this;
+
+        vm.sprint = sprint;
+
+        vm.stopSprint = function(){
+            vm.sprint.for_finalized = true;
+            SprintService.update(vm.sprint).then(function (sp) {
+                modalInstance.close();
+            }, function (err) {
+                modalInstance.dismiss('error');
+            });
+        };
+
+        vm.cancel = function () {
             modalInstance.dismiss('cancelled');
         };
     };
 
     StartSprintController.$inject = ['$modalInstance', 'SprintService', 'sprint'];
+    StopSprintController.$inject = ['$modalInstance', 'SprintService', 'sprint'];
 
     angular.module('Coati.Sprint', ['ui.router',
         'Coati.Directives',
         'Coati.Services.Sprint'])
-        .controller('StartSprintController', StartSprintController);
+        .controller('StartSprintController', StartSprintController)
+        .controller('StopSprintController', StopSprintController);
 
 }(angular));

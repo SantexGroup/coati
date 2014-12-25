@@ -97,6 +97,8 @@
                         return;
                     }
                 });
+            }, function(){
+                modalInstance.dismiss('error loading ticket');
             });
         };
 
@@ -186,7 +188,7 @@
         };
 
         vm.close = function () {
-            modalInstance.dismiss('cancelled');
+            modalInstance.dismiss('closed');
         };
 
 

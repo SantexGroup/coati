@@ -20,6 +20,9 @@
             'get_started': function(project_pk){
                 return req.$do('/sprints/' + project_pk + '/started', req.METHODS.GET);
             },
+            'stop_sprint': function(project_pk){
+                return req.$do('/sprints/' + project_pk + '/started', req.METHODS.GET);
+            },
             'get_tickets': function(sprint_id){
                return req.$do('/sprint/' + sprint_id + '/tickets', req.METHODS.GET);
             },

@@ -1,14 +1,23 @@
-import os, json
+import os
+import logging
+from logging import FileHandler
+
 from jinja2 import ChoiceLoader, FileSystemLoader
-from flask import Flask, render_template, session
+from flask import Flask, render_template
 from flask.ext.mongoengine import MongoEngine
+
 from app import api, auth, utils
 from auth import decorators
+
 
 app = Flask(__name__)
 app.config.from_pyfile('../config.py')
 app.static_folder = 'frontend/' + app.config['FRONTEND']
 app.static_url_path = '/static'
+
+file_handler = FileHandler('log.txt')
+file_handler.setLevel(logging.DEBUG)
+app.logger.addHandler(file_handler)
 
 db = MongoEngine(app)
 

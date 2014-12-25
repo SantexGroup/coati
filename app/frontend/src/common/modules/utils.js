@@ -55,7 +55,7 @@
                     }
 
                     //Notify
-                    growl.addErrorMessage(data);
+                    growl.addErrorMessage("There was an error on the server side, please try again!");
 
                     results.reject({
                         'message': data,

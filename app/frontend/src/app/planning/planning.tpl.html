@@ -20,11 +20,11 @@
 
                         <div class="options pull-right">
                             <span class="badge bg-inverse">Total Points: <[ sprint.tickets | sumValue:'points' ]></span>
-                            <a ng-if="$index == 0 && !vm.one_started"
+                            <a ng-if="$index == 0 && !vm.one_started && !sprint.finalized"
                                class="btn btn-primary btn-sm" href="#"
                                ng-click="vm.startSprint(sprint);">Start
                                 Sprint</a>
-                            <a ng-if="sprint.started"
+                            <a ng-if="sprint.started && !sprint.finalized"
                                class="btn btn-danger btn-sm" href="#"
                                ng-click="vm.stopSprint(sprint);">Stop Sprint</a>
                             <a class="btn btn-sm btn-danger"
@@ -40,13 +40,13 @@
                                 ng-model="sprint.tickets">
                                 <li ng-repeat="tkt in sprint.tickets track by tkt._id.$oid"
                                     class="ticket-item <[ tkt.type ]>"
-                                    ng-click="vm.showQuickDetail(tkt);"
+                                    ng-click="vm.showDetails($event, tkt);"
                                     title="Click to quick view">
                                     <i class="icon-ellipsis-vertical handler"></i>
 
                                     <div class="task-title">
                                         <span class="task-title-sp">
-                                          <a href="javascript:;" ng-click="vm.showDetails($event, tkt);"><[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]></a>
+                                          <[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
                                         </span>
 
                                         <div class="pull-right hidden-phone">
@@ -84,13 +84,13 @@
                         ng-model="vm.tickets">
                         <li ng-repeat="tkt in vm.tickets track by tkt._id.$oid"
                             class="user-story <[ tkt.type ]>"
-                            ng-click="showQuickDetail(tkt);"
+                            ng-click="vm.showDetails($event, tkt);"
                                 title="Click to quick view">
                             <i class="icon-ellipsis-vertical handler"></i>
 
                             <div class="task-title">
                                 <span class="task-title-sp">
-                                  <a href="javascript:;" ng-click="vm.showDetails($event, tkt);"><[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]></a>
+                                  <[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
                                 </span>
                                 <div class="pull-right hidden-phone">
                                     <span class="badge bg-info"><[ tkt.points ]></span>
@@ -106,6 +106,4 @@
             </div>
         </section>
     </div>
-    <ticket-detail-view reduced-item="#planning-list" size-reduced-item="8">
-    </ticket-detail-view>
 </div>

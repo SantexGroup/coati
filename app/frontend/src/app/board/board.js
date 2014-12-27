@@ -135,13 +135,14 @@
                             ticket: ticket._id.$oid,
                             order: new_order
                         };
-
-                        if (target.col) {
-                            data.column = target.col._id.$oid;
-                        } else {
-                            data.backlog = target.vm.sprint._id.$oid;
+                        if(target) {
+                            if (target.col) {
+                                data.column = target.col._id.$oid;
+                            } else {
+                                data.backlog = target.vm.sprint._id.$oid;
+                            }
+                            TicketService.transition(data);
                         }
-                        TicketService.transition(data);
 
                     }
                 }

@@ -1,4 +1,5 @@
 __author__ = 'gastonrobledo'
+import json
 from datetime import timedelta, datetime
 
 from dateutil import parser
@@ -58,7 +59,7 @@ class SprintInstance(Resource):
         data = request.get_json(force=True, silent=True)
         if data:
             sp = Sprint.objects.get(pk=sp_id)
-            sp.name = data.get('name')
+            sp.name = data.get('name', sp.name)
             if data.get('for_starting'):
 
                 # sum all the ticket for the initial planning value
@@ -71,6 +72,9 @@ class SprintInstance(Resource):
                 sp.start_date = parser.parse(data.get('start_date'))
                 sp.end_date = parser.parse(data.get('end_date'))
                 sp.started = True
+            elif data.get('for_finalized'):
+                sp.finalized = True
+
             sp.save()
             return sp.to_json(), 200
         return jsonify({"error": 'Bad Request'}), 400
@@ -93,7 +97,7 @@ class SprintActive(Resource):
             sprint = sprints[0]
         if sprint:
             return sprint.to_json(), 200
-        return jsonify({'started': False}), 404
+        return jsonify({'started': False}), 200
 
 
 class SprintTickets(Resource):
@@ -179,8 +183,9 @@ class SprintChart(Resource):
             data = {
                 'points_remaining': points_remaining,
                 'dates': days,
-                'tickets': tickets_per_day,
-                'ideal': ideal
+                'tickets_per_day': tickets_per_day,
+                'ideal': ideal,
+                'all_tickets': json.loads(sprint.get_tickets_with_latest_status())
             }
             return jsonify(data), 200
         return jsonify({'error': 'Bad Request'}), 400

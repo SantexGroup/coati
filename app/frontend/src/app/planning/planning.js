@@ -27,7 +27,7 @@
             SprintService.query(project_id).then(function (sprints) {
                 vm.sprints = sprints;
                 angular.forEach(sprints, function (val, key) {
-                    if (val.started) {
+                    if (val.started && !val.finalized) {
                         vm.one_started = true;
                     }
                 });
@@ -138,6 +138,22 @@
             modal_instance.result.then(function () {
                 growl.addSuccessMessage('The sprint was started successfully');
                 vm.one_started = true;
+            });
+        };
+
+        vm.stopSprint = function (sprint) {
+            var modal_instance = modal.open({
+                controller: 'StopSprintController as vm',
+                templateUrl: 'sprint/stop_sprint.tpl.html',
+                resolve: {
+                    sprint: function () {
+                        return angular.copy(sprint);
+                    }
+                }
+            });
+            modal_instance.result.then(function () {
+                growl.addSuccessMessage('The sprint was stopped successfully');
+                vm.one_started = false;
             });
         };
 

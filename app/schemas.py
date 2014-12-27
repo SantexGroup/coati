@@ -137,6 +137,38 @@ class Sprint(mongoengine.Document):
         data["tickets"] = ticket_list
         return json_util.dumps(data)
 
+    def get_tickets_with_latest_status(self):
+        tickets = SprintTicketOrder.objects(sprint=self).order_by('order')
+        result_list = []
+        for t in tickets:
+            assignments = []
+            for ass in t.ticket.assigned_to:
+                assignments.append(ass.to_mongo())
+
+            value = {
+                'points': t.ticket.points,
+                'title': '%s-%s: %s' % (t.ticket.project.prefix,
+                                        t.ticket.number,
+                                        t.ticket.title),
+                '_id': t.ticket.id,
+                'type': t.ticket.type,
+                'added_after': t.when > self.start_date
+            }
+            try:
+                tt = TicketColumnTransition.objects.get(ticket=t.ticket,
+                                                        latest_state=True)
+                value['who'] = tt.who.to_mongo()
+                value['when'] = tt.when
+                if tt.column.done_column:
+                    value['finished'] = True
+                else:
+                    value['finished'] = False
+            except mongoengine.DoesNotExist:
+                value['finished'] = False
+
+            result_list.append(value)
+        return json_util.dumps(result_list)
+
     def get_tickets_board_backlog(self):
         # first get all the columns
         columns = Column.objects(project=self.project)
@@ -184,8 +216,7 @@ class Ticket(mongoengine.Document):
     points = mongoengine.IntField()
     type = mongoengine.StringField(max_length=1, choices=TICKET_TYPE)
     files = mongoengine.ListField(mongoengine.ReferenceField('Attachment'))
-    assigned_to = mongoengine.ListField(mongoengine.ReferenceField('User'),
-                                        unique=True)
+    assigned_to = mongoengine.ListField(mongoengine.ReferenceField('User'))
 
     meta = {
         'queryset_class': CustomQuerySet

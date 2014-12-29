@@ -1,0 +1,14 @@
+{
+    "author": "Gaston Robledo",
+    "name": "Coati",
+    "version": "0.1.0",
+    "homepage": "https://bitbucket.org/gastonrobledo/coati",
+    "bugs": "https://bitbucket.org/gastonrobledo/coati/issues",
+    "repository": {
+        "type": "git",
+        "url": "git@bitbucket.org:gastonrobledo/coati.git"
+    },
+    "dependencies": {
+        "socket.io": ""
+    }
+}

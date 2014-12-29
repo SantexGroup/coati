@@ -5,7 +5,7 @@
      * @returns {{getItem: getItem, $get: $get}}
      * @constructor
      */
-    function KoalaGlobalConfiguration() {
+    function GlobalConfiguration() {
 
         var globals = {
             BASE_API_URL: '/api',
@@ -33,5 +33,5 @@
     }
 
 //angular module
-    angular.module('Coati.Config', []).provider('Conf', KoalaGlobalConfiguration);
+    angular.module('Coati.Config', []).provider('Conf', GlobalConfiguration);
 }());

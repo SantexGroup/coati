@@ -6,12 +6,12 @@ from flask.ext.restful import Resource, request
 from mongoengine import DoesNotExist
 
 from app.schemas import User, Project, Column, ProjectMember
+from app.redis import RedisClient
 
 
 class ProjectList(Resource):
     def __init__(self):
         super(ProjectList, self).__init__()
-
 
     def get(self, *args, **kwargs):
         return ProjectMember.get_projects_for_member(kwargs['user_id']['pk']), 200
@@ -24,12 +24,8 @@ class ProjectList(Resource):
         if not data:
             msg = "payload must be a valid json"
             return jsonify({"error": msg}), 400
-
-        user_session = session.get('user')
-        if not user_session:
-            return jsonify({"error": 'owner user does not exist'}), 400
         try:
-            user_id = user_session['_id']['$oid']
+            user_id = kwargs['user_id']['pk']
             user = User.objects.get(pk=user_id)
         except DoesNotExist, e:
             return jsonify({"error": 'owner user does not exist'}), 400
@@ -60,6 +56,9 @@ class ProjectList(Resource):
                 col.done_column = True
             col.save()
 
+        ## add to redis
+        #r = RedisClient()
+        #r.store('new_project', prj.to_json())
 
         return prj.to_json(), 201
 

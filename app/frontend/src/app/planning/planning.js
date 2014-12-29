@@ -18,7 +18,7 @@
         });
     };
 
-    var ProjectCtrlPlanning = function (scope, state, modal, growl, ProjectService, TicketService, SprintService) {
+    var ProjectCtrlPlanning = function (scope, state, modal, growl, ProjectService, TicketService, SprintService, socket) {
         var vm = this;
         vm.ticket_detail = null;
 
@@ -286,10 +286,11 @@
     };
 
     Config.$inject = ['$stateProvider'];
-    ProjectCtrlPlanning.$inject = ['$scope', '$state', '$modal', 'growl', 'ProjectService', 'TicketService', 'SprintService'];
+    ProjectCtrlPlanning.$inject = ['$scope', '$state', '$modal', 'growl', 'ProjectService', 'TicketService', 'SprintService', '$socket'];
 
     angular.module('Coati.Planning', ['ui.router', 'ui.sortable',
         'Coati.Directives',
+        'Coati.SocketIO',
         'Coati.Services.Project',
         'Coati.Services.Sprint',
         'Coati.Services.Ticket'])

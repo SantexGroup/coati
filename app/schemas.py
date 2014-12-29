@@ -343,8 +343,10 @@ class TicketColumnTransition(mongoengine.Document):
 
 
 class ProjectMember(mongoengine.Document):
-    member = mongoengine.ReferenceField('User')
-    project = mongoengine.ReferenceField('Project')
+    member = mongoengine.ReferenceField('User',
+                                        reverse_delete_rule=mongoengine.CASCADE)
+    project = mongoengine.ReferenceField('Project',
+                                         reverse_delete_rule=mongoengine.CASCADE)
     since = mongoengine.DateTimeField(default=datetime.now())
     is_owner = mongoengine.BooleanField(default=False)
 

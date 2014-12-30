@@ -97,7 +97,8 @@
                 }
             });
             modal_instance.result.then(function () {
-                //see here
+                getSprintsWithTickets(vm.project._id.$oid);
+                getTicketsForProject(vm.project._id.$oid);
             });
             e.stopPropagation();
         };

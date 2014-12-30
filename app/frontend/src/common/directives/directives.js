@@ -172,30 +172,52 @@
         return {
             scope: {
                 model: '=inlineEdit',
+                collection: '=collection',
+                show: '=toShow',
                 handleSave: '&onSave',
                 handleCancel: '&onCancel'
             },
             link: function (scope, elm, attr) {
                 var previousValue;
+
                 scope.editMode = false;
-                scope.edit = function () {
+                scope.edit = function (e) {
                     scope.editMode = true;
                     previousValue = scope.model;
                     timeout(function () {
-                        elm.find('input')[0].focus();
+                        elm.find(attr.controlType || 'input')[0].focus();
                     }, 0, false);
+                    e.stopPropagation();
                 };
-                scope.save = function () {
+                scope.save = function (e) {
                     scope.editMode = false;
                     scope.handleSave({value: scope.model});
+                    e.stopPropagation();
                 };
-                scope.cancel = function () {
+                scope.cancel = function (e) {
                     scope.editMode = false;
                     scope.model = previousValue;
                     scope.handleCancel({value: scope.model});
+                    e.stopPropagation();
                 };
             },
-            template: '<input style="width: auto; display:inline-block;" class="form-control" type="text" on-enter="save()" on-esc="cancel()" ng-model="model" ng-show="editMode"><span ng-hide="editMode" ng-click="edit()"><[ model ]></span>'
+            template: function(tElem, tAttr){
+                var template = '';
+                tAttr.show = tAttr.show || tAttr.model;
+                console.log(tAttr);
+                switch(tAttr.controlType) {
+                    case 'select':
+                        template = '<select style="width: auto;display: inline-block;" on-esc="cancel($event);" ng-options="obj.value as obj.name for obj in collection" class="form-control" ng-model="model" ng-show="editMode"></select><button ng-show="editMode" style="margin-left: 6px;border: 1px solid #999;" type="button" class="btn btn-xs btn-success" ng-click="save($event);">Save</button><span ng-hide="editMode" ng-click="edit($event)"><[ show ]></span>';
+                        break;
+                    case 'textarea':
+                        template = '<textarea class="form-control" ng-model="model" ng-show="editMode" on-esc="cancel($event);"></textarea><button type="button" ng-show="editMode" class="btn btn-success" ng-click="save($event);">Save</button><p ng-hide="editMode" ng-click="edit($event)"><[ model ]></p>';
+                        break;
+                    default:
+                        template = '<input style="width: auto; display:inline-block;" class="form-control" type="text" on-enter="save($event)" on-esc="cancel($event)" ng-model="model" ng-show="editMode"><span ng-hide="editMode" ng-click="edit($event)"><[ model ]></span>';
+                        break;
+                }
+                return template;
+            }
         };
     };
 

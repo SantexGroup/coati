@@ -32,6 +32,7 @@ class TicketInstance(Resource):
             tkt.save()
 
             if data.get('sprint'):
+
                 sprint = Sprint.objects.get(pk=data.get('sprint')['pk'])
                 try:
                     spo = SprintTicketOrder.objects.get(sprint=sprint,

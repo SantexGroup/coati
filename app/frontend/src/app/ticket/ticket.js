@@ -79,6 +79,8 @@
         vm.files = [];
         vm.file_uploaded = 0;
 
+        vm.types = conf.TICKET_TYPES;
+
         var getComments = function (ticket_id) {
             TicketService.get_comments(ticket_id).then(function (comments) {
                 vm.comments = comments;
@@ -97,7 +99,7 @@
                         return;
                     }
                 });
-            }, function(){
+            }, function () {
                 modalInstance.dismiss('error loading ticket');
             });
         };
@@ -119,6 +121,15 @@
 
         vm.project = item.project;
         getTicket(item.ticket_id);
+
+        vm.saveTicket = function (ticket) {
+            if (ticket) {
+                ticket.sprint = undefined;
+                TicketService.update(ticket._id.$oid, ticket).then(function(tkt){
+                    vm.ticket = tkt;
+                });
+            }
+        };
 
         vm.removeFileFromQueue = function (f) {
             _.pull(vm.files, f);
@@ -188,7 +199,7 @@
         };
 
         vm.close = function () {
-            modalInstance.dismiss('closed');
+            modalInstance.close('closed');
         };
 
 

@@ -173,100 +173,41 @@
             scope: {
                 model: '=inlineEdit',
                 collection: '=collection',
+                width: '=size',
                 show: '=toShow',
                 handleSave: '&onSave',
                 handleCancel: '&onCancel'
             },
             link: function (scope, elm, attr) {
                 var previousValue;
+                var width = scope.width ? scope.width + 'px' : 'auto';
+                scope.custom_width = width;
+                scope.controlType = attr.controlType || 'input';
+                scope.custtom_dispaly = 'inline-block';
 
                 scope.editMode = false;
-                scope.edit = function (e) {
+                scope.edit = function () {
                     scope.editMode = true;
                     previousValue = scope.model;
                     timeout(function () {
-                        elm.find(attr.controlType || 'input')[0].focus();
+                        elm.find(scope.controlType)[0].focus();
                     }, 0, false);
-                    e.stopPropagation();
                 };
-                scope.save = function (e) {
+                scope.save = function () {
                     scope.editMode = false;
                     scope.handleSave({value: scope.model});
-                    e.stopPropagation();
                 };
-                scope.cancel = function (e) {
+                scope.cancel = function () {
                     scope.editMode = false;
                     scope.model = previousValue;
                     scope.handleCancel({value: scope.model});
-                    e.stopPropagation();
                 };
             },
-            template: function(tElem, tAttr){
-                var template = '';
-                tAttr.show = tAttr.show || tAttr.model;
-                console.log(tAttr);
-                switch(tAttr.controlType) {
-                    case 'select':
-                        template = '<select style="width: auto;display: inline-block;" on-esc="cancel($event);" ng-options="obj.value as obj.name for obj in collection" class="form-control" ng-model="model" ng-show="editMode"></select><button ng-show="editMode" style="margin-left: 6px;border: 1px solid #999;" type="button" class="btn btn-xs btn-success" ng-click="save($event);">Save</button><span ng-hide="editMode" ng-click="edit($event)"><[ show ]></span>';
-                        break;
-                    case 'textarea':
-                        template = '<textarea class="form-control" ng-model="model" ng-show="editMode" on-esc="cancel($event);"></textarea><button type="button" ng-show="editMode" class="btn btn-success" ng-click="save($event);">Save</button><p ng-hide="editMode" ng-click="edit($event)"><[ model ]></p>';
-                        break;
-                    default:
-                        template = '<input style="width: auto; display:inline-block;" class="form-control" type="text" on-enter="save($event)" on-esc="cancel($event)" ng-model="model" ng-show="editMode"><span ng-hide="editMode" ng-click="edit($event)"><[ model ]></span>';
-                        break;
-                }
-                return template;
-            }
+            templateUrl: 'directives/inline-edit.tpl.html'
         };
     };
 
-    var TicketDetailView = function (conf) {
-        return {
-            restrict: 'E',
-            scope: {
-                reduceItem: '@reducedItem',
-                sizeReducedItem: '@sizeReducedItem'
-            },
-            controller: 'TicketDetailController',
-            transclude: true,
-            replace: true,
-            templateUrl: 'ticket/ticket_quick_detail_view.tpl.html',
-            link: function (scope, elem, attrs, ctrl) {
-                scope.$watch('$parent.vm.loaded', function (new_val, old_val) {
-                    scope.loaded = new_val;
-                });
 
-                scope.$watch('$parent.vm.ticket_detail', function (new_val, old_val) {
-                    scope.ticket = new_val;
-                    if (scope.ticket) {
-                        angular.forEach(conf.TICKET_TYPES, function (val, key) {
-                            if (val.value === scope.ticket.type) {
-                                scope.ticket.type_name = val.name;
-                                return;
-                            }
-                        });
-                    }
-                });
-                scope.$watch('$parent.vm.ticket_clicked', function (new_val) {
-                    if (new_val) {
-                        $(elem).show("fold", 500);
-                        $(scope.reduceItem).addClass('col-md-' + scope.sizeReducedItem, 500);
-                        $(window.opera ? 'html' : 'html, body').animate({
-                            scrollTop: 0
-                        }, 'slow');
-                    }
-                });
-                scope.close = function () {
-                    scope.$parent.vm.ticket_detail = null;
-                    scope.$parent.vm.ticket_clicked = false;
-                    $(elem).hide("fold", 500);
-                    $(scope.reduceItem).removeClass('col-md-' + scope.sizeReducedItem, 500);
-                };
-                $(elem).css('display', 'none');
-            }
-        };
-    };
 
 
     var CalculateWithBoard = function (rootScope, timeout) {
@@ -282,8 +223,8 @@
                         $('.board-area').width(list_width);
 
                         //set same height of content column
-                        $('.task-list').each(function(){
-                           $(this).css('min-height', $(this).parent().parent().height());
+                        $('.task-list').each(function () {
+                            $(this).css('min-height', $(this).parent().parent().height());
                         });
                     };
                     timeout(calculateWidth, 0);
@@ -326,7 +267,6 @@
     InlineEdit.$inject = ['$timeout'];
     commentFlow.$inject = ['$rootScope'];
     CalculateWithBoard.$inject = ['$rootScope', '$timeout'];
-    TicketDetailView.$inject = ['Conf'];
 
     angular.module('Coati.Directives', ['Coati.Config'])
         .directive('image', ImageFunction)
@@ -334,7 +274,6 @@
         .directive('onEsc', OnEscape)
         .directive('onEnter', OnEnter)
         .directive('inlineEdit', InlineEdit)
-        .directive('ticketDetailView', TicketDetailView)
         .directive('prepareBoard', CalculateWithBoard)
         .directive('commentFlow', commentFlow);
 

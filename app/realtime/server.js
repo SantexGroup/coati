@@ -13,16 +13,21 @@ io.on('connection', function (socket) {
 
     var client = redis.createClient(6379, '127.0.0.1', {auth_pass: 'c04t1'});
     socket.on('channel', function (data) {
+        console.log(data);
         var room = data.key;
+        var user_id = data.user_id;
         socket.room = room;
         socket.join(room);
+        socket.username = user_id;
         client.subscribe(room);
     });
 
     client.on('message', function (channel, message) {
-        console.log(message);
         var data = JSON.parse(message);
-        socket.broadcast.to(channel).emit(data.type, data.data);
+        if(socket.username == data.user_id) {
+            console.log(data.type);
+            socket.broadcast.to(channel).emit(data.type, {});
+        }
     });
 
     client.on("error", function (err) {

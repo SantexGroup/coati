@@ -58,7 +58,7 @@ class ProjectList(Resource):
 
         ## add to redis
         r = RedisClient(channel=str(prj.pk))
-        r.store(dict(type='new_project', data=prj.to_json()))
+        r.store('new_project', **kwargs)
 
         return prj.to_json(), 201
 
@@ -89,16 +89,16 @@ class ProjectInstance(Resource):
 
         ## add to redis
         r = RedisClient(channel=str(project.pk))
-        r.store(dict(type='update_project', data=project.to_json()))
+        r.store('update_project', **kwargs)
 
         return project.to_json(), 200
 
-    def delete(self, project_pk):
+    def delete(self, project_pk, *args, **kwargs):
         project = Project.objects.get(pk=project_pk)
         project.delete()
         ## add to redis
         r = RedisClient()
-        r.store(dict(type='delete_project', data=project.to_json()))
+        r.store('delete_project', **kwargs)
         return {}, 204
 
 
@@ -135,7 +135,7 @@ class ProjectColumns(Resource):
 
         ## add to redis
         r = RedisClient(channel=str(project.pk))
-        r.store(dict(type='new_column', data=col.to_json()))
+        r.store('new_column', **kwargs)
 
         return col.to_json(), 200
 
@@ -165,7 +165,7 @@ class ProjectColumn(Resource):
             col.save()
             ## add to redis
             r = RedisClient(channel=str(col.project.pk))
-            r.store(dict(type='update_column', data=col.to_json()))
+            r.store('update_column', **kwargs)
             return col.to_json(), 200
         return jsonify({"error": 'Bad Request'}), 400
 
@@ -175,7 +175,7 @@ class ProjectColumn(Resource):
             col.delete()
             ## add to redis
             r = RedisClient(channel=str(col.project.pk))
-            r.store(dict(type='delete_column', data=col.to_json()))
+            r.store('delete_column', **kwargs)
             return jsonify({"success": True}), 200
         return jsonify({"error": 'Bad Request'}), 400
 
@@ -193,7 +193,7 @@ class ProjectColumnsOrder(Resource):
                 col.save()
             ## add to redis
             r = RedisClient(channel=project_pk)
-            r.store(dict(type='order_columns', data=data))
+            r.store('order_columns', **kwargs)
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400
 
@@ -224,6 +224,6 @@ class ProjectMembers(Resource):
                     m.save()
             ## add to redis
             r = RedisClient(channel=project_pk)
-            r.store(dict(type='new_members', data=data))
+            r.store('new_members', **kwargs)
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400

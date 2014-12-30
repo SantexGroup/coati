@@ -46,7 +46,7 @@ class TicketInstance(Resource):
 
             # # add to redis
             r = RedisClient(channel=str(tkt.project.pk))
-            r.store(dict(type='update_ticket', data=tkt.to_json()))
+            r.store('update_ticket', **kwargs)
             return tkt.to_json(), 200
         return jsonify({'error': 'Bad Request'}), 400
 
@@ -56,7 +56,7 @@ class TicketInstance(Resource):
             tkt.delete()
             # # add to redis
             r = RedisClient(channel=str(tkt.project.pk))
-            r.store(dict(type='delete_ticket', data=tkt.to_json()))
+            r.store('delete_ticket', **kwargs)
             return jsonify({'success': True}), 200
         return jsonify({'error': 'Bad Request'}), 400
 
@@ -108,7 +108,7 @@ class TicketProjectList(Resource):
             spo.save()
 
         r = RedisClient(channel=project_pk)
-        r.store(dict(type='new_ticket', data=tkt.to_json()))
+        r.store('new_ticket', **kwargs)
 
         return tkt.to_json(), 201
 
@@ -130,7 +130,7 @@ class TicketOrderProject(Resource):
                 tkt_order.save()
             # add redis
             r = RedisClient(channel=project_pk)
-            r.store(dict(type="backlog_order", data=""))
+            r.store('backlog_order', **kwargs)
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400
 
@@ -153,7 +153,7 @@ class TicketOrderSprint(Resource):
                 tkt_order.save()
             # add redis
             r = RedisClient(channel=str(sprint.project.pk))
-            r.store(dict(type='sprint_ticket_order', data=''))
+            r.store('sprint_ticket_order', **kwargs)
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400
 
@@ -223,7 +223,7 @@ class TicketMovement(Resource):
                     tkt_order.save()
             # add redis
             r = RedisClient(channel=str(ticket.project.pk))
-            r.store(dict(type='ticket_movement', data=''))
+            r.store('ticket_movement', **kwargs)
             return jsonify({'success': True}), 200
         return jsonify({'error': 'Bad Request'}), 400
 
@@ -252,7 +252,7 @@ class TicketTransition(Resource):
                     sto.save()
                 # add redis
                 r = RedisClient(channel=str(tkt.project.pk))
-                r.store(dict(type='ticket_transition', data=data))
+                r.store('ticket_transition', **kwargs)
                 return jsonify({'success': True})
             else:
                 # Search already state
@@ -289,7 +289,7 @@ class TicketTransition(Resource):
 
                     # add redis
                     r = RedisClient(channel=str(tkt.project.pk))
-                    r.store(dict(type='ticket_transition', data=data))
+                    r.store('ticket_transition', **kwargs)
                     return transition.to_json(), 201
                 else:
                     return jsonify({'error': 'Bad Request'}), 400
@@ -316,7 +316,7 @@ class TicketColumnOrder(Resource):
                     tkt_trans_order.save()
                 # add redis
                 r = RedisClient(channel=str(col.project.pk))
-                r.store(dict(type='ticket_colunm_order', data=data))
+                r.store('ticket_colunm_order', **kwargs)
                 return jsonify({'success': True}), 200
             else:
                 return jsonify({'error': 'Bad Request'}), 400
@@ -340,7 +340,7 @@ class TicketComments(Resource):
             c.save()
             # add redis
             r = RedisClient(channel=str(c.ticket.project.pk))
-            r.store(dict(type='new_comment', data=data))
+            r.store('new_comment', **kwargs)
             return c.to_json(), 201
         return jsonify({'error': 'Bad Request'}), 400
 
@@ -367,7 +367,7 @@ class TicketAttachments(Resource):
             ticket.save()
             # add redis
             r = RedisClient(channel=str(ticket.project.pk))
-            r.store(dict(type='new_attachment', data=data))
+            r.store('new_attachment', **kwargs)
             return att.to_json(), 200
 
         return jsonify({'error': 'Bad Request'}), 400
@@ -383,9 +383,11 @@ class AttachmentInstance(Resource):
     def delete(self, tkt_id, att_id, *args, **kwargs):
         att = Attachment.objects.get(pk=att_id)
 
-        Ticket.objects(pk=tkt_id).update_one(pull__files=att)
+        tkt = Ticket.objects.get(pk=tkt_id)
+        tkt.update_one(pull__files=att)
         att.delete()
-        # TODO: Add redis here
+        r = RedisClient(channel=str(tkt.project.pk))
+        r.store('delete_attachment', **kwargs)
         return jsonify({}), 204
 
 
@@ -402,9 +404,7 @@ class MemberTicketInstance(Resource):
                 tkt.save()
                 # add redis
                 r = RedisClient(channel=str(tkt.project.pk))
-                r.store(dict(type='new_assigment',
-                             data={'user': user.to_json(),
-                                   'ticket': tkt.to_json()}))
+                r.store('new_assigment', **kwargs)
                 return jsonify({'success': True}), 200
             return jsonify({'fail': 'Already added'}), 200
         except DoesNotExist as ex:
@@ -412,9 +412,10 @@ class MemberTicketInstance(Resource):
 
     def delete(self, tkt_id, member_id, *args, **kwargs):
         try:
-            Ticket.objects(pk=tkt_id).update_one(pull__assigned_to=member_id)
-            # TODO: add redis here
-
+            tkt = Ticket.objects.get(pk=tkt_id)
+            tkt.update_one(pull__assigned_to=member_id)
+            r = RedisClient(channel=str(tkt.project.pk))
+            r.store('delete_assignment', **kwargs)
             return jsonify({'success': True}), 200
         except DoesNotExist as ex:
             return jsonify({'error': 'Bad Request'}), 400

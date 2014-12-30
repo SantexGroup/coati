@@ -27,7 +27,7 @@ class SprintOrder(Resource):
                 sprint.save()
             ## add to redis
             r = RedisClient(channel=project_pk)
-            r.store(dict(type='order_sprints', data=data))
+            r.store('order_sprints', **kwargs)
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400
 
@@ -53,7 +53,7 @@ class SprintList(Resource):
         sp.save()
         ## add to redis
         r = RedisClient(channel=project_pk)
-        r.store(dict(type='new_sprint', data=sp.to_json()))
+        r.store('new_sprint', **kwargs)
         return sp.to_json(), 201
 
 
@@ -88,7 +88,7 @@ class SprintInstance(Resource):
             sp.save()
             ## add to redis
             r = RedisClient(channel=str(sp.project.pk))
-            r.store(dict(type='update_sprint', data=sp.to_json()))
+            r.store('update_sprint', **kwargs)
             return sp.to_json(), 200
         return jsonify({"error": 'Bad Request'}), 400
 
@@ -97,7 +97,7 @@ class SprintInstance(Resource):
         sp.delete()
         ## add to redis
         r = RedisClient(channel=str(sp.project.pk))
-        r.store(dict(type='delete_sprint', data=sp.to_json()))
+        r.store('delete_sprint', **kwargs)
         return sp.to_json(), 204
 
 

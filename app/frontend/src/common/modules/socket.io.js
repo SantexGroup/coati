@@ -6,9 +6,9 @@
 
 
             return {
-                init: function(channel){
+                init: function(channel, user_id){
                     socket = io.connect(Conf.SOCKET_URL);
-                    socket.emit('channel', {'key': channel});
+                    socket.emit('channel', {'key': channel, 'user_id': user_id});
                 },
                 on: function (eventName, callback) {
                     socket.on(eventName, function () {

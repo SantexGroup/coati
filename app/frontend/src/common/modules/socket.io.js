@@ -3,14 +3,18 @@
     var socket_module = function (rootScope, Conf) {
         var socket;
         if (typeof io !== 'undefined') {
-            socket = io.connect(Conf.SOCKET_URL);
+
 
             return {
+                init: function(channel){
+                    socket = io.connect(Conf.SOCKET_URL);
+                    socket.emit('channel', {'key': channel});
+                },
                 on: function (eventName, callback) {
                     socket.on(eventName, function () {
                         var args;
                         args = arguments;
-                        $rootScope.$apply(function () {
+                        rootScope.$apply(function () {
                             callback.apply(socket, args);
                         });
                     });
@@ -19,7 +23,7 @@
                     socket.emit(eventName, data, function () {
                         var args;
                         args = arguments;
-                        $rootScope.$apply(function () {
+                        rootScope.$apply(function () {
                             if (callback) {
                                 callback.apply(socket, args);
                             }
@@ -28,14 +32,21 @@
                 }
             };
         } else {
-            return undefined;
+            return {
+                'on': function(eventName, callback){
+
+                },
+                'emit': function(eventName, data, callback){
+
+                }
+            };
         }
     };
 
     socket_module.$inject = ['$rootScope', 'Conf'];
 
     angular.module('Coati.SocketIO', ['Coati.Config'])
-        .factory('$socket', socket_module);
+        .factory('SocketIO', socket_module);
 
 }(angular));
 

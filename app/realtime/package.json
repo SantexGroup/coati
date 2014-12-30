@@ -9,6 +9,7 @@
         "url": "git@bitbucket.org:gastonrobledo/coati.git"
     },
     "dependencies": {
-        "socket.io": ""
+        "socket.io": "",
+        "redis": ""
     }
 }

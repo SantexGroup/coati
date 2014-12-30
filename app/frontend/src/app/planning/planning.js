@@ -18,7 +18,7 @@
         });
     };
 
-    var ProjectCtrlPlanning = function (scope, state, modal, growl, ProjectService, TicketService, SprintService, socket) {
+    var ProjectCtrlPlanning = function (scope, state, modal, growl, ProjectService, TicketService, SprintService, SocketIO) {
         var vm = this;
         vm.ticket_detail = null;
 
@@ -164,11 +164,11 @@
             start: function (e, ui) {
                 ui.placeholder.height(ui.helper.outerHeight());
             },
-            update: function(e, ui){
-               this.updated = true;
+            update: function (e, ui) {
+                this.updated = true;
             },
             stop: function (e, ui) {
-                if(this.updated) {
+                if (this.updated) {
                     var new_order = [];
                     angular.forEach(ui.item.sortable.sourceModel, function (val, key) {
                         new_order.push(val._id.$oid);
@@ -204,7 +204,7 @@
                             });
                             TicketService.update_sprint_order(target.sprint._id.$oid, new_order);
                         } else {
-                            angular.forEach(target.tickets, function (v, k) {
+                            angular.forEach(target.vm.tickets, function (v, k) {
                                 new_order.push(v._id.$oid);
                             });
                             TicketService.update_backlog_order(vm.project._id.$oid, new_order);
@@ -283,10 +283,39 @@
         vm.project = scope.$parent.project;
         getTicketsForProject(vm.project._id.$oid);
         getSprintsWithTickets(vm.project._id.$oid);
+
+        //Socket actions
+        SocketIO.init(vm.project._id.$oid);
+
+        SocketIO.on('backlog_order', function () {
+            getTicketsForProject(vm.project._id.$oid);
+        });
+
+        SocketIO.on('ticket_movement', function () {
+            getSprintsWithTickets(vm.project._id.$oid);
+            getTicketsForProject(vm.project._id.$oid);
+        });
+        SocketIO.on('order_sprints', function () {
+            getSprintsWithTickets(vm.project._id.$oid);
+        });
+        SocketIO.on('new_sprint', function () {
+            getSprintsWithTickets(vm.project._id.$oid);
+        });
+        SocketIO.on('update_sprint', function () {
+            getSprintsWithTickets(vm.project._id.$oid);
+        });
+        SocketIO.on('sprint_ticket_order', function () {
+            getSprintsWithTickets(vm.project._id.$oid);
+        });
+        SocketIO.on('update_ticket', function () {
+            getSprintsWithTickets(vm.project._id.$oid);
+            getTicketsForProject(vm.project._id.$oid);
+        });
+
     };
 
     Config.$inject = ['$stateProvider'];
-    ProjectCtrlPlanning.$inject = ['$scope', '$state', '$modal', 'growl', 'ProjectService', 'TicketService', 'SprintService', '$socket'];
+    ProjectCtrlPlanning.$inject = ['$scope', '$state', '$modal', 'growl', 'ProjectService', 'TicketService', 'SprintService', 'SocketIO'];
 
     angular.module('Coati.Planning', ['ui.router', 'ui.sortable',
         'Coati.Directives',

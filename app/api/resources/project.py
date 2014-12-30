@@ -57,8 +57,8 @@ class ProjectList(Resource):
             col.save()
 
         ## add to redis
-        #r = RedisClient()
-        #r.store('new_project', prj.to_json())
+        r = RedisClient(channel=str(prj.pk))
+        r.store(dict(type='new_project', data=prj.to_json()))
 
         return prj.to_json(), 201
 
@@ -86,11 +86,19 @@ class ProjectInstance(Resource):
         project.sprint_duration = data.get('sprint_duration')
         project.prefix = data.get('prefix')
         project.save()
+
+        ## add to redis
+        r = RedisClient(channel=str(project.pk))
+        r.store(dict(type='update_project', data=project.to_json()))
+
         return project.to_json(), 200
 
     def delete(self, project_pk):
         project = Project.objects.get(pk=project_pk)
         project.delete()
+        ## add to redis
+        r = RedisClient()
+        r.store(dict(type='delete_project', data=project.to_json()))
         return {}, 204
 
 
@@ -124,6 +132,11 @@ class ProjectColumns(Resource):
                     c.done_column = False
                     c.save()
         col.save()
+
+        ## add to redis
+        r = RedisClient(channel=str(project.pk))
+        r.store(dict(type='new_column', data=col.to_json()))
+
         return col.to_json(), 200
 
 
@@ -150,6 +163,9 @@ class ProjectColumn(Resource):
                     c.done_column = False
                     c.save()
             col.save()
+            ## add to redis
+            r = RedisClient(channel=str(col.project.pk))
+            r.store(dict(type='update_column', data=col.to_json()))
             return col.to_json(), 200
         return jsonify({"error": 'Bad Request'}), 400
 
@@ -157,6 +173,9 @@ class ProjectColumn(Resource):
         col = Column.objects.get(pk=column_pk)
         if col:
             col.delete()
+            ## add to redis
+            r = RedisClient(channel=str(col.project.pk))
+            r.store(dict(type='delete_column', data=col.to_json()))
             return jsonify({"success": True}), 200
         return jsonify({"error": 'Bad Request'}), 400
 
@@ -172,6 +191,9 @@ class ProjectColumnsOrder(Resource):
                 col = Column.objects.get(pk=c, project=project_pk)
                 col.order = index
                 col.save()
+            ## add to redis
+            r = RedisClient(channel=project_pk)
+            r.store(dict(type='order_columns', data=data))
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400
 
@@ -200,5 +222,8 @@ class ProjectMembers(Resource):
                         # Send an email with the invitation
                         m.member = u
                     m.save()
+            ## add to redis
+            r = RedisClient(channel=project_pk)
+            r.store(dict(type='new_members', data=data))
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400

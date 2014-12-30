@@ -1,29 +1,38 @@
 var server = require('http').Server();
 var io = require('socket.io')(server);
 
+
 var usernames = [];
+
+var redis = require('redis');
+
 
 io.on('connection', function (socket) {
 
     console.log('Socket connected!!', socket.id);
 
-    socket.on('project', function (data) {
-        var user = data.user;
-        var room = data.room;
-        if (!usernames[user.username]) {
-            socket.room = room;
-            socket.username = user.username;
-            usernames[user.username] = user;
-            socket.join(room);
-        }
-        socket.emit('onUsersInBoards', {users: usernames});
-        socket.broadcast.to(room).emit('onUsersInBoards', {users: usernames});
+    var client = redis.createClient(6379, '127.0.0.1', {auth_pass: 'c04t1'});
+    socket.on('channel', function (data) {
+        var room = data.key;
+        socket.room = room;
+        socket.join(room);
+        client.subscribe(room);
     });
 
+    client.on('message', function (channel, message) {
+        console.log(message);
+        var data = JSON.parse(message);
+        socket.broadcast.to(channel).emit(data.type, data.data);
+    });
+
+    client.on("error", function (err) {
+        console.log('something', err);
+    });
+
+
     socket.on('disconnect', function () {
-        delete usernames[socket.username];
-        socket.broadcast.to(socket.room).emit('onUsersInBoards', {users: usernames});
         socket.leave(socket.room);
+        client.quit();
     });
 });
 

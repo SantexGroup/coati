@@ -73,7 +73,7 @@
 
     };
 
-    var TicketDetailController = function (rootScope, tmo, modalInstance, conf, downloader, TicketService, item) {
+    var TicketDetailController = function (rootScope, tmo, modalInstance, conf, downloader, TicketService, SocketIO, item) {
         var vm = this;
 
         vm.files = [];
@@ -203,14 +203,19 @@
             f.aborted = true;
         };
 
+        SocketIO.on('update_ticket', function () {
+            getTicket(item.ticket_id);
+        });
+
     };
 
-    TicketDetailController.$inject = ['$rootScope', '$timeout', '$modalInstance', 'Conf', '$file_download', 'TicketService', 'item'];
+    TicketDetailController.$inject = ['$rootScope', '$timeout', '$modalInstance', 'Conf', '$file_download', 'TicketService', 'SocketIO', 'item'];
     TicketFormController.$inject = ['$modalInstance', 'Conf', 'TicketService', 'SprintService', 'item'];
     TicketDeleteController.$inject = ['$modalInstance', 'TicketService', 'item'];
 
     angular.module('Coati.Ticket', ['ui.router', 'ngTagsInput', 'angularFileUpload',
         'Coati.Config',
+        'Coati.SocketIO',
         'Coati.Helpers',
         'Coati.Directives',
         'Coati.Services.Ticket',

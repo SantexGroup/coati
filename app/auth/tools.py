@@ -1,5 +1,6 @@
 import json
 import time
+from urllib2 import Request, urlopen, URLError
 
 from itsdangerous import JSONWebSignatureSerializer
 from flask import current_app, redirect, url_for, g, request
@@ -7,6 +8,7 @@ from flask.ext.oauth import OAuth
 from mongoengine import DoesNotExist
 
 from app.schemas import User, Token
+from app.utils import deserialize_data, serialize_data
 
 
 def get_provider(oauth_provider):
@@ -52,7 +54,7 @@ def get_token(token=None):
 
 
 def get_user_data(access_token, provider, provider_name):
-    from urllib2 import Request, urlopen, URLError
+
 
     types = {
         'github': 'token',
@@ -126,13 +128,3 @@ def generate_token(user_id):
 def get_data_from_token(token):
     s = JSONWebSignatureSerializer(current_app.config['SECRET_KEY'])
     return s.loads(token)
-
-
-def serialize_data(data):
-    s = JSONWebSignatureSerializer(current_app.config['SECRET_KEY'])
-    return s.dumps(data)
-
-
-def deserialize_data(data):
-    s = JSONWebSignatureSerializer(current_app.config['SECRET_KEY'])
-    return s.loads(data)

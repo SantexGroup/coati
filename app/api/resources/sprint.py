@@ -1,3 +1,5 @@
+
+
 __author__ = 'gastonrobledo'
 import json
 from datetime import timedelta, datetime
@@ -8,6 +10,8 @@ from flask.ext.restful import Resource
 
 from app.schemas import (Sprint, Project, SprintTicketOrder,
                          Column, TicketColumnTransition)
+
+from app.redis import RedisClient
 
 
 class SprintOrder(Resource):
@@ -21,6 +25,9 @@ class SprintOrder(Resource):
                 sprint = Sprint.objects.get(pk=s)
                 sprint.order = index
                 sprint.save()
+            ## add to redis
+            r = RedisClient(channel=project_pk)
+            r.store(dict(type='order_sprints', data=data))
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400
 
@@ -44,6 +51,9 @@ class SprintList(Resource):
         sp = Sprint(project=project.to_dbref())
         sp.name = 'Sprint %d' % (total + 1)
         sp.save()
+        ## add to redis
+        r = RedisClient(channel=project_pk)
+        r.store(dict(type='new_sprint', data=sp.to_json()))
         return sp.to_json(), 201
 
 
@@ -76,12 +86,18 @@ class SprintInstance(Resource):
                 sp.finalized = True
 
             sp.save()
+            ## add to redis
+            r = RedisClient(channel=str(sp.project.pk))
+            r.store(dict(type='update_sprint', data=sp.to_json()))
             return sp.to_json(), 200
         return jsonify({"error": 'Bad Request'}), 400
 
     def delete(self, sp_id, *args, **kwargs):
         sp = Sprint.objects.get(pk=sp_id)
         sp.delete()
+        ## add to redis
+        r = RedisClient(channel=str(sp.project.pk))
+        r.store(dict(type='delete_sprint', data=sp.to_json()))
         return sp.to_json(), 204
 
 

@@ -1,8 +1,18 @@
-from flask import make_response
+from flask import make_response, current_app
+from itsdangerous import JSONWebSignatureSerializer
 
 
 __author__ = 'gastonrobledo'
 
+
+def serialize_data(data):
+    s = JSONWebSignatureSerializer(current_app.config['SECRET_KEY'])
+    return s.dumps(data)
+
+
+def deserialize_data(data):
+    s = JSONWebSignatureSerializer(current_app.config['SECRET_KEY'])
+    return s.loads(data)
 
 def output_json(obj, code, headers=None):
     """

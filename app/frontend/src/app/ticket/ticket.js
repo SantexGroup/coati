@@ -217,6 +217,9 @@
         SocketIO.on('update_ticket', function () {
             getTicket(item.ticket_id);
         });
+        SocketIO.on('ticket_transition', function() {
+            getTicket(item.ticket_id);
+        });
 
     };
 

@@ -134,7 +134,7 @@ class ProjectColumns(Resource):
         col.save()
 
         ## add to redis
-        r = RedisClient(channel=str(project.pk))
+        r = RedisClient(channel=project_pk)
         r.store('new_column', **kwargs)
 
         return col.to_json(), 200
@@ -172,10 +172,10 @@ class ProjectColumn(Resource):
     def delete(self, column_pk, *args, **kwargs):
         col = Column.objects.get(pk=column_pk)
         if col:
-            col.delete()
             ## add to redis
             r = RedisClient(channel=str(col.project.pk))
             r.store('delete_column', **kwargs)
+            col.delete()
             return jsonify({"success": True}), 200
         return jsonify({"error": 'Bad Request'}), 400
 

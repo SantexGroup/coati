@@ -19,7 +19,7 @@
         });
     };
 
-    var ProjectCtrlBoard = function (rootScope, state, location, modal, SprintService, ProjectService, TicketService) {
+    var ProjectCtrlBoard = function (rootScope, state, location, modal, SprintService, ProjectService, TicketService, SocketIO) {
         var vm = this;
 
         vm.project_pk = state.params.project_pk;
@@ -161,6 +161,41 @@
         });
 
 
+        //Socket IO listeners
+
+        SocketIO.init(vm.project_pk, rootScope.user._id.$oid);
+        SocketIO.on('ticket_transition', function(){
+            if (vm.sprint.started) {
+                getSprintTickets(vm.sprint._id.$oid);
+                getColumnConfiguration(vm.project_pk);
+            }
+        });
+        SocketIO.on('new_column', function(){
+            if (vm.sprint.started) {
+                getSprintTickets(vm.sprint._id.$oid);
+                getColumnConfiguration(vm.project_pk);
+            }
+        });
+        SocketIO.on('delete_column', function(){
+            if (vm.sprint.started) {
+                getSprintTickets(vm.sprint._id.$oid);
+                getColumnConfiguration(vm.project_pk);
+            }
+        });
+        SocketIO.on('order_columns', function(){
+            if (vm.sprint.started) {
+                getSprintTickets(vm.sprint._id.$oid);
+                getColumnConfiguration(vm.project_pk);
+            }
+        });
+        SocketIO.on('update_ticket', function () {
+            if (vm.sprint.started) {
+                getSprintTickets(vm.sprint._id.$oid);
+                getColumnConfiguration(vm.project_pk);
+            }
+        });
+
+
         //This is for control back button and show modal or not
         rootScope.$watch(function () {
             return location.search();
@@ -181,9 +216,10 @@
     };
 
     Config.$inject = ['$stateProvider'];
-    ProjectCtrlBoard.$inject = ['$rootScope', '$state', '$location', '$modal', 'SprintService', 'ProjectService', 'TicketService'];
+    ProjectCtrlBoard.$inject = ['$rootScope', '$state', '$location', '$modal', 'SprintService', 'ProjectService', 'TicketService', 'SocketIO'];
 
     angular.module('Coati.Board', ['ui.router',
+        'Coati.SocketIO',
         'Coati.Directives',
         'Coati.Services.Project',
         'Coati.Services.Ticket',

@@ -24,8 +24,8 @@ io.on('connection', function (socket) {
 
     client.on('message', function (channel, message) {
         var data = JSON.parse(message);
+        console.log(data.type);
         if(socket.username == data.user_id) {
-            console.log(data.type);
             socket.broadcast.to(channel).emit(data.type, {});
         }
     });

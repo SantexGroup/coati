@@ -139,6 +139,7 @@
             modal_instance.result.then(function () {
                 growl.addSuccessMessage('The sprint was started successfully');
                 vm.one_started = true;
+                getSprintsWithTickets(vm.project._id.$oid);
             });
         };
 

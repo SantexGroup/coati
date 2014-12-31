@@ -12,6 +12,7 @@ from app.schemas import (Sprint, Project, SprintTicketOrder,
                          Column, TicketColumnTransition)
 
 from app.redis import RedisClient
+from mongoengine import Q
 
 
 class SprintOrder(Resource):
@@ -160,10 +161,10 @@ class SprintChart(Resource):
 
             for day in days:
                 planned_counter = (planned_counter - planned / duration)
-                if planned_counter > -1:
+                if planned_counter > -1 and len(ideal) < len(days):
                     ideal.append(planned_counter)
                 start_date = day
-                end_date = start_date + timedelta(days=1)
+                end_date = start_date + timedelta(hours=23, minutes=59)
 
                 if start_date.date() <= datetime.now().date():
 
@@ -182,9 +183,11 @@ class SprintChart(Resource):
                     starting_points -= points_burned_for_date
 
                     # tickets after started sprint
-                    spt_list = SprintTicketOrder.objects(sprint=sprint,
-                                                         when__gte=start_date.date(),
-                                                         when__lt=end_date.date())
+                    sp_start = sprint.start_date + timedelta(hours=23, minutes=59)
+                    spt_list = SprintTicketOrder.objects(Q(sprint=sprint) &
+                                                         Q(when__gte=sp_start) &
+                                                         Q(when__gte=start_date) &
+                                                         Q(when__lt=end_date))
                     for spt in spt_list:
                         tickets.append(
                             u'+ %s-%s  (%s)' % (spt.ticket.project.prefix,

@@ -145,6 +145,7 @@ class Sprint(mongoengine.Document):
             for ass in t.ticket.assigned_to:
                 assignments.append(ass.to_mongo())
 
+            w = t.when + timedelta(hours=23, minutes=59)
             value = {
                 'points': t.ticket.points,
                 'title': '%s-%s: %s' % (t.ticket.project.prefix,
@@ -152,7 +153,7 @@ class Sprint(mongoengine.Document):
                                         t.ticket.title),
                 '_id': t.ticket.id,
                 'type': t.ticket.type,
-                'added_after': t.when > self.start_date
+                'added_after': w < self.start_date
             }
             try:
                 tt = TicketColumnTransition.objects.get(ticket=t.ticket,

@@ -1,10 +1,10 @@
 (function (angular) {
 
-    var StartSprintController = function (modalInstance, SprintService, sprint) {
+    var StartSprintController = function (scope, conf, filter, modalInstance, SprintService, sprint) {
         var vm = this;
         vm.sprint = sprint;
         vm.form = {};
-        vm.format = 'MM/dd/yyyy';
+        vm.format = conf.DATE_FORMAT;
 
         var today = new Date();
 
@@ -12,13 +12,13 @@
         vm.max_date = addDays(today, vm.sprint.sprint_duration);
 
         //set defaults
-        vm.sprint.start_date = vm.min_date;
-        vm.sprint.end_date = vm.max_date;
+        vm.sprint.start_date = filter('date')(vm.min_date, vm.format);
+        vm.sprint.end_date = filter('date')(vm.max_date, vm.format);
 
         //check change of start date
-        vm.$watch('vm.sprint.start_date', function () {
-            vm.max_date = addDays(vm.sprint.start_date, vm.sprint.sprint_duration);
-            vm.sprint.end_date = vm.max_date;
+        scope.$watch('vm.sprint.start_date', function () {
+            vm.max_date = filter('date')(addDays(vm.sprint.start_date, vm.sprint.sprint_duration), vm.format);
+            vm.sprint.end_date = filter('date')(vm.max_date, vm.format);
         });
 
         // Datapicker options
@@ -79,10 +79,11 @@
         };
     };
 
-    StartSprintController.$inject = ['$modalInstance', 'SprintService', 'sprint'];
+    StartSprintController.$inject = ['$scope','Conf', '$filter', '$modalInstance', 'SprintService', 'sprint'];
     StopSprintController.$inject = ['$modalInstance', 'SprintService', 'sprint'];
 
     angular.module('Coati.Sprint', ['ui.router',
+        'Coati.Config',
         'Coati.Directives',
         'Coati.Services.Sprint'])
         .controller('StartSprintController', StartSprintController)

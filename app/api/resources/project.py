@@ -38,7 +38,7 @@ class ProjectList(Resource):
         prj.description = data.get('description')
 
         # Add initial config
-        prj.sprint_duration = 15
+        prj.sprint_duration = 10
         prj.save()
 
         # add owner as member

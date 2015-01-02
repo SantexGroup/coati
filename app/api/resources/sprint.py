@@ -1,3 +1,5 @@
+
+
 __author__ = 'gastonrobledo'
 import json
 from datetime import timedelta, datetime
@@ -8,6 +10,9 @@ from flask.ext.restful import Resource
 
 from app.schemas import (Sprint, Project, SprintTicketOrder,
                          Column, TicketColumnTransition)
+
+from app.redis import RedisClient
+from mongoengine import Q
 
 
 class SprintOrder(Resource):
@@ -21,6 +26,9 @@ class SprintOrder(Resource):
                 sprint = Sprint.objects.get(pk=s)
                 sprint.order = index
                 sprint.save()
+            ## add to redis
+            r = RedisClient(channel=project_pk)
+            r.store('order_sprints', **kwargs)
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400
 
@@ -30,7 +38,7 @@ class SprintList(Resource):
         super(SprintList, self).__init__()
 
     def get(self, project_pk, *args, **kwargs):
-        return Sprint.objects(project=project_pk).order_by('order').to_json()
+        return Sprint.objects(project=project_pk, finalized=False).order_by('order').to_json()
 
     def post(self, project_pk, *args, **kwargs):
         """
@@ -44,6 +52,9 @@ class SprintList(Resource):
         sp = Sprint(project=project.to_dbref())
         sp.name = 'Sprint %d' % (total + 1)
         sp.save()
+        ## add to redis
+        r = RedisClient(channel=project_pk)
+        r.store('new_sprint', **kwargs)
         return sp.to_json(), 201
 
 
@@ -76,12 +87,18 @@ class SprintInstance(Resource):
                 sp.finalized = True
 
             sp.save()
+            ## add to redis
+            r = RedisClient(channel=str(sp.project.pk))
+            r.store('update_sprint', **kwargs)
             return sp.to_json(), 200
         return jsonify({"error": 'Bad Request'}), 400
 
     def delete(self, sp_id, *args, **kwargs):
         sp = Sprint.objects.get(pk=sp_id)
         sp.delete()
+        ## add to redis
+        r = RedisClient(channel=str(sp.project.pk))
+        r.store('delete_sprint', **kwargs)
         return sp.to_json(), 204
 
 
@@ -144,10 +161,10 @@ class SprintChart(Resource):
 
             for day in days:
                 planned_counter = (planned_counter - planned / duration)
-                if planned_counter > -1:
+                if planned_counter > -1 and len(ideal) < len(days):
                     ideal.append(planned_counter)
                 start_date = day
-                end_date = start_date + timedelta(days=1)
+                end_date = start_date + timedelta(hours=23, minutes=59)
 
                 if start_date.date() <= datetime.now().date():
 
@@ -166,9 +183,11 @@ class SprintChart(Resource):
                     starting_points -= points_burned_for_date
 
                     # tickets after started sprint
-                    spt_list = SprintTicketOrder.objects(sprint=sprint,
-                                                         when__gte=start_date.date(),
-                                                         when__lt=end_date.date())
+                    sp_start = sprint.start_date + timedelta(hours=23, minutes=59)
+                    spt_list = SprintTicketOrder.objects(Q(sprint=sprint) &
+                                                         Q(when__gte=sp_start) &
+                                                         Q(when__gte=start_date) &
+                                                         Q(when__lt=end_date))
                     for spt in spt_list:
                         tickets.append(
                             u'+ %s-%s  (%s)' % (spt.ticket.project.prefix,
@@ -189,3 +208,19 @@ class SprintChart(Resource):
             }
             return jsonify(data), 200
         return jsonify({'error': 'Bad Request'}), 400
+
+
+class SprintArchivedList(Resource):
+    def __init__(self):
+        super(SprintArchivedList, self).__init__()
+
+    def get(self, project_pk, *args, **kwargs):
+        return Sprint.objects(project=project_pk, finalized=True).order_by('order').to_json()
+
+
+class SprintAllList(Resource):
+    def __init__(self):
+        super(SprintAllList, self).__init__()
+
+    def get(self, project_pk, *args, **kwargs):
+        return Sprint.objects(project=project_pk).order_by('order').to_json()

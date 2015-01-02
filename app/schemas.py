@@ -71,13 +71,14 @@ class Token(mongoengine.Document):
 class Project(mongoengine.Document):
     name = mongoengine.StringField(required=True, unique_with='owner')
     description = mongoengine.StringField(max_length=500)
-    private = mongoengine.BooleanField(default=True)
     active = mongoengine.BooleanField(default=True)
     owner = mongoengine.ReferenceField('User',
                                        dbref=True,
                                        reverse_delete_rule=mongoengine.CASCADE)
     prefix = mongoengine.StringField()
     sprint_duration = mongoengine.IntField()
+    # true = Scrum, false = Kanban
+    project_type = mongoengine.BooleanField(default=True)
 
     meta = {
         'indexes': ['name'],
@@ -145,6 +146,7 @@ class Sprint(mongoengine.Document):
             for ass in t.ticket.assigned_to:
                 assignments.append(ass.to_mongo())
 
+            w = t.when + timedelta(hours=23, minutes=59)
             value = {
                 'points': t.ticket.points,
                 'title': '%s-%s: %s' % (t.ticket.project.prefix,
@@ -152,7 +154,7 @@ class Sprint(mongoengine.Document):
                                         t.ticket.title),
                 '_id': t.ticket.id,
                 'type': t.ticket.type,
-                'added_after': t.when > self.start_date
+                'added_after': w < self.start_date
             }
             try:
                 tt = TicketColumnTransition.objects.get(ticket=t.ticket,
@@ -343,8 +345,10 @@ class TicketColumnTransition(mongoengine.Document):
 
 
 class ProjectMember(mongoengine.Document):
-    member = mongoengine.ReferenceField('User')
-    project = mongoengine.ReferenceField('Project')
+    member = mongoengine.ReferenceField('User',
+                                        reverse_delete_rule=mongoengine.CASCADE)
+    project = mongoengine.ReferenceField('Project',
+                                         reverse_delete_rule=mongoengine.CASCADE)
     since = mongoengine.DateTimeField(default=datetime.now())
     is_owner = mongoengine.BooleanField(default=False)
 

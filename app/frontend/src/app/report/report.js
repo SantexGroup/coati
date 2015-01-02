@@ -23,9 +23,17 @@
         vm.is_not_started = false;
 
         var getSprints = function (project_id) {
-            SprintService.query(project_id).then(function (sprints) {
+            SprintService.all(project_id).then(function (sprints) {
                 vm.sprints = sprints;
             });
+        };
+
+        vm.getSprintType = function(s){
+            if(s.finalized){
+                return 'Finalized Sprints';
+            }else{
+                return 'Current Sprints';
+            }
         };
 
         var getSprintReport = function (sprint_id) {
@@ -102,6 +110,7 @@
 
         vm.getReport = function () {
             if (vm.sprint_selected && vm.sprint_selected.started) {
+                vm.is_not_started = false;
                 getSprintReport(vm.sprint_selected._id.$oid);
             } else {
                 if (vm.sprint_selected) {

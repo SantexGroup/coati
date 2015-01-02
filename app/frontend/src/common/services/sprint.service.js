@@ -5,6 +5,12 @@
             'query': function (project_pk) {
                 return req.$do('/sprints/' + project_pk, req.METHODS.GET);
             },
+            'all': function (project_pk) {
+                return req.$do('/sprints/' + project_pk + '/all', req.METHODS.GET);
+            },
+            'archived': function (project_pk) {
+                return req.$do('/sprints/' + project_pk + '/archived', req.METHODS.GET);
+            },
             'save': function (project_pk, sp) {
                 return req.$do('/sprints/' + project_pk, req.METHODS.POST, sp);
             },

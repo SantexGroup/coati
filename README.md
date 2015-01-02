@@ -9,6 +9,7 @@
     - Flask-RestFul
     - OAuth
 - MongoDB
+- Redis
 - AngularJS
 - NodeJS
 
@@ -16,6 +17,10 @@
 
 Install mongodb:
 http://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/
+brew install mongodb
+
+Install Redis:
+brew install redis
 
 Clone repository
 ```sh
@@ -35,4 +40,9 @@ grunt build
 ###### Run application
 ```sh
 python coati/run.py
+```
+
+##### Run Node Js
+```sh
+node app/realtime/server.js
 ```

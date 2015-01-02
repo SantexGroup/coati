@@ -81,7 +81,8 @@ module.exports = {
             'vendor/highcharts/highcharts-all.js',
             'vendor/ng-file-upload/angular-file-upload.min.js',
             'vendor/ng-file-upload/angular-file-upload-shim.min.js',
-            'vendor/angular-ui-sortable/sortable.min.js'
+            'vendor/angular-ui-sortable/sortable.min.js',
+            'vendor/angular-xeditable/dist/js/xeditable.min.js'
         ],
         maps: [
             'vendor/angular/angular.min.js.map',
@@ -90,7 +91,8 @@ module.exports = {
         css: [
             'vendor/angular/angular-csp.css',
             'vendor/angular-notifications/notification.min.css',
-            'vendor/ng-tags-input/ng-tags-input.min.css'
+            'vendor/ng-tags-input/ng-tags-input.min.css',
+            'vendor/angular-xeditable/dist/css/xeditable.css'
         ],
         assets: [],
         fonts: [

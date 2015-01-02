@@ -15,6 +15,10 @@
                         <a data-toggle="tab"
                            ng-click="vm.switchView('project.reports');">Reports</a>
                     </li>
+                    <li ng-class="{active: vm.archived}">
+                        <a data-toggle="tab"
+                           ng-click="vm.switchView('project.archived');">Archived Sprints</a>
+                    </li>
                     <li ng-show="vm.check_permission()" ng-class="{active: vm.settings}">
                         <a data-toggle="tab"
                            ng-click="vm.switchView('project.settings');">Project
@@ -33,6 +37,10 @@
                     </div>
                     <div id="reports" class="tab-pane" ng-class="{active: vm.reports}">
                         <div ui-view="project-reports"></div>
+                    </div>
+                    <div id="sprint-archived-overview"
+                         class="tab-pane" ng-class="{active: vm.archived}">
+                        <div ui-view="project-archived"></div>
                     </div>
                     <div id="settings" class="tab-pane" ng-class="{active: vm.settings}">
                         <div ui-view="project-settings"></div>

@@ -1,23 +1,27 @@
-<div class="row" style="margin-bottom:10px;">
-    <div class="col-lg-12">
-        <button type="button" class="btn btn-primary" ng-click="vm.create_project();"><i
-                class="icon-tasks"></i> New Project
-        </button>
-    </div>
-</div>
 <div class="row">
     <div class="col-lg-12">
+        <h3>Welcome to Coati Agile Project.</h3>
+
+        <hr/>
         <p data-ng-show="vm.projects.length < 1">You don't have Projects created
             yet!</p>
         <!--widget start-->
-        <aside class="profile-nav alt blue-border col-lg-3"
-               style="margin-right: 5px"
+        <aside class="profile-nav alt blue-border col-md-3"
                ng-repeat="item in vm.projects track by item._id.$oid"
                data-index="<[ $index ]>">
             <section class="panel">
-                <header class="panel-heading alt blue-bg">
-                    <a href="/project/<[ item._id.$oid ]>/"><[ item.name ]></a>
-                </header>
+                <a href="/project/<[ item._id.$oid ]>/">
+                    <header class="panel-heading alt">
+                        <span><[ item.name ]></span>
+
+                        <div class="pull-right">
+                        <span ng-class="{active: item.active, deactivated: !item.active}"
+                              title="Green: Active, Red: Inactive"><i
+                                class="icon-circle"></i></span>
+                        </div>
+                    </header>
+                </a>
+
                 <div class="panel-body">
                     <p><[ item.description ]></p>
                     <ul class="nav nav-pills nav-stacked">
@@ -31,5 +35,15 @@
             </section>
         </aside>
         <!--widget end-->
+        <aside class="profile-nav alt col-md-3 new-project" ng-click="vm.create_project();">
+            <section class="panel">
+                <header class="panel-heading alt">
+                    <span>New Project...</span>
+                </header>
+                <div class="panel-body">
+                    <p>Click here to create a new project...</p>
+                </div>
+            </section>
+        </aside>
     </div>
 </div>

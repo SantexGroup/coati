@@ -1,10 +1,72 @@
 (function (angular) {
 
-    var StartSprintController = function (modalInstance, SprintService, sprint) {
+    var Config = function (stateProvider) {
+        stateProvider.state('project.archived', {
+            url: 'archived-sprints',
+            views: {
+                "project-archived": {
+                    controller: 'ArchivedSprintController',
+                    controllerAs: 'vm',
+                    templateUrl: 'sprint/archived.tpl.html'
+                }
+            },
+            tab_active: 'archived',
+            data: {
+                pageTitle: 'Archived Sprints'
+            },
+            reloadOnSearch: false,
+            reload: true
+        });
+    };
+
+    var ArchivedSprintController = function(rootScope, scope, modal, SprintService, SocketIO){
+
+        var vm = this;
+
+        vm.project = scope.$parent.project;
+
+        var getSprintsWithTickets = function(project_id){
+            SprintService.archived(project_id).then(function (sprints) {
+                vm.sprints = sprints;
+            });
+        };
+
+
+        vm.showDetails = function (e, tkt) {
+            if (tkt) {
+                tkt = angular.copy(tkt);
+                tkt.pk = tkt._id.$oid;
+
+            }
+            var modal_instance = modal.open({
+                controller: 'TicketDetailController as vm',
+                templateUrl: 'ticket/ticket_detail_view.tpl.html',
+                resolve: {
+                    item: function () {
+                        return {
+                            'project': vm.project,
+                            'ticket_id': tkt._id.$oid
+                        };
+                    }
+                }
+            });
+            modal_instance.result.then(function () {
+                getSprintsWithTickets(vm.project._id.$oid);
+            });
+            e.stopPropagation();
+        };
+
+        getSprintsWithTickets(vm.project._id.$oid);
+
+        SocketIO.init(vm.project._id.$oid, rootScope.user._id.$oid);
+
+    };
+
+    var StartSprintController = function (scope, conf, filter, modalInstance, SprintService, sprint) {
         var vm = this;
         vm.sprint = sprint;
         vm.form = {};
-        vm.format = 'MM/dd/yyyy';
+        vm.format = conf.DATE_FORMAT;
 
         var today = new Date();
 
@@ -12,13 +74,13 @@
         vm.max_date = addDays(today, vm.sprint.sprint_duration);
 
         //set defaults
-        vm.sprint.start_date = vm.min_date;
-        vm.sprint.end_date = vm.max_date;
+        vm.sprint.start_date = filter('date')(vm.min_date, vm.format);
+        vm.sprint.end_date = filter('date')(vm.max_date, vm.format);
 
         //check change of start date
-        vm.$watch('vm.sprint.start_date', function () {
-            vm.max_date = addDays(vm.sprint.start_date, vm.sprint.sprint_duration);
-            vm.sprint.end_date = vm.max_date;
+        scope.$watch('vm.sprint.start_date', function () {
+            vm.max_date = filter('date')(addDays(vm.sprint.start_date, vm.sprint.sprint_duration), vm.format);
+            vm.sprint.end_date = filter('date')(vm.max_date, vm.format);
         });
 
         // Datapicker options
@@ -79,12 +141,18 @@
         };
     };
 
-    StartSprintController.$inject = ['$modalInstance', 'SprintService', 'sprint'];
+    Config.$inject = ['$stateProvider'];
+    ArchivedSprintController.$inject = ['$rootScope', '$scope', '$modal', 'SprintService', 'SocketIO'];
+    StartSprintController.$inject = ['$scope','Conf', '$filter', '$modalInstance', 'SprintService', 'sprint'];
     StopSprintController.$inject = ['$modalInstance', 'SprintService', 'sprint'];
 
     angular.module('Coati.Sprint', ['ui.router',
+        'Coati.Config',
+        'Coati.SocketIO',
         'Coati.Directives',
         'Coati.Services.Sprint'])
+        .config(Config)
+        .controller('ArchivedSprintController', ArchivedSprintController)
         .controller('StartSprintController', StartSprintController)
         .controller('StopSprintController', StopSprintController);
 

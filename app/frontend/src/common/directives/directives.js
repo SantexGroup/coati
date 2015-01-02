@@ -168,85 +168,6 @@
         };
     };
 
-    var InlineEdit = function (timeout) {
-        return {
-            scope: {
-                model: '=inlineEdit',
-                handleSave: '&onSave',
-                handleCancel: '&onCancel'
-            },
-            link: function (scope, elm, attr) {
-                var previousValue;
-                scope.editMode = false;
-                scope.edit = function () {
-                    scope.editMode = true;
-                    previousValue = scope.model;
-                    timeout(function () {
-                        elm.find('input')[0].focus();
-                    }, 0, false);
-                };
-                scope.save = function () {
-                    scope.editMode = false;
-                    scope.handleSave({value: scope.model});
-                };
-                scope.cancel = function () {
-                    scope.editMode = false;
-                    scope.model = previousValue;
-                    scope.handleCancel({value: scope.model});
-                };
-            },
-            template: '<input style="width: auto; display:inline-block;" class="form-control" type="text" on-enter="save()" on-esc="cancel()" ng-model="model" ng-show="editMode"><span ng-hide="editMode" ng-click="edit()"><[ model ]></span>'
-        };
-    };
-
-    var TicketDetailView = function (conf) {
-        return {
-            restrict: 'E',
-            scope: {
-                reduceItem: '@reducedItem',
-                sizeReducedItem: '@sizeReducedItem'
-            },
-            controller: 'TicketDetailController',
-            transclude: true,
-            replace: true,
-            templateUrl: 'ticket/ticket_quick_detail_view.tpl.html',
-            link: function (scope, elem, attrs, ctrl) {
-                scope.$watch('$parent.vm.loaded', function (new_val, old_val) {
-                    scope.loaded = new_val;
-                });
-
-                scope.$watch('$parent.vm.ticket_detail', function (new_val, old_val) {
-                    scope.ticket = new_val;
-                    if (scope.ticket) {
-                        angular.forEach(conf.TICKET_TYPES, function (val, key) {
-                            if (val.value === scope.ticket.type) {
-                                scope.ticket.type_name = val.name;
-                                return;
-                            }
-                        });
-                    }
-                });
-                scope.$watch('$parent.vm.ticket_clicked', function (new_val) {
-                    if (new_val) {
-                        $(elem).show("fold", 500);
-                        $(scope.reduceItem).addClass('col-md-' + scope.sizeReducedItem, 500);
-                        $(window.opera ? 'html' : 'html, body').animate({
-                            scrollTop: 0
-                        }, 'slow');
-                    }
-                });
-                scope.close = function () {
-                    scope.$parent.vm.ticket_detail = null;
-                    scope.$parent.vm.ticket_clicked = false;
-                    $(elem).hide("fold", 500);
-                    $(scope.reduceItem).removeClass('col-md-' + scope.sizeReducedItem, 500);
-                };
-                $(elem).css('display', 'none');
-            }
-        };
-    };
-
-
     var CalculateWithBoard = function (rootScope, timeout) {
         return {
             link: function () {
@@ -260,8 +181,8 @@
                         $('.board-area').width(list_width);
 
                         //set same height of content column
-                        $('.task-list').each(function(){
-                           $(this).css('min-height', $(this).parent().parent().height());
+                        $('.task-list').each(function () {
+                            $(this).css('min-height', $(this).parent().parent().height());
                         });
                     };
                     timeout(calculateWidth, 0);
@@ -300,20 +221,41 @@
         };
     };
 
+    var editableTagInput = function (editableDirectiveFactory) {
+        return editableDirectiveFactory({
+            directiveName: 'editableTags',
+            inputTpl: '<div></div>',
+            render: function () {
+                this.parent.render.call(this);
+                var tagIn = '<tags-input ng-model="$data" replace-spaces-with-dashes="false" placeholder="Add Label"></tags-input>';
+                this.inputEl.before(tagIn);
+                if(this.attrs.eStyle) {
+                    this.inputEl.style = this.attrs.eStyle;
+                }
+            },
+            autosubmit: function () {
+                var self = this;
+                self.inputEl.bind('change', function () {
+                    self.scope.$apply(function () {
+                        self.scope.$form.$submit();
+                    });
+                });
+            }
+        });
+    };
+
+
     ImageFunction.$inject = ['$q'];
-    InlineEdit.$inject = ['$timeout'];
     commentFlow.$inject = ['$rootScope'];
     CalculateWithBoard.$inject = ['$rootScope', '$timeout'];
-    TicketDetailView.$inject = ['Conf'];
 
     angular.module('Coati.Directives', ['Coati.Config'])
         .directive('image', ImageFunction)
         .directive('chart', Chart)
         .directive('onEsc', OnEscape)
         .directive('onEnter', OnEnter)
-        .directive('inlineEdit', InlineEdit)
-        .directive('ticketDetailView', TicketDetailView)
         .directive('prepareBoard', CalculateWithBoard)
+        .directive('editableTags', editableTagInput)
         .directive('commentFlow', commentFlow);
 
 

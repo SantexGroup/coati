@@ -51,6 +51,20 @@
         };
     }
 
+    function filterTicketTypes(){
+        return function(types, type){
+            var value = null;
+            for(var i=0; i<types.length; i++){
+                var v = types[i];
+                if(v.value === type){
+                    value = v.name;
+                    break;
+                }
+            }
+            return value;
+        };
+    }
+
     function AppController(scope, rootScope, state, stateParams, tokens) {
 
         rootScope.$on('$stateChangeStart', function (event, toState) {
@@ -73,7 +87,12 @@
 
     }
 
-    var RunApp = function(rootScope, objects){
+    var RunApp = function(rootScope, objects, editableOptions,editableThemes ){
+
+        editableThemes.bs3.inputClass = 'input-sm';
+        editableThemes.bs3.buttonsClass = 'btn-sm';
+        editableOptions.theme = 'bs3';
+
         var user = null;
         try{
             user = JSON.parse(window.sessionStorage.getItem('user'));
@@ -87,13 +106,13 @@
     };
 
     // Injections
-    RunApp.$inject = ['$rootScope', '$objects'];
+    RunApp.$inject = ['$rootScope', '$objects', 'editableOptions', 'editableThemes'];
     ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider'];
     AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', 'tokens'];
 
     angular.module('Coati', [
         'templates-app', 'templates-common',
-        'ui.router', 'ui.bootstrap', 'angular-growl',
+        'ui.router', 'ui.bootstrap', 'angular-growl', 'xeditable',
         'Coati.Config', 'Coati.Directives', 'Coati.Home',
         'Coati.Login', 'Coati.Helpers',
         'Coati.User', 'Coati.Project', 'Coati.Ticket', 'Coati.Sprint'])
@@ -102,6 +121,7 @@
         .filter('getByProperty', filterGetByProperty)
         .filter('getIndexByProperty', filterGetIndexByProperty)
         .filter('sumValue', sumValue)
+        .filter('ticketTypes', filterTicketTypes)
         .controller('AppCtrl', AppController);
 
 }(angular));

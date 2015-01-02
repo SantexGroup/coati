@@ -6,19 +6,6 @@
 
     var Config = function (stateProvider) {
         stateProvider
-            .state('project-new', {
-                url: '/project/new-project/',
-                views: {
-                    "main": {
-                        controller: 'ProjectFormCtrl',
-                        controllerAs: 'vm',
-                        templateUrl: 'project/new_project.tpl.html'
-                    }
-                },
-                data: {
-                    pageTitle: 'New Project'
-                }
-            })
             .state('project', {
                 url: '/project/:project_pk/',
                 views: {
@@ -64,20 +51,26 @@
 
         rootScope.$on("$stateChangeSuccess", function (event, toState, toParams, fromState, fromParams) {
             vm.tab_active = state.current.tab_active;
-            vm[vm.tab_active] = true;
-            vm[fromState.tab_active] = false;
+            if(state.current.name.indexOf('project') !== -1) {
+                if (vm.tab_active === undefined) {
+                    state.go('project.planning', {project_pk: state.params.project_pk}, {reload: true});
+                } else {
+                    vm[vm.tab_active] = true;
+                    vm[fromState.tab_active] = false;
+                }
+            }
         });
     };
 
-    var ProjectFormCtrl = function (state, ProjectService, growl) {
+    var ProjectFormCtrl = function (state, modalInstance, ProjectService, growl) {
         var vm = this;
         vm.form = {};
         vm.project = {};
         vm.save = function () {
             if (vm.form.project_form.$valid) {
                 ProjectService.save(vm.project).then(function (project) {
-                    state.go('project.planning', {project_pk: project._id.$oid});
                     growl.addSuccessMessage('The project was created successfully');
+                    modalInstance.close(project);
                 });
             } else {
                 vm.submitted = true;
@@ -85,16 +78,29 @@
         };
 
         vm.cancel = function () {
-            state.go('home');
+            modalInstance.dismiss('closed');
         };
     };
 
+    var ProjectDeleteController = function (modalInstance, ProjectService, project) {
+        var vm = this;
+        vm.project = project;
+        vm.erase = function () {
+            ProjectService.erase(vm.project._id.$oid).then(function () {
+                modalInstance.close('delete');
+            });
+        };
+
+        vm.cancel = function () {
+            modalInstance.dismiss('cancelled');
+        };
+    };
 
     ResolveProject.$inject = ['$stateParams', 'ProjectService'];
     Config.$inject = ['$stateProvider'];
     ProjectCtrl.$inject = ['$scope', '$rootScope', '$state', 'project'];
-
-    ProjectFormCtrl.$inject = ['$state', 'ProjectService', 'growl'];
+    ProjectDeleteController.$inject = ['$modalInstance', 'ProjectService', 'project'];
+    ProjectFormCtrl.$inject = ['$state', '$modalInstance', 'ProjectService', 'growl'];
 
     angular.module('Coati.Project', ['ui.router',
         'Coati.Settings',
@@ -105,6 +111,7 @@
         'Coati.Services.Project'])
         .config(Config)
         .controller('ProjectCtrl', ProjectCtrl)
+        .controller('ProjectDeleteController', ProjectDeleteController)
         .controller('ProjectFormCtrl', ProjectFormCtrl);
 
 }(angular));

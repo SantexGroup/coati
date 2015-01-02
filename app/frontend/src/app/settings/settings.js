@@ -24,7 +24,7 @@
     };
 
 
-    var ProjectCtrlSettings = function (scope, state, modal, growl, ProjectService) {
+    var ProjectCtrlSettings = function (rootScope, scope, state, modal, growl, ProjectService, SocketIO) {
         var vm = this;
         vm.form = {};
 
@@ -95,6 +95,21 @@
             }
         };
 
+        vm.delete_project = function(){
+            var modalInstance = modal.open({
+                controller: 'ProjectDeleteController as vm',
+                templateUrl: 'project/delete_project.tpl.html',
+                resolve: {
+                    project: function () {
+                        return vm.project;
+                    }
+                }
+            });
+            modalInstance.result.then(function () {
+                state.go('home');
+            });
+        };
+
         //order_columns
         vm.sortColumnOptions = {
             forcePlaceholderSize: true,
@@ -133,6 +148,9 @@
         vm.project = scope.$parent.project;
         getColumnConfiguration(vm.project._id.$oid);
         getMembers(vm.project._id.$oid);
+
+        SocketIO.init(vm.project._id.$oid, rootScope.user._id.$oid);
+
     };
 
     var ColumnFormController = function (modalInstance, ProjectService, project, column) {
@@ -202,12 +220,13 @@
     };
 
     Config.$inject = ['$stateProvider', 'tagsInputConfigProvider'];
-    ProjectCtrlSettings.$inject = ['$scope', '$state', '$modal', 'growl', 'ProjectService'];
+    ProjectCtrlSettings.$inject = ['$rootScope', '$scope', '$state', '$modal', 'growl', 'ProjectService', 'SocketIO'];
     ColumnFormController.$inject = ['$modalInstance', 'ProjectService', 'project', 'column'];
     ColumnDeleteController.$inject = ['$modalInstance', 'ProjectService', 'column'];
     MembersController.$inject = ['$modalInstance', 'UserService', 'ProjectService', 'project'];
 
     angular.module('Coati.Settings', ['ui.router', 'ngTagsInput',
+        'Coati.SocketIO',
         'Coati.Directives',
         'Coati.Services.User',
         'Coati.Services.Project'])

@@ -11,7 +11,7 @@
             views: {
                 "main": {
                     controller: 'UserProfileCtrl',
-                    templateUrl: 'user/user.tpl.html'
+                    templateUrl: 'app/user/user.tpl.html'
                 }
             },
             data: {

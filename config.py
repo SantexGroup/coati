@@ -52,3 +52,5 @@ MONGODB_HOST = 'localhost'
 MONGODB_PORT = 27017
 MONGODB_USERNAME = ''
 PASSWORD = ''
+
+REDIS_URL='redis://:c04t1@localhost:6379/0'

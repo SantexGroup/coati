@@ -33,7 +33,7 @@
                 </li>
                 <!-- user login dropdown start-->
                 <li dropdown ng-controller="UserCtrl as vm" update-profile>
-                    <a class="dropdown-toggle user_picture" href="#">
+                    <a class="dropdown-toggle user_picture" dropdown-toggle href="#">
                         <img ng-if="!vm.user.picture" alt="" src="{{ url_for('static', filename='assets/img/koala.png')}}">
                         <img ng-if="vm.user.picture" alt="" src="<[ vm.user.picture ]>">
                         <span class="username"><[ vm.user.email ]></span>
@@ -79,7 +79,7 @@
 <script type="text/javascript"
         src="{{ url_for('static', filename='<%= file %>')}}"></script>
 <% }); %>
-<!--<script type="text/javascript"
-        src="http://localhost:9000/socket.io/socket.io.js"></script> -->
+<script type="text/javascript"
+        src="http://localhost:9000/socket.io/socket.io.js"></script>
 </body>
 </html>

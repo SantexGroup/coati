@@ -73,11 +73,13 @@
 
     };
 
-    var TicketDetailController = function (rootScope, tmo, modalInstance, conf, downloader, TicketService, item) {
+    var TicketDetailController = function (rootScope, tmo, modalInstance, conf, downloader, TicketService, SocketIO, item) {
         var vm = this;
 
         vm.files = [];
         vm.file_uploaded = 0;
+
+        vm.types = conf.TICKET_TYPES;
 
         var getComments = function (ticket_id) {
             TicketService.get_comments(ticket_id).then(function (comments) {
@@ -88,16 +90,12 @@
         var getTicket = function (ticket_id) {
             TicketService.get(ticket_id).then(function (tkt) {
                 vm.ticket = tkt;
+                vm.labels = tkt.labels;
 
                 getComments(tkt._id.$oid);
 
-                angular.forEach(conf.TICKET_TYPES, function (val, key) {
-                    if (val.value === vm.ticket.type) {
-                        vm.type = val.name;
-                        return;
-                    }
-                });
-            }, function(){
+
+            }, function () {
                 modalInstance.dismiss('error loading ticket');
             });
         };
@@ -119,6 +117,15 @@
 
         vm.project = item.project;
         getTicket(item.ticket_id);
+
+        vm.saveTicket = function (ticket) {
+            if (ticket) {
+                ticket.sprint = undefined;
+                TicketService.update(ticket._id.$oid, ticket).then(function(tkt){
+                    vm.ticket = tkt;
+                });
+            }
+        };
 
         vm.removeFileFromQueue = function (f) {
             _.pull(vm.files, f);
@@ -188,7 +195,7 @@
         };
 
         vm.close = function () {
-            modalInstance.dismiss('closed');
+            modalInstance.close('closed');
         };
 
 
@@ -203,14 +210,32 @@
             f.aborted = true;
         };
 
+        vm.prepareLabelsToSave = function(lbls, save){
+            vm.ticket.labels = [];
+            angular.forEach(vm.labels, function(v, k){
+                 vm.ticket.labels.push(v.text);
+            });
+            if(save) {
+                vm.saveTicket(vm.ticket);
+            }
+        };
+
+        SocketIO.on('update_ticket', function () {
+            getTicket(item.ticket_id);
+        });
+        SocketIO.on('ticket_transition', function() {
+            getTicket(item.ticket_id);
+        });
+
     };
 
-    TicketDetailController.$inject = ['$rootScope', '$timeout', '$modalInstance', 'Conf', '$file_download', 'TicketService', 'item'];
+    TicketDetailController.$inject = ['$rootScope', '$timeout', '$modalInstance', 'Conf', '$file_download', 'TicketService', 'SocketIO', 'item'];
     TicketFormController.$inject = ['$modalInstance', 'Conf', 'TicketService', 'SprintService', 'item'];
     TicketDeleteController.$inject = ['$modalInstance', 'TicketService', 'item'];
 
     angular.module('Coati.Ticket', ['ui.router', 'ngTagsInput', 'angularFileUpload',
         'Coati.Config',
+        'Coati.SocketIO',
         'Coati.Helpers',
         'Coati.Directives',
         'Coati.Services.Ticket',

@@ -1,7 +1,7 @@
 <section class="panel">
     <header class="panel-heading">
         <h4 class="modal-title pull-left">
-            <span><[ vm.project.prefix]>-<[ vm.ticket.number ]></span>: <span><[ vm.ticket.title ]></span>
+            <span><[ vm.project.prefix]>-<[ vm.ticket.number ]></span>: <span editable-text="vm.ticket.title" onbeforesave="vm.saveTicket(vm.ticket);"><[ vm.ticket.title ]></span>
         </h4>
 
         <div class="pull-right">
@@ -18,12 +18,12 @@
                 <div class="row">
                     <div class="col-md-10">
                         <label>Points</label>
-                        <span class="badge bg-important">
+                        <span class="badge bg-important" editable-text="vm.ticket.points" onbeforesave="vm.saveTicket(vm.ticket);">
                             <[ vm.ticket.points ]>
                         </span>
                         <label>Ticket Type:</label>
-                        <span class="badge <[ vm.ticket.type]>">
-                            <[ vm.type ]>
+                        <span class="badge <[ vm.ticket.type]>" editable-select="vm.ticket.type"  e-ng-options="t.value as t.name for t in vm.types" onbeforesave="vm.saveTicket(vm.ticket);">
+                            <[ vm.types | ticketTypes:vm.ticket.type ]>
                         </span>
                         <label>In Column:</label>
                         <span ng-if="!vm.ticket.in_column"
@@ -57,7 +57,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <label>Description:</label>
-                        <p><[ vm.ticket.description ]></p>
+                        <p editable-textarea="vm.ticket.description" e-rows="5" e-cols="70" onbeforesave="vm.saveTicket(vm.ticket);"><[ vm.ticket.description ]></p>
                     </div>
                 </div>
                 <hr/>
@@ -65,7 +65,7 @@
                     <div class="col-md-12">
                         <label>Labels:</label>
 
-                        <p class="labels-ticket">
+                        <p class="labels-ticket" editable-tags="vm.labels" e-style="display:inline-block;min-width:400px;" oncancel="vm.prepareLabelsToSave($data, false);" onbeforesave="vm.prepareLabelsToSave($data, true);">
                             <span class="badge bg-info"
                                   ng-repeat="lbl in vm.ticket.labels">
                                 <[ lbl ]>

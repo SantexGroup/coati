@@ -15,7 +15,7 @@
                          ng-class="{started:vm.sprint.started}">
                     <header class="panel-heading">
                         <i class="icon-ellipsis-vertical handler"></i>
-                        <span inline-edit="sprint.name" on-save="vm.renameSprint(sprint);"><[ sprint.name ]></span>
+                        <span editable-text="sprint.name" onbeforesave="vm.renameSprint(sprint);"><[ sprint.name ]></span>
                         <span class="badge"><[ sprint.tickets.length ]></span>
 
                         <div class="options pull-right">

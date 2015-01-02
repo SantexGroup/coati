@@ -34,7 +34,7 @@ class ProjectList(Resource):
                       owner=user.to_dbref())
         prj.active = data.get('active')
         prj.private = data.get('private')
-        prj.prefix = data.get('prefix') or data.get('name')[3:0]
+        prj.prefix = data.get('prefix', data.get('name')[:3].upper())
         prj.description = data.get('description')
 
         # Add initial config
@@ -99,7 +99,7 @@ class ProjectInstance(Resource):
         ## add to redis
         r = RedisClient()
         r.store('delete_project', **kwargs)
-        return {}, 204
+        return jsonify({}), 204
 
 
 class ProjectColumns(Resource):

@@ -96,10 +96,10 @@ class TicketProjectList(Resource):
         tkt.order = Ticket.objects.count()
         tkt.project = project
         tkt.description = data.get('description')
-        tkt.points = data.get('points')
+        tkt.points = data.get('points', 0)
         tkt.title = data.get('title')
         tkt.labels = data.get('labels')
-        tkt.type = data.get('type')
+        tkt.type = data.get('type', 'U')
         tkt.save()
 
         if data.get('sprint'):

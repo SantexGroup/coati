@@ -95,6 +95,21 @@
             }
         };
 
+        vm.delete_project = function(){
+            var modalInstance = modal.open({
+                controller: 'ProjectDeleteController as vm',
+                templateUrl: 'project/delete_project.tpl.html',
+                resolve: {
+                    project: function () {
+                        return vm.project;
+                    }
+                }
+            });
+            modalInstance.result.then(function () {
+                state.go('home');
+            });
+        };
+
         //order_columns
         vm.sortColumnOptions = {
             forcePlaceholderSize: true,

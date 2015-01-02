@@ -14,6 +14,9 @@
             'update': function(project_pk, data){
                 return req.$do('/project/' + project_pk, req.METHODS.UPDATE, data);
             },
+            'erase': function(project_pk){
+                return req.$do('/project/' + project_pk, req.METHODS.DELETE);
+            },
             'get_columns': function (project_id) {
                 return req.$do('/project/' + project_id + '/columns', req.METHODS.GET);
             },

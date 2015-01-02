@@ -30,7 +30,7 @@
      * @param ProjectService - API Service for Projects
      * @constructor
      */
-    function MainController(state, ProjectService, UserService) {
+    function MainController(state, modal, ProjectService, UserService) {
         var vm = this;
 
         vm.user = window.username;
@@ -43,7 +43,13 @@
         };
 
         vm.create_project = function(){
-            state.go('project-new');
+            var modal_instance = modal.open({
+                controller: 'ProjectFormCtrl as vm',
+                templateUrl: 'project/new_project.tpl.html'
+            });
+            modal_instance.result.then(function (project) {
+                vm.projects.push(project);
+            });
         };
 
         if(UserService.is_logged()) {
@@ -53,7 +59,7 @@
 
     //Injections
     ConfigModule.$inject = ['$stateProvider'];
-    MainController.$inject = ['$state', 'ProjectService', 'UserService'];
+    MainController.$inject = ['$state', '$modal', 'ProjectService', 'UserService'];
 
 
     angular.module('Coati.Home',

@@ -90,15 +90,11 @@
         var getTicket = function (ticket_id) {
             TicketService.get(ticket_id).then(function (tkt) {
                 vm.ticket = tkt;
+                vm.labels = tkt.labels;
 
                 getComments(tkt._id.$oid);
 
-                angular.forEach(conf.TICKET_TYPES, function (val, key) {
-                    if (val.value === vm.ticket.type) {
-                        vm.type = val.name;
-                        return;
-                    }
-                });
+
             }, function () {
                 modalInstance.dismiss('error loading ticket');
             });
@@ -212,6 +208,16 @@
         vm.abort_upload = function (f) {
             f.upload.abort();
             f.aborted = true;
+        };
+
+        vm.prepareLabelsToSave = function(lbls, save){
+            vm.ticket.labels = [];
+            angular.forEach(vm.labels, function(v, k){
+                 vm.ticket.labels.push(v.text);
+            });
+            if(save) {
+                vm.saveTicket(vm.ticket);
+            }
         };
 
         SocketIO.on('update_ticket', function () {

@@ -168,48 +168,6 @@
         };
     };
 
-    var InlineEdit = function (timeout) {
-        return {
-            scope: {
-                model: '=inlineEdit',
-                collection: '=collection',
-                width: '=size',
-                show: '=toShow',
-                handleSave: '&onSave',
-                handleCancel: '&onCancel'
-            },
-            link: function (scope, elm, attr) {
-                var previousValue;
-                var width = scope.width ? scope.width + 'px' : 'auto';
-                scope.custom_width = width;
-                scope.controlType = attr.controlType || 'input';
-                scope.custtom_dispaly = 'inline-block';
-
-                scope.editMode = false;
-                scope.edit = function () {
-                    scope.editMode = true;
-                    previousValue = scope.model;
-                    timeout(function () {
-                        elm.find(scope.controlType)[0].focus();
-                    }, 0, false);
-                };
-                scope.save = function () {
-                    scope.editMode = false;
-                    scope.handleSave({value: scope.model});
-                };
-                scope.cancel = function () {
-                    scope.editMode = false;
-                    scope.model = previousValue;
-                    scope.handleCancel({value: scope.model});
-                };
-            },
-            templateUrl: 'directives/inline-edit.tpl.html'
-        };
-    };
-
-
-
-
     var CalculateWithBoard = function (rootScope, timeout) {
         return {
             link: function () {
@@ -263,8 +221,31 @@
         };
     };
 
+    var editableTagInput = function (editableDirectiveFactory) {
+        return editableDirectiveFactory({
+            directiveName: 'editableTags',
+            inputTpl: '<div></div>',
+            render: function () {
+                this.parent.render.call(this);
+                var tagIn = '<tags-input ng-model="$data" replace-spaces-with-dashes="false" placeholder="Add Label"></tags-input>';
+                this.inputEl.before(tagIn);
+                if(this.attrs.eStyle) {
+                    this.inputEl.style = this.attrs.eStyle;
+                }
+            },
+            autosubmit: function () {
+                var self = this;
+                self.inputEl.bind('change', function () {
+                    self.scope.$apply(function () {
+                        self.scope.$form.$submit();
+                    });
+                });
+            }
+        });
+    };
+
+
     ImageFunction.$inject = ['$q'];
-    InlineEdit.$inject = ['$timeout'];
     commentFlow.$inject = ['$rootScope'];
     CalculateWithBoard.$inject = ['$rootScope', '$timeout'];
 
@@ -273,8 +254,8 @@
         .directive('chart', Chart)
         .directive('onEsc', OnEscape)
         .directive('onEnter', OnEnter)
-        .directive('inlineEdit', InlineEdit)
         .directive('prepareBoard', CalculateWithBoard)
+        .directive('editableTags', editableTagInput)
         .directive('commentFlow', commentFlow);
 
 

@@ -6,7 +6,7 @@
             <select class="form-control"
                     name="sprint"
                     data-ng-model="vm.sprint_selected"
-                    data-ng-options="s.name for s in vm.sprints"
+                    data-ng-options="s.name group by vm.getSprintType(s) for s in vm.sprints"
                     data-ng-change="vm.getReport();">
                 <option value="">Select a Sprint</option>
             </select>

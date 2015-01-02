@@ -77,6 +77,8 @@ class Project(mongoengine.Document):
                                        reverse_delete_rule=mongoengine.CASCADE)
     prefix = mongoengine.StringField()
     sprint_duration = mongoengine.IntField()
+    # true = Scrum, false = Kanban
+    project_type = mongoengine.BooleanField(default=True)
 
     meta = {
         'indexes': ['name'],

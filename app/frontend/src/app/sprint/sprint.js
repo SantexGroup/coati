@@ -1,5 +1,67 @@
 (function (angular) {
 
+    var Config = function (stateProvider) {
+        stateProvider.state('project.archived', {
+            url: 'archived-sprints',
+            views: {
+                "project-archived": {
+                    controller: 'ArchivedSprintController',
+                    controllerAs: 'vm',
+                    templateUrl: 'sprint/archived.tpl.html'
+                }
+            },
+            tab_active: 'archived',
+            data: {
+                pageTitle: 'Archived Sprints'
+            },
+            reloadOnSearch: false,
+            reload: true
+        });
+    };
+
+    var ArchivedSprintController = function(rootScope, scope, modal, SprintService, SocketIO){
+
+        var vm = this;
+
+        vm.project = scope.$parent.project;
+
+        var getSprintsWithTickets = function(project_id){
+            SprintService.archived(project_id).then(function (sprints) {
+                vm.sprints = sprints;
+            });
+        };
+
+
+        vm.showDetails = function (e, tkt) {
+            if (tkt) {
+                tkt = angular.copy(tkt);
+                tkt.pk = tkt._id.$oid;
+
+            }
+            var modal_instance = modal.open({
+                controller: 'TicketDetailController as vm',
+                templateUrl: 'ticket/ticket_detail_view.tpl.html',
+                resolve: {
+                    item: function () {
+                        return {
+                            'project': vm.project,
+                            'ticket_id': tkt._id.$oid
+                        };
+                    }
+                }
+            });
+            modal_instance.result.then(function () {
+                getSprintsWithTickets(vm.project._id.$oid);
+            });
+            e.stopPropagation();
+        };
+
+        getSprintsWithTickets(vm.project._id.$oid);
+
+        SocketIO.init(vm.project._id.$oid, rootScope.user._id.$oid);
+
+    };
+
     var StartSprintController = function (scope, conf, filter, modalInstance, SprintService, sprint) {
         var vm = this;
         vm.sprint = sprint;
@@ -79,13 +141,18 @@
         };
     };
 
+    Config.$inject = ['$stateProvider'];
+    ArchivedSprintController.$inject = ['$rootScope', '$scope', '$modal', 'SprintService', 'SocketIO'];
     StartSprintController.$inject = ['$scope','Conf', '$filter', '$modalInstance', 'SprintService', 'sprint'];
     StopSprintController.$inject = ['$modalInstance', 'SprintService', 'sprint'];
 
     angular.module('Coati.Sprint', ['ui.router',
         'Coati.Config',
+        'Coati.SocketIO',
         'Coati.Directives',
         'Coati.Services.Sprint'])
+        .config(Config)
+        .controller('ArchivedSprintController', ArchivedSprintController)
         .controller('StartSprintController', StartSprintController)
         .controller('StopSprintController', StopSprintController);
 

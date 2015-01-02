@@ -85,6 +85,7 @@ class ProjectInstance(Resource):
         project.private = data.get('private')
         project.sprint_duration = data.get('sprint_duration')
         project.prefix = data.get('prefix')
+        #project.project_type = bool(data.get('project_type'))
         project.save()
 
         ## add to redis

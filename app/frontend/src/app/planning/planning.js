@@ -26,6 +26,7 @@
         var getSprintsWithTickets = function (project_id) {
             SprintService.query(project_id).then(function (sprints) {
                 vm.sprints = sprints;
+                vm.one_started = false;
                 angular.forEach(sprints, function (val, key) {
                     if (val.started && !val.finalized) {
                         vm.one_started = true;
@@ -155,7 +156,7 @@
             });
             modal_instance.result.then(function () {
                 growl.addSuccessMessage('The sprint was stopped successfully');
-                vm.one_started = false;
+                getSprintsWithTickets(vm.project._id.$oid);
             });
         };
 

@@ -38,7 +38,7 @@ class SprintList(Resource):
         super(SprintList, self).__init__()
 
     def get(self, project_pk, *args, **kwargs):
-        return Sprint.objects(project=project_pk).order_by('order').to_json()
+        return Sprint.objects(project=project_pk, finalized=False).order_by('order').to_json()
 
     def post(self, project_pk, *args, **kwargs):
         """
@@ -208,3 +208,19 @@ class SprintChart(Resource):
             }
             return jsonify(data), 200
         return jsonify({'error': 'Bad Request'}), 400
+
+
+class SprintArchivedList(Resource):
+    def __init__(self):
+        super(SprintArchivedList, self).__init__()
+
+    def get(self, project_pk, *args, **kwargs):
+        return Sprint.objects(project=project_pk, finalized=True).order_by('order').to_json()
+
+
+class SprintAllList(Resource):
+    def __init__(self):
+        super(SprintAllList, self).__init__()
+
+    def get(self, project_pk, *args, **kwargs):
+        return Sprint.objects(project=project_pk).order_by('order').to_json()

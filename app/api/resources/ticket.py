@@ -385,7 +385,7 @@ class AttachmentInstance(Resource):
         att = Attachment.objects.get(pk=att_id)
 
         tkt = Ticket.objects.get(pk=tkt_id)
-        tkt.update_one(pull__files=att)
+        Ticket.objects(pk=tkt_id).update_one(pull__files=att)
         att.delete()
         r = RedisClient(channel=str(tkt.project.pk))
         r.store('delete_attachment', **kwargs)
@@ -414,7 +414,7 @@ class MemberTicketInstance(Resource):
     def delete(self, tkt_id, member_id, *args, **kwargs):
         try:
             tkt = Ticket.objects.get(pk=tkt_id)
-            tkt.update_one(pull__assigned_to=member_id)
+            Ticket.objects(pk=tkt_id).update_one(pull__assigned_to=member_id)
             r = RedisClient(channel=str(tkt.project.pk))
             r.store('delete_assignment', **kwargs)
             return jsonify({'success': True}), 200

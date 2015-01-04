@@ -27,7 +27,7 @@
         vm.save = function () {
             if (vm.form.user_form.$valid) {
                 vm.user.picture = vm.image ? vm.image.resized.dataURL : '';
-                UserService.update(vm.user.id, vm.user).then(function (data) {
+                UserService.update(vm.user._id.$oid, vm.user).then(function (data) {
                     modalInstance.close(data);
                 });
             } else {

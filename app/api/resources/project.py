@@ -20,12 +20,12 @@ class ProjectList(Resource):
         """
         Create Project
         """
+        user_id = kwargs['user_id']['pk']
         data = request.get_json(force=True, silent=True)
         if not data:
             msg = "payload must be a valid json"
             return jsonify({"error": msg}), 400
         try:
-            user_id = kwargs['user_id']['pk']
             user = User.objects.get(pk=user_id)
         except DoesNotExist, e:
             return jsonify({"error": 'owner user does not exist'}), 400

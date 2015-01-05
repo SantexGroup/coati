@@ -30,7 +30,7 @@
      * @param ProjectService - API Service for Projects
      * @constructor
      */
-    function MainController(state, modal, ProjectService, UserService) {
+    function MainController(rootScope, state, modal, ProjectService, UserService) {
         var vm = this;
 
         vm.user = window.username;
@@ -59,7 +59,7 @@
 
     //Injections
     ConfigModule.$inject = ['$stateProvider'];
-    MainController.$inject = ['$state', '$modal', 'ProjectService', 'UserService'];
+    MainController.$inject = ['$rootScope', '$state', '$modal', 'ProjectService', 'UserService'];
 
 
     angular.module('Coati.Home',

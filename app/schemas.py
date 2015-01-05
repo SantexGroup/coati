@@ -14,8 +14,9 @@ TICKET_TYPE = (('U', 'User Story'),
 
 
 class CustomQuerySet(mongoengine.QuerySet):
-    def to_json(self):
-        return "[%s]" % (",".join([doc.to_json() for doc in self]))
+    def to_json(self, *args, **kwargs):
+        return "[%s]" % (
+        ",".join([doc.to_json(*args, **kwargs) for doc in self]))
 
 
 class User(mongoengine.Document):
@@ -101,7 +102,7 @@ class Project(mongoengine.Document):
         tickets = []
         sprints = Sprint.objects(project=self)
         for s in sprints:
-            for spo in SprintTicketOrder.objects(sprint=s):
+            for spo in SprintTicketOrder.objects(sprint=s, active=True):
                 tickets.append(str(spo.ticket.pk))
         result = Ticket.objects(project=self, id__nin=tickets).order_by(
             'order')
@@ -123,9 +124,13 @@ class Sprint(mongoengine.Document):
         'queryset_class': CustomQuerySet
     }
 
-    def to_json(self):
+    def to_json(self, *args, **kwargs):
         data = self.to_mongo()
-        tickets = SprintTicketOrder.objects(sprint=self.pk).order_by('order')
+        if kwargs.get('archived'):
+            tickets = SprintTicketOrder.objects(sprint=self.pk).order_by('order')
+        else:
+            tickets = SprintTicketOrder.objects(sprint=self.pk,
+                                                active=True).order_by('order')
         ticket_list = []
         for t in tickets:
             tkt = t.ticket.to_mongo()
@@ -146,7 +151,6 @@ class Sprint(mongoengine.Document):
             for ass in t.ticket.assigned_to:
                 assignments.append(ass.to_mongo())
 
-            w = t.when + timedelta(hours=23, minutes=59)
             value = {
                 'points': t.ticket.points,
                 'title': '%s-%s: %s' % (t.ticket.project.prefix,
@@ -154,7 +158,7 @@ class Sprint(mongoengine.Document):
                                         t.ticket.title),
                 '_id': t.ticket.id,
                 'type': t.ticket.type,
-                'added_after': w < self.start_date
+                'added_after': t.when > self.start_date
             }
             try:
                 tt = TicketColumnTransition.objects.get(ticket=t.ticket,
@@ -182,6 +186,7 @@ class Sprint(mongoengine.Document):
 
         # exclude from sprint
         tickets = SprintTicketOrder.objects(sprint=self,
+                                            active=True,
                                             ticket__nin=tickets_in_cols).order_by(
             'order')
         ticket_list = []
@@ -241,7 +246,7 @@ class Ticket(mongoengine.Document):
             pass
 
         try:
-            sp = SprintTicketOrder.objects.get(ticket=self)
+            sp = SprintTicketOrder.objects.get(ticket=self, active=True)
             if sp is not None:
                 data['sprint'] = sp.sprint.to_mongo()
         except mongoengine.DoesNotExist:
@@ -261,6 +266,7 @@ class SprintTicketOrder(mongoengine.Document):
     order = mongoengine.IntField()
     sprint = mongoengine.ReferenceField('Sprint',
                                         reverse_delete_rule=mongoengine.CASCADE)
+    active = mongoengine.BooleanField(default=True)
     when = mongoengine.DateTimeField(default=datetime.now())
 
 
@@ -338,6 +344,8 @@ class TicketColumnTransition(mongoengine.Document):
                                         reverse_delete_rule=mongoengine.CASCADE)
     column = mongoengine.ReferenceField('Column',
                                         reverse_delete_rule=mongoengine.CASCADE)
+    sprint = mongoengine.ReferenceField('Sprint',
+                                        reverse_delete_rule=mongoengine.CASCADE)
     when = mongoengine.DateTimeField(default=datetime.now())
     order = mongoengine.IntField()
     who = mongoengine.ReferenceField('User')
@@ -366,7 +374,11 @@ class ProjectMember(mongoengine.Document):
         prj_mem = ProjectMember.objects(member=member_pk)
         projects = []
         for pm in prj_mem:
-            projects.append(pm.project.to_mongo())
+            if pm.project.active:
+                projects.append(pm.project.to_mongo())
+            elif str(pm.project.owner.pk) == member_pk:
+                projects.append(pm.project.to_mongo())
+
         return json_util.dumps(projects)
 
     @staticmethod

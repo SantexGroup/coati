@@ -156,6 +156,7 @@
             });
             modal_instance.result.then(function () {
                 growl.addSuccessMessage('The sprint was stopped successfully');
+                getTicketsForProject(vm.project._id.$oid);
                 getSprintsWithTickets(vm.project._id.$oid);
             });
         };

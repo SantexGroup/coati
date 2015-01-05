@@ -73,7 +73,7 @@ class SprintInstance(Resource):
             if data.get('for_starting'):
 
                 # sum all the ticket for the initial planning value
-                sto = SprintTicketOrder.objects(sprint=sp)
+                sto = SprintTicketOrder.objects(sprint=sp, active=True)
                 total_planned_points = 0
                 for s in sto:
                     total_planned_points += s.ticket.points
@@ -82,26 +82,40 @@ class SprintInstance(Resource):
                 time_start = timedelta(minutes=datetime.now().minute,
                                        hours=datetime.now().hour)
                 time_end = timedelta(minutes=59, hours=23)
-                sp.start_date = parser.parse(data.get('start_date')) + time_start
+                sp.start_date = parser.parse(
+                    data.get('start_date')) + time_start
                 sp.end_date = parser.parse(data.get('end_date')) + time_end
                 sp.started = True
             elif data.get('for_finalized'):
                 sp.finalized = True
+                tt = TicketColumnTransition.objects(sprint=sp,
+                                                    latest_state=True)
+                finished_tickets = []
+                for t in tt:
+                    if t.column.done_column:
+                        finished_tickets.append(t.ticket)
+
+                all_not_finised = SprintTicketOrder.objects(ticket__nin=finished_tickets,
+                                                            sprint=sp,
+                                                            active=True)
+                all_not_finised.update(set__active=False)
 
             sp.save()
             # # add to redis
             r = RedisClient(channel=str(sp.project.pk))
             r.store('update_sprint', **kwargs)
             return sp.to_json(), 200
+
         return jsonify({"error": 'Bad Request'}), 400
 
-    def delete(self, sp_id, *args, **kwargs):
-        sp = Sprint.objects.get(pk=sp_id)
-        sp.delete()
-        # # add to redis
-        r = RedisClient(channel=str(sp.project.pk))
-        r.store('delete_sprint', **kwargs)
-        return sp.to_json(), 204
+
+def delete(self, sp_id, *args, **kwargs):
+    sp = Sprint.objects.get(pk=sp_id)
+    sp.delete()
+    # # add to redis
+    r = RedisClient(channel=str(sp.project.pk))
+    r.store('delete_sprint', **kwargs)
+    return sp.to_json(), 204
 
 
 class SprintActive(Resource):
@@ -138,12 +152,14 @@ class SprintChart(Resource):
         sprint = Sprint.objects.get(pk=sprint_id)
         if sprint:
             duration = sprint.project.sprint_duration
-            tickets_in_sprint = SprintTicketOrder.objects(sprint=sprint,
-                                                          when__lt=sprint.start_date)
+            tickets_in_sprint = SprintTicketOrder.objects(sprint=sprint)
             planned = sprint.total_points_when_started
             ideal_planned = 0
-            for sto in tickets_in_sprint:
-                ideal_planned += sto.ticket.points
+            if tickets_in_sprint:
+                for sto in tickets_in_sprint:
+                    ideal_planned += sto.ticket.points
+            else:
+                ideal_planned = planned
             # get done column
             col = Column.objects.get(project=sprint.project,
                                      done_column=True)
@@ -153,7 +169,6 @@ class SprintChart(Resource):
             starting_points = planned
 
             points_remaining = []
-            tickets_per_day = []
             ideal = [ideal_planned]
             planned_counter = ideal_planned
 
@@ -177,6 +192,7 @@ class SprintChart(Resource):
                 if start_date.date() <= datetime.now().date():
 
                     tct_list = TicketColumnTransition.objects(column=col,
+                                                              sprint=sprint,
                                                               when__gte=start_date.date(),
                                                               when__lt=end_date.date(),
                                                               latest_state=True)
@@ -191,27 +207,18 @@ class SprintChart(Resource):
                     starting_points -= points_burned_for_date
 
                     # tickets after started sprint
-                    spt_list = SprintTicketOrder.objects(Q(sprint=sprint) &
-                                                         Q(
-                                                             when__gte=sprint.start_date) &
-                                                         Q(
-                                                             when__gt=start_date) &
-                                                         Q(when__lt=end_date))
+                    std = start_date + timedelta(minutes=5)
+                    spt_list = SprintTicketOrder.objects(sprint=sprint,
+                                                         when__gt=std,
+                                                         when__lt=end_date)
                     for spt in spt_list:
-                        tickets.append(
-                            u'+ %s-%s  (%s)' % (spt.ticket.project.prefix,
-                                                spt.ticket.number,
-                                                spt.ticket.points))
                         starting_points += spt.ticket.points
-
-                    tickets_per_day.append(tickets)
                     points_remaining.append(starting_points)
 
             # days.insert(0, 'Start')
             data = {
                 'points_remaining': points_remaining,
                 'dates': days,
-                'tickets_per_day': tickets_per_day,
                 'ideal': ideal,
                 'all_tickets': json.loads(
                     sprint.get_tickets_with_latest_status())
@@ -226,7 +233,7 @@ class SprintArchivedList(Resource):
 
     def get(self, project_pk, *args, **kwargs):
         return Sprint.objects(project=project_pk, finalized=True).order_by(
-            'order').to_json()
+            'order').to_json(archived=True)
 
 
 class SprintAllList(Resource):

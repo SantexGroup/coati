@@ -124,7 +124,11 @@
                                 new_order.push(v._id.$oid);
                             });
                             //update order
-                            TicketService.order_ticket_column(target.col._id.$oid, {'order': new_order});
+                            data = {
+                                order: new_order,
+                                sprint: vm.sprint._id.$oid
+                            };
+                            TicketService.order_ticket_column(target.col._id.$oid, data);
                         }
 
                     } else {
@@ -133,7 +137,8 @@
                         });
                         var data = {
                             ticket: ticket._id.$oid,
-                            order: new_order
+                            order: new_order,
+                            sprint: vm.sprint._id.$oid
                         };
                         if(target) {
                             if (target.col) {

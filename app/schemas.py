@@ -14,8 +14,9 @@ TICKET_TYPE = (('U', 'User Story'),
 
 
 class CustomQuerySet(mongoengine.QuerySet):
-    def to_json(self):
-        return "[%s]" % (",".join([doc.to_json() for doc in self]))
+    def to_json(self, *args, **kwargs):
+        return "[%s]" % (
+        ",".join([doc.to_json(*args, **kwargs) for doc in self]))
 
 
 class User(mongoengine.Document):
@@ -101,7 +102,7 @@ class Project(mongoengine.Document):
         tickets = []
         sprints = Sprint.objects(project=self)
         for s in sprints:
-            for spo in SprintTicketOrder.objects(sprint=s):
+            for spo in SprintTicketOrder.objects(sprint=s, active=True):
                 tickets.append(str(spo.ticket.pk))
         result = Ticket.objects(project=self, id__nin=tickets).order_by(
             'order')
@@ -123,9 +124,13 @@ class Sprint(mongoengine.Document):
         'queryset_class': CustomQuerySet
     }
 
-    def to_json(self):
+    def to_json(self, *args, **kwargs):
         data = self.to_mongo()
-        tickets = SprintTicketOrder.objects(sprint=self.pk).order_by('order')
+        if kwargs.get('archived'):
+            tickets = SprintTicketOrder.objects(sprint=self.pk).order_by('order')
+        else:
+            tickets = SprintTicketOrder.objects(sprint=self.pk,
+                                                active=True).order_by('order')
         ticket_list = []
         for t in tickets:
             tkt = t.ticket.to_mongo()
@@ -181,6 +186,7 @@ class Sprint(mongoengine.Document):
 
         # exclude from sprint
         tickets = SprintTicketOrder.objects(sprint=self,
+                                            active=True,
                                             ticket__nin=tickets_in_cols).order_by(
             'order')
         ticket_list = []
@@ -240,7 +246,7 @@ class Ticket(mongoengine.Document):
             pass
 
         try:
-            sp = SprintTicketOrder.objects.get(ticket=self)
+            sp = SprintTicketOrder.objects.get(ticket=self, active=True)
             if sp is not None:
                 data['sprint'] = sp.sprint.to_mongo()
         except mongoengine.DoesNotExist:
@@ -260,6 +266,7 @@ class SprintTicketOrder(mongoengine.Document):
     order = mongoengine.IntField()
     sprint = mongoengine.ReferenceField('Sprint',
                                         reverse_delete_rule=mongoengine.CASCADE)
+    active = mongoengine.BooleanField(default=True)
     when = mongoengine.DateTimeField(default=datetime.now())
 
 
@@ -336,6 +343,8 @@ class TicketColumnTransition(mongoengine.Document):
     ticket = mongoengine.ReferenceField('Ticket',
                                         reverse_delete_rule=mongoengine.CASCADE)
     column = mongoengine.ReferenceField('Column',
+                                        reverse_delete_rule=mongoengine.CASCADE)
+    sprint = mongoengine.ReferenceField('Sprint',
                                         reverse_delete_rule=mongoengine.CASCADE)
     when = mongoengine.DateTimeField(default=datetime.now())
     order = mongoengine.IntField()

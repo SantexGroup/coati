@@ -36,13 +36,13 @@ class TicketInstance(Resource):
                 sprint = Sprint.objects.get(pk=data.get('sprint')['pk'])
                 try:
                     spo = SprintTicketOrder.objects.get(sprint=sprint,
-                                                        ticket=tkt)
+                                                        ticket=tkt,
+                                                        active=True)
                 except DoesNotExist:
                     # remove old data if this already exists
-                    spo_old = SprintTicketOrder.objects(ticket=tkt)
-                    spo_old.delete()
                     spo = SprintTicketOrder(sprint=sprint, ticket=tkt)
-                    spo.order = SprintTicketOrder.objects(sprint=sprint).count()
+                    spo.order = SprintTicketOrder.objects(sprint=sprint,
+                                                          active=True).count()
                 spo.save()
 
             # # add to redis
@@ -105,7 +105,8 @@ class TicketProjectList(Resource):
         if data.get('sprint'):
             sprint = Sprint.objects.get(pk=data.get('sprint')['pk'])
             spo = SprintTicketOrder(sprint=sprint, ticket=tkt)
-            spo.order = SprintTicketOrder.objects(sprint=sprint).count()
+            spo.order = SprintTicketOrder.objects(sprint=sprint,
+                                                  active=True).count()
             spo.save()
 
         r = RedisClient(channel=project_pk)
@@ -149,6 +150,7 @@ class TicketOrderSprint(Resource):
             sprint = Sprint.objects.get(pk=sprint_pk)
             for index, tkt_id in enumerate(data):
                 tkt_order = SprintTicketOrder.objects.get(ticket=tkt_id,
+                                                          active=True,
                                                           sprint=sprint)
                 tkt_order.order = index
                 tkt_order.save()
@@ -183,6 +185,7 @@ class TicketMovement(Resource):
                 for index, tkt_id in enumerate(dest.get('order')):
                     try:
                         tkt_order = SprintTicketOrder.objects.get(ticket=tkt_id,
+                                                                  active=True,
                                                                   sprint=sprint)
                         tkt_order.order = index
                         tkt_order.save()
@@ -201,22 +204,27 @@ class TicketMovement(Resource):
 
                 for index, tkt_id in enumerate(dest.get('order')):
                     tkt_order = SprintTicketOrder.objects.get(ticket=tkt_id,
+                                                              active=True,
                                                               sprint=sprint)
                     tkt_order.order = index
                     tkt_order.save()
 
                 sto = SprintTicketOrder.objects.get(ticket=ticket,
+                                                    active=True,
                                                     sprint=source.get(
                                                         'sprint_id'))
-                sto.delete()
+                sto.active = False
+                sto.save()
 
             elif source.get('sprint_id') and dest.get('project_id'):
                 # From sprint to backlog
                 ticket = Ticket.objects.get(pk=source.get('ticket_id'))
                 sprint = Sprint.objects.get(pk=source.get('sprint_id'))
                 spo = SprintTicketOrder.objects.get(ticket=ticket,
+                                                    active=True,
                                                     sprint=sprint)
-                spo.delete()
+                spo.active = False
+                spo.save()
 
                 for index, tkt_id in enumerate(dest.get('order')):
                     tkt_order = Ticket.objects.get(pk=tkt_id)
@@ -248,6 +256,7 @@ class TicketTransition(Resource):
                 for index, s in enumerate(data.get('order')):
                     sto = SprintTicketOrder.objects.get(
                         sprint=data.get('backlog'),
+                        active=True,
                         ticket=s)
                     sto.order = index
                     sto.save()
@@ -259,9 +268,11 @@ class TicketTransition(Resource):
                 # Search already state
                 tkt = Ticket.objects.get(pk=data.get('ticket'))
                 col = Column.objects.get(pk=data.get('column'))
-                if tkt and col:
+                sp = data.get('sprint')
+                if tkt and col and sp:
 
                     latest_state = TicketColumnTransition.objects(ticket=tkt,
+                                                                  sprint=sp,
                                                                   latest_state=True)
                     if latest_state:
                         tct = latest_state[0]
@@ -273,6 +284,7 @@ class TicketTransition(Resource):
                     transition.column = col
                     transition.order = TicketColumnTransition.objects(
                         column=col).count()
+                    transition.sprint = Sprint.objects.get(pk=sp)
                     transition.latest_state = True
                     transition.when = datetime.now()
                     transition.who = User.objects.get(
@@ -284,6 +296,7 @@ class TicketTransition(Resource):
                         tkt_trans_order = TicketColumnTransition.objects.get(
                             ticket=tkt_id,
                             column=col,
+                            sprint=sp,
                             latest_state=True)
                         tkt_trans_order.order = index
                         tkt_trans_order.save()
@@ -306,12 +319,14 @@ class TicketColumnOrder(Resource):
         if data:
             # Search already state
             col = Column.objects.get(pk=column)
+            sp = data.get('sprint')
             if col:
                 # execute order
                 for index, tkt_id in enumerate(data.get('order')):
                     tkt_trans_order = TicketColumnTransition.objects.get(
                         ticket=tkt_id,
                         column=col,
+                        sprint=sp,
                         latest_state=True)
                     tkt_trans_order.order = index
                     tkt_trans_order.save()

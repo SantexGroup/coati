@@ -13,7 +13,7 @@
     <% }); %>
 </head>
 
-<body ui-view="master_view"
+<body ui-view="master_view" ng-cloak
       data-ng-class="{true:'body-404', false:''}[actual_path == 'not_found']">
 <section id="container">
     <!--header start-->
@@ -22,7 +22,9 @@
             <img src="{{ url_for('static', filename='assets/img/koala.png')}}"/>
         </div>
         <!--logo start-->
-        <a href="/" class="logo">Coati<span> Agile Board</span></a>
+        <a href="/" class="logo">Coati<span> Agile Board</span>
+        </a>
+        <span class="beta">Beta</span>
         <!--logo end-->
         <div class="top-nav ">
             <!--search & user info start-->

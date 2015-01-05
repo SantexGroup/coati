@@ -1,8 +1,38 @@
-<form class="form-signin">
-    <h2 class="form-signin-heading">Coati Agile Board</h2>
+<form class="form-signin" name="vm.form.login" ng-submit="vm.login_user()"
+      novalidate>
+    <h2 class="form-signin-heading">Coati Agile Board
+        <small>Be fast, be agile...</small>
+        <span class="beta"  style="right: 45px;font-size: 10px;top: 12px;">Beta</span>
+    </h2>
+
 
     <div class="login-wrap">
-        <h1>COATI 1.0</h1>
+        <div class="form-group">
+            <input class="form-control"
+                   data-ng-class="{'error': vm.form.login.email.$invalid && vm.submitted}"
+                   autocomplete="off"
+                   placeholder="E-Mail" data-ng-model="vm.login.email"
+                   name="email" type="email" required>
+            <label class="error"
+                   data-ng-show="vm.form.login.email.$invalid && vm.submitted">Please
+                enter a valid email</label>
+        </div>
+        <div class="form-group">
+            <input class="form-control"
+                   data-ng-class="{'error': vm.form.login.password.$invalid && vm.submitted}"
+                   autocomplete="off"
+                   placeholder="Password" data-ng-model="vm.login.password"
+                   name="password" type="password" required>
+            <label class="error"
+                   data-ng-show="vm.form.login.password.$invalid && vm.submitted">Please
+                enter a password</label>
+        </div>
+        <button class="btn btn-primary"
+                type="submit">Log in
+        </button>
+        <a href="/register">Register</a>
+        <label style="display: block;" class="error" ng-if="vm.error"><[vm.error]></label>
+        <hr/>
 
         <p>Please log in with some social account!</p>
 
@@ -15,11 +45,13 @@ text-align: center;">
             </a>
         </div>
         <div class="login-social-link">
-            <a href="#" ng-click="vm.authenticate('google')" class="btn-google-plus">
+            <a href="#" ng-click="vm.authenticate('google')"
+               class="btn-google-plus">
                 <i class="icon-google-plus"></i>
                 Google
             </a>
-            <a href="#" ng-click="vm.authenticate('facebook')" class="btn-facebook">
+            <a href="#" ng-click="vm.authenticate('facebook')"
+               class="btn-facebook">
                 <i class="icon-facebook"></i>
                 Facebook
             </a>

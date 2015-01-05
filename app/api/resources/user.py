@@ -1,14 +1,17 @@
-from flask import request, jsonify, session
-
-__author__ = 'gastonrobledo'
-
 import json
+import hashlib
+
+from flask import request, jsonify
 from flask.ext.restful import Resource
-from mongoengine import Q
-from app.schemas import User
+from mongoengine import Q, DoesNotExist
+
+from app.api.resources.auth_resource import AuthResource
+from app.auth import generate_token
+from app.schemas import User, Token
+from app.utils import send_activation_email
 
 
-class UsersList(Resource):
+class UsersList(AuthResource):
     def __init__(self):
         super(UsersList, self).__init__()
 
@@ -16,7 +19,7 @@ class UsersList(Resource):
         return User.objects.all().to_json()
 
 
-class UserSearch(Resource):
+class UserSearch(AuthResource):
     def __init__(self):
         super(UserSearch, self).__init__()
 
@@ -31,7 +34,7 @@ class UserSearch(Resource):
         return json.dumps(data), 200
 
 
-class UserInstance(Resource):
+class UserInstance(AuthResource):
     def __init__(self):
         super(UserInstance, self).__init__()
 
@@ -51,7 +54,7 @@ class UserInstance(Resource):
         return jsonify({'error': 'Bad Request'}), 400
 
 
-class UserLogged(Resource):
+class UserLogged(AuthResource):
 
     def __init__(self):
         super(UserLogged, self).__init__()
@@ -60,3 +63,63 @@ class UserLogged(Resource):
         if kwargs['user_id']:
             return User.objects.get(pk=kwargs['user_id']['pk']).to_json()
         return jsonify({}), 204
+    
+
+class UserLogin(Resource):
+
+    def __init__(self):
+        super(UserLogin, self).__init__()
+
+    
+    def post(self, *args, **kwargs):
+        data = request.get_json(force=True, silent=True)
+        if data:
+            email = data.get('email')
+            password = data.get('password')
+            pwd = hashlib.sha1(password)
+            try:
+                user = User.objects.get(email=email,
+                                        password=pwd.hexdigest(),
+                                        active=True)
+                token = generate_token(str(user.pk))
+                Token.save_token_for_user(user,
+                                          app_token=token,
+                                          social_token='',
+                                          provider='Custom Login',
+                                          expire_in=10000)
+                return jsonify({'token': token, 'expire': 10000}), 200
+            except DoesNotExist:
+                return jsonify({'error': 'Login Incorrect'}), 404
+        return jsonify({'error': 'Bad Request'}), 400
+
+
+class UserRegister(Resource):
+
+    def __init__(self):
+        super(UserRegister, self).__init__()
+
+
+    def post(self, *args, **kwargs):
+        data = request.get_json(force=True, silent=True)
+        if data:
+            email = data.get('email')
+            password = data.get('password')
+            pwd = hashlib.sha1(password)
+            try:
+                user = User.objects.get(email=email)
+                return jsonify({'error': 'Email already exists'}), 400
+            except DoesNotExist:
+                user = User()
+                user.email = email
+                user.password = pwd.hexdigest()
+                user.first_name = data.get('firstname')
+                user.last_name = data.get('lastname')
+                user.active = False
+                token = generate_token(str(user.email))
+                user.activation_token = token
+                send_activation_email(user)
+                user.save()
+
+                return jsonify({'success': True}), 200
+
+        return jsonify({'error': 'Bad Request'}), 400

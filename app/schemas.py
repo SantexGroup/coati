@@ -21,8 +21,10 @@ class CustomQuerySet(mongoengine.QuerySet):
 
 class User(mongoengine.Document):
     email = mongoengine.StringField(required=True)
+    password = mongoengine.StringField(required=False)
     first_name = mongoengine.StringField(max_length=50)
     last_name = mongoengine.StringField(max_length=50)
+    activation_token = mongoengine.StringField()
     active = mongoengine.BooleanField(default=True)
     picture = mongoengine.StringField()
 

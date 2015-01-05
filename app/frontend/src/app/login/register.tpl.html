@@ -1,0 +1,63 @@
+<form class="form-signin" name="vm.form.register" ng-submit="vm.register()"
+      novalidate>
+    <h2 class="form-signin-heading">Coati Agile Board
+        <small>Be fast, be agile...</small>
+        <span class="beta" style="right: 45px;font-size: 10px;top: 12px;">Beta</span>
+    </h2>
+    <p ng-if="vm.success">
+        You have been registered successfully, please check your email to active the account!
+        Thanks!
+        <a href="javascript:;" ui-sref="login">Log in...</a>
+    </p>
+    <div class="login-wrap" ng-if="!vm.success">
+        <div class="form-group">
+            <input class="form-control"
+                   data-ng-class="{'error': vm.form.register.email.$invalid && vm.submitted}"
+                   autocomplete="off"
+                   placeholder="E-Mail" data-ng-model="vm.user.email"
+                   name="email" type="email" required>
+            <label class="error"
+                   data-ng-show="vm.form.register.email.$invalid && vm.submitted">Please
+                enter a valid email</label>
+        </div>
+        <div class="form-group">
+            <input class="form-control"
+                   data-ng-class="{'error': vm.form.register.password.$invalid && vm.submitted}"
+                   autocomplete="off"
+                   placeholder="Password" data-ng-model="vm.user.password"
+                   name="password" type="password" required>
+            <label class="error"
+                   data-ng-show="vm.form.register.password.$invalid && vm.submitted">Please
+                enter a password</label>
+        </div>
+        <div class="form-group">
+            <input class="form-control"
+                   data-ng-class="{'error': vm.form.register.firstname.$invalid && vm.submitted}"
+                   autocomplete="off"
+                   placeholder="First Name" data-ng-model="vm.user.firstname"
+                   name="firstname" type="text" required>
+            <label class="error"
+                   data-ng-show="vm.form.register.firstname.$invalid && vm.submitted">Please
+                enter a first name</label>
+        </div>
+        <div class="form-group">
+            <input class="form-control"
+                   data-ng-class="{'error': vm.form.register.lastname.$invalid && vm.submitted}"
+                   autocomplete="off"
+                   placeholder="Last Name" data-ng-model="vm.user.lastname"
+                   name="lastname" type="text" required>
+            <label class="error"
+                   data-ng-show="vm.form.register.lastname.$invalid && vm.submitted">Please
+                enter a last name</label>
+        </div>
+        <button class="btn btn-primary"
+                type="submit">Register
+        </button>
+        <button class="btn btn-danger"
+                type="button" ui-sref="login">Cancel
+        </button>
+        <span class="error" ng-if="vm.error"><[vm.error]></span>
+
+    </div>
+</form>
+

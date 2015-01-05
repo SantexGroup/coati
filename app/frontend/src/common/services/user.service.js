@@ -8,6 +8,9 @@
             'update': function(pk, data){
                 return req.$do('/user/' + pk, req.METHODS.UPDATE, data);
             },
+            'register': function(data){
+              return req.$do('/user/register', req.METHODS.POST, data);
+            },
             'get': function(pk){
                 return req.$do('/user/' + pk, req.METHODS.GET);
             },

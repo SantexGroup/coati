@@ -6,7 +6,8 @@ from resources.project import ProjectList, ProjectInstance, ProjectColumns, \
 from resources.ticket import TicketOrderProject, TicketOrderSprint, TicketProjectList, \
     TicketMovement, TicketInstance, TicketTransition, TicketColumnOrder, \
     TicketComments, TicketAttachments, AttachmentInstance, MemberTicketInstance
-from resources.user import UsersList, UserInstance, UserSearch, UserLogged
+from resources.user import UsersList, UserInstance, UserSearch, UserLogged, \
+    UserLogin, UserRegister
 from app.utils import output_json
 
 
@@ -26,6 +27,8 @@ def init_app(app, decorators=None):
     api.add_resource(UserSearch, '/api/users/search/<string:query>')
     api.add_resource(UserInstance, '/api/user/<string:pk>')
     api.add_resource(UserLogged, '/api/user/me')
+    api.add_resource(UserLogin, '/api/user/login')
+    api.add_resource(UserRegister, '/api/user/register')
 
     api.add_resource(SprintList, '/api/sprints/<string:project_pk>')
     api.add_resource(SprintArchivedList, '/api/sprints/<string:project_pk>/archived')

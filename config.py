@@ -1,5 +1,7 @@
 __author__ = 'gastonrobledo'
 
+CURRENT_DOMAIN = 'http://localhost:5000/'
+
 # You must configure these 3 values from Google APIs console
 # https://code.google.com/apis/console
 PROVIDERS = {
@@ -53,4 +55,13 @@ MONGODB_PORT = 27017
 MONGODB_USERNAME = ''
 PASSWORD = ''
 
-REDIS_URL='redis://:c04t1@localhost:6379/0'
+MAIL_SERVER = 'smtp.gmail.com'
+MAIL_PORT = 587
+MAIL_USE_TLS = True
+MAIL_USE_SSL = False
+MAIL_DEBUG = True
+MAIL_USERNAME = 'gastonrobledo@gmail.com'
+MAIL_PASSWORD = '!G@5t0NVP$'
+MAIL_DEFAULT_SENDER = 'gastonrobledo@gmail.com'
+
+REDIS_URL = 'redis://:c04t1@localhost:6379/0'

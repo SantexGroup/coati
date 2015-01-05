@@ -1,15 +1,13 @@
-__author__ = 'gastonrobledo'
-
-from bson import json_util
-from flask import jsonify, session
-from flask.ext.restful import Resource, request
+from flask import jsonify
+from flask.ext.restful import request
 from mongoengine import DoesNotExist
 
 from app.schemas import User, Project, Column, ProjectMember
 from app.redis import RedisClient
+from app.api.resources.auth_resource import AuthResource
 
 
-class ProjectList(Resource):
+class ProjectList(AuthResource):
     def __init__(self):
         super(ProjectList, self).__init__()
 
@@ -63,7 +61,7 @@ class ProjectList(Resource):
         return prj.to_json(), 201
 
 
-class ProjectInstance(Resource):
+class ProjectInstance(AuthResource):
     def __init__(self):
         super(ProjectInstance, self).__init__()
 
@@ -103,7 +101,7 @@ class ProjectInstance(Resource):
         return jsonify({}), 204
 
 
-class ProjectColumns(Resource):
+class ProjectColumns(AuthResource):
     def __init__(self):
         super(ProjectColumns, self).__init__()
 
@@ -141,7 +139,7 @@ class ProjectColumns(Resource):
         return col.to_json(), 200
 
 
-class ProjectColumn(Resource):
+class ProjectColumn(AuthResource):
     def __init__(self):
         super(ProjectColumn, self).__init__()
 
@@ -181,7 +179,7 @@ class ProjectColumn(Resource):
         return jsonify({"error": 'Bad Request'}), 400
 
 
-class ProjectColumnsOrder(Resource):
+class ProjectColumnsOrder(AuthResource):
     def __init__(self):
         super(ProjectColumnsOrder, self).__init__()
 
@@ -199,7 +197,7 @@ class ProjectColumnsOrder(Resource):
         return jsonify({"error": 'Bad Request'}), 400
 
 
-class ProjectMembers(Resource):
+class ProjectMembers(AuthResource):
     def __init__(self):
         super(ProjectMembers, self).__init__()
 

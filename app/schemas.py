@@ -374,7 +374,11 @@ class ProjectMember(mongoengine.Document):
         prj_mem = ProjectMember.objects(member=member_pk)
         projects = []
         for pm in prj_mem:
-            projects.append(pm.project.to_mongo())
+            if pm.project.active:
+                projects.append(pm.project.to_mongo())
+            elif str(pm.project.owner.pk) == member_pk:
+                projects.append(pm.project.to_mongo())
+
         return json_util.dumps(projects)
 
     @staticmethod

@@ -1,5 +1,3 @@
-
-
 __author__ = 'gastonrobledo'
 import json
 from datetime import timedelta, datetime
@@ -26,7 +24,7 @@ class SprintOrder(Resource):
                 sprint = Sprint.objects.get(pk=s)
                 sprint.order = index
                 sprint.save()
-            ## add to redis
+            # # add to redis
             r = RedisClient(channel=project_pk)
             r.store('order_sprints', **kwargs)
             return jsonify({'success': True}), 200
@@ -38,7 +36,8 @@ class SprintList(Resource):
         super(SprintList, self).__init__()
 
     def get(self, project_pk, *args, **kwargs):
-        return Sprint.objects(project=project_pk, finalized=False).order_by('order').to_json()
+        return Sprint.objects(project=project_pk, finalized=False).order_by(
+            'order').to_json()
 
     def post(self, project_pk, *args, **kwargs):
         """
@@ -52,7 +51,7 @@ class SprintList(Resource):
         sp = Sprint(project=project.to_dbref())
         sp.name = 'Sprint %d' % (total + 1)
         sp.save()
-        ## add to redis
+        # # add to redis
         r = RedisClient(channel=project_pk)
         r.store('new_sprint', **kwargs)
         return sp.to_json(), 201
@@ -80,14 +79,17 @@ class SprintInstance(Resource):
                     total_planned_points += s.ticket.points
 
                 sp.total_points_when_started = total_planned_points
-                sp.start_date = parser.parse(data.get('start_date'))
-                sp.end_date = parser.parse(data.get('end_date'))
+                time_start = timedelta(minutes=datetime.now().minute,
+                                       hours=datetime.now().hour)
+                time_end = timedelta(minutes=59, hours=23)
+                sp.start_date = parser.parse(data.get('start_date')) + time_start
+                sp.end_date = parser.parse(data.get('end_date')) + time_end
                 sp.started = True
             elif data.get('for_finalized'):
                 sp.finalized = True
 
             sp.save()
-            ## add to redis
+            # # add to redis
             r = RedisClient(channel=str(sp.project.pk))
             r.store('update_sprint', **kwargs)
             return sp.to_json(), 200
@@ -96,7 +98,7 @@ class SprintInstance(Resource):
     def delete(self, sp_id, *args, **kwargs):
         sp = Sprint.objects.get(pk=sp_id)
         sp.delete()
-        ## add to redis
+        # # add to redis
         r = RedisClient(channel=str(sp.project.pk))
         r.store('delete_sprint', **kwargs)
         return sp.to_json(), 204
@@ -136,7 +138,12 @@ class SprintChart(Resource):
         sprint = Sprint.objects.get(pk=sprint_id)
         if sprint:
             duration = sprint.project.sprint_duration
+            tickets_in_sprint = SprintTicketOrder.objects(sprint=sprint,
+                                                          when__lt=sprint.start_date)
             planned = sprint.total_points_when_started
+            ideal_planned = 0
+            for sto in tickets_in_sprint:
+                ideal_planned += sto.ticket.points
             # get done column
             col = Column.objects.get(project=sprint.project,
                                      done_column=True)
@@ -147,8 +154,8 @@ class SprintChart(Resource):
 
             points_remaining = []
             tickets_per_day = []
-            ideal = [planned]
-            planned_counter = planned
+            ideal = [ideal_planned]
+            planned_counter = ideal_planned
 
             days.append(sd)
             counter = 1
@@ -160,9 +167,10 @@ class SprintChart(Resource):
                 counter += 1
 
             for day in days:
-                planned_counter = (planned_counter - planned / duration)
+                planned_counter = (planned_counter - ideal_planned / duration)
                 if planned_counter > -1 and len(ideal) < len(days):
                     ideal.append(planned_counter)
+
                 start_date = day
                 end_date = start_date + timedelta(hours=23, minutes=59)
 
@@ -183,10 +191,11 @@ class SprintChart(Resource):
                     starting_points -= points_burned_for_date
 
                     # tickets after started sprint
-                    sp_start = sprint.start_date + timedelta(hours=23, minutes=59)
                     spt_list = SprintTicketOrder.objects(Q(sprint=sprint) &
-                                                         Q(when__gte=sp_start) &
-                                                         Q(when__gte=start_date) &
+                                                         Q(
+                                                             when__gte=sprint.start_date) &
+                                                         Q(
+                                                             when__gt=start_date) &
                                                          Q(when__lt=end_date))
                     for spt in spt_list:
                         tickets.append(
@@ -204,7 +213,8 @@ class SprintChart(Resource):
                 'dates': days,
                 'tickets_per_day': tickets_per_day,
                 'ideal': ideal,
-                'all_tickets': json.loads(sprint.get_tickets_with_latest_status())
+                'all_tickets': json.loads(
+                    sprint.get_tickets_with_latest_status())
             }
             return jsonify(data), 200
         return jsonify({'error': 'Bad Request'}), 400
@@ -215,7 +225,8 @@ class SprintArchivedList(Resource):
         super(SprintArchivedList, self).__init__()
 
     def get(self, project_pk, *args, **kwargs):
-        return Sprint.objects(project=project_pk, finalized=True).order_by('order').to_json()
+        return Sprint.objects(project=project_pk, finalized=True).order_by(
+            'order').to_json()
 
 
 class SprintAllList(Resource):

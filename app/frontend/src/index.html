@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" data-ng-app="Coati" data-ng-controller="AppCtrl">
 <head>
+    <base href="/">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-ng-bind="pageTitle">Coati Agile Board</title>
@@ -37,7 +38,7 @@
                 <li dropdown ng-controller="UserCtrl as vm" update-profile>
                     <a class="dropdown-toggle user_picture" dropdown-toggle href="#">
                         <img ng-if="!vm.user.picture" alt="" src="{{ url_for('static', filename='assets/img/koala.png')}}">
-                        <img ng-if="vm.user.picture" alt="" src="<[ vm.user.picture ]>">
+                        <img ng-if="vm.user.picture" alt="" ng-src="<[ vm.user.picture ]>">
                         <span class="username"><[ vm.user.email ]></span>
                         <b class="caret"></b>
                     </a>

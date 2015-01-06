@@ -17,6 +17,9 @@
             'me': function(){
                 return req.$do('/user/me', req.METHODS.GET);
             },
+            'activateUser': function(code){
+                return req.$do('/user/activate/' + code, req.METHODS.GET);
+            },
             'is_logged': function(){
                 var token = tokens.get_token();
                 return token ? true : false;

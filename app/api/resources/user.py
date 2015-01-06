@@ -123,3 +123,24 @@ class UserRegister(Resource):
                 return jsonify({'success': True}), 200
 
         return jsonify({'error': 'Bad Request'}), 400
+
+
+class UserActivate(Resource):
+
+    def __init__(self):
+        super(UserActivate, self).__init__()
+
+    def get(self, code, *args, **kwargs):
+        try:
+            user = User.objects.get(activation_token=code)
+            user.active = True
+            user.save()
+            token = generate_token(str(user.pk))
+            Token.save_token_for_user(user,
+                                      app_token=token,
+                                      social_token='',
+                                      provider='Custom Login',
+                                      expire_in=10000)
+            return jsonify({'token': token, 'expire': 10000}), 200
+        except DoesNotExist:
+            return jsonify({'error': 'Bad Request'}), 400

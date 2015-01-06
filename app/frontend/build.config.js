@@ -78,7 +78,7 @@ module.exports = {
             'vendor/bootstrap/dist/js/bootstrap.min.js',
             'vendor/html5shiv/dist/html5shiv.min.js',
             'vendor/ng-tags-input/ng-tags-input.min.js',
-            'vendor/highcharts/highcharts-all.js',
+            'vendor/highcharts/highcharts.js',
             'vendor/ng-file-upload/angular-file-upload.min.js',
             'vendor/ng-file-upload/angular-file-upload-shim.min.js',
             'vendor/angular-ui-sortable/sortable.min.js',

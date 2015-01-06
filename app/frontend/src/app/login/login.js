@@ -39,6 +39,18 @@
                 data: {
                     pageTitle: 'Coati :: Register'
                 }
+            })
+
+            .state('login_activate', {
+                url: '/login/activate_user/:activation_code',
+                views: {
+                    "master_view": {
+                        controller: 'ActivateController'
+                    }
+                },
+                data: {
+                    pageTitle: 'Coati :: Activation'
+                }
             });
     }
 
@@ -71,6 +83,17 @@
         vm.authenticate = function (provider) {
             LoginService.auth(provider, state.params.next);
         };
+    };
+
+    var ActivateController = function(state, UserService) {
+        if (state.params.activation_code) {
+            UserService.activateUser(state.params.activation_code).then(function(data){
+                 state.go('login_auth', {token: data.token,
+                        expire: data.expire}, {reload: true});
+            });
+        } else {
+            state.go('login', {reload: true});
+        }
     };
 
     var LoginAuthController = function(rootScope, state, UserService, tokens) {
@@ -115,6 +138,7 @@
 
     Config.$inject = ['$stateProvider'];
     LoginController.$inject = ['$state', 'LoginService'];
+    ActivateController.$inject = ['$state', 'UserService'];
     LoginAuthController.$inject = ['$rootScope', '$state', 'UserService', 'tokens'];
     RegisterController.$inject = ['$state', 'UserService'];
 
@@ -127,6 +151,7 @@
         .config(Config)
         .controller('LoginController', LoginController)
         .controller('RegisterController', RegisterController)
+        .controller('ActivateController', ActivateController)
         .controller('LoginAuthController', LoginAuthController);
 
 

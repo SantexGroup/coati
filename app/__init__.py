@@ -32,7 +32,7 @@ app.jinja_loader = custom_loader
 # # Init apps
 auth.init_app(app)
 # # Init Api
-api.init_app(app, decorators=[decorators.require_authentication])
+api.init_app(app)
 
 
 # # Default Routes

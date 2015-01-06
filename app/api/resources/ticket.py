@@ -1,19 +1,19 @@
 import base64
-from mongoengine import DoesNotExist, GridFSProxy
-from app.redis import RedisClient
-
-__author__ = 'gastonrobledo'
 
 from datetime import datetime
-from flask import jsonify, session
-from flask.ext.restful import Resource, request
 
+from mongoengine import DoesNotExist
+from flask import jsonify
+from flask.ext.restful import request
+
+from app.api.resources.auth_resource import AuthResource
+from app.redis import RedisClient
 from app.schemas import (Project, Ticket, SprintTicketOrder,
                          Sprint, TicketColumnTransition, Column, User, Comment,
                          Attachment)
 
 
-class TicketInstance(Resource):
+class TicketInstance(AuthResource):
     def __init__(self):
         super(TicketInstance, self).__init__()
 
@@ -62,7 +62,7 @@ class TicketInstance(Resource):
         return jsonify({'error': 'Bad Request'}), 400
 
 
-class TicketProjectList(Resource):
+class TicketProjectList(AuthResource):
     def __init__(self):
         super(TicketProjectList, self).__init__()
 
@@ -115,7 +115,7 @@ class TicketProjectList(Resource):
         return tkt.to_json(), 201
 
 
-class TicketOrderProject(Resource):
+class TicketOrderProject(AuthResource):
     def __init__(self):
         super(TicketOrderProject, self).__init__()
 
@@ -137,7 +137,7 @@ class TicketOrderProject(Resource):
         return jsonify({"error": 'Bad Request'}), 400
 
 
-class TicketOrderSprint(Resource):
+class TicketOrderSprint(AuthResource):
     def __init__(self):
         super(TicketOrderSprint, self).__init__()
 
@@ -161,7 +161,7 @@ class TicketOrderSprint(Resource):
         return jsonify({"error": 'Bad Request'}), 400
 
 
-class TicketMovement(Resource):
+class TicketMovement(AuthResource):
     def __init__(self):
         super(TicketMovement, self).__init__()
 
@@ -237,7 +237,7 @@ class TicketMovement(Resource):
         return jsonify({'error': 'Bad Request'}), 400
 
 
-class TicketTransition(Resource):
+class TicketTransition(AuthResource):
     def __init__(self):
         super(TicketTransition, self).__init__()
 
@@ -310,7 +310,7 @@ class TicketTransition(Resource):
         return jsonify({'error': 'Bad Request'}), 400
 
 
-class TicketColumnOrder(Resource):
+class TicketColumnOrder(AuthResource):
     def __init__(self):
         super(TicketColumnOrder, self).__init__()
 
@@ -339,7 +339,7 @@ class TicketColumnOrder(Resource):
         return jsonify({'error': 'Bad Request'}), 400
 
 
-class TicketComments(Resource):
+class TicketComments(AuthResource):
     def __init__(self):
         super(TicketComments, self).__init__()
 
@@ -361,7 +361,7 @@ class TicketComments(Resource):
         return jsonify({'error': 'Bad Request'}), 400
 
 
-class TicketAttachments(Resource):
+class TicketAttachments(AuthResource):
     def __init__(self):
         super(TicketAttachments, self).__init__()
 
@@ -389,7 +389,7 @@ class TicketAttachments(Resource):
         return jsonify({'error': 'Bad Request'}), 400
 
 
-class AttachmentInstance(Resource):
+class AttachmentInstance(AuthResource):
     def __init__(self):
         super(AttachmentInstance, self).__init__()
 
@@ -407,7 +407,7 @@ class AttachmentInstance(Resource):
         return jsonify({}), 204
 
 
-class MemberTicketInstance(Resource):
+class MemberTicketInstance(AuthResource):
     def __init__(self):
         super(MemberTicketInstance, self).__init__()
 

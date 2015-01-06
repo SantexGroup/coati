@@ -2,7 +2,7 @@
 
     var Config = function (stateProvider) {
         stateProvider.state('project.archived', {
-            url: 'archived-sprints',
+            url: '/archived-sprints',
             views: {
                 "project-archived": {
                     controller: 'ArchivedSprintController',

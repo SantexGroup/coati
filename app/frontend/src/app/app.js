@@ -77,17 +77,19 @@
         });
 
         rootScope.$on('$stateChangeSuccess', function (event) {
-            if (rootScope.state_name !== "login" && rootScope.state_name !== 'login_auth') {
+            if (rootScope.state_name !== "login" &&
+                rootScope.state_name !== 'login_auth' &&
+                rootScope.state_name !== 'login_register') {
                 if (tokens.get_token() == null) {
                     event.preventDefault();
-                    state.go('login', stateParams);
+                    state.go('login', stateParams, {reload:true, notify: false});
                 }
             }
         });
 
     }
 
-    var RunApp = function(rootScope, objects, editableOptions,editableThemes ){
+    var RunApp = function(rootScope, state, stateParams, objects, editableOptions,editableThemes ){
 
         editableThemes.bs3.inputClass = 'input-sm';
         editableThemes.bs3.buttonsClass = 'btn-sm';
@@ -95,9 +97,14 @@
 
         var user = null;
         try{
-            user = JSON.parse(window.sessionStorage.getItem('user'));
+            user = JSON.parse(window.localStorage.getItem('user'));
             if(objects.isObject(user)) {
                 rootScope.user = user;
+            }else{
+                if(window.location.href.indexOf('login') < 0) {
+                    stateParams.next = window.location.href;
+                    state.go('login', stateParams);
+                }
             }
         }catch(err){
 
@@ -106,7 +113,7 @@
     };
 
     // Injections
-    RunApp.$inject = ['$rootScope', '$objects', 'editableOptions', 'editableThemes'];
+    RunApp.$inject = ['$rootScope', '$state', '$stateParams', '$objects', 'editableOptions', 'editableThemes'];
     ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider'];
     AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', 'tokens'];
 

@@ -2,7 +2,7 @@
 
     var Config = function (stateProvider, tagsInputProvider) {
         stateProvider.state('project.settings', {
-            url: 'settings',
+            url: '/settings',
             views: {
                 "project-settings": {
                     controller: 'ProjectCtrlSettings',

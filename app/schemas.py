@@ -21,8 +21,10 @@ class CustomQuerySet(mongoengine.QuerySet):
 
 class User(mongoengine.Document):
     email = mongoengine.StringField(required=True)
+    password = mongoengine.StringField(required=False)
     first_name = mongoengine.StringField(max_length=50)
     last_name = mongoengine.StringField(max_length=50)
+    activation_token = mongoengine.StringField()
     active = mongoengine.BooleanField(default=True)
     picture = mongoengine.StringField()
 
@@ -74,7 +76,6 @@ class Project(mongoengine.Document):
     description = mongoengine.StringField(max_length=500)
     active = mongoengine.BooleanField(default=True)
     owner = mongoengine.ReferenceField('User',
-                                       dbref=True,
                                        reverse_delete_rule=mongoengine.CASCADE)
     prefix = mongoengine.StringField()
     sprint_duration = mongoengine.IntField()
@@ -348,7 +349,8 @@ class TicketColumnTransition(mongoengine.Document):
                                         reverse_delete_rule=mongoengine.CASCADE)
     when = mongoengine.DateTimeField(default=datetime.now())
     order = mongoengine.IntField()
-    who = mongoengine.ReferenceField('User')
+    who = mongoengine.ReferenceField('User',
+                                     reverse_delete_rule=mongoengine.NULLIFY)
     latest_state = mongoengine.BooleanField(default=True)
 
 

@@ -2,7 +2,7 @@
 
     function Config(stateProvider) {
         stateProvider.state('login', {
-            url: '/login?logout',
+            url: '/login?logout&next',
             views: {
                 "master_view": {
                     controller: 'LoginController',
@@ -12,53 +12,111 @@
             },
             data: {
                 pageTitle: 'Coati :: Login Page'
-            }
+            },
+            reload:true
         })
             .state('login_auth', {
-                url: '/login/auth?token&expire',
+                url: '/login/auth?token&expire&next',
                 views: {
                     "master_view": {
                         controller: 'LoginAuthController'
                     }
                 },
                 data: {
-                    pageTitle: 'Coati :: Login Page'
+                    pageTitle: 'Coati :: Auth Page'
+                },
+                reload: true
+            })
+            .state('login_register', {
+                url: '/register',
+                views: {
+                    "master_view": {
+                        controller: 'RegisterController',
+                        controllerAs: 'vm',
+                        templateUrl: 'login/register.tpl.html'
+                    }
+                },
+                data: {
+                    pageTitle: 'Coati :: Register'
                 }
             });
     }
 
-    function LoginController(state, LoginService) {
+    var LoginController = function(state, LoginService) {
         var vm = this;
+
+        vm.form = {};
+        vm.login = {};
+
         if (state.params && state.params.logout) {
-            window.sessionStorage.clear();
+            window.localStorage.setItem('token_data', null);
+            window.localStorage.setItem('user', null);
         }
 
-        vm.authenticate = function (provider) {
-            LoginService.auth(provider);
-        };
-    }
+        vm.login_user = function () {
+            if (vm.form.login.$valid) {
+                vm.login.next = state.params.next;
+                LoginService.login(vm.login).then(function (data) {
+                    state.go('login_auth', {token: data.token,
+                        expire: data.expire}, {reload: true});
+                }, function (err) {
+                    vm.error = 'Login Invalid.';
+                });
+            } else {
+                vm.submitted = true;
+            }
 
-    function LoginAuthController(rootScope, state, UserService, tokens) {
+        };
+
+        vm.authenticate = function (provider) {
+            LoginService.auth(provider, state.params.next);
+        };
+    };
+
+    var LoginAuthController = function(rootScope, state, UserService, tokens) {
         if (state.params.token) {
             tokens.store_token(state.params.token, state.params.expire);
 
             //Get here the user logged
             if (UserService.is_logged()) {
                 UserService.me().then(function (user) {
-                    window.sessionStorage.setItem('user', JSON.stringify(user));
+                    window.localStorage.setItem('user', JSON.stringify(user));
                     rootScope.user = user;
                 });
             }
-
-            state.go('home', {reload: true});
+            if(state.params.next){
+                window.location.href = state.params.next;
+            }else {
+                state.go('home', {reload: true});
+            }
         } else {
             state.go('login', {reload: true});
         }
-    }
+    };
+
+    var RegisterController = function(state, UserService){
+        var vm = this;
+
+        vm.form = {};
+        vm.user = {};
+
+        vm.register = function () {
+            if (vm.form.register.$valid) {
+                UserService.register(vm.user).then(function (data) {
+                    vm.success = data.success;
+                }, function (err) {
+                    vm.error = err.message.error;
+                });
+            } else {
+                vm.submitted = true;
+            }
+        };
+    };
 
     Config.$inject = ['$stateProvider'];
     LoginController.$inject = ['$state', 'LoginService'];
-    LoginAuthController.$inject = ['$rootScope','$state','UserService', 'tokens'];
+    LoginAuthController.$inject = ['$rootScope', '$state', 'UserService', 'tokens'];
+    RegisterController.$inject = ['$state', 'UserService'];
 
     angular.module('Coati.Login',
         ['ui.router', 'ui.bootstrap',
@@ -68,6 +126,7 @@
             'Coati.Services.User'])
         .config(Config)
         .controller('LoginController', LoginController)
+        .controller('RegisterController', RegisterController)
         .controller('LoginAuthController', LoginAuthController);
 
 

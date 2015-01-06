@@ -1,19 +1,19 @@
+
+
 __author__ = 'gastonrobledo'
 import json
 from datetime import timedelta, datetime
 
 from dateutil import parser
 from flask import jsonify, request
-from flask.ext.restful import Resource
 
 from app.schemas import (Sprint, Project, SprintTicketOrder,
                          Column, TicketColumnTransition)
-
 from app.redis import RedisClient
-from mongoengine import Q
+from app.api.resources.auth_resource import AuthResource
 
 
-class SprintOrder(Resource):
+class SprintOrder(AuthResource):
     def __init__(self):
         super(SprintOrder, self).__init__()
 
@@ -31,7 +31,7 @@ class SprintOrder(Resource):
         return jsonify({"error": 'Bad Request'}), 400
 
 
-class SprintList(Resource):
+class SprintList(AuthResource):
     def __init__(self):
         super(SprintList, self).__init__()
 
@@ -57,7 +57,7 @@ class SprintList(Resource):
         return sp.to_json(), 201
 
 
-class SprintInstance(Resource):
+class SprintInstance(AuthResource):
     def __init__(self):
         super(SprintInstance, self).__init__()
 
@@ -108,17 +108,16 @@ class SprintInstance(Resource):
 
         return jsonify({"error": 'Bad Request'}), 400
 
+    def delete(self, sp_id, *args, **kwargs):
+        sp = Sprint.objects.get(pk=sp_id)
+        sp.delete()
+        # # add to redis
+        r = RedisClient(channel=str(sp.project.pk))
+        r.store('delete_sprint', **kwargs)
+        return sp.to_json(), 204
 
-def delete(self, sp_id, *args, **kwargs):
-    sp = Sprint.objects.get(pk=sp_id)
-    sp.delete()
-    # # add to redis
-    r = RedisClient(channel=str(sp.project.pk))
-    r.store('delete_sprint', **kwargs)
-    return sp.to_json(), 204
 
-
-class SprintActive(Resource):
+class SprintActive(AuthResource):
     def __init__(self):
         super(SprintActive, self).__init__()
 
@@ -133,7 +132,7 @@ class SprintActive(Resource):
         return jsonify({'started': False}), 200
 
 
-class SprintTickets(Resource):
+class SprintTickets(AuthResource):
     def __init__(self):
         super(SprintTickets, self).__init__()
 
@@ -144,7 +143,7 @@ class SprintTickets(Resource):
         return jsonify({'error': 'Bad Request'}), 400
 
 
-class SprintChart(Resource):
+class SprintChart(AuthResource):
     def __init__(self):
         super(SprintChart, self).__init__()
 
@@ -227,7 +226,7 @@ class SprintChart(Resource):
         return jsonify({'error': 'Bad Request'}), 400
 
 
-class SprintArchivedList(Resource):
+class SprintArchivedList(AuthResource):
     def __init__(self):
         super(SprintArchivedList, self).__init__()
 
@@ -236,7 +235,7 @@ class SprintArchivedList(Resource):
             'order').to_json(archived=True)
 
 
-class SprintAllList(Resource):
+class SprintAllList(AuthResource):
     def __init__(self):
         super(SprintAllList, self).__init__()
 

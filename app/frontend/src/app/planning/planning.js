@@ -2,7 +2,7 @@
 
     var Config = function (stateProvider) {
         stateProvider.state('project.planning', {
-            url: 'planning',
+            url: '/planning',
             views: {
                 "project-planning": {
                     templateUrl: 'planning/planning.tpl.html',

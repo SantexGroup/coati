@@ -3,7 +3,7 @@
     var Tokens = function () {
         return {
             'get_token': function () {
-                var token_data = window.sessionStorage.getItem('token_data');
+                var token_data = window.localStorage.getItem('token_data');
                 if (token_data != null) {
                     token_data = JSON.parse(token_data);
                     var expire_in_seconds = token_data['expire'];
@@ -21,7 +21,7 @@
                     'token': token,
                     'expire': expire
                 };
-                window.sessionStorage.setItem('token_data', JSON.stringify(data));
+                window.localStorage.setItem('token_data', JSON.stringify(data));
             }
         };
     };

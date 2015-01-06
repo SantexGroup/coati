@@ -16,7 +16,8 @@ def init_app(app):
 def authenticate():
     return redirect(url_for('auth.login',
                             provider=request.args.get('provider'),
-                            client_callback=request.args.get('callback')))
+                            client_callback=request.args.get('callback'),
+                            next=request.args.get('next')))
 
 
 @blueprint.route('/login')
@@ -25,7 +26,8 @@ def login():
     prov = get_provider(request.args.get('provider'))
     extra_params = {'state': tools.serialize_data({
         'provider': request.args.get('provider'),
-        'callback': request.args.get('client_callback')
+        'callback': request.args.get('client_callback'),
+        'next': request.args.get('next')
     })}
     prov.request_token_params.update(extra_params)
     return prov.authorize(callback=callback)

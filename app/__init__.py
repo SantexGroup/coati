@@ -35,11 +35,10 @@ auth.init_app(app)
 api.init_app(app)
 
 
-if app.config['DEBUG']:
-    # Default Routes
-    @app.route('/', defaults={'path': ''})
-    @app.route('/<path:path>')
-    def index(path):
-        return render_template('index.html')
+# # Default Routes
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def index(path):
+    return render_template('index.html')
 
 

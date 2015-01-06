@@ -42,9 +42,10 @@ def authorize_data():
                                   provider=provider.name,
                                   expire_in=10000)
 
-        return '%s?token=%s&expire=%s' % (provider_data.get('callback'),
-                                          token,
-                                          10000)
+        return '%s?token=%s&expire=%s&next=%s' % (provider_data.get('callback'),
+                                                  token,
+                                                  10000,
+                                                  provider_data.get('next'))
     else:
         return provider_data.get('callback')
 
@@ -54,8 +55,6 @@ def get_token(token=None):
 
 
 def get_user_data(access_token, provider, provider_name):
-
-
     types = {
         'github': 'token',
         'google': 'OAuth',

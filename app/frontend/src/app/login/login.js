@@ -2,7 +2,7 @@
 
     function Config(stateProvider) {
         stateProvider.state('login', {
-            url: '/login?logout',
+            url: '/login?logout&next',
             views: {
                 "master_view": {
                     controller: 'LoginController',
@@ -12,10 +12,11 @@
             },
             data: {
                 pageTitle: 'Coati :: Login Page'
-            }
+            },
+            reload:true
         })
             .state('login_auth', {
-                url: '/login/auth?token&expire',
+                url: '/login/auth?token&expire&next',
                 views: {
                     "master_view": {
                         controller: 'LoginAuthController'
@@ -48,11 +49,13 @@
         vm.login = {};
 
         if (state.params && state.params.logout) {
-            window.sessionStorage.clear();
+            window.localStorage.setItem('token_data', null);
+            window.localStorage.setItem('user', null);
         }
 
         vm.login_user = function () {
             if (vm.form.login.$valid) {
+                vm.login.next = state.params.next;
                 LoginService.login(vm.login).then(function (data) {
                     state.go('login_auth', {token: data.token,
                         expire: data.expire}, {reload: true});
@@ -66,7 +69,7 @@
         };
 
         vm.authenticate = function (provider) {
-            LoginService.auth(provider);
+            LoginService.auth(provider, state.params.next);
         };
     };
 
@@ -77,12 +80,15 @@
             //Get here the user logged
             if (UserService.is_logged()) {
                 UserService.me().then(function (user) {
-                    window.sessionStorage.setItem('user', JSON.stringify(user));
+                    window.localStorage.setItem('user', JSON.stringify(user));
                     rootScope.user = user;
                 });
             }
-
-            state.go('home', {reload: true});
+            if(state.params.next){
+                window.location.href = state.params.next;
+            }else {
+                state.go('home', {reload: true});
+            }
         } else {
             state.go('login', {reload: true});
         }

@@ -2,7 +2,7 @@
 
     var Config = function (stateProvider) {
         stateProvider.state('project.reports', {
-            url: 'reports',
+            url: '/reports',
             views: {
                 "project-reports": {
                     controller: 'ProjectCtrlReports',

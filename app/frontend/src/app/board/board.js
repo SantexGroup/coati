@@ -2,7 +2,7 @@
 
     var Config = function (stateProvider) {
         stateProvider.state('project.board', {
-            url: 'board?ticket',
+            url: '/board?ticket',
             views: {
                 "project-board": {
                     controller: 'ProjectCtrlBoard',

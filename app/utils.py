@@ -28,9 +28,21 @@ def send_activation_email(user):
                                           user.activation_token)
     msg = Message(subject='Coati - Activation Email',
                   recipients=[user.email],
-                  body=template.render(link=link))
+                  html=template.render(link=link))
     mail.send(msg)
 
+
+def send_new_member_email(user, project):
+    mail = Mail(app=current_app)
+    path = os.path.dirname(os.path.abspath(__file__))
+    env = Environment(loader=FileSystemLoader(path + '/templates'))
+    template = env.get_template('new_member.html')
+    link = '%s/project/%s' % (current_app.config['CURRENT_DOMAIN'],
+                              str(project.pk))
+    msg = Message(subject='Coati - Project Participation',
+                  recipients=[user.email],
+                  html=template.render(link=link, name=project.name))
+    mail.send(msg)
 
 
 

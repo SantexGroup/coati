@@ -76,7 +76,6 @@ class Project(mongoengine.Document):
     description = mongoengine.StringField(max_length=500)
     active = mongoengine.BooleanField(default=True)
     owner = mongoengine.ReferenceField('User',
-                                       dbref=True,
                                        reverse_delete_rule=mongoengine.CASCADE)
     prefix = mongoengine.StringField()
     sprint_duration = mongoengine.IntField()
@@ -350,7 +349,8 @@ class TicketColumnTransition(mongoengine.Document):
                                         reverse_delete_rule=mongoengine.CASCADE)
     when = mongoengine.DateTimeField(default=datetime.now())
     order = mongoengine.IntField()
-    who = mongoengine.ReferenceField('User')
+    who = mongoengine.ReferenceField('User',
+                                     reverse_delete_rule=mongoengine.NULLIFY)
     latest_state = mongoengine.BooleanField(default=True)
 
 

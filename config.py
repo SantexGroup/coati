@@ -1,6 +1,6 @@
 __author__ = 'gastonrobledo'
 
-CURRENT_DOMAIN = 'http://localhost:5000/'
+CURRENT_DOMAIN = 'http://localhost:5000'
 
 # You must configure these 3 values from Google APIs console
 # https://code.google.com/apis/console
@@ -60,8 +60,8 @@ MAIL_PORT = 587
 MAIL_USE_TLS = True
 MAIL_USE_SSL = False
 MAIL_DEBUG = True
-MAIL_USERNAME = 'gastonrobledo@gmail.com'
-MAIL_PASSWORD = '!G@5t0NVP$'
-MAIL_DEFAULT_SENDER = 'gastonrobledo@gmail.com'
+MAIL_USERNAME = 'gaston.robledo@santexgroup.com'
+MAIL_PASSWORD = '!G@5t0NR0bl3d0'
+MAIL_DEFAULT_SENDER = 'gaston.robledo@santexgroup.com'
 
 REDIS_URL = 'redis://:c04t1@localhost:6379/0'

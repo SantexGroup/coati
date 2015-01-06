@@ -5,6 +5,7 @@ from mongoengine import DoesNotExist
 from app.schemas import User, Project, Column, ProjectMember
 from app.redis import RedisClient
 from app.api.resources.auth_resource import AuthResource
+from app.utils import send_new_member_email
 
 
 class ProjectList(AuthResource):
@@ -217,10 +218,11 @@ class ProjectMembers(AuthResource):
                         u = User(email=member.get('text'))
                         u.active = False
                         u.save()
-
-                        # Send an email with the invitation
                         m.member = u
                     m.save()
+                # Send email notification
+                send_new_member_email(m.member, project)
+
             ## add to redis
             r = RedisClient(channel=project_pk)
             r.store('new_members', **kwargs)

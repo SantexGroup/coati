@@ -107,7 +107,7 @@
                     rootScope.user = user;
                 });
             }
-            if(state.params.next){
+            if(state.params.next && state.params.next !== 'undefined'){
                 window.location.href = state.params.next;
             }else {
                 state.go('home', {reload: true});

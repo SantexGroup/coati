@@ -15,8 +15,9 @@
         "ng-tags-input": "v2.1.1",
         "ng-file-upload": "",
         "lodash": "",
-        "highcharts": "",
-        "angular-xeditable": ""
+        "highcharts": "4.0.4",
+        "angular-xeditable": "",
+        "ment.io": "0.9.20"
     },
     "devDependencies": {
         "angular-mocks": ""

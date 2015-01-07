@@ -191,36 +191,6 @@
         };
     };
 
-    var commentFlow = function (rootScope) {
-        return {
-            restrict: 'A',
-            link: function (scope, elem, attrs, ctrl) {
-                var txt = $(elem).find('textarea');
-                var btn = $(elem).find('button');
-
-                var restore = function () {
-                    txt.attr('rows', 1);
-                    txt.val('');
-                    btn.hide();
-                };
-
-                $(txt).on('focus', function (e) {
-                    txt.attr('rows', 5);
-                    btn.show();
-                }).on('blur', function (e) {
-                    var rt = $(e.relatedTarget);
-                    if (rt.attr('id') !== 'add-comment') {
-                        restore();
-                    }
-                });
-
-                rootScope.$on('comment_saved', function (params) {
-                    restore();
-                });
-            }
-        };
-    };
-
     var editableTagInput = function (editableDirectiveFactory) {
         return editableDirectiveFactory({
             directiveName: 'editableTags',
@@ -229,7 +199,7 @@
                 this.parent.render.call(this);
                 var tagIn = '<tags-input ng-model="$data" replace-spaces-with-dashes="false" placeholder="Add Label"></tags-input>';
                 this.inputEl.before(tagIn);
-                if(this.attrs.eStyle) {
+                if (this.attrs.eStyle) {
                     this.inputEl.style = this.attrs.eStyle;
                 }
             },
@@ -244,9 +214,62 @@
         });
     };
 
+    var contentEditable = function ($sce) {
+        return {
+            restrict: 'A', // only activate on element attribute
+            require: '?ngModel', // get a hold of NgModelController
+            link: function (scope, element, attrs, ngModel) {
+                function read() {
+                    var html = element.html();
+                    // When we clear the content editable the browser leaves a <br> behind
+                    // If strip-br attribute is provided then we strip this out
+                    if (attrs.stripBr && html === '<br>') {
+                        html = '';
+                    }
+
+
+                    if(attrs.mentions){
+
+                        var spans = element.find('span');
+                        scope.vm.mentions = [];
+                        angular.forEach(spans, function(item, key){
+                            scope.vm.mentions.push(item.getAttribute('data-token'));
+                        });
+                    }
+                    console.log(html);
+                    ngModel.$setViewValue(html);
+                }
+
+                if (!ngModel) {
+                    return;
+                } // do nothing if no ng-model
+
+                // Specify how UI should be updated
+                ngModel.$render = function () {
+                    if (ngModel.$viewValue !== element.html()) {
+                        element.html($sce.getTrustedHtml(ngModel.$viewValue || ''));
+                    }
+                };
+
+                // Listen for change events to enable binding
+                element.on('blur keyup change', function () {
+                    scope.$apply(read);
+                });
+
+                scope.$on('comment_saved', function(){
+                    element.empty();
+                });
+
+                read(); // initialize
+            }
+        };
+    };
+
+
+
 
     ImageFunction.$inject = ['$q'];
-    commentFlow.$inject = ['$rootScope'];
+    contentEditable.$inject = ['$sce'];
     CalculateWithBoard.$inject = ['$rootScope', '$timeout'];
 
     angular.module('Coati.Directives', ['Coati.Config'])
@@ -256,7 +279,7 @@
         .directive('onEnter', OnEnter)
         .directive('prepareBoard', CalculateWithBoard)
         .directive('editableTags', editableTagInput)
-        .directive('commentFlow', commentFlow);
+        .directive('contenteditable', contentEditable);
 
 
 }(angular));

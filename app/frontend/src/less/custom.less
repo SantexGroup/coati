@@ -652,3 +652,33 @@ input.error {
   background: transparent;
   font-weight: 700;
 }
+
+.message-body{
+  margin:0px !important;
+}
+.message-body img {
+  width:22px;
+  height: 22px;
+  object-fit: cover;
+}
+.msg-time-chat:before{
+  display:none !important;
+}
+
+.comments {
+  margin-top: 10px;
+}
+.user-search img{
+  width:22px;
+  height: 22px;
+  object-fit: cover;
+}
+
+[contentEditable=true]:empty:not(:focus):before{
+  content:attr(data-ph);
+  color:grey;
+  font-style:italic;
+}
+.editable-textarea{
+  display: block !important;
+}

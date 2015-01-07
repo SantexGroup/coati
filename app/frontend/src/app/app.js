@@ -15,7 +15,7 @@
 
 
     // Filters
-    function sumValue() {
+    var sumValue = function() {
         return function (items, field) {
             var total = 0, i = 0;
             if (items !== undefined) {
@@ -25,9 +25,9 @@
             }
             return total;
         };
-    }
+    };
 
-    function filterGetByProperty() {
+    var filterGetByProperty = function() {
         return function (propertyName, propertyValue, collection) {
             for (var i = 0; i < collection.length; i++) {
                 var v = collection[i];
@@ -37,9 +37,9 @@
             }
             return null;
         };
-    }
+    };
 
-    function filterGetIndexByProperty() {
+    var filterGetIndexByProperty = function() {
         return function (propertyName, propertyValue, collection) {
             for (var i = 0; i < collection.length; i++) {
                 var v = collection[i];
@@ -49,9 +49,9 @@
             }
             return null;
         };
-    }
+    };
 
-    function filterTicketTypes(){
+    var filterTicketTypes = function(){
         return function(types, type){
             var value = null;
             for(var i=0; i<types.length; i++){
@@ -63,9 +63,15 @@
             }
             return value;
         };
-    }
+    };
 
-    function AppController(scope, rootScope, state, stateParams, tokens) {
+    var filterTrustedHTML = function($sce){
+        return function(text) {
+            return $sce.trustAsHtml(text);
+        };
+    };
+
+    var AppController = function(scope, rootScope, state, stateParams, tokens) {
 
         rootScope.$on('$stateChangeStart', function (event, toState) {
 
@@ -87,7 +93,7 @@
             }
         });
 
-    }
+    };
 
     var RunApp = function(rootScope, state, stateParams, objects, editableOptions,editableThemes ){
 
@@ -113,6 +119,7 @@
     };
 
     // Injections
+    filterTrustedHTML.$inject = ['$sce'];
     RunApp.$inject = ['$rootScope', '$state', '$stateParams', '$objects', 'editableOptions', 'editableThemes'];
     ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider'];
     AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', 'tokens'];
@@ -129,6 +136,7 @@
         .filter('getIndexByProperty', filterGetIndexByProperty)
         .filter('sumValue', sumValue)
         .filter('ticketTypes', filterTicketTypes)
+        .filter('trustedHtml', filterTrustedHTML)
         .controller('AppCtrl', AppController);
 
 }(angular));

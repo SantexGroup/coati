@@ -16,8 +16,7 @@
         "ng-file-upload": "",
         "lodash": "",
         "highcharts": "4.0.4",
-        "angular-xeditable": "",
-        "ment.io": "0.9.20"
+        "angular-xeditable": ""
     },
     "devDependencies": {
         "angular-mocks": ""

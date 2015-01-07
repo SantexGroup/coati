@@ -139,6 +139,8 @@
         .filter('trustedHtml', filterTrustedHTML)
         .controller('AppCtrl', AppController);
 
+
+
 }(angular));
 
 

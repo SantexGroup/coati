@@ -48,10 +48,10 @@
                             <div class="input-group">
                                 <input type="radio" name="project_type"
                                        ng-model="vm.project.project_type"
-                                       ng-value="true"/> Scrum
+                                       ng-value="true"> Scrum
                                 <input type="radio" name="project_type"
                                        ng-model="vm.project.project_type"
-                                       ng-value="false"/> Kanban
+                                       ng-value="false"> Kanban
                             </div>
                         </div>-->
                         <div class="form-group">
@@ -93,9 +93,9 @@
                     <div class="member col-md-1" ng-repeat="m in vm.members"
                          tooltip="<[ m.member.first_name ? m.member.first_name + ' ' + m.member.last_name : m.member.email ]>">
                         <img ng-if="m.member.picture"
-                             src="<[ m.member.picture ]>"/>
+                             src="<[ m.member.picture ]>">
                         <img ng-if="!m.member.picture"
-                             src="/static/assets/img/koala.png"/>
+                             src="/static/assets/img/koala.png">
 
                         <div class="badge bg-success" ng-if="m.is_owner">Owner
                         </div>

@@ -52,11 +52,11 @@
                         <input type="checkbox"
                                ng-checked="vm.checkMember(m);"
                                ng-model="m.checked"
-                               ng-change="vm.assign_to_ticket(m);"/>
+                               ng-change="vm.assign_to_ticket(m);">
                         <img ng-if="m.member.picture"
-                             src="<[ m.member.picture ]>"/>
+                             src="<[ m.member.picture ]>">
                         <img ng-if="!m.member.picture"
-                             src="/static/assets/img/koala.png"/>
+                             src="/static/assets/img/koala.png">
                     </div>
                     <div class="pull-left member-data">
                         <[ m.member.email ]>
@@ -67,7 +67,7 @@
         </ul>
     </div>
 </div>
-<hr/>
+<hr>
 <div class="row">
     <div class="col-md-12">
         <label>Description:</label>
@@ -77,7 +77,7 @@
             <[ vm.ticket.description ]></p>
     </div>
 </div>
-<hr/>
+<hr>
 <div class="row">
     <div class="col-md-12">
         <label>Labels:</label>
@@ -94,7 +94,7 @@
         </p>
     </div>
 </div>
-<hr/>
+<hr>
 <div class="row">
     <div class="col-md-12">
         <div class="attachments">
@@ -189,7 +189,7 @@
                  ng-model="vm.comment"
                  mentions="vm.mentions"
                  data-ph="Write a comment..."></div>
-            <br/>
+            <br>
             <button id="add-comment"
                     class="btn btn-success pull-right"
                     ng-click="vm.add_new_comment($event)">Add

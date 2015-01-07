@@ -8,7 +8,7 @@ from mongoengine import Q, DoesNotExist
 from app.api.resources.auth_resource import AuthResource
 from app.auth import generate_token
 from app.schemas import User, Token
-from app.utils import send_activation_email
+from app.utils import send_activation_email_async
 
 
 class UsersList(AuthResource):
@@ -106,7 +106,7 @@ class UserRegister(Resource):
             password = data.get('password')
             pwd = hashlib.sha1(password)
             try:
-                user = User.objects.get(email=email)
+                User.objects.get(email=email)
                 return jsonify({'error': 'Email already exists'}), 400
             except DoesNotExist:
                 user = User()
@@ -117,7 +117,7 @@ class UserRegister(Resource):
                 user.active = False
                 token = generate_token(str(user.email))
                 user.activation_token = token
-                send_activation_email(user)
+                send_activation_email_async(user)
                 user.save()
 
                 return jsonify({'success': True}), 200

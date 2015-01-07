@@ -1,5 +1,6 @@
 import os
-from flask import make_response, current_app
+import threading
+from flask import make_response, current_app, copy_current_request_context
 from flask_mail import Mail, Message
 from itsdangerous import JSONWebSignatureSerializer
 from jinja2 import Environment, FileSystemLoader
@@ -19,8 +20,15 @@ def deserialize_data(data):
     return s.loads(data)
 
 
-def send_activation_email(user):
-    mail = Mail(app=current_app)
+def send_activation_email_async(*args):
+    send_email_async(create_activation_email, *args)
+
+
+def send_new_member_email_async(*args):
+    send_email_async(create_new_member_email, *args)
+
+
+def create_activation_email(user):
     path = os.path.dirname(os.path.abspath(__file__))
     env = Environment(loader=FileSystemLoader(path + '/templates'))
     template = env.get_template('activation_email.html')
@@ -29,11 +37,10 @@ def send_activation_email(user):
     msg = Message(subject='Coati - Activation Email',
                   recipients=[user.email],
                   html=template.render(link=link))
-    mail.send(msg)
+    return msg
 
 
-def send_new_member_email(user, project):
-    mail = Mail(app=current_app)
+def create_new_member_email(user, project):
     path = os.path.dirname(os.path.abspath(__file__))
     env = Environment(loader=FileSystemLoader(path + '/templates'))
     template = env.get_template('new_member.html')
@@ -42,9 +49,18 @@ def send_new_member_email(user, project):
     msg = Message(subject='Coati - Project Participation',
                   recipients=[user.email],
                   html=template.render(link=link, name=project.name))
-    mail.send(msg)
+    return msg
 
 
+def send_email_async(function, *args):
+    mail = Mail(app=current_app)
+    msg = function(*args)
+    @copy_current_request_context
+    def send_message(message):
+        mail.send(message)
+
+    sender = threading.Thread(name='mail_sender', target=send_message, args=(msg,))
+    sender.start()
 
 def output_json(obj, code, headers=None):
     """

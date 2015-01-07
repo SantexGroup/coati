@@ -10,7 +10,7 @@ from app.api.resources.auth_resource import AuthResource
 from app.redis import RedisClient
 from app.schemas import (Project, Ticket, SprintTicketOrder,
                          Sprint, TicketColumnTransition, Column, User, Comment,
-                         Attachment)
+                         Attachment, Notification)
 
 
 class TicketInstance(AuthResource):
@@ -354,6 +354,13 @@ class TicketComments(AuthResource):
             c.comment = data.get('comment')
             c.when = datetime.now()
             c.save()
+            for m in data.get('mentions'):
+                u = User.objects.get(pk=m)
+                n = Notification()
+                n.message = "You have been mentioned in a comment"
+                n.name = "mention"
+                n.to = u
+                n.save()
             # add redis
             r = RedisClient(channel=str(c.ticket.project.pk))
             r.store('new_comment', **kwargs)

@@ -391,3 +391,15 @@ class ProjectMember(mongoengine.Document):
             val = dict(member=pm.member.to_mongo(), is_owner=pm.is_owner)
             members.append(val)
         return members
+
+
+class Notification(mongoengine.Document):
+    name = mongoengine.StringField()
+    to = mongoengine.ReferenceField('User',
+                                    reverse_delete_rule=mongoengine.CASCADE)
+    message = mongoengine.StringField()
+    read = mongoengine.BooleanField(default=False)
+
+    meta = {
+        'queryset_class': CustomQuerySet
+    }

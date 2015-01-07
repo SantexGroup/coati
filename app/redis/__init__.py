@@ -17,3 +17,4 @@ class RedisClient():
         data = json.dumps({'type': message_type,
                            'user_id': kwargs['user_id']['pk']})
         self.redis_instance.connection.publish(self.channel, data)
+

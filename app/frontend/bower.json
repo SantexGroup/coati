@@ -15,7 +15,7 @@
         "ng-tags-input": "v2.1.1",
         "ng-file-upload": "",
         "lodash": "",
-        "highcharts": "",
+        "highcharts": "4.0.4",
         "angular-xeditable": ""
     },
     "devDependencies": {

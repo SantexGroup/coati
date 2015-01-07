@@ -73,17 +73,25 @@
 
     };
 
-    var TicketDetailController = function (rootScope, tmo, modalInstance, conf, downloader, TicketService, SocketIO, item) {
+    var TicketDetailController = function (rootScope, filter, tmo, modalInstance, conf, downloader, ProjectService, TicketService, SocketIO, item) {
         var vm = this;
 
         vm.files = [];
         vm.file_uploaded = 0;
+        vm.members_filtered = [];
+        vm.mentions = [];
 
         vm.types = conf.TICKET_TYPES;
 
         var getComments = function (ticket_id) {
             TicketService.get_comments(ticket_id).then(function (comments) {
                 vm.comments = comments;
+            });
+        };
+
+        var getMembers = function () {
+            ProjectService.get_members(vm.project._id.$oid).then(function (data) {
+                vm.members = data;
             });
         };
 
@@ -117,14 +125,25 @@
 
         vm.project = item.project;
         getTicket(item.ticket_id);
+        getMembers();
 
         vm.saveTicket = function (ticket) {
             if (ticket) {
                 ticket.sprint = undefined;
-                TicketService.update(ticket._id.$oid, ticket).then(function(tkt){
+                TicketService.update(ticket._id.$oid, ticket).then(function (tkt) {
                     vm.ticket = tkt;
                 });
             }
+        };
+
+        vm.searchMember = function (term) {
+            vm.members_filtered = filter('filter')(vm.members, term);
+        };
+
+        vm.getMemberText = function (item) {
+            // note item.label is sent when the typedText wasn't found
+            var name = item.member.first_name ? item.member.first_name + ' ' + item.member.last_name : item.member.email;
+            return '<span class="badge bg-info" data-token="'+ item.member._id.$oid +'" contenteditable="false">@' + name + '</span>';
         };
 
         vm.removeFileFromQueue = function (f) {
@@ -185,7 +204,7 @@
 
         vm.add_new_comment = function (e) {
             if (vm.comment.length > 0) {
-                var comment = {'comment': vm.comment};
+                var comment = {'comment': vm.comment, 'mentions': vm.mentions};
                 TicketService.add_comment(vm.ticket._id.$oid, comment).then(function (tkt) {
                     rootScope.$broadcast('comment_saved');
                     vm.comments.unshift(tkt);
@@ -210,12 +229,12 @@
             f.aborted = true;
         };
 
-        vm.prepareLabelsToSave = function(lbls, save){
+        vm.prepareLabelsToSave = function (lbls, save) {
             vm.ticket.labels = [];
-            angular.forEach(vm.labels, function(v, k){
-                 vm.ticket.labels.push(v.text);
+            angular.forEach(vm.labels, function (v, k) {
+                vm.ticket.labels.push(v.text);
             });
-            if(save) {
+            if (save) {
                 vm.saveTicket(vm.ticket);
             }
         };
@@ -223,21 +242,22 @@
         SocketIO.on('update_ticket', function () {
             getTicket(item.ticket_id);
         });
-        SocketIO.on('ticket_transition', function() {
+        SocketIO.on('ticket_transition', function () {
             getTicket(item.ticket_id);
         });
 
     };
 
-    TicketDetailController.$inject = ['$rootScope', '$timeout', '$modalInstance', 'Conf', '$file_download', 'TicketService', 'SocketIO', 'item'];
+    TicketDetailController.$inject = ['$rootScope', '$filter', '$timeout', '$modalInstance', 'Conf', '$file_download', 'ProjectService', 'TicketService', 'SocketIO', 'item'];
     TicketFormController.$inject = ['$modalInstance', 'Conf', 'TicketService', 'SprintService', 'item'];
     TicketDeleteController.$inject = ['$modalInstance', 'TicketService', 'item'];
 
-    angular.module('Coati.Ticket', ['ui.router', 'ngTagsInput', 'angularFileUpload',
+    angular.module('Coati.Ticket', ['ui.router', 'ngTagsInput', 'angularFileUpload', 'mentio',
         'Coati.Config',
         'Coati.SocketIO',
         'Coati.Helpers',
         'Coati.Directives',
+        'Coati.Services.Project',
         'Coati.Services.Ticket',
         'Coati.Services.Sprint'])
         .controller('TicketFormController', TicketFormController)

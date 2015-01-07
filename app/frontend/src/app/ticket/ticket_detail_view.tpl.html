@@ -1,183 +1,236 @@
 <section class="panel">
-    <header class="panel-heading">
-        <h4 class="modal-title pull-left">
-            <span><[ vm.project.prefix]>-<[ vm.ticket.number ]></span>: <span editable-text="vm.ticket.title" onbeforesave="vm.saveTicket(vm.ticket);"><[ vm.ticket.title ]></span>
-        </h4>
+<header class="panel-heading">
+    <h4 class="modal-title pull-left">
+        <span><[ vm.project.prefix]>-<[ vm.ticket.number ]></span>: <span
+            editable-text="vm.ticket.title"
+            onbeforesave="vm.saveTicket(vm.ticket);"><[ vm.ticket.title ]></span>
+    </h4>
 
-        <div class="pull-right">
-            <a href="javascript:;" title="Close" ng-click="vm.close();">
-                <i class="icon-remove"></i>
-            </a>
-        </div>
-        <div style="clear:both"></div>
-    </header>
-    <div class="panel-body">
+    <div class="pull-right">
+        <a href="javascript:;" title="Close" ng-click="vm.close();">
+            <i class="icon-remove"></i>
+        </a>
+    </div>
+    <div style="clear:both"></div>
+</header>
+<div class="panel-body">
 
-        <div class="row">
-            <div class="col-md-12">
-                <div class="row">
-                    <div class="col-md-10">
-                        <label>Points</label>
-                        <span class="badge bg-important" editable-text="vm.ticket.points" onbeforesave="vm.saveTicket(vm.ticket);">
+<div class="row">
+<div class="col-md-12">
+<div class="row">
+    <div class="col-md-10">
+        <label>Points</label>
+                        <span class="badge bg-important"
+                              editable-text="vm.ticket.points"
+                              onbeforesave="vm.saveTicket(vm.ticket);">
                             <[ vm.ticket.points ]>
                         </span>
-                        <label>Ticket Type:</label>
-                        <span class="badge <[ vm.ticket.type]>" editable-select="vm.ticket.type"  e-ng-options="t.value as t.name for t in vm.types" onbeforesave="vm.saveTicket(vm.ticket);">
+        <label>Ticket Type:</label>
+                        <span class="badge <[ vm.ticket.type]>"
+                              editable-select="vm.ticket.type"
+                              e-ng-options="t.value as t.name for t in vm.types"
+                              onbeforesave="vm.saveTicket(vm.ticket);">
                             <[ vm.types | ticketTypes:vm.ticket.type ]>
                         </span>
-                        <label>In Column:</label>
+        <label>In Column:</label>
                         <span ng-if="!vm.ticket.in_column"
                               class="badge bg-warning">Backlog</span>
                         <span ng-if="vm.ticket.in_column"
                               class="badge bg-warning"><[ vm.ticket.in_column ]></span>
-                    </div>
-                    <div class="col-md-2" dropdown>
-                        <button class="btn btn-xs btn-success dropdown-toggle" dropdown-toggle type="button">
-                            Members <span class="caret"></span>
-                        </button>
-                        <ul role="menu" class="dropdown-menu members-menu">
-                              <li ng-repeat="m in vm.project.members" ng-click="$event.stopPropagation();">
-                                  <div class="member-item">
+    </div>
+    <div class="col-md-2" dropdown>
+        <button class="btn btn-xs btn-success dropdown-toggle"
+                dropdown-toggle type="button">
+            Members <span class="caret"></span>
+        </button>
+        <ul role="menu" class="dropdown-menu members-menu">
+            <li ng-repeat="m in vm.project.members"
+                ng-click="$event.stopPropagation();">
+                <div class="member-item">
 
-                                      <div class="pull-left img-container">
-                                        <input type="checkbox" ng-checked="vm.checkMember(m);" ng-model="m.checked" ng-change="vm.assign_to_ticket(m);" />
-                                        <img ng-if="m.member.picture" src="<[ m.member.picture ]>" />
-                                        <img ng-if="!m.member.picture" src="/static/assets/img/koala.png"  />
-                                      </div>
-                                      <div class="pull-left member-data">
-                                        <[ m.member.email ]>
-                                      </div>
-                                      <div style="clear:both;"></div>
-                                  </div>
-                              </li>
-                          </ul>
+                    <div class="pull-left img-container">
+                        <input type="checkbox"
+                               ng-checked="vm.checkMember(m);"
+                               ng-model="m.checked"
+                               ng-change="vm.assign_to_ticket(m);"/>
+                        <img ng-if="m.member.picture"
+                             src="<[ m.member.picture ]>"/>
+                        <img ng-if="!m.member.picture"
+                             src="/static/assets/img/koala.png"/>
                     </div>
-                </div>
-                <hr/>
-                <div class="row">
-                    <div class="col-md-12">
-                        <label>Description:</label>
-                        <p editable-textarea="vm.ticket.description" e-rows="5" e-cols="70" onbeforesave="vm.saveTicket(vm.ticket);"><[ vm.ticket.description ]></p>
+                    <div class="pull-left member-data">
+                        <[ m.member.email ]>
                     </div>
+                    <div style="clear:both;"></div>
                 </div>
-                <hr/>
-                <div class="row">
-                    <div class="col-md-12">
-                        <label>Labels:</label>
+            </li>
+        </ul>
+    </div>
+</div>
+<hr/>
+<div class="row">
+    <div class="col-md-12">
+        <label>Description:</label>
 
-                        <p class="labels-ticket" editable-tags="vm.labels" e-style="display:inline-block;min-width:400px;" oncancel="vm.prepareLabelsToSave($data, false);" onbeforesave="vm.prepareLabelsToSave($data, true);">
-                            <span class="badge bg-info"
-                                  ng-repeat="lbl in vm.ticket.labels">
-                                <[ lbl ]>
-                            </span>
-                        </p>
-                    </div>
-                </div>
-                <hr/>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="attachments">
-                            <label>Attachements:</label>
+        <p editable-textarea="vm.ticket.description" e-rows="5"
+           e-cols="70" onbeforesave="vm.saveTicket(vm.ticket);">
+            <[ vm.ticket.description ]></p>
+    </div>
+</div>
+<hr/>
+<div class="row">
+    <div class="col-md-12">
+        <label>Labels:</label>
 
-                            <div class="attachments_stored">
-                                <div style="margin-right: 3px;margin-bottom:3px"
-                                     ng-repeat="f in vm.ticket.files"
-                                     class="btn-group" dropdown
-                                     is-open="f.isopen">
-                                    <button class="btn btn-xs btn-info"
-                                            dropdown-toggle>
-                                        <i ng-class="vm.checkTypeIcon(f)"></i>
-                                        <span><[ f.name ]></span>
-                                        <span>(<[ f.size / 1024 |number:0 ]> Kb)</span>
-                                    </button>
-                                    <ul role="menu" class="dropdown-menu">
-                                        <li><a href="#"
-                                               ng-click="vm.download(f);">
-                                            <i class="icon-download"></i>
-                                            Download</a>
-                                        </li>
-                                        <li><a href="#"
-                                               ng-click="vm.delete_file(f);">
-                                            <i class="icon-trash"></i>
-                                            Delete</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <button class="btn pull-left btn-sm btn-primary"
-                                    ng-file-select ng-model="vm.files"
-                                    ng-file-change="vm.prepare_upload()"
-                                    multiple="true">Select Files...
-                            </button>
-                            <button ng-show="vm.files.length"
-                                    ng-click="vm.confirm_upload();"
-                                    class="btn pull-right btn-sm btn-success">
-                                Upload Files
-                            </button>
-                            <div style="clear:both"></div>
-                            <div class="files" ng-show="vm.files.length">
-                                <ul>
-                                    <li ng-repeat="f in vm.files"
-                                        ng-class="{aborted: f.aborted}">
-                                        <div class="row">
-                                            <div class="col-md-8">
-                                                <i ng-class="vm.checkTypeIcon(f)"></i>
-                                                <span><[ f.name ]></span>
-                                                <span>(<[ f.size / 1024 |number:0 ]> Kb)</span>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div ng-show="!f.aborted && f.progress >= 0"
-                                                     class="progress progress-striped">
-                                                    <div class="progress-bar progress-bar-info"
-                                                         role="progressbar"
-                                                         aria-valuenow="<[ f.progress ]>"
-                                                         aria-valuemin="0"
-                                                         aria-valuemax="100"
-                                                         ng-style="{width: f.progress + '%' }">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <button ng-hide="f.upload"
-                                                        ng-click="vm.removeFileFromQueue(f)"
-                                                        class="btn btn-danger btn-xs pull-right icon-trash"></button>
-                                                <button class="btn btn-xs btn-danger"
-                                                        ng-show="f.upload != null && f.progress < 100 && !f.aborted"
-                                                        ng-click="vm.abort_upload(f);">
-                                                    Cancel
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="add_new_comment" comment-flow>
-                            <textarea class="form-control" rows="1"
-                                      ng-model="vm.comment"
-                                      placeholder="Write a comment..."></textarea>
-                            <br/>
-                            <button id="add-comment" style="display: none;"
-                                    class="btn btn-success pull-right"
-                                    ng-click="vm.add_new_comment($event)">Add
-                                New
-                                Comment
-                            </button>
-                            <div style="clear:both"></div>
-                        </div>
-                        <div class="comments">
-                            <ul>
-                                <li ng-repeat="c in vm.comments track by c._id.$oid">
-                                    <div class="comment-box">
-                                        <p><[ c.comment ]></p>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+        <p class="labels-ticket" editable-tags="vm.labels"
+           e-style="display:inline-block;min-width:400px;"
+           oncancel="vm.prepareLabelsToSave($data, false);"
+           onbeforesave="vm.prepareLabelsToSave($data, true);">
+            <span class="badge bg-info"
+                  ng-repeat="lbl in vm.ticket.labels">
+                <[ lbl ]>
+            </span>
+            <span ng-if="vm.labels.length < 1">No Labels</span>
+        </p>
+    </div>
+</div>
+<hr/>
+<div class="row">
+    <div class="col-md-12">
+        <div class="attachments">
+            <label>Attachements:</label>
+
+            <div class="attachments_stored">
+                <div style="margin-right: 3px;margin-bottom:3px"
+                     ng-repeat="f in vm.ticket.files"
+                     class="btn-group" dropdown
+                     is-open="f.isopen">
+                    <button class="btn btn-xs btn-info"
+                            dropdown-toggle>
+                        <i ng-class="vm.checkTypeIcon(f)"></i>
+                        <span><[ f.name ]></span>
+                        <span>(<[ f.size / 1024 |number:0 ]> Kb)</span>
+                    </button>
+                    <ul role="menu" class="dropdown-menu">
+                        <li><a href="javascript:;"
+                               ng-click="vm.download(f);">
+                            <i class="icon-download"></i>
+                            Download</a>
+                        </li>
+                        <li><a href="javascript:;"
+                               ng-click="vm.delete_file(f);">
+                            <i class="icon-trash"></i>
+                            Delete</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
+            <button class="btn pull-left btn-sm btn-primary"
+                    ng-file-select ng-model="vm.files"
+                    ng-file-change="vm.prepare_upload()"
+                    multiple="true">Select Files...
+            </button>
+            <button ng-show="vm.files.length"
+                    ng-click="vm.confirm_upload();"
+                    class="btn pull-right btn-sm btn-success">
+                Upload Files
+            </button>
+            <div style="clear:both"></div>
+            <div class="files" ng-show="vm.files.length">
+                <ul>
+                    <li ng-repeat="f in vm.files"
+                        ng-class="{aborted: f.aborted}">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <i ng-class="vm.checkTypeIcon(f)"></i>
+                                <span><[ f.name ]></span>
+                                <span>(<[ f.size / 1024 |number:0 ]> Kb)</span>
+                            </div>
+                            <div class="col-md-2">
+                                <div ng-show="!f.aborted && f.progress >= 0"
+                                     class="progress progress-striped">
+                                    <div class="progress-bar progress-bar-info"
+                                         role="progressbar"
+                                         aria-valuenow="<[ f.progress ]>"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100"
+                                         ng-style="{width: f.progress + '%' }">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <button ng-hide="f.upload"
+                                        ng-click="vm.removeFileFromQueue(f)"
+                                        class="btn btn-danger btn-xs pull-right icon-trash"></button>
+                                <button class="btn btn-xs btn-danger"
+                                        ng-show="f.upload != null && f.progress < 100 && !f.aborted"
+                                        ng-click="vm.abort_upload(f);">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="add_new_comment">
+            <div contenteditable="true" stripBr="true" class="form-control"
+                 style="height: auto !important;"
+                 id="comment_area"
+                 mentio
+                 mentio-id="'comment_area'"
+                 mentio-trigger-char="'@'"
+                 mentio-items="vm.members_filtered"
+                 mentio-template-url="ticket/members-mentions.tpl.html"
+                 mentio-search="vm.searchMember(term)"
+                 mentio-select="vm.getMemberText(item)"
+                 mentio-typed-term="typedTerm"
+                 ng-trim="false"
+                 ng-model="vm.comment"
+                 mentions="vm.mentions"
+                 data-ph="Write a comment..."></div>
+            <br/>
+            <button id="add-comment"
+                    class="btn btn-success pull-right"
+                    ng-click="vm.add_new_comment($event)">Add
+                New
+                Comment
+            </button>
+            <div style="clear:both"></div>
+        </div>
+        <div class="comments">
+            <ul>
+                <li ng-repeat="c in vm.comments track by c._id.$oid">
+                    <div class="msg-time-chat">
+                        <div class="message-body msg-in">
+                            <div class="text">
+
+                                <p class="attribution">
+                                    <img class="avatar"
+                                         ng-if="!c.who.picture"
+                                         alt=""
+                                         src="static/assets/img/koala.png">
+                                    <img class="avatar"
+                                         ng-if="c.who.picture"
+                                         alt=""
+                                         ng-src="<[ c.who.picture ]>">
+                                    <a href="javascript:;">
+                                        <span ng-if="c.who.first_name"><[ c.who.first_name ]> <[ c.who.last_name ]></span>
+                                        <span ng-if="!c.who.first_name"><[ c.who.email ]></span>
+                                    </a>
+                                    <[ c.when.$date | date:'medium':'UTC' ]></p>
+
+                                <p ng-bind-html="c.comment | trustedHtml"></p>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
         </div>
     </div>
-    </div>
+</div>
+</div>
+</div>
+</div>
+
 </section>

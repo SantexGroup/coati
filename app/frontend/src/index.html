@@ -36,7 +36,7 @@
                 </li>
                 <!-- user login dropdown start-->
                 <li dropdown ng-controller="UserCtrl as vm" update-profile>
-                    <a class="dropdown-toggle user_picture" dropdown-toggle href="#">
+                    <a class="dropdown-toggle user_picture" dropdown-toggle href="javascript:;">
                         <img ng-if="!vm.user.picture" alt="" src="{{ url_for('static', filename='assets/img/koala.png')}}">
                         <img ng-if="vm.user.picture" alt="" ng-src="<[ vm.user.picture ]>">
                         <span class="username"><[ vm.user.email ]></span>
@@ -44,7 +44,7 @@
                     </a>
                     <ul class="dropdown-menu logout">
                         <div class="log-arrow-up"></div>
-                        <li><a href="#" ng-click="vm.show_profile();"><i
+                        <li><a href="javascript:;" ng-click="vm.show_profile();"><i
                                 class=" icon-suitcase"></i> Profile</a>
                         </li>
                         <li><a ng-href="/auth/logout" href="/logout"

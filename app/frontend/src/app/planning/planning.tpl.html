@@ -1,6 +1,6 @@
 <h3>
     <[ vm.project.name ]>
-    <a class="btn btn-success btn-sm pull-right" href="#"
+    <a class="btn btn-success btn-sm pull-right" href="javascript:;"
        ng-click="vm.add_or_edit($event);">Add New
         Ticket</a>
 </h3>
@@ -21,11 +21,11 @@
                         <div class="options pull-right">
                             <span class="badge bg-inverse">Total Points: <[ sprint.tickets | sumValue:'points' ]></span>
                             <a ng-if="$index == 0 && !vm.one_started && !sprint.finalized && !sprint.started"
-                               class="btn btn-primary btn-sm" href="#"
+                               class="btn btn-primary btn-sm" href="javascript:;"
                                ng-click="vm.startSprint(sprint);">Start
                                 Sprint</a>
                             <a ng-if="sprint.started && !sprint.finalized"
-                               class="btn btn-danger btn-sm" href="#"
+                               class="btn btn-danger btn-sm" href="javascript:;"
                                ng-click="vm.stopSprint(sprint);">Stop Sprint</a>
                             <a class="btn btn-sm btn-danger"
                                ng-click="vm.remove_sprint(sprint._id.$oid)">
@@ -51,8 +51,6 @@
 
                                         <div class="pull-right hidden-phone">
                                             <span class="badge bg-info"><[ tkt.points ]></span>
-                                            <button class="btn btn-primary btn-xs icon-pencil"
-                                                  title="Quick Edit"  ng-click="vm.add_or_edit($event, tkt);"></button>
                                             <button title="Delete Ticket" class="btn btn-danger btn-xs icon-trash"
                                                     ng-click="vm.delete_ticket($event, tkt);"></button>
                                         </div>
@@ -72,7 +70,7 @@
 
                 <div class="add-task-row pull-right">
                     <span class="badge bg-inverse">Total Points: <[ vm.tickets | sumValue:'points' ]></span>
-                    <a class="btn btn-primary btn-sm" href="#"
+                    <a class="btn btn-primary btn-sm" href="javascript:;"
                        ng-click="vm.create_sprint();">Create
                         Sprint</a>
                 </div>
@@ -94,8 +92,6 @@
                                 </span>
                                 <div class="pull-right hidden-phone">
                                     <span class="badge bg-info"><[ tkt.points ]></span>
-                                    <button class="btn btn-primary btn-xs icon-pencil"
-                                            title="Quick Edit" ng-click="vm.add_or_edit($event, tkt);"></button>
                                     <button title="Delete Ticket" class="btn btn-danger btn-xs icon-trash"
                                             ng-click="vm.delete_ticket($event,tkt);"></button>
                                 </div>

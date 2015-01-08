@@ -212,7 +212,9 @@ class ProjectMembers(AuthResource):
         if data:
             try:
                 pm = ProjectMember.objects.get(pk=data.get('member'))
+                project = Project.objects.get(pk=project_pk)
                 pm.is_owner = True
+                project.owner = pm.member
                 ProjectMember.objects(project=project_pk).update(set__is_owner=False)
                 pm.save()
                 return jsonify({'success': True}), 200

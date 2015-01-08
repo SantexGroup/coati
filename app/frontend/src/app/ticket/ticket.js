@@ -143,7 +143,7 @@
         vm.getMemberText = function (item) {
             // note item.label is sent when the typedText wasn't found
             var name = item.member.first_name ? item.member.first_name + ' ' + item.member.last_name : item.member.email;
-            return '<span class="badge bg-info" data-token="'+ item.member._id.$oid +'" contenteditable="false">@' + name + '</span>';
+            return '<span class="badge bg-info" data-token="' + item.member._id.$oid + '" contenteditable="false">@' + name + '</span>';
         };
 
         vm.removeFileFromQueue = function (f) {
@@ -206,12 +206,14 @@
         vm.add_new_comment = function (e) {
             if (vm.comment.length > 0 && !vm.process_comment) {
                 vm.process_comment = true;
-                var comment = {'comment': vm.comment, 'mentions': vm.mentions};
-                TicketService.add_comment(vm.ticket._id.$oid, comment).then(function (tkt) {
-                    rootScope.$broadcast('comment_saved');
-                    vm.comments.unshift(tkt);
-                    vm.process_comment = false;
-                });
+                tmo(function () {
+                    var comment = {'comment': vm.comment, 'mentions': vm.mentions};
+                    TicketService.add_comment(vm.ticket._id.$oid, comment).then(function (tkt) {
+                        rootScope.$broadcast('comment_saved');
+                        vm.comments.unshift(tkt);
+                        vm.process_comment = false;
+                    });
+                }, 100);
             }
             e.stopPropagation();
         };

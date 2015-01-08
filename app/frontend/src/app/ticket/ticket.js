@@ -213,7 +213,7 @@
                         vm.comments.unshift(tkt);
                         vm.process_comment = false;
                     });
-                }, 100);
+                }, 500);
             }
             e.stopPropagation();
         };

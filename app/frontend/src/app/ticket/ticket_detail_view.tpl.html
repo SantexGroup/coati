@@ -1,4 +1,13 @@
-<section class="panel">
+<div class="ticket_loading" ng-hide="!vm.loading">
+    <div class="spinner">
+        <div class="rect1"></div>
+        <div class="rect2"></div>
+        <div class="rect3"></div>
+        <div class="rect4"></div>
+        <div class="rect5"></div>
+    </div>
+</div>
+<section class="panel" ng-hide="vm.loading">
 <header class="panel-heading">
     <h4 class="modal-title pull-left">
         <span><[ vm.project.prefix]>-<[ vm.ticket.number ]></span>: <span
@@ -58,10 +67,12 @@
                         <img ng-if="!m.member.picture"
                              src="/static/assets/img/koala.png">
                     </div>
-                    <div ng-if="m.member.first_name" class="pull-left member-data">
+                    <div ng-if="m.member.first_name"
+                         class="pull-left member-data">
                         <[ m.member.first_name ]> <[ m.member.last_name ]>
                     </div>
-                    <div ng-if="!m.member.first_name" class="pull-left member-data">
+                    <div ng-if="!m.member.first_name"
+                         class="pull-left member-data">
                         <[ m.member.email ]>
                     </div>
                     <div style="clear:both;"></div>
@@ -130,7 +141,6 @@
             </div>
             <button class="btn pull-left btn-sm btn-primary"
                     ng-file-select ng-model="vm.files"
-                    ng-file-change="vm.prepare_upload()"
                     multiple="true">Select Files...
             </button>
             <button ng-show="vm.files.length"

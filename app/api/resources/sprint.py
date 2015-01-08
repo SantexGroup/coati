@@ -11,6 +11,7 @@ from app.schemas import (Sprint, Project, SprintTicketOrder,
                          Column, TicketColumnTransition)
 from app.redis import RedisClient
 from app.api.resources.auth_resource import AuthResource
+from mongoengine import DoesNotExist
 
 
 class SprintOrder(AuthResource):
@@ -45,7 +46,7 @@ class SprintList(AuthResource):
         """
         try:
             project = Project.objects.get(id=project_pk)
-        except Project.DoesNotExist, e:
+        except DoesNotExist, e:
             return jsonify({"error": 'project does not exist'}), 400
         total = Sprint.objects(project=project_pk).count()
         sp = Sprint(project=project.to_dbref())

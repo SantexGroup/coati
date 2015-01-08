@@ -80,7 +80,6 @@
         vm.file_uploaded = 0;
         vm.members_filtered = [];
         vm.mentions = [];
-
         vm.types = conf.TICKET_TYPES;
 
         var getComments = function (ticket_id) {
@@ -95,14 +94,13 @@
             });
         };
 
-        var getTicket = function (ticket_id) {
+        var getTicket = function (ticket_id, show_loading) {
+            vm.loading = (show_loading !== undefined ? show_loading : true);
             TicketService.get(ticket_id).then(function (tkt) {
                 vm.ticket = tkt;
                 vm.labels = tkt.labels;
-
+                vm.loading = false;
                 getComments(tkt._id.$oid);
-
-
             }, function () {
                 modalInstance.dismiss('error loading ticket');
             });

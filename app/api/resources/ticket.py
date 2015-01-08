@@ -93,7 +93,7 @@ class TicketProjectList(AuthResource):
         except Exception as ex:
             number = 1
         tkt.number = number
-        tkt.order = Ticket.objects.count()
+        tkt.order = Ticket.objects(project=project).count()
         tkt.project = project
         tkt.description = data.get('description')
         tkt.points = data.get('points', 0)

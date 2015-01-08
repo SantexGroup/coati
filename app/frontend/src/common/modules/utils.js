@@ -103,7 +103,7 @@
         };
     };
 
-    var UploadHelper = function (up, tokens, conf) {
+    var UploadHelper = function (up, tokens, conf, growl) {
         return {
             '$do': function (url, files, extra_data, not_default) {
                 var token = tokens.get_token();
@@ -117,6 +117,10 @@
                     url: endpoint,
                     data: extra_data,
                     file: files
+                }).error(function(err){
+                    //Notify
+                    growl.addErrorMessage("There was an error on the server side, please try again!");
+
                 });
             }
         };
@@ -141,7 +145,7 @@
     };
 
     RequestHelper.$inject = ['$http', '$q', '$state', 'Conf', 'tokens', 'growl'];
-    UploadHelper.$inject = ['$upload', 'tokens', 'Conf'];
+    UploadHelper.$inject = ['$upload', 'tokens', 'Conf', 'growl'];
 
     angular.module('Coati.Helpers', ['Coati.Config',
         'angular-growl',

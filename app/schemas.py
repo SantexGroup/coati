@@ -1,7 +1,7 @@
-import base64
 from datetime import datetime, timedelta
 
 import mongoengine
+from mongoengine import Q, signals
 from bson import json_util
 
 
@@ -105,8 +105,10 @@ class Project(mongoengine.Document):
         for s in sprints:
             for spo in SprintTicketOrder.objects(sprint=s, active=True):
                 tickets.append(str(spo.ticket.pk))
-        result = Ticket.objects(project=self, id__nin=tickets).order_by(
-            'order')
+        result = Ticket.objects(Q(project=self) &
+                                Q(id__nin=tickets) &
+                                (Q(closed=False) | Q(closed__exists=False))
+        ).order_by('order')
         return result
 
 
@@ -257,6 +259,7 @@ class ProjectMember(mongoengine.Document):
             members.append(val)
         return members
 
+
 class Ticket(mongoengine.Document):
     title = mongoengine.StringField(max_length=200, required=True)
     description = mongoengine.StringField()
@@ -268,11 +271,19 @@ class Ticket(mongoengine.Document):
     points = mongoengine.IntField()
     type = mongoengine.StringField(max_length=1, choices=TICKET_TYPE)
     files = mongoengine.ListField(mongoengine.ReferenceField('Attachment'))
-    assigned_to = mongoengine.ListField(mongoengine.ReferenceField('ProjectMember'))
+    assigned_to = mongoengine.ListField(
+        mongoengine.ReferenceField('ProjectMember'))
+    closed = mongoengine.BooleanField(default=False)
 
     meta = {
         'queryset_class': CustomQuerySet
     }
+
+    @classmethod
+    def pre_delete(cls, sender, document, **kwargs):
+        for att in document.files:
+            att.delete()
+
 
     def to_json(self, *args, **kwargs):
         data = self.to_mongo()
@@ -412,3 +423,8 @@ class Notification(mongoengine.Document):
     meta = {
         'queryset_class': CustomQuerySet
     }
+
+
+# Signals
+
+signals.pre_delete.connect(Ticket.pre_delete, sender=Ticket)

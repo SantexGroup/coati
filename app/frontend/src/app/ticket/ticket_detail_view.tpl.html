@@ -44,7 +44,7 @@
             Members <span class="caret"></span>
         </button>
         <ul role="menu" class="dropdown-menu members-menu">
-            <li ng-repeat="m in vm.project.members"
+            <li ng-repeat="m in vm.members"
                 ng-click="$event.stopPropagation();">
                 <div class="member-item">
 
@@ -54,11 +54,14 @@
                                ng-model="m.checked"
                                ng-change="vm.assign_to_ticket(m);">
                         <img ng-if="m.member.picture"
-                             src="<[ m.member.picture ]>">
+                             ng-src="<[ m.member.picture ]>">
                         <img ng-if="!m.member.picture"
                              src="/static/assets/img/koala.png">
                     </div>
-                    <div class="pull-left member-data">
+                    <div ng-if="m.member.first_name" class="pull-left member-data">
+                        <[ m.member.first_name ]> <[ m.member.last_name ]>
+                    </div>
+                    <div ng-if="!m.member.first_name" class="pull-left member-data">
                         <[ m.member.email ]>
                     </div>
                     <div style="clear:both;"></div>

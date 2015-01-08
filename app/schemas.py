@@ -16,7 +16,7 @@ TICKET_TYPE = (('U', 'User Story'),
 class CustomQuerySet(mongoengine.QuerySet):
     def to_json(self, *args, **kwargs):
         return "[%s]" % (
-        ",".join([doc.to_json(*args, **kwargs) for doc in self]))
+            ",".join([doc.to_json(*args, **kwargs) for doc in self]))
 
 
 class User(mongoengine.Document):
@@ -128,7 +128,8 @@ class Sprint(mongoengine.Document):
     def to_json(self, *args, **kwargs):
         data = self.to_mongo()
         if kwargs.get('archived'):
-            tickets = SprintTicketOrder.objects(sprint=self.pk).order_by('order')
+            tickets = SprintTicketOrder.objects(sprint=self.pk).order_by(
+                'order')
         else:
             tickets = SprintTicketOrder.objects(sprint=self.pk,
                                                 active=True).order_by('order')
@@ -138,7 +139,8 @@ class Sprint(mongoengine.Document):
             tkt['order'] = t.order
             assignments = []
             for ass in t.ticket.assigned_to:
-                assignments.append(ass.to_mongo())
+                if ass.__class__.__name__ != 'DBRef':
+                    assignments.append(ass.to_mongo())
             tkt['assigned_to'] = assignments
             ticket_list.append(tkt)
         data["tickets"] = ticket_list
@@ -150,7 +152,8 @@ class Sprint(mongoengine.Document):
         for t in tickets:
             assignments = []
             for ass in t.ticket.assigned_to:
-                assignments.append(ass.to_mongo())
+                if ass.__class__.__name__ != 'DBRef':
+                    assignments.append(ass.to_mongo())
 
             value = {
                 'points': t.ticket.points,
@@ -192,13 +195,15 @@ class Sprint(mongoengine.Document):
             'order')
         ticket_list = []
         for t in tickets:
-            tkt = t.ticket.to_mongo()
-            tkt.order = t.order
-            assignments = []
-            for ass in t.ticket.assigned_to:
-                assignments.append(ass.to_mongo())
-            tkt['assigned_to'] = assignments
-            ticket_list.append(tkt)
+            if t.ticket.__class__.__name__ != 'DBRef':
+                tkt = t.ticket.to_mongo()
+                tkt.order = t.order
+                assignments = []
+                for ass in t.ticket.assigned_to:
+                    if ass.__class__.__name__ != 'DBRef':
+                        assignments.append(ass.to_mongo())
+                tkt['assigned_to'] = assignments
+                ticket_list.append(tkt)
         return json_util.dumps(ticket_list)
 
     def clean(self):
@@ -213,6 +218,45 @@ class Attachment(mongoengine.Document):
     data = mongoengine.StringField()
 
 
+class ProjectMember(mongoengine.Document):
+    member = mongoengine.ReferenceField('User',
+                                        reverse_delete_rule=mongoengine.CASCADE)
+    project = mongoengine.ReferenceField('Project',
+                                         reverse_delete_rule=mongoengine.CASCADE)
+    since = mongoengine.DateTimeField(default=datetime.now())
+    is_owner = mongoengine.BooleanField(default=False)
+
+    meta = {
+        'queryset_class': CustomQuerySet
+    }
+
+    def to_json(self, *args, **kwargs):
+        data = self.to_mongo()
+        data['member'] = self.member.to_mongo()
+        return json_util.dumps(data)
+
+    @staticmethod
+    def get_projects_for_member(member_pk):
+        prj_mem = ProjectMember.objects(member=member_pk)
+        projects = []
+        for pm in prj_mem:
+            if pm.project.active:
+                projects.append(pm.project.to_mongo())
+            elif str(pm.project.owner.pk) == member_pk:
+                projects.append(pm.project.to_mongo())
+
+        return json_util.dumps(projects)
+
+    @staticmethod
+    def get_members_for_project(project):
+        prj_mem = ProjectMember.objects(project=project)
+        members = []
+        for pm in prj_mem:
+            val = pm.to_mongo()
+            val['member'] = pm.member.to_mongo()
+            members.append(val)
+        return members
+
 class Ticket(mongoengine.Document):
     title = mongoengine.StringField(max_length=200, required=True)
     description = mongoengine.StringField()
@@ -224,7 +268,7 @@ class Ticket(mongoengine.Document):
     points = mongoengine.IntField()
     type = mongoengine.StringField(max_length=1, choices=TICKET_TYPE)
     files = mongoengine.ListField(mongoengine.ReferenceField('Attachment'))
-    assigned_to = mongoengine.ListField(mongoengine.ReferenceField('User'))
+    assigned_to = mongoengine.ListField(mongoengine.ReferenceField('ProjectMember'))
 
     meta = {
         'queryset_class': CustomQuerySet
@@ -235,8 +279,9 @@ class Ticket(mongoengine.Document):
         data['project'] = self.project.to_mongo()
         files = []
         for f in self.files:
-            file_att = f.to_mongo()
-            files.append(file_att)
+            if f.__class__.__name__ != 'DBRef':
+                file_att = f.to_mongo()
+                files.append(file_att)
         data['files'] = files
         try:
             tt = TicketColumnTransition.objects.get(ticket=self,
@@ -249,13 +294,15 @@ class Ticket(mongoengine.Document):
         try:
             sp = SprintTicketOrder.objects.get(ticket=self, active=True)
             if sp is not None:
-                data['sprint'] = sp.sprint.to_mongo()
+                if sp.sprint.__class__.__name__ != 'DBRef':
+                    data['sprint'] = sp.sprint.to_mongo()
         except mongoengine.DoesNotExist:
             pass
 
         assignments = []
         for ass in self.assigned_to:
-            assignments.append(ass.to_mongo())
+            if ass.__class__.__name__ != 'DBRef':
+                assignments.append(ass.to_mongo())
         data['assigned_to'] = assignments
 
         return json_util.dumps(data)
@@ -318,7 +365,8 @@ class Column(mongoengine.Document):
 
             assignments = []
             for ass in t.ticket.assigned_to:
-                assignments.append(ass.to_mongo())
+                if ass.__class__.__name__ != 'DBRef':
+                    assignments.append(ass.to_mongo())
 
             value = {
                 'points': t.ticket.points,
@@ -352,45 +400,6 @@ class TicketColumnTransition(mongoengine.Document):
     who = mongoengine.ReferenceField('User',
                                      reverse_delete_rule=mongoengine.NULLIFY)
     latest_state = mongoengine.BooleanField(default=True)
-
-
-class ProjectMember(mongoengine.Document):
-    member = mongoengine.ReferenceField('User',
-                                        reverse_delete_rule=mongoengine.CASCADE)
-    project = mongoengine.ReferenceField('Project',
-                                         reverse_delete_rule=mongoengine.CASCADE)
-    since = mongoengine.DateTimeField(default=datetime.now())
-    is_owner = mongoengine.BooleanField(default=False)
-
-    meta = {
-        'queryset_class': CustomQuerySet
-    }
-
-    def to_json(self, *args, **kwargs):
-        data = self.to_mongo()
-        data['member'] = self.member.to_mongo()
-        return json_util.dumps(data)
-
-    @staticmethod
-    def get_projects_for_member(member_pk):
-        prj_mem = ProjectMember.objects(member=member_pk)
-        projects = []
-        for pm in prj_mem:
-            if pm.project.active:
-                projects.append(pm.project.to_mongo())
-            elif str(pm.project.owner.pk) == member_pk:
-                projects.append(pm.project.to_mongo())
-
-        return json_util.dumps(projects)
-
-    @staticmethod
-    def get_members_for_project(project):
-        prj_mem = ProjectMember.objects(project=project)
-        members = []
-        for pm in prj_mem:
-            val = dict(member=pm.member.to_mongo(), is_owner=pm.is_owner)
-            members.append(val)
-        return members
 
 
 class Notification(mongoengine.Document):

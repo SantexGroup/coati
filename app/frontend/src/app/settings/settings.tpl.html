@@ -90,16 +90,34 @@
                     </button>
                 </header>
                 <div class="panel-body">
-                    <div class="member col-md-1" ng-repeat="m in vm.members"
+                    <div dropdown class="member col-md-1"
+                         ng-repeat="m in vm.members"
                          tooltip="<[ m.member.first_name ? m.member.first_name + ' ' + m.member.last_name : m.member.email ]>">
-                        <img ng-if="m.member.picture"
+                        <img dropdown-toggle ng-if="m.member.picture"
                              src="<[ m.member.picture ]>">
-                        <img ng-if="!m.member.picture"
+                        <img dropdown-toggle ng-if="!m.member.picture"
                              src="/static/assets/img/koala.png">
-
-                        <div class="badge bg-success" ng-if="m.is_owner">Owner
-                        </div>
+                        <ul role="menu" class="dropdown-menu">
+                            <li ng-if="!m.is_owner"><a href="javascript:;"
+                                                       ng-click="vm.set_as_owner(m);">
+                                <i class="icon-level-up"></i>
+                                Set as Owner</a>
+                            </li>
+                            <li ng-if="m.is_owner">
+                                <a href="javascript:;">
+                                    <i class="icon-user"></i>
+                                    Owner
+                                </a>
+                            </li>
+                            <li ng-if="!m.is_owner"><a href="javascript:;"
+                                   ng-click="vm.remove_member(m);">
+                                <i class="icon-trash"></i>
+                                Remove from Project</a>
+                            </li>
+                        </ul>
                     </div>
+
+
                 </div>
             </section>
             <section class="panel backlog">

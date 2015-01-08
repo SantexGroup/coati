@@ -1,9 +1,7 @@
 from flask import session, redirect, url_for, blueprints, request
 
 from tools import get_provider, get_user_data, generate_token, authorize_data
-
-
-__author__ = 'gastonrobledo'
+from app.utils import serialize_data
 
 blueprint = blueprints.Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -24,7 +22,7 @@ def authenticate():
 def login():
     callback = url_for('auth.authorized', _external=True)
     prov = get_provider(request.args.get('provider'))
-    extra_params = {'state': tools.serialize_data({
+    extra_params = {'state': serialize_data({
         'provider': request.args.get('provider'),
         'callback': request.args.get('client_callback'),
         'next': request.args.get('next')

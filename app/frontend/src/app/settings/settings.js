@@ -81,6 +81,32 @@
             });
             modalInstance.result.then(function () {
                 growl.addSuccessMessage('The user was added as member successfully');
+                getMembers(vm.project._id.$oid);
+            });
+        };
+
+        vm.remove_member = function (m) {
+            var modalInstance = modal.open({
+                controller: 'RemoveMemberController as vm',
+                templateUrl: 'settings/remove_member.tpl.html',
+                resolve: {
+                    item: function () {
+                        return {
+                            'member': m,
+                            'project': vm.project
+                        };
+                    }
+                }
+            });
+            modalInstance.result.then(function () {
+                growl.addSuccessMessage('The member was removed successfully');
+                getMembers(vm.project._id.$oid);
+            });
+        };
+
+        vm.set_as_owner = function(m){
+            ProjectService.set_as_owner(vm.project._id.$oid, m._id.$oid).then(function(){
+               getMembers(vm.project._id.$oid);
             });
         };
 
@@ -219,11 +245,27 @@
         };
     };
 
+    var RemoveMemberController = function(modalInstance, ProjectService, item){
+        var vm = this;
+        vm.member = item.member;
+
+        vm.erase = function(){
+            ProjectService.remove_member(item.project._id.$oid, vm.member._id.$oid).then(function (rta) {
+                modalInstance.close(rta);
+            });
+        };
+
+        vm.cancel = function(){
+          modalInstance.dismiss('canceled');
+        };
+    };
+
     Config.$inject = ['$stateProvider', 'tagsInputConfigProvider'];
     ProjectCtrlSettings.$inject = ['$rootScope', '$scope', '$state', '$modal', 'growl', 'ProjectService', 'SocketIO'];
     ColumnFormController.$inject = ['$modalInstance', 'ProjectService', 'project', 'column'];
     ColumnDeleteController.$inject = ['$modalInstance', 'ProjectService', 'column'];
     MembersController.$inject = ['$modalInstance', 'UserService', 'ProjectService', 'project'];
+    RemoveMemberController.$inject = ['$modalInstance', 'ProjectService', 'item'];
 
     angular.module('Coati.Settings', ['ui.router', 'ngTagsInput',
         'Coati.SocketIO',
@@ -234,6 +276,7 @@
         .controller('ProjectCtrlSettings', ProjectCtrlSettings)
         .controller('ColumnFormController', ColumnFormController)
         .controller('ColumnDeleteController', ColumnDeleteController)
+        .controller('RemoveMemberController', RemoveMemberController)
         .controller('MembersController', MembersController);
 
 }(angular));

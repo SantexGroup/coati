@@ -13,7 +13,8 @@ class ProjectList(AuthResource):
         super(ProjectList, self).__init__()
 
     def get(self, *args, **kwargs):
-        return ProjectMember.get_projects_for_member(kwargs['user_id']['pk']), 200
+        return ProjectMember.get_projects_for_member(
+            kwargs['user_id']['pk']), 200
 
     def post(self, *args, **kwargs):
         """
@@ -43,6 +44,7 @@ class ProjectList(AuthResource):
         # add owner as member
         pm = ProjectMember(project=prj)
         pm.member = prj.owner
+        pm.is_owner = True
         pm.save()
 
         # Add 3 columns states
@@ -55,7 +57,7 @@ class ProjectList(AuthResource):
                 col.done_column = True
             col.save()
 
-        ## add to redis
+        # # add to redis
         r = RedisClient(channel=str(prj.pk))
         r.store('new_project', **kwargs)
 
@@ -84,7 +86,7 @@ class ProjectInstance(AuthResource):
         project.private = data.get('private')
         project.sprint_duration = data.get('sprint_duration')
         project.prefix = data.get('prefix')
-        #project.project_type = bool(data.get('project_type'))
+        # project.project_type = bool(data.get('project_type'))
         project.save()
 
         ## add to redis
@@ -96,7 +98,7 @@ class ProjectInstance(AuthResource):
     def delete(self, project_pk, *args, **kwargs):
         project = Project.objects.get(pk=project_pk)
         project.delete()
-        ## add to redis
+        # # add to redis
         r = RedisClient()
         r.store('delete_project', **kwargs)
         return jsonify({}), 204
@@ -133,7 +135,7 @@ class ProjectColumns(AuthResource):
                     c.save()
         col.save()
 
-        ## add to redis
+        # # add to redis
         r = RedisClient(channel=project_pk)
         r.store('new_column', **kwargs)
 
@@ -163,7 +165,7 @@ class ProjectColumn(AuthResource):
                     c.done_column = False
                     c.save()
             col.save()
-            ## add to redis
+            # # add to redis
             r = RedisClient(channel=str(col.project.pk))
             r.store('update_column', **kwargs)
             return col.to_json(), 200
@@ -172,7 +174,7 @@ class ProjectColumn(AuthResource):
     def delete(self, column_pk, *args, **kwargs):
         col = Column.objects.get(pk=column_pk)
         if col:
-            ## add to redis
+            # # add to redis
             r = RedisClient(channel=str(col.project.pk))
             r.store('delete_column', **kwargs)
             col.delete()
@@ -191,7 +193,7 @@ class ProjectColumnsOrder(AuthResource):
                 col = Column.objects.get(pk=c, project=project_pk)
                 col.order = index
                 col.save()
-            ## add to redis
+            # # add to redis
             r = RedisClient(channel=project_pk)
             r.store('order_columns', **kwargs)
             return jsonify({'success': True}), 200
@@ -204,6 +206,34 @@ class ProjectMembers(AuthResource):
 
     def get(self, project_pk, *args, **kwargs):
         return ProjectMember.objects(project=project_pk).to_json()
+
+    def put(self, project_pk, *args, **kwargs):
+        data = request.get_json(force=True, silent=True)
+        if data:
+            try:
+                pm = ProjectMember.objects.get(pk=data.get('member'))
+                project = Project.objects.get(pk=project_pk)
+                pm.is_owner = True
+                project.owner = pm.member
+                ProjectMember.objects(project=project_pk).update(set__is_owner=False)
+                pm.save()
+                return jsonify({'success': True}), 200
+            except DoesNotExist:
+                return jsonify({'error': 'Not Found'}), 404
+
+        return jsonify({'error': 'Bad Request'}), 400
+
+    def delete(self, project_pk, *args, **kwargs):
+        data = request.get_json(force=True, silent=True)
+        if data:
+            try:
+                pm = ProjectMember.objects.get(pk=data.get('member'))
+                pm.delete()
+                return jsonify({'success': True}), 200
+            except DoesNotExist:
+                return jsonify({'error': 'Not Found'}), 404
+
+        return jsonify({'error': 'Bad Request'}), 400
 
     def post(self, project_pk, *args, **kwargs):
         data = request.get_json(force=True, silent=True)
@@ -223,7 +253,7 @@ class ProjectMembers(AuthResource):
                 # Send email notification
                 send_new_member_email_async(m.member, project)
 
-            ## add to redis
+            # # add to redis
             r = RedisClient(channel=project_pk)
             r.store('new_members', **kwargs)
             return jsonify({'success': True}), 200

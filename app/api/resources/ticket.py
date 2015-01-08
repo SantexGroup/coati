@@ -10,7 +10,7 @@ from app.api.resources.auth_resource import AuthResource
 from app.redis import RedisClient
 from app.schemas import (Project, Ticket, SprintTicketOrder,
                          Sprint, TicketColumnTransition, Column, User, Comment,
-                         Attachment, Notification)
+                         Attachment, Notification, ProjectMember)
 
 
 class TicketInstance(AuthResource):
@@ -421,9 +421,9 @@ class MemberTicketInstance(AuthResource):
     def put(self, tkt_id, member_id, *args, **kwargs):
         try:
             tkt = Ticket.objects.get(pk=tkt_id)
-            user = User.objects.get(pk=member_id)
-            if user not in tkt.assigned_to:
-                tkt.assigned_to.append(user)
+            m = ProjectMember.objects.get(pk=member_id)
+            if m not in tkt.assigned_to:
+                tkt.assigned_to.append(m)
                 tkt.save()
                 # add redis
                 r = RedisClient(channel=str(tkt.project.pk))

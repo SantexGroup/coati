@@ -4,11 +4,12 @@ from urllib2 import Request, urlopen, URLError
 
 from itsdangerous import JSONWebSignatureSerializer
 from flask import current_app, redirect, url_for, g, request
-from flask.ext.oauth import OAuth
+from flask.ext.oauth import OAuth, OAuthException
 from mongoengine import DoesNotExist
 
 from app.schemas import User, Token
-from app.utils import deserialize_data, serialize_data
+from app.utils import deserialize_data
+
 
 
 def get_provider(oauth_provider):
@@ -24,30 +25,34 @@ def authorize_data():
     provider_data = deserialize_data(request.args.get('state'))
     provider_name = provider_data.get('provider')
     provider = get_provider(provider_name)
-    if 'oauth_verifier' in request.args:
-        data = provider.handle_oauth1_response()
-    elif 'code' in request.args:
-        data = provider.handle_oauth2_response()
-    else:
-        data = provider.handle_unknown_response()
+    data = None
+    try:
+        if 'oauth_verifier' in request.args:
+            data = provider.handle_oauth1_response()
+        elif 'code' in request.args:
+            data = provider.handle_oauth2_response()
+        else:
+            data = provider.handle_unknown_response()
+    except OAuthException as ex:
+        current_app.logger.error(ex.data)
 
-    provider.free_request_token()
-    g.access_token = data['access_token']
-    user = get_user_data(g.access_token, provider, provider_name)
-    if user:
-        token = generate_token(str(user.pk))
-        Token.save_token_for_user(user,
-                                  app_token=token,
-                                  social_token=g.access_token,
-                                  provider=provider.name,
-                                  expire_in=10000)
+    if data is not None:
+        provider.free_request_token()
+        g.access_token = data['access_token']
+        user = get_user_data(g.access_token, provider, provider_name)
+        if user:
+            token = generate_token(str(user.pk))
+            Token.save_token_for_user(user,
+                                      app_token=token,
+                                      social_token=g.access_token,
+                                      provider=provider.name,
+                                      expire_in=10000)
 
-        return '%s?token=%s&expire=%s&next=%s' % (provider_data.get('callback'),
-                                                  token,
-                                                  10000,
-                                                  provider_data.get('next'))
-    else:
-        return provider_data.get('callback')
+            return '%s?token=%s&expire=%s&next=%s' % (provider_data.get('callback'),
+                                                      token,
+                                                      10000,
+                                                      provider_data.get('next'))
+    return provider_data.get('callback')
 
 
 def get_token(token=None):

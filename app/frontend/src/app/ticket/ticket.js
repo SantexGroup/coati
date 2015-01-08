@@ -164,7 +164,7 @@
         vm.checkMember = function (m) {
             if (vm.ticket !== undefined) {
                 return _.find(vm.ticket.assigned_to, function (obj) {
-                    var valid = obj._id.$oid === m.member._id.$oid;
+                    var valid = obj._id.$oid === m._id.$oid;
                     m.checked = valid;
                     return valid;
                 });
@@ -173,13 +173,13 @@
 
         vm.assign_to_ticket = function (m) {
             if (m.checked) {
-                TicketService.assign_member(vm.ticket._id.$oid, m.member._id.$oid).then(function () {
+                TicketService.assign_member(vm.ticket._id.$oid, m._id.$oid).then(function () {
                     getTicket(vm.ticket._id.$oid);
                 }, function () {
                     m.checked = false;
                 });
             } else {
-                TicketService.remove_member(vm.ticket._id.$oid, m.member._id.$oid).then(function () {
+                TicketService.remove_member(vm.ticket._id.$oid, m._id.$oid).then(function () {
                     getTicket(vm.ticket._id.$oid);
                 }, function () {
                     m.checked = true;

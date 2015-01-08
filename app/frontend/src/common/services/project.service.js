@@ -37,6 +37,14 @@
             },
             'add_members': function(project_id, members){
                 return req.$do('/project/' + project_id + '/members', req.METHODS.POST, members);
+            },
+            'remove_member': function(project_id, member){
+                var data = {'member': member};
+                return req.$do('/project/' + project_id + '/members', req.METHODS.DELETE, data);
+            },
+            'set_as_owner': function(project_id, member){
+                var data = {'member': member};
+                return req.$do('/project/' + project_id + '/members', req.METHODS.UPDATE, data);
             }
         };
     };

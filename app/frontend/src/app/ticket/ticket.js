@@ -202,12 +202,15 @@
             return classes;
         };
 
+        vm.process_comment = false;
         vm.add_new_comment = function (e) {
-            if (vm.comment.length > 0) {
+            if (vm.comment.length > 0 && !vm.process_comment) {
+                vm.process_comment = true;
                 var comment = {'comment': vm.comment, 'mentions': vm.mentions};
                 TicketService.add_comment(vm.ticket._id.$oid, comment).then(function (tkt) {
                     rootScope.$broadcast('comment_saved');
                     vm.comments.unshift(tkt);
+                    vm.process_comment = false;
                 });
             }
             e.stopPropagation();

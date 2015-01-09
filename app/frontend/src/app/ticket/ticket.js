@@ -248,7 +248,8 @@
                 vm.saveTicket(vm.ticket);
             }
         };
-
+        SocketIO.init(vm.project._id.$oid, rootScope.user);
+        
         SocketIO.on('update_ticket', function () {
             getTicket(item.ticket_id);
         });

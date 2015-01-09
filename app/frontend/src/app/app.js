@@ -95,9 +95,7 @@
 
         var showTicketDetails = function (tkt) {
             if (tkt) {
-                tkt = angular.copy(tkt);
                 tkt.pk = tkt._id.$oid;
-
             }
             var modal_instance = modal.open({
                 controller: 'TicketDetailController as vm',
@@ -105,7 +103,7 @@
                 resolve: {
                     item: function () {
                         return {
-                            'project': rootScope.project,
+                            'project': tkt.project,
                             'ticket_id': tkt._id.$oid
                         };
                     }

@@ -95,7 +95,9 @@
         <p editable-textarea="vm.ticket.description" e-form="decription_form"
                               ng-click="vm.show(decription_form)" ng-disabled="vm.no_editing" e-rows="5"
            e-cols="70" onbeforesave="vm.saveTicket(vm.ticket);">
-            <[ vm.ticket.description ]></p>
+            <[ vm.ticket.description ]>
+            <span ng-if="!vm.ticket.description" class="ng-scope">No Description</span>
+        </p>
     </div>
 </div>
 <hr>

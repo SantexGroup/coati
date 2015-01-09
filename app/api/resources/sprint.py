@@ -1,5 +1,3 @@
-
-
 __author__ = 'gastonrobledo'
 import json
 from datetime import timedelta, datetime
@@ -7,7 +5,7 @@ from datetime import timedelta, datetime
 from dateutil import parser
 from flask import jsonify, request
 
-from app.schemas import (Sprint, Project, SprintTicketOrder,
+from app.schemas import (Sprint, Project, SprintTicketOrder, Ticket,
                          Column, TicketColumnTransition)
 from app.redis import RedisClient
 from app.api.resources.auth_resource import AuthResource
@@ -92,14 +90,20 @@ class SprintInstance(AuthResource):
                 tt = TicketColumnTransition.objects(sprint=sp,
                                                     latest_state=True)
                 finished_tickets = []
+                tickets_to_close_id = []
                 for t in tt:
                     if t.column.done_column:
                         finished_tickets.append(t.ticket)
+                        tickets_to_close_id.append(str(t.ticket.pk))
 
-                all_not_finised = SprintTicketOrder.objects(ticket__nin=finished_tickets,
-                                                            sprint=sp,
-                                                            active=True)
+                all_not_finised = SprintTicketOrder.objects(
+                    ticket__nin=finished_tickets,
+                    sprint=sp,
+                    active=True)
                 all_not_finised.update(set__active=False)
+
+                Ticket.objects(pk__in=tickets_to_close_id).update(
+                    set__closed=True)
 
             sp.save()
             # # add to redis

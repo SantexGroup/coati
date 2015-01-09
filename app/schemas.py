@@ -105,10 +105,12 @@ class Project(mongoengine.Document):
         for s in sprints:
             for spo in SprintTicketOrder.objects(sprint=s, active=True):
                 tickets.append(str(spo.ticket.pk))
+
         result = Ticket.objects(Q(project=self) &
                                 Q(id__nin=tickets) &
                                 (Q(closed=False) | Q(closed__exists=False))
         ).order_by('order')
+
         return result
 
 
@@ -373,24 +375,25 @@ class Column(mongoengine.Document):
             'order')
         tickets = []
         for t in ticket_column:
+            if not t.ticket.closed:
+                assignments = []
+                for ass in t.ticket.assigned_to:
+                    if ass.__class__.__name__ != 'DBRef':
+                        assignments.append(ass.to_mongo())
 
-            assignments = []
-            for ass in t.ticket.assigned_to:
-                if ass.__class__.__name__ != 'DBRef':
-                    assignments.append(ass.to_mongo())
+                value = {
+                    'points': t.ticket.points,
+                    'number': t.ticket.number,
+                    'order': t.order,
+                    'title': t.ticket.title,
+                    '_id': t.ticket.id,
+                    'who': t.who.to_mongo(),
+                    'when': t.when,
+                    'type': t.ticket.type,
+                    'assigned_to': assignments
+                }
 
-            value = {
-                'points': t.ticket.points,
-                'number': t.ticket.number,
-                'order': t.order,
-                'title': t.ticket.title,
-                '_id': t.ticket.id,
-                'who': t.who.to_mongo(),
-                'when': t.when,
-                'type': t.ticket.type,
-                'assigned_to': assignments
-            }
-            tickets.append(value)
+                tickets.append(value)
         data['tickets'] = tickets
         return json_util.dumps(data)
 

@@ -458,3 +458,11 @@ class TicketSearch(AuthResource):
                               Q(description__icontains=query)) &
                               Q(project__in=projects)).to_json()
 
+
+class TicketClosed(AuthResource):
+    def __init__(self):
+        super(TicketClosed, self).__init__()
+
+    def get(self, project_pk, *args, **kwargs):
+        return Ticket.objects(project=project_pk, closed=True).to_json()
+

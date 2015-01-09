@@ -106,6 +106,21 @@
             e.stopPropagation();
         };
 
+        vm.saveQuickTicket = function(sprint){
+            var new_ticket = {
+                title: vm.new_ticket,
+                sprint: sprint
+            };
+            if(new_ticket.sprint){
+                new_ticket.sprint.pk = sprint._id.$oid;
+            }
+            TicketService.save(vm.project._id.$oid, new_ticket).then(function (tkt) {
+                getSprintsWithTickets(vm.project._id.$oid);
+                getTicketsForProject(vm.project._id.$oid, false);
+                vm.new_ticket = null;
+            });
+        };
+
         vm.delete_ticket = function (e, tkt) {
             var ticket = angular.copy(tkt);
             ticket.pk = tkt._id.$oid;

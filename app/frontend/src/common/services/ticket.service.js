@@ -8,6 +8,9 @@
             'query': function (project_pk) {
                 return req.$do('/tickets/' + project_pk, req.METHODS.GET);
             },
+            'closed_tickets': function (project_pk) {
+                return req.$do('/tickets/' + project_pk + '/archived', req.METHODS.GET);
+            },
             'search': function (query) {
                 return req.$do('/tickets/search/' + query, req.METHODS.GET);
             },

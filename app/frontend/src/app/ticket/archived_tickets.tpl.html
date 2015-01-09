@@ -1,0 +1,40 @@
+<div class="row">
+    <div class="col-md-12">
+        <section class="panel tasks-widget backlog">
+            <header class="panel-heading">
+                <span>Archived Tickets</span>
+                <div class="add-task-row pull-right">
+                    <span class="badge bg-inverse">Total Tickets: <[ vm.tickets.length ]></span>
+                </div>
+                <div style="clear:both"></div>
+            </header>
+            <div class="panel-body">
+                <div class="task-content">
+                    <div class="spinner" ng-hide="!vm.loading_tickets">
+                        <div class="rect1"></div>
+                        <div class="rect2"></div>
+                        <div class="rect3"></div>
+                        <div class="rect4"></div>
+                        <div class="rect5"></div>
+                    </div>
+                    <ul class="task-list">
+                        <li ng-repeat="tkt in vm.tickets track by tkt._id.$oid"
+                            class="user-story <[ tkt.type ]>"
+                            ng-click="vm.showDetails($event, tkt);"
+                            title="Click to quick view">
+                            <div class="task-title">
+                                <span class="task-title-sp">
+                                  <[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
+                                </span>
+
+                                <div class="pull-right hidden-phone">
+                                    <span class="badge bg-info"><[ tkt.points ]></span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

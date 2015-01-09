@@ -363,7 +363,10 @@ input.error {
 }
 
 .ticket-item.T, .user-story.T {
-  border-left: 3px solid #fffe15;
+  border-left: 3px solid #f70cff;
+}
+.ticket-item.NEW, .user-story.NEW {
+  border-left: 3px solid #1232ff;
 }
 
 .badge.U {
@@ -387,7 +390,11 @@ input.error {
 }
 
 .badge.T {
-  background-color: #fffe15;
+  background-color: #f70cff;
+}
+
+.ticket-item.U, .user-story.U {
+  border-left: 3px solid #78CD51;
 }
 
 .ticket-item i, .user-story i {
@@ -743,4 +750,11 @@ input.error {
   right: 5px;
   top: 8px;
   margin: 0px !important;
+}
+.new-ticket{
+  opacity: 0.5;
+  background-color: #ddf !important;
+}
+.new-ticket:hover{
+  opacity: 1;
 }

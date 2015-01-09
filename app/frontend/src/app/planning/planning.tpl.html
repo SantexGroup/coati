@@ -14,14 +14,16 @@
                 <section class="panel tasks-widget sprint-item"
                          ng-class="{started:sprint.started}">
                     <header class="panel-heading">
-                        <span editable-text="sprint.name" onbeforesave="vm.renameSprint(sprint);"><[ sprint.name ]></span>
+                        <span editable-text="sprint.name"
+                              onbeforesave="vm.renameSprint(sprint);"><[ sprint.name ]></span>
                         <span ng-if="sprint.started" class="sprint_dates">(<[ sprint.start_date.$date | date:'MM/dd/yyyy' ]> to <[ sprint.end_date.$date | date:'MM/dd/yyyy']>)</span>
 
                         <div class="options pull-right">
                             <span class="badge bg-inverse">Total Tickets: <[ sprint.tickets.length ]></span>
                             <span class="badge bg-inverse">Total Points: <[ sprint.tickets | sumValue:'points' ]></span>
                             <a ng-if="$index == 0 && !vm.one_started && !sprint.finalized && !sprint.started"
-                               class="btn btn-primary btn-sm" href="javascript:;"
+                               class="btn btn-primary btn-sm"
+                               href="javascript:;"
                                ng-click="vm.startSprint(sprint);">Start
                                 Sprint</a>
                             <a ng-if="sprint.started && !sprint.finalized"
@@ -36,7 +38,8 @@
                     </header>
                     <div class="panel-body">
                         <div class="task-content">
-                            <ul class="task-list" ui-sortable="vm.sortTicketOptions"
+                            <ul class="task-list"
+                                ui-sortable="vm.sortTicketOptions"
                                 ng-model="sprint.tickets">
                                 <li ng-repeat="tkt in sprint.tickets track by tkt._id.$oid"
                                     class="ticket-item <[ tkt.type ]>"
@@ -51,9 +54,18 @@
 
                                         <div class="pull-right hidden-phone">
                                             <span class="badge bg-info"><[ tkt.points ]></span>
-                                            <button title="Delete Ticket" class="btn btn-danger btn-xs icon-trash"
+                                            <button title="Delete Ticket"
+                                                    class="btn btn-danger btn-xs icon-trash"
                                                     ng-click="vm.delete_ticket($event, tkt);"></button>
                                         </div>
+                                    </div>
+                                </li>
+                                <li class="ticket-item new-ticket NEW"
+                                    title="Click to create a new ticket">
+                                    <div e-style="display: inline-block;width: 100%"
+                                         editable-text="vm.new_ticket"
+                                         onaftersave="vm.saveQuickTicket(sprint);">
+                                        Click here to add a new Ticket...
                                     </div>
                                 </li>
                             </ul>
@@ -66,6 +78,7 @@
         <section class="panel tasks-widget backlog">
             <header class="panel-heading">
                 <span>Backlog</span>
+
                 <div class="add-task-row pull-right">
                     <span class="badge bg-inverse">Total Tickets: <[ vm.tickets.length ]></span>
                     <span class="badge bg-inverse">Total Points: <[ vm.tickets | sumValue:'points' ]></span>
@@ -78,29 +91,39 @@
             <div class="panel-body">
                 <div class="task-content">
                     <div class="spinner" ng-hide="!vm.loading_backlog">
-                            <div class="rect1"></div>
-                            <div class="rect2"></div>
-                            <div class="rect3"></div>
-                            <div class="rect4"></div>
-                            <div class="rect5"></div>
+                        <div class="rect1"></div>
+                        <div class="rect2"></div>
+                        <div class="rect3"></div>
+                        <div class="rect4"></div>
+                        <div class="rect5"></div>
                     </div>
                     <ul class="task-list" ui-sortable="vm.sortTicketOptions"
                         ng-model="vm.tickets">
                         <li ng-repeat="tkt in vm.tickets track by tkt._id.$oid"
                             class="user-story <[ tkt.type ]>"
                             ng-click="vm.showDetails($event, tkt);"
-                                title="Click to quick view">
+                            title="Click to quick view">
                             <i class="icon-ellipsis-vertical handler"></i>
 
                             <div class="task-title">
                                 <span class="task-title-sp">
                                   <[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
                                 </span>
+
                                 <div class="pull-right hidden-phone">
                                     <span class="badge bg-info"><[ tkt.points ]></span>
-                                    <button title="Delete Ticket" class="btn btn-danger btn-xs icon-trash"
+                                    <button title="Delete Ticket"
+                                            class="btn btn-danger btn-xs icon-trash"
                                             ng-click="vm.delete_ticket($event,tkt);"></button>
                                 </div>
+                            </div>
+                        </li>
+                        <li class="ticket-item new-ticket NEW"
+                            title="Click to create a new ticket">
+                            <div e-style="display: inline-block;width: 100%"
+                                 editable-text="vm.new_ticket"
+                                 onaftersave="vm.saveQuickTicket();">Click here
+                                to add a new Ticket...
                             </div>
                         </li>
                     </ul>

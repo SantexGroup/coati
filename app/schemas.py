@@ -105,10 +105,12 @@ class Project(mongoengine.Document):
         for s in sprints:
             for spo in SprintTicketOrder.objects(sprint=s, active=True):
                 tickets.append(str(spo.ticket.pk))
+
         result = Ticket.objects(Q(project=self) &
                                 Q(id__nin=tickets) &
                                 (Q(closed=False) | Q(closed__exists=False))
         ).order_by('order')
+
         return result
 
 

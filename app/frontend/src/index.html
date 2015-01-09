@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="Coati" ng-controller="AppCtrl">
+<html lang="en" ng-app="Coati" ng-controller="AppCtrl as main">
 <head>
     <base href="/">
     <meta charset="utf-8">
@@ -31,8 +31,13 @@
             <!--search & user info start-->
             <ul class="nav pull-right top-menu">
                 <li>
-                    <input type="text" class="form-control search"
-                           placeholder="Search">
+                    <input type="text" ng-model="main.ticket_found"
+                           placeholder="Search..."
+                           typeahead-template-url="search_ticket.tpl.html"
+                           typeahead-min-length="3"
+                           typeahead-wait-ms="300"
+                           typeahead="ticket for ticket in main.searchTickets($viewValue)"
+                           class="form-control search">
                 </li>
                 <!-- user login dropdown start-->
                 <li dropdown ng-controller="UserCtrl as vm" update-profile>

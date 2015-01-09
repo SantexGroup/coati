@@ -1,0 +1,32 @@
+<table role="grid" aria-labelledby="{{uniqueId}}-title"
+       aria-activedescendant="{{activeDateId}}" class="table-condensed">
+    <thead>
+    <tr>
+        <th class="prev"
+            ng-click="move(-1)" tabindex="-1">
+            <i class="glyphicon glyphicon-chevron-left"></i>
+        </th>
+        <th id="{{uniqueId}}-title" role="heading" aria-live="assertive"
+            aria-atomic="true" class="month switch text-center"
+            ng-click="toggleMode()"
+            tabindex="-1">
+            {{title}}
+        </th>
+        <th class="next"
+            ng-click="move(1)" tabindex="-1">
+            <i class="glyphicon glyphicon-chevron-right"></i>
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="row in rows track by $index">
+        <td id="{{dt.uid}}" aria-disabled="{{!!dt.disabled}}"
+            class="month"
+            ng-class="{active: isActive(dt), 'text-info': dt.current, 'btn-info': dt.selected}"
+            ng-click="select(dt.date)" ng-disabled="dt.disabled"
+            tabindex="-1" ng-repeat="dt in row track by dt.date">
+            {{dt.label}}
+        </td>
+    </tr>
+    </tbody>
+</table>

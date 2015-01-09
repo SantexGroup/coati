@@ -10,7 +10,7 @@
         "angular-ui-sortable": "",
         "jquery": "2.1.0",
         "jquery-ui": "~1.10.3",
-        "bootstrap": "3.0.2",
+        "bootstrap": "3.1.1",
         "html5shiv": "3.7.2",
         "ng-tags-input": "v2.1.1",
         "ng-file-upload": "",

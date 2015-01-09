@@ -81,6 +81,7 @@
         vm.members_filtered = [];
         vm.mentions = [];
         vm.types = conf.TICKET_TYPES;
+        vm.no_editing = item.disabled || false;
 
         var getComments = function (ticket_id) {
             TicketService.get_comments(ticket_id).then(function (comments) {
@@ -124,6 +125,12 @@
         vm.project = item.project;
         getTicket(item.ticket_id);
         getMembers();
+
+        vm.show = function(form){
+            if (!vm.no_editing) {
+                form.$show();
+            }
+        };
 
         vm.saveTicket = function (ticket) {
             if (ticket) {

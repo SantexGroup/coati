@@ -2,7 +2,7 @@ import base64
 
 from datetime import datetime
 
-from mongoengine import DoesNotExist
+from mongoengine import DoesNotExist, Q
 from flask import jsonify
 from flask.ext.restful import request
 
@@ -442,3 +442,19 @@ class MemberTicketInstance(AuthResource):
             return jsonify({'success': True}), 200
         except DoesNotExist as ex:
             return jsonify({'error': 'Bad Request'}), 400
+
+
+class TicketSearch(AuthResource):
+    def __init__(self):
+        super(TicketSearch, self).__init__()
+
+    def get(self, query, *args, **kwargs):
+        user_id = kwargs['user_id']['pk']
+        projects = []
+        projects_query = ProjectMember.objects(member=user_id)
+        for p in projects_query:
+            projects.append(str(p.project.pk))
+        return Ticket.objects((Q(title__icontains=query) |
+                              Q(description__icontains=query)) &
+                              Q(project__in=projects)).to_json()
+

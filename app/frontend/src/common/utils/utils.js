@@ -2,7 +2,7 @@ window.FileAPI = {
     debug: true
 };
 
-var browser_detection = function () {
+function browser_detection() {
     var ua = navigator.userAgent, tem,
         M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*([\d\.]+)/i) || [];
     if (/trident/i.test(M[1])) {
@@ -14,9 +14,9 @@ var browser_detection = function () {
         M[2] = tem[1];
     }
     return {'name': M[0], 'version': M[1]};
-};
+}
 
-var resizedataURL = function (datas, wantedWidth, wantedHeight, callback) {
+function resizedataURL(datas, wantedWidth, wantedHeight, callback) {
     // We create an image to receive the Data URI
     var img = document.createElement('img');
 
@@ -45,15 +45,15 @@ var resizedataURL = function (datas, wantedWidth, wantedHeight, callback) {
     img.src = datas;
 };
 
-var range = function (start, end) {
+function range(start, end) {
     var arr = [];
     while (start <= end) {
         arr.push(start++);
     }
     return arr;
-};
+}
 
-var predicatBy = function (prop) {
+function predicatBy(prop) {
     return function (a, b) {
         if (a[prop] > b[prop]) {
             return 1;
@@ -62,11 +62,11 @@ var predicatBy = function (prop) {
         }
         return 0;
     };
-};
+}
 
-var addDays = function (theDate, days) {
+function addDays(theDate, days) {
     return new Date(theDate.getTime() + days * 24 * 60 * 60 * 1000);
-};
+}
 
 
 function validateEmail(email) {

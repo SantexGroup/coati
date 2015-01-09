@@ -12,6 +12,8 @@
     <h4 class="modal-title pull-left">
         <span><[ vm.project.prefix]>-<[ vm.ticket.number ]></span>: <span
             editable-text="vm.ticket.title"
+            e-form="title_form"
+            ng-click="vm.show(title_form)"
             onbeforesave="vm.saveTicket(vm.ticket);"><[ vm.ticket.title ]></span>
     </h4>
 
@@ -31,12 +33,16 @@
         <label>Points</label>
                         <span class="badge bg-important"
                               editable-text="vm.ticket.points"
-                              onbeforesave="vm.saveTicket(vm.ticket);">
+                              onbeforesave="vm.saveTicket(vm.ticket);"
+                              e-form="points_form"
+                              ng-click="vm.show(points_form)">
                             <[ vm.ticket.points ]>
                         </span>
         <label>Ticket Type:</label>
                         <span class="badge <[ vm.ticket.type]>"
                               editable-select="vm.ticket.type"
+                              e-form="type_form"
+                              ng-click="vm.show(type_form)"
                               e-ng-options="t.value as t.name for t in vm.types"
                               onbeforesave="vm.saveTicket(vm.ticket);">
                             <[ vm.types | ticketTypes:vm.ticket.type ]>
@@ -49,7 +55,7 @@
     </div>
     <div class="col-md-2" dropdown>
         <button class="btn btn-xs btn-success dropdown-toggle"
-                dropdown-toggle type="button">
+                dropdown-toggle type="button" ng-disabled="vm.no_editing">
             Members <span class="caret"></span>
         </button>
         <ul role="menu" class="dropdown-menu members-menu">
@@ -86,7 +92,8 @@
     <div class="col-md-12">
         <label>Description:</label>
 
-        <p editable-textarea="vm.ticket.description" e-rows="5"
+        <p editable-textarea="vm.ticket.description" e-form="decription_form"
+                              ng-click="vm.show(decription_form)" ng-disabled="vm.no_editing" e-rows="5"
            e-cols="70" onbeforesave="vm.saveTicket(vm.ticket);">
             <[ vm.ticket.description ]></p>
     </div>
@@ -96,7 +103,8 @@
     <div class="col-md-12">
         <label>Labels:</label>
 
-        <p class="labels-ticket" editable-tags="vm.labels"
+        <p class="labels-ticket" e-form="labels_form"
+                              ng-click="vm.show(labels_form)" editable-tags="vm.labels"
            e-style="display:inline-block;min-width:400px;"
            oncancel="vm.prepareLabelsToSave($data, false);"
            onbeforesave="vm.prepareLabelsToSave($data, true);">
@@ -141,7 +149,8 @@
             </div>
             <button class="btn pull-left btn-sm btn-primary"
                     ng-file-select ng-model="vm.files"
-                    multiple="true">Select Files...
+                    multiple="true"
+                    ng-disabled="vm.no_editing">Select Files...
             </button>
             <button ng-show="vm.files.length"
                     ng-click="vm.confirm_upload();"
@@ -187,7 +196,7 @@
             </div>
         </div>
         <div class="add_new_comment">
-            <div contenteditable="true" stripBr="true" class="form-control"
+            <div contenteditable="<[!vm.no_editing]>" stripBr="true" class="form-control"
                  style="height: auto !important;"
                  id="comment_area"
                  mentio
@@ -205,7 +214,7 @@
             <br>
             <button id="add-comment"
                     class="btn btn-success pull-right"
-                    ng-disabled="vm.process_comment"
+                    ng-disabled="vm.process_comment || vm.no_editing"
                     ng-click="vm.add_new_comment($event)">Add
                 New
                 Comment

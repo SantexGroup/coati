@@ -15,7 +15,7 @@
 
 
     // Filters
-    var sumValue = function() {
+    var sumValue = function () {
         return function (items, field) {
             var total = 0, i = 0;
             if (items !== undefined) {
@@ -27,7 +27,7 @@
         };
     };
 
-    var filterGetByProperty = function() {
+    var filterGetByProperty = function () {
         return function (propertyName, propertyValue, collection) {
             for (var i = 0; i < collection.length; i++) {
                 var v = collection[i];
@@ -39,7 +39,7 @@
         };
     };
 
-    var filterGetIndexByProperty = function() {
+    var filterGetIndexByProperty = function () {
         return function (propertyName, propertyValue, collection) {
             for (var i = 0; i < collection.length; i++) {
                 var v = collection[i];
@@ -51,12 +51,12 @@
         };
     };
 
-    var filterTicketTypes = function(){
-        return function(types, type){
+    var filterTicketTypes = function () {
+        return function (types, type) {
             var value = null;
-            for(var i=0; i<types.length; i++){
+            for (var i = 0; i < types.length; i++) {
                 var v = types[i];
-                if(v.value === type){
+                if (v.value === type) {
                     value = v.name;
                     break;
                 }
@@ -65,14 +65,14 @@
         };
     };
 
-    var filterTrustedHTML = function($sce){
-        return function(text) {
+    var filterTrustedHTML = function ($sce) {
+        return function (text) {
             return $sce.trustAsHtml(text);
         };
     };
 
-    var AppController = function(scope, rootScope, state, stateParams, tokens) {
-
+    var AppController = function (scope, rootScope, state, stateParams, tokens, TicketService) {
+        var vm = this;
         rootScope.$on('$stateChangeStart', function (event, toState) {
 
             if (angular.isDefined(toState.data.pageTitle)) {
@@ -88,31 +88,40 @@
                 rootScope.state_name !== 'login_register') {
                 if (tokens.get_token() == null) {
                     event.preventDefault();
-                    state.go('login', stateParams, {reload:true, notify: false});
+                    state.go('login', stateParams, {reload: true, notify: false});
                 }
             }
         });
 
+        vm.ticket_found = [];
+        vm.searchTickets = function (query) {
+            return TicketService.search(query).then(function (rta) {
+                return rta.map(function (item) {
+                    return {'title': item.title, 'description': item.description};
+                });
+            });
+        };
+
     };
 
-    var RunApp = function(rootScope, state, stateParams, objects, editableOptions,editableThemes ){
+    var RunApp = function (rootScope, state, stateParams, objects, editableOptions, editableThemes) {
 
         editableThemes.bs3.inputClass = 'input-sm';
         editableThemes.bs3.buttonsClass = 'btn-sm';
         editableOptions.theme = 'bs3';
 
         var user = null;
-        try{
+        try {
             user = JSON.parse(window.localStorage.getItem('user'));
-            if(objects.isObject(user)) {
+            if (objects.isObject(user)) {
                 rootScope.user = user;
-            }else{
-                if(window.location.href.indexOf('login') < 0) {
+            } else {
+                if (window.location.href.indexOf('login') < 0) {
                     stateParams.next = window.location.href;
                     state.go('login', stateParams);
                 }
             }
-        }catch(err){
+        } catch (err) {
 
         }
 
@@ -122,12 +131,13 @@
     filterTrustedHTML.$inject = ['$sce'];
     RunApp.$inject = ['$rootScope', '$state', '$stateParams', '$objects', 'editableOptions', 'editableThemes'];
     ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider'];
-    AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', 'tokens'];
+    AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', 'tokens', 'TicketService'];
 
     angular.module('Coati', [
         'templates-app', 'templates-common',
         'ui.router', 'ui.bootstrap', 'angular-growl', 'xeditable',
-        'Coati.Config', 'Coati.Directives', 'Coati.Home',
+        'Coati.Config', 'Coati.Directives', 'Coati.Services.Ticket',
+        'Coati.Home',
         'Coati.Login', 'Coati.Helpers',
         'Coati.User', 'Coati.Project', 'Coati.Ticket', 'Coati.Sprint'])
         .config(ConfigApp)
@@ -138,7 +148,6 @@
         .filter('ticketTypes', filterTicketTypes)
         .filter('trustedHtml', filterTrustedHTML)
         .controller('AppCtrl', AppController);
-
 
 
 }(angular));

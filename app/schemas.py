@@ -73,7 +73,7 @@ class Token(mongoengine.Document):
 
 class Project(mongoengine.Document):
     name = mongoengine.StringField(required=True, unique_with='owner')
-    description = mongoengine.StringField(max_length=500)
+    description = mongoengine.StringField()
     active = mongoengine.BooleanField(default=True)
     owner = mongoengine.ReferenceField('User',
                                        reverse_delete_rule=mongoengine.CASCADE)

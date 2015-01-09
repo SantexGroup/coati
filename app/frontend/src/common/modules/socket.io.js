@@ -38,6 +38,9 @@
                 },
                 'emit': function(eventName, data, callback){
 
+                },
+                'init': function(channel, user_id){
+
                 }
             };
         }

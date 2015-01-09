@@ -69,7 +69,6 @@ class UserLogin(Resource):
 
     def __init__(self):
         super(UserLogin, self).__init__()
-
     
     def post(self, *args, **kwargs):
         data = request.get_json(force=True, silent=True)

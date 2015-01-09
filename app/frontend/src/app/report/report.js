@@ -27,7 +27,7 @@
                 vm.sprints = sprints;
 
                 vm.sprint_selected = _.find(sprints, function(s){
-                    return s.started;
+                    return s.started && !s.finalized;
                 });
                 if(vm.sprint_selected){
                     vm.is_not_started = false;

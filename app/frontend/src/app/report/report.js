@@ -25,6 +25,15 @@
         var getSprints = function (project_id) {
             SprintService.all(project_id).then(function (sprints) {
                 vm.sprints = sprints;
+
+                vm.sprint_selected = _.find(sprints, function(s){
+                    return s.started;
+                });
+                if(vm.sprint_selected){
+                    vm.is_not_started = false;
+                    getSprintReport(vm.sprint_selected._id.$oid);
+                }
+
             });
         };
 

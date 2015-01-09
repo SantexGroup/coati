@@ -1,6 +1,6 @@
 {
   "name": "CoatiAgileBoard",
-  "version": "0.2.2",
+  "version": "0.2.4-BETA",
   "directory": "vendor",
   "ignore": [
     "src",

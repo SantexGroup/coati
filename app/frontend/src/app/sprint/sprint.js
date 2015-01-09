@@ -72,17 +72,21 @@
         var today = new Date();
 
         vm.min_date = today;
-        vm.max_date = window.addDays(today, vm.sprint.sprint_duration);
+        vm.max_date = new Date(today.getTime() + vm.sprint.sprint_duration * 24 * 60 * 60 * 1000);
 
         //set defaults
         vm.sprint.start_date = filter('date')(vm.min_date, vm.format);
         vm.sprint.end_date = filter('date')(vm.max_date, vm.format);
 
         //check change of start date
-        scope.$watch('vm.sprint.start_date', function (new_val) {
-            var md = window.addDays(new_val, vm.sprint.sprint_duration);
-            vm.max_date = filter('date')(md, vm.format);
-            vm.sprint.end_date = filter('date')(vm.max_date, vm.format);
+        scope.$watch(function(){
+            return vm.sprint.start_date;
+        }, function (new_val) {
+            if(new_val instanceof Date) {
+                var md = new Date(new_val.getTime() + vm.sprint.sprint_duration * 24 * 60 * 60 * 1000);
+                vm.max_date = filter('date')(md, vm.format);
+                vm.sprint.end_date = filter('date')(vm.max_date, vm.format);
+            }
         });
 
         // Datapicker options

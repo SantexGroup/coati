@@ -71,7 +71,7 @@
         };
     };
 
-    var AppController = function (scope, rootScope, state, stateParams, tokens, TicketService) {
+    var AppController = function (scope, rootScope, state, stateParams, modal, tokens, TicketService) {
         var vm = this;
         rootScope.$on('$stateChangeStart', function (event, toState) {
 
@@ -93,13 +93,50 @@
             }
         });
 
-        vm.ticket_found = [];
+        var showTicketDetails = function (tkt) {
+            if (tkt) {
+                tkt = angular.copy(tkt);
+                tkt.pk = tkt._id.$oid;
+
+            }
+            var modal_instance = modal.open({
+                controller: 'TicketDetailController as vm',
+                templateUrl: 'ticket/ticket_detail_view.tpl.html',
+                resolve: {
+                    item: function () {
+                        return {
+                            'project': rootScope.project,
+                            'ticket_id': tkt._id.$oid
+                        };
+                    }
+                }
+            });
+
+            modal_instance.result.then(function () {
+                vm.ticket_found = null;
+            });
+        };
+
         vm.searchTickets = function (query) {
+            vm.loading_results = true;
             return TicketService.search(query).then(function (rta) {
+                vm.loading_results = false;
                 return rta.map(function (item) {
-                    return {'title': item.title, 'description': item.description};
+                    var result = {
+                        label: item.project.prefix + '-' + item.number  +': ' + item.title,
+                        description: item.description,
+                        data: item
+                    };
+                    return result;
                 });
             });
+        };
+
+
+
+        vm.on_select_result = function(item, model, label, value){
+            showTicketDetails(model.data);
+            return model.label;
         };
 
     };
@@ -131,7 +168,7 @@
     filterTrustedHTML.$inject = ['$sce'];
     RunApp.$inject = ['$rootScope', '$state', '$stateParams', '$objects', 'editableOptions', 'editableThemes'];
     ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider'];
-    AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', 'tokens', 'TicketService'];
+    AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', '$modal', 'tokens', 'TicketService'];
 
     angular.module('Coati', [
         'templates-app', 'templates-common',

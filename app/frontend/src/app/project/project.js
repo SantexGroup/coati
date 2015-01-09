@@ -29,6 +29,7 @@
     var ProjectCtrl = function (scope, rootScope, state, project) {
         //Keep the project in this scope so any child can access it without re-call.
         scope.project = project;
+        rootScope.project = project;
 
         var vm = this;
 

@@ -1,4 +1,4 @@
 <a>
-    <span><[ match.model.title | typeaheadHighlight:query ]></span>
-    <small ng-bind-html="match.model.description | trustedHtml | typeaheadHighlight:query "></small>
+    <span ng-bind-html="(match.model.label | typeaheadHighlight:query) | trustedHtml"></span>
+    <small ng-bind-html="(match.model.description | typeaheadHighlight:query) | trustedHtml"></small>
 </a>

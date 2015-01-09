@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="Coati" ng-controller="AppCtrl">
+<html lang="en" ng-app="Coati" ng-controller="AppCtrl as main">
 <head>
     <base href="/">
     <meta charset="utf-8">
@@ -29,11 +29,31 @@
         <!--logo end-->
         <div class="top-nav ">
             <!--search & user info start-->
-            <ul class="nav pull-right top-menu">
-                <li>
-                    <input type="text" class="form-control search"
-                           placeholder="Search">
+            <ul class="nav pull-left top-menu">
+                <li id="search_bar">
+                    <div class="spinner" ng-hide="!main.loading_results"
+                         style="display: inline-block;">
+                        <div class="rect1"></div>
+                        <div class="rect2"></div>
+                        <div class="rect3"></div>
+                        <div class="rect4"></div>
+                        <div class="rect5"></div>
+                    </div>
+                    <input type="text" ng-model="main.ticket_found"
+                           placeholder="Search..."
+                           typeahead-template-url="search_ticket.tpl.html"
+                           typeahead-min-length="3"
+                           typeahead-wait-ms="300"
+                           typeahead-focus-first="false"
+                           typeahead-editable="false"
+                           typeahead-input-formatter="$model.label"
+                           typeahead-on-select="main.on_select_result($item, $model, $label, $viewValue)"
+                           typeahead="ticket for ticket in main.searchTickets($viewValue)"
+                           class="form-control search">
+
                 </li>
+            </ul>
+            <ul class="nav pull-right top-menu user-options">
                 <!-- user login dropdown start-->
                 <li dropdown ng-controller="UserCtrl as vm" update-profile>
                     <a class="dropdown-toggle user_picture" dropdown-toggle
@@ -73,7 +93,7 @@
     <!--footer start-->
     <footer class="site-footer">
         <div class="text-center">
-            2014 - Coati Team
+            2014 - Coati Team - <%= version %>
             <a href="#" class="go-top">
                 <i class="icon-angle-up"></i>
             </a>

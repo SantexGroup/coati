@@ -401,11 +401,11 @@ input.error {
   cursor: move !important;
 }
 
-.columns-in-project header {
+.columns-in-project header, .import_from_file header {
   background: none;
 }
 
-.columns-in-project .panel-body {
+.columns-in-project .panel-body, .import_from_file .panel-body {
   border: none;
 }
 
@@ -653,36 +653,94 @@ input.error {
   font-weight: 700;
 }
 
-.message-body{
-  margin:0px !important;
+.message-body {
+  margin: 0px !important;
 }
+
 .message-body img {
-  width:22px;
+  width: 22px;
   height: 22px;
   object-fit: cover;
 }
-.msg-time-chat:before{
-  display:none !important;
+
+.msg-time-chat:before {
+  display: none !important;
 }
 
 .comments {
   margin-top: 10px;
 }
-.user-search img{
-  width:22px;
+
+.user-search img {
+  width: 22px;
   height: 22px;
   object-fit: cover;
 }
 
-[contentEditable=true]:empty:not(:focus):before{
-  content:attr(data-ph);
-  color:grey;
-  font-style:italic;
+[contentEditable=true]:empty:not(:focus):before {
+  content: attr(data-ph);
+  color: grey;
+  font-style: italic;
 }
-.editable-textarea{
+
+.editable-textarea {
   display: block !important;
 }
+
 .sprint_dates {
   font-size: 11px;
   color: #336ad0;
+}
+
+.ticket_loading {
+  min-height: 300px;
+  padding: 50px;
+}
+
+.dropdown-menu.extended {
+  max-width: 600px !important;
+  min-width: 500px !important;
+  top: 42px;
+  width: 500px !important;
+  padding: 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.176) !important;
+  border: none !important;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+}
+
+.dropdown-menu > .active > a, .dropdown-menu > .active > a:hover, .dropdown-menu > .active > a:focus {
+  background-color: #357ebd;
+  background-image: -webkit-gradient(linear, left 0, left 100%, from(#00DEFA), to(#49B4B8));
+  background-image: -webkit-linear-gradient(top, #00DEFA 0, #49B4B8 100%);
+  background-image: -moz-linear-gradient(top, #00DEFA 0, #49B4B8 100%);
+  background-image: linear-gradient(to bottom, #00DEFA 0, #49B4B8 100%);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00DEFA', endColorstr='#49B4B8', GradientType=0)
+}
+
+/* */
+
+.dropdown-menu.extended > .active > a,
+.dropdown-menu.extended > .active > a:hover,
+.dropdown-menu.extended > .active > a:focus {
+  background-color: #F7F8F9 !important;
+}
+
+.truncate_long_texts {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#search_bar {
+  position: relative;
+}
+
+#search_bar .spinner {
+  display: inline-block;
+  position: absolute;
+  right: 5px;
+  top: 8px;
+  margin: 0px !important;
 }

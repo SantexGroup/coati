@@ -1,8 +1,9 @@
+import json, urllib2, base64
 from flask import jsonify
 from flask.ext.restful import request
 from mongoengine import DoesNotExist
 
-from app.schemas import User, Project, Column, ProjectMember
+from app.schemas import User, Project, Column, ProjectMember, Ticket, Attachment
 from app.redis import RedisClient
 from app.api.resources.auth_resource import AuthResource
 from app.utils import send_new_member_email_async
@@ -89,7 +90,7 @@ class ProjectInstance(AuthResource):
         # project.project_type = bool(data.get('project_type'))
         project.save()
 
-        ## add to redis
+        # # add to redis
         r = RedisClient(channel=str(project.pk))
         r.store('update_project', **kwargs)
 
@@ -215,7 +216,8 @@ class ProjectMembers(AuthResource):
                 project = Project.objects.get(pk=project_pk)
                 pm.is_owner = True
                 project.owner = pm.member
-                ProjectMember.objects(project=project_pk).update(set__is_owner=False)
+                ProjectMember.objects(project=project_pk).update(
+                    set__is_owner=False)
                 pm.save()
                 return jsonify({'success': True}), 200
             except DoesNotExist:
@@ -258,3 +260,72 @@ class ProjectMembers(AuthResource):
             r.store('new_members', **kwargs)
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400
+
+
+class ProjectImport(AuthResource):
+    def __init__(self):
+        super(ProjectImport, self).__init__()
+
+    def post(self, project_pk, *args, **kwargs):
+        """
+        Import cards and columns
+        """
+        body = request.form
+        imported_file = request.files.get('file')
+        if not imported_file and not body:
+            msg = "payload must be a valid file"
+            return jsonify({"error": msg}), 400
+        try:
+            project = Project.objects.get(pk=project_pk)
+        except DoesNotExist, e:
+            return jsonify({"error": 'project does not exist'}), 400
+
+        data = json.loads(imported_file.stream.read().decode('utf-8'),
+                          encoding='UTF-8')
+        tickets = []
+        actual_last_ticket = Ticket.objects(project=project).order_by('-number')
+        starting_number = actual_last_ticket.first().number if actual_last_ticket else 1
+        if body.get('include_cards') == u'true':
+            for card in data.get('cards'):
+                t = Ticket()
+                t.title = card.get('name')
+                t.description = card.get('desc')
+                t.labels = [l.get('name') for l in card.get('labels')]
+                t.closed = card.get('closed')
+
+                for att in card.get('attachments'):
+                    location = att.get('url')
+                    if 'https://trello-attachments.s3.amazonaws.com/' in location:
+                        file_location = urllib2.urlopen(location)
+                        file_data = file_location.read()
+                        if file_data:
+                            att_file = Attachment()
+                            att_file.name = att.get('name')
+                            att_file.size = att.get('bytes')
+                            att_file.type = att.get('mimeType')
+                            att_file.data = base64.b64encode(file_data)
+                            att_file.save()
+                            t.files.append(att_file)
+                t.project = project
+                t.number = starting_number
+                t.order = starting_number - 1
+                # by default user story
+                t.type = 'U'
+                t.points = 0
+                tickets.append(t)
+                starting_number += 1
+
+        columns = []
+        if body.get('include_cols') == u'true':
+            for col in data.get('lists'):
+                if not col.get('closed'):
+                    new_col = Column()
+                    new_col.title = col.get('name')
+                    new_col.project = project
+                    columns.append(new_col)
+
+        if tickets:
+            Ticket.objects.insert(tickets, load_bulk=False)
+        if columns:
+            Column.objects.insert(columns, load_bulk=False)
+        return jsonify({'success': True}), 200

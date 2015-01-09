@@ -24,7 +24,7 @@
     };
 
 
-    var ProjectCtrlSettings = function (rootScope, scope, state, modal, growl, ProjectService, SocketIO) {
+    var ProjectCtrlSettings = function (rootScope, tmo, filter, scope, state, modal, growl, ProjectService, SocketIO) {
         var vm = this;
         vm.form = {};
 
@@ -104,9 +104,9 @@
             });
         };
 
-        vm.set_as_owner = function(m){
-            ProjectService.set_as_owner(vm.project._id.$oid, m._id.$oid).then(function(){
-               getMembers(vm.project._id.$oid);
+        vm.set_as_owner = function (m) {
+            ProjectService.set_as_owner(vm.project._id.$oid, m._id.$oid).then(function () {
+                getMembers(vm.project._id.$oid);
             });
         };
 
@@ -121,7 +121,7 @@
             }
         };
 
-        vm.delete_project = function(){
+        vm.delete_project = function () {
             var modalInstance = modal.open({
                 controller: 'ProjectDeleteController as vm',
                 templateUrl: 'project/delete_project.tpl.html',
@@ -134,6 +134,34 @@
             modalInstance.result.then(function () {
                 state.go('home');
             });
+        };
+
+        vm.prepare_upload = function () {
+            if (window.FileReader != null && (window.FileAPI == null || FileAPI.html5 !== false)) {
+                tmo(function () {
+                    var fileReader = new FileReader();
+                    fileReader.readAsText(vm.json_file[0]);
+                    fileReader.onload = function (e) {
+                        tmo(function () {
+                            vm.json_file.data = JSON.parse(e.target.result);
+                        });
+                    };
+                });
+            }
+        };
+
+        vm.confirm_upload = function () {
+            vm.uploading = true;
+            ProjectService.import_file(vm.project._id.$oid, vm.json_file,
+                {'include_cards': vm.import_cards, 'include_cols': vm.import_cols})
+                .success(function (rta) {
+                    vm.json_file = null;
+                    vm.uploading = false;
+                    growl.addSuccessMessage('The file was imported successfully');
+                    getColumnConfiguration(vm.project._id.$oid);
+                }).error(function(){
+                    vm.uploading = false;
+                });
         };
 
         //order_columns
@@ -245,23 +273,23 @@
         };
     };
 
-    var RemoveMemberController = function(modalInstance, ProjectService, item){
+    var RemoveMemberController = function (modalInstance, ProjectService, item) {
         var vm = this;
         vm.member = item.member;
 
-        vm.erase = function(){
+        vm.erase = function () {
             ProjectService.remove_member(item.project._id.$oid, vm.member._id.$oid).then(function (rta) {
                 modalInstance.close(rta);
             });
         };
 
-        vm.cancel = function(){
-          modalInstance.dismiss('canceled');
+        vm.cancel = function () {
+            modalInstance.dismiss('canceled');
         };
     };
 
     Config.$inject = ['$stateProvider', 'tagsInputConfigProvider'];
-    ProjectCtrlSettings.$inject = ['$rootScope', '$scope', '$state', '$modal', 'growl', 'ProjectService', 'SocketIO'];
+    ProjectCtrlSettings.$inject = ['$rootScope', '$timeout', '$filter', '$scope', '$state', '$modal', 'growl', 'ProjectService', 'SocketIO'];
     ColumnFormController.$inject = ['$modalInstance', 'ProjectService', 'project', 'column'];
     ColumnDeleteController.$inject = ['$modalInstance', 'ProjectService', 'column'];
     MembersController.$inject = ['$modalInstance', 'UserService', 'ProjectService', 'project'];

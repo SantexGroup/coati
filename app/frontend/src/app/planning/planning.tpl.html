@@ -77,6 +77,13 @@
             </header>
             <div class="panel-body">
                 <div class="task-content">
+                    <div class="spinner" ng-hide="!vm.loading_backlog">
+                            <div class="rect1"></div>
+                            <div class="rect2"></div>
+                            <div class="rect3"></div>
+                            <div class="rect4"></div>
+                            <div class="rect5"></div>
+                    </div>
                     <ul class="task-list" ui-sortable="vm.sortTicketOptions"
                         ng-model="vm.tickets">
                         <li ng-repeat="tkt in vm.tickets track by tkt._id.$oid"

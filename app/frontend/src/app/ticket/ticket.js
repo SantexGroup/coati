@@ -80,8 +80,8 @@
         vm.file_uploaded = 0;
         vm.members_filtered = [];
         vm.mentions = [];
-
         vm.types = conf.TICKET_TYPES;
+        vm.no_editing = item.disabled || false;
 
         var getComments = function (ticket_id) {
             TicketService.get_comments(ticket_id).then(function (comments) {
@@ -95,14 +95,13 @@
             });
         };
 
-        var getTicket = function (ticket_id) {
+        var getTicket = function (ticket_id, show_loading) {
+            vm.loading = (show_loading !== undefined ? show_loading : true);
             TicketService.get(ticket_id).then(function (tkt) {
                 vm.ticket = tkt;
                 vm.labels = tkt.labels;
-
+                vm.loading = false;
                 getComments(tkt._id.$oid);
-
-
             }, function () {
                 modalInstance.dismiss('error loading ticket');
             });
@@ -126,6 +125,12 @@
         vm.project = item.project;
         getTicket(item.ticket_id);
         getMembers();
+
+        vm.show = function(form){
+            if (!vm.no_editing) {
+                form.$show();
+            }
+        };
 
         vm.saveTicket = function (ticket) {
             if (ticket) {

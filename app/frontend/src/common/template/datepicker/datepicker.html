@@ -1,0 +1,9 @@
+<div class="datepicker" ng-switch="datepickerMode" role="application"
+     ng-keydown="keydown($event)">
+    <daypicker class="datepicker-days" ng-switch-when="day"
+               tabindex="0"></daypicker>
+    <monthpicker class="datepicker-months" ng-switch-when="month"
+                 tabindex="0"></monthpicker>
+    <yearpicker class="datepicker-years" ng-switch-when="year"
+                tabindex="0"></yearpicker>
+</div>

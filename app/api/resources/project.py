@@ -90,9 +90,10 @@ class ProjectInstance(AuthResource):
         # project.project_type = bool(data.get('project_type'))
         project.save()
 
-        # # add to redis
+        # add to redis
         r = RedisClient(channel=str(project.pk))
         r.store('update_project', **kwargs)
+
 
         return project.to_json(), 200
 

@@ -33,10 +33,10 @@
                                                 <span class="badge bg-warning"><[ tkt.points ]></span>
                                                 <ul class="members pull-right">
                                                     <li ng-repeat="m in tkt.assigned_to"
-                                                        title="<[ m.email ]>">
-                                                        <img ng-if="m.picture"
-                                                             src="<[ m.picture ]>">
-                                                        <img ng-if="!m.picture"
+                                                        title="<[ m.member.email ]>">
+                                                        <img ng-if="m.member.picture"
+                                                             ng-src="<[ m.member.picture ]>">
+                                                        <img ng-if="!m.member.picture"
                                                              src="/static/assets/img/koala.png">
                                                     </li>
                                                 </ul>

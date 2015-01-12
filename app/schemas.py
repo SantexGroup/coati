@@ -32,6 +32,19 @@ class User(mongoengine.Document):
         'indexes': [{'fields': ['email'], 'sparse': True, 'unique': True}]
     }
 
+    @classmethod
+    def pre_delete(cls, sender, document, **kwargs):
+        # delete tokens
+        Token.objects(user=document).delete()
+        # delete projects
+        Project.objects(owner=document).delete()
+        # delete from project members
+        ProjectMember.objects(member=document).delete()
+        # delete comment
+        Comment.objects(who=document).delete()
+        # delete from notification listener
+        NotificationSubscribers.objects(listener=document).delete()
+
 
 class Token(mongoengine.Document):
     app_token = mongoengine.StringField()
@@ -87,6 +100,19 @@ class Project(mongoengine.Document):
         'queryset_class': CustomQuerySet
     }
 
+    @classmethod
+    def pre_delete(cls, sender, document, **kwargs):
+        # delete sprints
+        Sprint.objects(project=document).delete()
+        # delete members
+        ProjectMember.objects(project=document).delete()
+        # delete tickets
+        Ticket.objects(project=document).delete()
+        # delete columns
+        Column.objects(project=document).delete()
+
+
+
     def to_json(self):
         data = self.to_mongo()
         data["owner"] = self.owner.to_mongo()
@@ -128,6 +154,14 @@ class Sprint(mongoengine.Document):
     meta = {
         'queryset_class': CustomQuerySet
     }
+
+    @classmethod
+    def pre_delete(cls, sender, document, **kwargs):
+        # delete tickets assigned to sprint
+        SprintTicketOrder.objects(sprint=document).delete()
+        # delete ticket transition
+        TicketColumnTransition.objects(sprint=document).delete()
+
 
     def to_json(self, *args, **kwargs):
         data = self.to_mongo()
@@ -205,7 +239,9 @@ class Sprint(mongoengine.Document):
                 assignments = []
                 for ass in t.ticket.assigned_to:
                     if ass.__class__.__name__ != 'DBRef':
-                        assignments.append(ass.to_mongo())
+                        val = ass.to_mongo()
+                        val['member'] = ass.member.to_mongo()
+                        assignments.append(val)
                 tkt['assigned_to'] = assignments
                 ticket_list.append(tkt)
         return json_util.dumps(ticket_list)
@@ -233,6 +269,10 @@ class ProjectMember(mongoengine.Document):
     meta = {
         'queryset_class': CustomQuerySet
     }
+
+    @classmethod
+    def pre_delete(cls, sender, document, **kwargs):
+        Ticket.objects(assigned_to__contains=document).update(pull__assigned_to=document)
 
     def to_json(self, *args, **kwargs):
         data = self.to_mongo()
@@ -283,8 +323,15 @@ class Ticket(mongoengine.Document):
 
     @classmethod
     def pre_delete(cls, sender, document, **kwargs):
+        # delete attachements
         for att in document.files:
             att.delete()
+        # delete ticket column transition
+        TicketColumnTransition.objects(ticket=document).delete()
+        # delete sprint ticket order
+        SprintTicketOrder.objects(ticket=document).delete()
+        # delete comments
+        Comment.objects(ticket=document).delete()
 
 
     def to_json(self, *args, **kwargs):
@@ -315,7 +362,9 @@ class Ticket(mongoengine.Document):
         assignments = []
         for ass in self.assigned_to:
             if ass.__class__.__name__ != 'DBRef':
-                assignments.append(ass.to_mongo())
+                val = ass.to_mongo()
+                val['member'] = ass.member.to_mongo()
+                assignments.append(val)
         data['assigned_to'] = assignments
 
         return json_util.dumps(data)
@@ -417,11 +466,21 @@ class TicketColumnTransition(mongoengine.Document):
 
 
 class Notification(mongoengine.Document):
-    name = mongoengine.StringField()
-    to = mongoengine.ReferenceField('User',
-                                    reverse_delete_rule=mongoengine.CASCADE)
-    message = mongoengine.StringField()
-    read = mongoengine.BooleanField(default=False)
+    verb = mongoengine.StringField()
+    author = mongoengine.ReferenceField('User')
+    action = mongoengine.StringField()
+    target = mongoengine.StringField()
+    when = mongoengine.DateTimeField(default=datetime.now())
+
+    meta = {
+        'queryset_class': CustomQuerySet
+    }
+
+
+class NotificationSubscribers(mongoengine.Document):
+    listener = mongoengine.ReferenceField('User')
+    target = mongoengine.StringField()
+    when = mongoengine.DateTimeField(default=datetime.now())
 
     meta = {
         'queryset_class': CustomQuerySet
@@ -429,5 +488,8 @@ class Notification(mongoengine.Document):
 
 
 # Signals
-
+signals.pre_delete.connect(Project.pre_delete, sender=Project)
+signals.pre_delete.connect(Sprint.pre_delete, sender=Sprint)
+signals.pre_delete.connect(ProjectMember.pre_delete, sender=ProjectMember)
+signals.pre_delete.connect(User.pre_delete, sender=User)
 signals.pre_delete.connect(Ticket.pre_delete, sender=Ticket)

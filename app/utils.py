@@ -4,7 +4,7 @@ from flask import make_response, current_app, copy_current_request_context
 from flask_mail import Mail, Message
 from itsdangerous import JSONWebSignatureSerializer
 from jinja2 import Environment, FileSystemLoader
-
+from app.schemas import Notification
 
 
 __author__ = 'gastonrobledo'
@@ -76,6 +76,15 @@ def output_json(obj, code, headers=None):
         pass
 
     return resp
+
+
+def notify(author, verb, target, action=None):
+    n = Notification()
+    n.author = author
+    n.verb = verb
+    n.target = target
+    n.save()
+
 
 
 

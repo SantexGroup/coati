@@ -7,7 +7,7 @@ from mongoengine import Q, DoesNotExist
 
 from app.api.resources.auth_resource import AuthResource
 from app.auth import generate_token
-from app.schemas import User, Token
+from app.schemas import User, Token, UserNotification
 from app.utils import send_activation_email_async
 
 
@@ -63,13 +63,13 @@ class UserLogged(AuthResource):
         if kwargs['user_id']:
             return User.objects.get(pk=kwargs['user_id']['pk']).to_json()
         return jsonify({}), 204
-    
+
 
 class UserLogin(Resource):
 
     def __init__(self):
         super(UserLogin, self).__init__()
-    
+
     def post(self, *args, **kwargs):
         data = request.get_json(force=True, silent=True)
         if data:
@@ -143,3 +143,12 @@ class UserActivate(Resource):
             return jsonify({'token': token, 'expire': 10000}), 200
         except DoesNotExist:
             return jsonify({'error': 'Bad Request'}), 400
+
+
+class UserNotifications(AuthResource):
+
+    def __init__(self):
+        super(UserNotifications, self).__init__()
+
+    def get(self, *args, **kwargs):
+        return UserNotification.objects(user=kwargs['user_id']['pk']).to_json()

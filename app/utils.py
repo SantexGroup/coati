@@ -4,10 +4,7 @@ from flask import make_response, current_app, copy_current_request_context
 from flask_mail import Mail, Message
 from itsdangerous import JSONWebSignatureSerializer
 from jinja2 import Environment, FileSystemLoader
-from app.schemas import Notification
-
-
-__author__ = 'gastonrobledo'
+from app.schemas import UserActivity, Project, User
 
 
 def serialize_data(data):
@@ -55,12 +52,15 @@ def create_new_member_email(user, project):
 def send_email_async(function, *args):
     mail = Mail(app=current_app)
     msg = function(*args)
+
     @copy_current_request_context
     def send_message(message):
         mail.send(message)
 
-    sender = threading.Thread(name='mail_sender', target=send_message, args=(msg,))
+    sender = threading.Thread(name='mail_sender', target=send_message,
+                              args=(msg,))
     sender.start()
+
 
 def output_json(obj, code, headers=None):
     """
@@ -78,13 +78,14 @@ def output_json(obj, code, headers=None):
     return resp
 
 
-def notify(author, verb, target, action=None):
-    n = Notification()
-    n.author = author
-    n.verb = verb
-    n.target = target
-    n.save()
-
+def save_notification(project_pk, author, verb, data=None, user_to=None):
+    ua = UserActivity()
+    ua.project = Project.objects.get(pk=project_pk)
+    ua.author = User.objects.get(pk=author)
+    ua.verb = verb
+    ua.data = data
+    ua.to = user_to
+    ua.save()
 
 
 

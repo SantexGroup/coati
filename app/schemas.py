@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import mongoengine
 from mongoengine import Q, signals
 from bson import json_util
+from app.redis import RedisClient
 
 
 TICKET_TYPE = (('U', 'User Story'),
@@ -42,8 +43,6 @@ class User(mongoengine.Document):
         ProjectMember.objects(member=document).delete()
         # delete comment
         Comment.objects(who=document).delete()
-        # delete from notification listener
-        NotificationSubscribers.objects(listener=document).delete()
 
 
 class Token(mongoengine.Document):
@@ -395,6 +394,7 @@ class Comment(mongoengine.Document):
     def to_json(self, *args, **kwargs):
         data = self.to_mongo()
         data['who'] = self.who.to_mongo()
+        data['ticket'] = self.ticket.to_mongo()
         return json_util.dumps(data)
 
     def clean(self):
@@ -465,29 +465,58 @@ class TicketColumnTransition(mongoengine.Document):
     latest_state = mongoengine.BooleanField(default=True)
 
 
-class Notification(mongoengine.Document):
+class UserActivity(mongoengine.Document):
+    project = mongoengine.ReferenceField('Project')
+    when = mongoengine.DateTimeField()
     verb = mongoengine.StringField()
     author = mongoengine.ReferenceField('User')
-    action = mongoengine.StringField()
-    target = mongoengine.StringField()
-    when = mongoengine.DateTimeField(default=datetime.now())
+    data = mongoengine.StringField()
+    to = mongoengine.ReferenceField('User')
 
     meta = {
         'queryset_class': CustomQuerySet
     }
 
 
-class NotificationSubscribers(mongoengine.Document):
-    listener = mongoengine.ReferenceField('User')
-    target = mongoengine.StringField()
-    when = mongoengine.DateTimeField(default=datetime.now())
+    @classmethod
+    def post_save(cls, sender, document, **kwargs):
+        # set in redis
+        r = RedisClient(channel=str(document.project.pk))
+        r.store(document.verb, str(document.author.pk))
+
+        if document.to is not None:
+            un = UserNotification(activity=document)
+            un.user = document.to
+            un.save()
+        else:
+            pms = ProjectMember.objects(project=document.project)
+            for pm in pms:
+                un = UserNotification(activity=document)
+                un.user = pm.member
+                un.save()
+
+
+class UserNotification(mongoengine.Document):
+    activity = mongoengine.ReferenceField('UserActivity')
+    user = mongoengine.ReferenceField('User')
+    viewed = mongoengine.BooleanField(default=False)
 
     meta = {
         'queryset_class': CustomQuerySet
     }
 
+    def to_json(self, *args, **kwargs):
+        data = self.to_mongo()
+        data['activity'] = self.activity.to_mongo()
+        author = self.activity.author.to_mongo()
+        del author['password']
+        del author['activation_token']
+        data['activity']['author'] = author
+        data['activity']['data'] = self.activity.data
+        return json_util.dumps(data)
 
 # Signals
+signals.post_save.connect(UserActivity.post_save, sender=UserActivity)
 signals.pre_delete.connect(Project.pre_delete, sender=Project)
 signals.pre_delete.connect(Sprint.pre_delete, sender=Sprint)
 signals.pre_delete.connect(ProjectMember.pre_delete, sender=ProjectMember)

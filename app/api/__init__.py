@@ -8,7 +8,7 @@ from resources.ticket import TicketOrderProject, TicketOrderSprint, TicketProjec
     TicketComments, TicketAttachments, AttachmentInstance, MemberTicketInstance, \
     TicketSearch, TicketClosed
 from resources.user import UsersList, UserInstance, UserSearch, UserLogged, \
-    UserLogin, UserRegister, UserActivate
+    UserLogin, UserRegister, UserActivate, UserNotifications
 from app.utils import output_json
 
 
@@ -32,6 +32,7 @@ def init_app(app, decorators=None):
     api.add_resource(UserLogin, '/api/user/login')
     api.add_resource(UserRegister, '/api/user/register')
     api.add_resource(UserActivate, '/api/user/activate/<string:code>')
+    api.add_resource(UserNotifications, '/api/user/notifications')
 
     api.add_resource(SprintList, '/api/sprints/<string:project_pk>')
     api.add_resource(SprintArchivedList, '/api/sprints/<string:project_pk>/archived')

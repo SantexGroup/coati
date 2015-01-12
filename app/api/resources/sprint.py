@@ -1,3 +1,5 @@
+from app.utils import save_notification
+
 __author__ = 'gastonrobledo'
 import json
 from datetime import timedelta, datetime
@@ -6,7 +8,7 @@ from dateutil import parser
 from flask import jsonify, request
 
 from app.schemas import (Sprint, Project, SprintTicketOrder, Ticket,
-                         Column, TicketColumnTransition)
+                         Column, TicketColumnTransition, UserActivity, User)
 from app.redis import RedisClient
 from app.api.resources.auth_resource import AuthResource
 from mongoengine import DoesNotExist
@@ -23,9 +25,12 @@ class SprintOrder(AuthResource):
                 sprint = Sprint.objects.get(pk=s)
                 sprint.order = index
                 sprint.save()
-            # # add to redis
-            r = RedisClient(channel=project_pk)
-            r.store('order_sprints', **kwargs)
+            # save activity
+            save_notification(project_pk=project_pk,
+                              author=kwargs['user_id']['pk'],
+                              verb='order_sprints',
+                              data=data)
+
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400
 
@@ -50,9 +55,12 @@ class SprintList(AuthResource):
         sp = Sprint(project=project.to_dbref())
         sp.name = 'Sprint %d' % (total + 1)
         sp.save()
-        # # add to redis
-        r = RedisClient(channel=project_pk)
-        r.store('new_sprint', **kwargs)
+
+        # save activity
+        save_notification(project_pk=project_pk,
+                          author=kwargs['user_id']['pk'],
+                          verb='new_sprint',
+                          data=sp.to_json())
         return sp.to_json(), 201
 
 
@@ -106,19 +114,28 @@ class SprintInstance(AuthResource):
                     set__closed=True)
 
             sp.save()
-            # # add to redis
-            r = RedisClient(channel=str(sp.project.pk))
-            r.store('update_sprint', **kwargs)
+
+            # save activity
+            save_notification(project_pk=sp.project.pk,
+                              author=kwargs['user_id']['pk'],
+                              verb='update_sprint',
+                              data=sp.to_json())
+
             return sp.to_json(), 200
 
         return jsonify({"error": 'Bad Request'}), 400
 
     def delete(self, sp_id, *args, **kwargs):
         sp = Sprint.objects.get(pk=sp_id)
+
+        # save activity
+        save_notification(project_pk=sp.project.pk,
+                          author=kwargs['user_id']['pk'],
+                          verb='delete_sprint',
+                          data=sp.to_json())
+
         sp.delete()
-        # # add to redis
-        r = RedisClient(channel=str(sp.project.pk))
-        r.store('delete_sprint', **kwargs)
+
         return sp.to_json(), 204
 
 
@@ -190,7 +207,7 @@ class SprintChart(AuthResource):
                 planned_counter = (planned_counter - ideal_planned / duration)
                 if planned_counter > -1 and len(ideal) < len(days):
                     ideal.append(planned_counter)
-                formatted_days.append(day.strftime('%d, %b %Y'))
+                formatted_days.append()
                 start_date = day
                 end_date = start_date + timedelta(hours=23, minutes=59)
 
@@ -223,7 +240,7 @@ class SprintChart(AuthResource):
             # days.insert(0, 'Start')
             data = {
                 'points_remaining': points_remaining,
-                'dates': formatted_days,
+                'dates': days,
                 'ideal': ideal,
                 'all_tickets': json.loads(
                     sprint.get_tickets_with_latest_status())

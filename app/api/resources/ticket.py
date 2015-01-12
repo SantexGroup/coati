@@ -10,7 +10,8 @@ from app.api.resources.auth_resource import AuthResource
 from app.redis import RedisClient
 from app.schemas import (Project, Ticket, SprintTicketOrder,
                          Sprint, TicketColumnTransition, Column, User, Comment,
-                         Attachment, Notification, ProjectMember)
+                         Attachment, ProjectMember, UserActivity)
+from app.utils import save_notification
 
 
 class TicketInstance(AuthResource):
@@ -45,19 +46,25 @@ class TicketInstance(AuthResource):
                                                           active=True).count()
                 spo.save()
 
-            # # add to redis
-            r = RedisClient(channel=str(tkt.project.pk))
-            r.store('update_ticket', **kwargs)
+            # save activity
+            save_notification(project_pk=tkt.project.pk,
+                              author=kwargs['user_id']['pk'],
+                              verb='update_ticket',
+                              data=tkt.to_json())
+
             return tkt.to_json(), 200
         return jsonify({'error': 'Bad Request'}), 400
 
     def delete(self, tkt_id, *args, **kwargs):
         tkt = Ticket.objects.get(pk=tkt_id)
         if tkt:
+            # save activity
+            save_notification(project_pk=tkt.project.pk,
+                              author=kwargs['user_id']['pk'],
+                              verb='delete_ticket',
+                              data=tkt.to_json())
             tkt.delete()
-            # # add to redis
-            r = RedisClient(channel=str(tkt.project.pk))
-            r.store('delete_ticket', **kwargs)
+
             return jsonify({'success': True}), 200
         return jsonify({'error': 'Bad Request'}), 400
 
@@ -109,8 +116,11 @@ class TicketProjectList(AuthResource):
                                                   active=True).count()
             spo.save()
 
-        r = RedisClient(channel=project_pk)
-        r.store('new_ticket', **kwargs)
+        # save activity
+        save_notification(project_pk=tkt.project.pk,
+                          author=kwargs['user_id']['pk'],
+                          verb='new_ticket',
+                          data=tkt.to_json())
 
         return tkt.to_json(), 201
 
@@ -130,9 +140,13 @@ class TicketOrderProject(AuthResource):
                                                project=project_pk)
                 tkt_order.order = index
                 tkt_order.save()
-            # add redis
-            r = RedisClient(channel=project_pk)
-            r.store('backlog_order', **kwargs)
+
+            # save activity
+            save_notification(project_pk=project_pk,
+                              author=kwargs['user_id']['pk'],
+                              verb='backlog_order',
+                              data=data)
+
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400
 
@@ -154,9 +168,12 @@ class TicketOrderSprint(AuthResource):
                                                           sprint=sprint)
                 tkt_order.order = index
                 tkt_order.save()
-            # add redis
-            r = RedisClient(channel=str(sprint.project.pk))
-            r.store('sprint_ticket_order', **kwargs)
+            # save activity
+            save_notification(project_pk=sprint.project.pk,
+                              author=kwargs['user_id']['pk'],
+                              verb='sprint_ticket_order',
+                              data=data)
+
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400
 
@@ -230,9 +247,13 @@ class TicketMovement(AuthResource):
                     tkt_order = Ticket.objects.get(pk=tkt_id)
                     tkt_order.order = index
                     tkt_order.save()
-            # add redis
-            r = RedisClient(channel=str(ticket.project.pk))
-            r.store('ticket_movement', **kwargs)
+
+            # save activity
+            save_notification(project_pk=ticket.project.pk,
+                              author=kwargs['user_id']['pk'],
+                              verb='ticket_movement',
+                              data=data)
+
             return jsonify({'success': True}), 200
         return jsonify({'error': 'Bad Request'}), 400
 
@@ -260,9 +281,12 @@ class TicketTransition(AuthResource):
                         ticket=s)
                     sto.order = index
                     sto.save()
-                # add redis
-                r = RedisClient(channel=str(tkt.project.pk))
-                r.store('ticket_transition', **kwargs)
+                # save activity
+                save_notification(project_pk=tkt.project.pk,
+                                  author=kwargs['user_id']['pk'],
+                                  verb='ticket_transition',
+                                  data=data)
+
                 return jsonify({'success': True})
             else:
                 # Search already state
@@ -301,9 +325,12 @@ class TicketTransition(AuthResource):
                         tkt_trans_order.order = index
                         tkt_trans_order.save()
 
-                    # add redis
-                    r = RedisClient(channel=str(tkt.project.pk))
-                    r.store('ticket_transition', **kwargs)
+                    # save activity
+                    save_notification(project_pk=tkt.project.pk,
+                                      author=kwargs['user_id']['pk'],
+                                      verb='ticket_transition',
+                                      data=transition.to_json())
+
                     return transition.to_json(), 201
                 else:
                     return jsonify({'error': 'Bad Request'}), 400
@@ -330,9 +357,12 @@ class TicketColumnOrder(AuthResource):
                         latest_state=True)
                     tkt_trans_order.order = index
                     tkt_trans_order.save()
-                # add redis
-                r = RedisClient(channel=str(col.project.pk))
-                r.store('ticket_colunm_order', **kwargs)
+
+                # save activity
+                save_notification(project_pk=col.project.pk,
+                                  author=kwargs['user_id']['pk'],
+                                  verb='ticket_colunm_order',
+                                  data=data)
                 return jsonify({'success': True}), 200
             else:
                 return jsonify({'error': 'Bad Request'}), 400
@@ -356,14 +386,18 @@ class TicketComments(AuthResource):
             c.save()
             for m in data.get('mentions'):
                 u = User.objects.get(pk=m)
-                n = Notification()
-                n.message = "You have been mentioned in a comment"
-                n.name = "mention"
-                n.to = u
-                n.save()
-            # add redis
-            r = RedisClient(channel=str(c.ticket.project.pk))
-            r.store('new_comment', **kwargs)
+                # save activity
+                save_notification(project_pk=c.ticket.project.pk,
+                                  author=kwargs['user_id']['pk'],
+                                  verb='mention',
+                                  user_to=u,
+                                  data=c.to_json())
+            # save activity
+            save_notification(project_pk=c.ticket.project.pk,
+                              author=kwargs['user_id']['pk'],
+                              verb='new_comment',
+                              data=c.to_json())
+
             return c.to_json(), 201
         return jsonify({'error': 'Bad Request'}), 400
 
@@ -388,9 +422,13 @@ class TicketAttachments(AuthResource):
             att.save()
             ticket.files.append(att)
             ticket.save()
-            # add redis
-            r = RedisClient(channel=str(ticket.project.pk))
-            r.store('new_attachment', **kwargs)
+
+            # save activity
+            save_notification(project_pk=ticket.project.pk,
+                              author=kwargs['user_id']['pk'],
+                              verb='new_attachment',
+                              data=att.to_json())
+
             return att.to_json(), 200
 
         return jsonify({'error': 'Bad Request'}), 400
@@ -408,9 +446,14 @@ class AttachmentInstance(AuthResource):
 
         tkt = Ticket.objects.get(pk=tkt_id)
         Ticket.objects(pk=tkt_id).update_one(pull__files=att)
+
+        # save activity
+        save_notification(project_pk=tkt.project.pk,
+                          author=kwargs['user_id']['pk'],
+                          verb='delete_attachment',
+                          data=att.to_json())
+
         att.delete()
-        r = RedisClient(channel=str(tkt.project.pk))
-        r.store('delete_attachment', **kwargs)
         return jsonify({}), 204
 
 
@@ -425,9 +468,12 @@ class MemberTicketInstance(AuthResource):
             if m not in tkt.assigned_to:
                 tkt.assigned_to.append(m)
                 tkt.save()
-                # add redis
-                r = RedisClient(channel=str(tkt.project.pk))
-                r.store('new_assigment', **kwargs)
+
+                # save activity
+                save_notification(project_pk=tkt.project.pk,
+                                  author=kwargs['user_id']['pk'],
+                                  verb='new_assigment',
+                                  data=tkt.to_json())
                 return jsonify({'success': True}), 200
             return jsonify({'fail': 'Already added'}), 200
         except DoesNotExist as ex:
@@ -437,8 +483,12 @@ class MemberTicketInstance(AuthResource):
         try:
             tkt = Ticket.objects.get(pk=tkt_id)
             Ticket.objects(pk=tkt_id).update_one(pull__assigned_to=member_id)
-            r = RedisClient(channel=str(tkt.project.pk))
-            r.store('delete_assignment', **kwargs)
+
+            # save activity
+            save_notification(project_pk=tkt.project.pk,
+                              author=kwargs['user_id']['pk'],
+                              verb='delete_assignment',
+                              data=tkt.to_json())
             return jsonify({'success': True}), 200
         except DoesNotExist as ex:
             return jsonify({'error': 'Bad Request'}), 400
@@ -455,7 +505,7 @@ class TicketSearch(AuthResource):
         for p in projects_query:
             projects.append(str(p.project.pk))
         return Ticket.objects((Q(title__icontains=query) |
-                              Q(description__icontains=query)) &
+                               Q(description__icontains=query)) &
                               Q(project__in=projects)).to_json()
 
 

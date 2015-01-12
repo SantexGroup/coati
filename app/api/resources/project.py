@@ -3,10 +3,12 @@ from flask import jsonify
 from flask.ext.restful import request
 from mongoengine import DoesNotExist
 
-from app.schemas import User, Project, Column, ProjectMember, Ticket, Attachment
+from app.schemas import User, Project, Column, ProjectMember, Ticket, \
+    Attachment, \
+    UserActivity
 from app.redis import RedisClient
 from app.api.resources.auth_resource import AuthResource
-from app.utils import send_new_member_email_async
+from app.utils import send_new_member_email_async, save_notification
 
 
 class ProjectList(AuthResource):
@@ -58,9 +60,10 @@ class ProjectList(AuthResource):
                 col.done_column = True
             col.save()
 
-        # # add to redis
-        r = RedisClient(channel=str(prj.pk))
-        r.store('new_project', **kwargs)
+        # save activity
+        save_notification(project_pk=prj.pk,
+                          author=kwargs['user_id']['pk'],
+                          verb='new_project')
 
         return prj.to_json(), 201
 
@@ -90,19 +93,16 @@ class ProjectInstance(AuthResource):
         # project.project_type = bool(data.get('project_type'))
         project.save()
 
-        # add to redis
-        r = RedisClient(channel=str(project.pk))
-        r.store('update_project', **kwargs)
-
+        # save activity
+        save_notification(project_pk=project.pk,
+                          author=kwargs['user_id']['pk'],
+                          verb='update_project')
 
         return project.to_json(), 200
 
     def delete(self, project_pk, *args, **kwargs):
         project = Project.objects.get(pk=project_pk)
         project.delete()
-        # # add to redis
-        r = RedisClient()
-        r.store('delete_project', **kwargs)
         return jsonify({}), 204
 
 
@@ -137,9 +137,11 @@ class ProjectColumns(AuthResource):
                     c.save()
         col.save()
 
-        # # add to redis
-        r = RedisClient(channel=project_pk)
-        r.store('new_column', **kwargs)
+        # save activity
+        save_notification(project_pk=project.pk,
+                          author=kwargs['user_id']['pk'],
+                          verb='new_column',
+                          data=col.to_json())
 
         return col.to_json(), 200
 
@@ -167,18 +169,25 @@ class ProjectColumn(AuthResource):
                     c.done_column = False
                     c.save()
             col.save()
-            # # add to redis
-            r = RedisClient(channel=str(col.project.pk))
-            r.store('update_column', **kwargs)
+
+            # save activity
+            save_notification(project_pk=col.project.pk,
+                              author=kwargs['user_id']['pk'],
+                              verb='update_column',
+                              data=col.to_json())
+
             return col.to_json(), 200
         return jsonify({"error": 'Bad Request'}), 400
 
     def delete(self, column_pk, *args, **kwargs):
         col = Column.objects.get(pk=column_pk)
         if col:
-            # # add to redis
-            r = RedisClient(channel=str(col.project.pk))
-            r.store('delete_column', **kwargs)
+            # save activity
+            save_notification(project_pk=col.project.pk,
+                              author=kwargs['user_id']['pk'],
+                              verb='delete_column',
+                              data=col.to_json())
+
             col.delete()
             return jsonify({"success": True}), 200
         return jsonify({"error": 'Bad Request'}), 400
@@ -195,9 +204,12 @@ class ProjectColumnsOrder(AuthResource):
                 col = Column.objects.get(pk=c, project=project_pk)
                 col.order = index
                 col.save()
-            # # add to redis
-            r = RedisClient(channel=project_pk)
-            r.store('order_columns', **kwargs)
+
+            # save activity
+            save_notification(project_pk=project_pk,
+                              author=kwargs['user_id']['pk'],
+                              verb='order_columns',
+                              data=data)
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400
 
@@ -242,23 +254,35 @@ class ProjectMembers(AuthResource):
         data = request.get_json(force=True, silent=True)
         if data:
             project = Project.objects.get(pk=project_pk)
+            members_added = []
             for member in data:
                 if str(project.owner.pk) != member.get('value'):
-                    m = ProjectMember(project=project_pk)
-                    if member.get('value'):
-                        m.member = User.objects.get(pk=member.get('value'))
-                    else:
-                        u = User(email=member.get('text'))
-                        u.active = False
-                        u.save()
-                        m.member = u
-                    m.save()
-                # Send email notification
-                send_new_member_email_async(m.member, project)
+                    exists = ProjectMember.objects(project=project_pk,
+                                                   member=member.get('value'))
+                    if exists.count() < 1:
 
-            # # add to redis
-            r = RedisClient(channel=project_pk)
-            r.store('new_members', **kwargs)
+                        m = ProjectMember(project=project_pk)
+                        if member.get('value'):
+                            m.member = User.objects.get(pk=member.get('value'))
+
+                        else:
+                            u = User(email=member.get('text'))
+                            u.active = False
+                            u.save()
+                            m.member = u
+
+                        m.save()
+                        # Send email notification
+                        send_new_member_email_async(m.member, project)
+                        members_added.append(m.to_json())
+                    else:
+                        return jsonify({'success': False,
+                                        'message': 'Already added'}), 200
+            # save activity
+            save_notification(project_pk=project_pk,
+                              author=kwargs['user_id']['pk'],
+                              verb='new_members',
+                              data={'members': members_added})
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400
 
@@ -329,4 +353,11 @@ class ProjectImport(AuthResource):
             Ticket.objects.insert(tickets, load_bulk=False)
         if columns:
             Column.objects.insert(columns, load_bulk=False)
+
+        # save activity
+        save_notification(project_pk=project_pk,
+                          author=kwargs['user_id']['pk'],
+                          verb='import',
+                          data=data)
+
         return jsonify({'success': True}), 200

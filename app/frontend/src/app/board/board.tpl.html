@@ -21,7 +21,7 @@
                                     ng-model="vm.tickets">
                                     <li ng-repeat="tkt in vm.tickets track by tkt._id.$oid"
                                         class="card ticket-item <[ tkt.type ]>"
-                                        ng-click="vm.showDetails($event, tkt._id.$oid);">
+                                        ui-sref="project.planning.ticket({ticket_id:tkt._id.$oid, project_pk:vm.project._id.$oid})">
                                         <div class="task-title">
                                             <span class="task-title-sp">
                                               <[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
@@ -57,7 +57,7 @@
                                     ng-model="col.tickets">
                                     <li ng-repeat="tkt in col.tickets"
                                         class="card ticket-item <[ tkt.type ]>"
-                                        ng-click="vm.showDetails($event, tkt._id.$oid);">
+                                        ui-sref="project.planning.ticket({ticket_id:tkt._id.$oid, project_pk:vm.project._id.$oid})">
                                         <div class="task-title">
                                             <span class="task-title-sp">
                                               <[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>

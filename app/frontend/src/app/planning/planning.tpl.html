@@ -43,7 +43,7 @@
                                 ng-model="sprint.tickets">
                                 <li ng-repeat="tkt in sprint.tickets track by tkt._id.$oid"
                                     class="ticket-item <[ tkt.type ]>"
-                                    ng-click="vm.showDetails($event, tkt);"
+                                    ui-sref="project.planning.ticket({ticket_id:tkt._id.$oid, project_pk:vm.project._id.$oid})"
                                     title="Click to quick view">
                                     <i class="icon-ellipsis-vertical handler"></i>
 
@@ -101,7 +101,7 @@
                         ng-model="vm.tickets">
                         <li ng-repeat="tkt in vm.tickets track by tkt._id.$oid"
                             class="user-story <[ tkt.type ]>"
-                            ng-click="vm.showDetails($event, tkt);"
+                            ui-sref="project.planning.ticket({ticket_id:tkt._id.$oid, project_pk:vm.project._id.$oid})"
                             title="Click to quick view">
                             <i class="icon-ellipsis-vertical handler"></i>
 

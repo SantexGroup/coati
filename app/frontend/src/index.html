@@ -72,29 +72,11 @@
                         </li>
                         <li ng-repeat="n in vm.notifications"
                             ng-class="{new:!n.viewed}">
-                            <div ng-if="n.activity.verb == 'mention'">
-                                <a href="javascript:;" ng-class="{'unread': !n.viewed}">
-                                <span>You have been mentioned in ticket:
-                                    <strong ng-click="$event.stopPropagation();vm.showDetails($event, n.activity.data.ticket);"><[
-                                        n.activity.data.ticket.title ]></strong>
-                                    by <strong><[ n.activity.author.first_name
-                                        ]> <[ n.activity.author.last_name
-                                        ]></strong>
-                                </span>
-                                </a>
-                            </div>
-                            <div ng-if="n.activity.verb == 'new_comment'">
-                                <a href="javascript:;"  ng-class="{'unread': !n.viewed}">
-                                    <strong><[ n.activity.author.first_name ]>
-                                        <[ n.activity.author.last_name
-                                        ]></strong> posted a new comment in
-                                    <strong ng-click="$event.stopPropagation();vm.showDetails($event, n.activity.data.ticket);"><[
-                                        n.activity.data.ticket.title ]></strong>
-                                </a>
-                            </div>
+                            <ng-include ng-if="n.activity.verb == 'mention'" src="'user/notifications/mention.tpl.html'"></ng-include>
+                            <ng-include ng-if="n.activity.verb == 'new_comment'" src="'user/notifications/new_comment.tpl.html'"></ng-include>
                         </li>
                         <li>
-                            <a href="#">See all notifications</a>
+                            <a href="javascript:;" ui-sref="notifications">See all notifications</a>
                         </li>
                     </ul>
                 </li>

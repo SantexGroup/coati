@@ -11,13 +11,27 @@
             views: {
                 "main": {
                     controller: 'UserProfileCtrl',
-                    templateUrl: 'app/user/user.tpl.html'
+                    templateUrl: 'user/user.tpl.html'
                 }
             },
             data: {
                 pageTitle: 'User Profile'
             }
+        })
+        .state('notifications', {
+            url: '/notifications',
+            views: {
+                "main": {
+                    controller: 'NotificationController',
+                    controllerAs: 'vm',
+                    templateUrl: 'user/notifications/all.tpl.html'
+                }
+            },
+            data: {
+                pageTitle: 'Notifications'
+            }
         });
+
     }
 
     var UserProfileController = function (rootScope, modalInstance, UserService) {
@@ -59,7 +73,7 @@
         var preProcessNotifications = function (list) {
             vm.notifications = [];
             vm.all_notifications = list;
-            angular.forEach(_.pull(list, 10), function (v, k) {
+            angular.forEach(list, function (v, k) {
                 var act = v;
                 act.activity.data = JSON.parse(v.activity.data);
                 vm.notifications.push(act);
@@ -67,7 +81,7 @@
         };
         var getNotifications = function () {
 
-            return UserService.notifications().then(function (list) {
+            return UserService.notifications(10).then(function (list) {
                 preProcessNotifications(list);
             });
         };
@@ -109,8 +123,35 @@
 
     };
 
+    var NotificationController = function(rootScope, UserService, SocketIO){
+        var vm = this;
+
+        var preProcessNotifications = function (list) {
+            vm.notifications = [];
+            angular.forEach(list, function (v, k) {
+                var act = v;
+                act.activity.data = JSON.parse(v.activity.data);
+                vm.notifications.push(act);
+            });
+        };
+        var getNotifications = function () {
+
+            UserService.notifications().then(function (list) {
+                preProcessNotifications(list);
+            });
+        };
+
+        getNotifications();
+
+        //Socket actions
+        SocketIO.on('notify', function () {
+            getNotifications();
+        });
+    };
+
     ConfigModule.$inject = ['$stateProvider'];
     UserController.$inject = ['$rootScope', '$timeout', 'growl', '$modal', 'UserService', 'SocketIO'];
+    NotificationController.$inject = ['$rootScope', 'UserService', 'SocketIO'];
     UserProfileController.$inject = ['$rootScope', '$modalInstance', 'UserService'];
 
     angular.module('Coati.User', ['ui.router',
@@ -119,6 +160,7 @@
         'Coati.Services.User'])
         .config(ConfigModule)
         .controller('UserCtrl', UserController)
+        .controller('NotificationController', NotificationController)
         .controller('UserProfileCtrl', UserProfileController);
 
 }(angular));

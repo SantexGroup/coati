@@ -513,6 +513,7 @@ class UserNotification(mongoengine.Document):
     def to_json(self, *args, **kwargs):
         data = self.to_mongo()
         data['activity'] = self.activity.to_mongo()
+        data['activity']['project'] = self.activity.project.to_mongo()
         author = self.activity.author.to_mongo()
         if 'password' in author.keys():
             del author['password']

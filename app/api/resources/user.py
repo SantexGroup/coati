@@ -151,9 +151,12 @@ class UserNotifications(AuthResource):
         super(UserNotifications, self).__init__()
 
     def get(self, *args, **kwargs):
-        return UserNotification.objects(user=kwargs['user_id']['pk'])\
+        data = UserNotification.objects(user=kwargs['user_id']['pk'])\
                    .order_by('viewed')\
-                   .order_by('activity__when')[:10].to_json(), 200
+                   .order_by('activity__when')
+        if request.args.get('total'):
+            data = data[:int(request.args.get('total'))]
+        return data.to_json(), 200
 
     def put(self, *args, **kwargs):
         UserNotification.objects(user=kwargs['user_id']['pk'])\

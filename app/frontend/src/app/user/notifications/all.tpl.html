@@ -1,0 +1,13 @@
+<ul>
+    <li id="header_notification_bar">
+        <ul class="dropdown-menu extended notification">
+            <li ng-repeat="n in vm.notifications"
+                ng-class="{new:!n.viewed}">
+                <ng-include ng-if="n.activity.verb == 'mention'"
+                            src="'user/notifications/mention.tpl.html'"></ng-include>
+                <ng-include ng-if="n.activity.verb == 'new_comment'"
+                            src="'user/notifications/new_comment.tpl.html'"></ng-include>
+            </li>
+        </ul>
+    </li>
+</ul>

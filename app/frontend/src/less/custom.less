@@ -782,9 +782,24 @@ a.unread {
   background-color: #eee;
 }
 
-#header_notification_bar img {
+#header_notification_bar img,
+.notification-list img {
   width: 22px;
   height: 22px;
   object-fit: cover;
   border-radius: 10px;
+}
+
+.notification-list a {
+  font-size: 12px;
+  list-style: none;
+  border-bottom: 1px solid #EBEBEB !important;
+  display: inline-block;
+  width: 100%;
+  padding: 15px 10px !important;
+}
+
+.notification-list a:hover {
+  color: #2E2E2E;
+  background-color: #F7F8F9 !important;
 }

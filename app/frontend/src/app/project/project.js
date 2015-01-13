@@ -26,7 +26,7 @@
     };
 
 
-    var ProjectCtrl = function (scope, rootScope, state, project) {
+    var ProjectCtrl = function (scope, rootScope, state, project, SocketIO) {
         //Keep the project in this scope so any child can access it without re-call.
         scope.project = project;
 
@@ -60,6 +60,8 @@
                 }
             }
         });
+
+        SocketIO.channel(scope.project._id.$oid);
     };
 
     var ProjectFormCtrl = function (state, modalInstance, ProjectService, growl) {
@@ -98,11 +100,12 @@
 
     ResolveProject.$inject = ['$stateParams', 'ProjectService'];
     Config.$inject = ['$stateProvider'];
-    ProjectCtrl.$inject = ['$scope', '$rootScope', '$state', 'project'];
+    ProjectCtrl.$inject = ['$scope', '$rootScope', '$state', 'project', 'SocketIO'];
     ProjectDeleteController.$inject = ['$modalInstance', 'ProjectService', 'project'];
     ProjectFormCtrl.$inject = ['$state', '$modalInstance', 'ProjectService', 'growl'];
 
     angular.module('Coati.Project', ['ui.router',
+        'Coati.SocketIO',
         'Coati.Settings',
         'Coati.Planning',
         'Coati.Board',

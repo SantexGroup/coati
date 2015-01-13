@@ -1,23 +1,29 @@
 (function (angular) {
 
     var socket_module = function (rootScope, Conf) {
-        var socket;
+        var socket, actual_channel;
         if (typeof io !== 'undefined') {
             return {
                 init: function () {
-
                     socket = io.connect(Conf.SOCKET_URL);
-
-                    rootScope.$watch('user', function (nv, ov) {
-                        if (nv !== undefined) {
-                            socket.emit('channel', {
-                                'key': 'coati',
-                                'user_id': rootScope.user._id.$oid
-                            });
-                        }
+                },
+                user_channel: function (user_id) {
+                    socket.emit('user_channel', {
+                        'user_id': user_id
                     });
-
-
+                },
+                channel: function (channel) {
+                    if(channel !== actual_channel) {
+                        rootScope.$watch('user', function (nv, ov) {
+                            if (nv !== undefined) {
+                                actual_channel = channel;
+                                socket.emit('channel', {
+                                    'key': channel,
+                                    'user_id': rootScope.user._id.$oid
+                                });
+                            }
+                        });
+                    }
                 },
                 on: function (eventName, callback) {
 
@@ -55,7 +61,9 @@
                 'init': function (channel, user_id) {
 
                 },
-                'channel': function (project_id, user_id, channel) {
+                'user_channel': function (user_id) {
+                },
+                'channel': function (channel) {
                 }
             };
         }

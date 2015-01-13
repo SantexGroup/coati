@@ -481,19 +481,23 @@ class UserActivity(mongoengine.Document):
     @classmethod
     def post_save(cls, sender, document, **kwargs):
         # project notify
-        r = RedisClient(channel='coati')
+        r = RedisClient(channel=str(document.project.pk))
         r.store(document.verb, str(document.author.pk))
 
         if document.to is not None:
             un = UserNotification(activity=document)
             un.user = document.to
             un.save()
+            r = RedisClient(channel=str(un.user.pk))
+            r.store(document.verb, str(document.author.pk))
         else:
             pms = ProjectMember.objects(project=document.project)
             for pm in pms:
                 un = UserNotification(activity=document)
                 un.user = pm.member
                 un.save()
+                r = RedisClient(channel=str(un.user.pk))
+                r.store(document.verb, str(document.author.pk))
 
 
 class UserNotification(mongoengine.Document):

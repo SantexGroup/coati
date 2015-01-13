@@ -207,7 +207,7 @@ class SprintChart(AuthResource):
                 planned_counter = (planned_counter - ideal_planned / duration)
                 if planned_counter > -1 and len(ideal) < len(days):
                     ideal.append(planned_counter)
-                formatted_days.append()
+                formatted_days.append(datetime.strftime(day, '%d, %b %Y'))
                 start_date = day
                 end_date = start_date + timedelta(hours=23, minutes=59)
 
@@ -240,7 +240,7 @@ class SprintChart(AuthResource):
             # days.insert(0, 'Start')
             data = {
                 'points_remaining': points_remaining,
-                'dates': days,
+                'dates': formatted_days,
                 'ideal': ideal,
                 'all_tickets': json.loads(
                     sprint.get_tickets_with_latest_status())

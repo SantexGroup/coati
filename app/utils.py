@@ -1,5 +1,6 @@
 import os
 import threading
+import json
 from flask import make_response, current_app, copy_current_request_context
 from flask_mail import Mail, Message
 from itsdangerous import JSONWebSignatureSerializer
@@ -79,6 +80,8 @@ def output_json(obj, code, headers=None):
 
 
 def save_notification(project_pk, author, verb, data=None, user_to=None):
+    if data is not basestring:
+        data = json.dumps(data)
     ua = UserActivity()
     ua.project = Project.objects.get(pk=project_pk)
     ua.author = User.objects.get(pk=author)

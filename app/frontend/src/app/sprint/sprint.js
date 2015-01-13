@@ -59,8 +59,6 @@
 
         getSprintsWithTickets(vm.project._id.$oid);
 
-        SocketIO.init(vm.project._id.$oid, rootScope.user._id.$oid);
-
     };
 
     var StartSprintController = function (scope, conf, filter, modalInstance, SprintService, sprint) {

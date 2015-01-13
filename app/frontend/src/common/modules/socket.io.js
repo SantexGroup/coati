@@ -3,14 +3,24 @@
     var socket_module = function (rootScope, Conf) {
         var socket;
         if (typeof io !== 'undefined') {
-
-
             return {
-                init: function(channel, user_id){
+                init: function () {
+
                     socket = io.connect(Conf.SOCKET_URL);
-                    socket.emit('channel', {'key': channel, 'user_id': user_id});
+
+                    rootScope.$watch('user', function (nv, ov) {
+                        if (nv !== undefined) {
+                            socket.emit('channel', {
+                                'key': 'coati',
+                                'user_id': rootScope.user._id.$oid
+                            });
+                        }
+                    });
+
+
                 },
                 on: function (eventName, callback) {
+
                     socket.on(eventName, function () {
                         var args;
                         args = arguments;
@@ -18,8 +28,10 @@
                             callback.apply(socket, args);
                         });
                     });
+
                 },
                 emit: function (eventName, data, callback) {
+
                     socket.emit(eventName, data, function () {
                         var args;
                         args = arguments;
@@ -29,18 +41,21 @@
                             }
                         });
                     });
+
                 }
             };
         } else {
             return {
-                'on': function(eventName, callback){
+                'on': function (eventName, callback) {
 
                 },
-                'emit': function(eventName, data, callback){
+                'emit': function (eventName, data, callback) {
 
                 },
-                'init': function(channel, user_id){
+                'init': function (channel, user_id) {
 
+                },
+                'channel': function (project_id, user_id, channel) {
                 }
             };
         }

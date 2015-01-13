@@ -71,7 +71,7 @@
         };
     };
 
-    var AppController = function (scope, rootScope, state, stateParams, modal, tokens, TicketService) {
+    var AppController = function (scope, rootScope, state, stateParams, modal, tokens, TicketService, SocketIO) {
         var vm = this;
         rootScope.$on('$stateChangeStart', function (event, toState) {
 
@@ -137,6 +137,8 @@
             return model.label;
         };
 
+        //Init Socket interaction
+        SocketIO.init();
     };
 
     var RunApp = function (rootScope, state, stateParams, objects, editableOptions, editableThemes) {
@@ -166,11 +168,11 @@
     filterTrustedHTML.$inject = ['$sce'];
     RunApp.$inject = ['$rootScope', '$state', '$stateParams', '$objects', 'editableOptions', 'editableThemes'];
     ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider'];
-    AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', '$modal', 'tokens', 'TicketService'];
+    AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', '$modal', 'tokens', 'TicketService', 'SocketIO'];
 
     angular.module('Coati', [
         'templates-app', 'templates-common',
-        'ui.router', 'ui.bootstrap', 'angular-growl', 'xeditable',
+        'ui.router', 'ui.bootstrap', 'angular-growl', 'xeditable','Coati.SocketIO',
         'Coati.Config', 'Coati.Directives', 'Coati.Services.Ticket',
         'Coati.Home',
         'Coati.Login', 'Coati.Helpers',

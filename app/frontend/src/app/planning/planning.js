@@ -306,8 +306,6 @@
         getSprintsWithTickets(vm.project._id.$oid);
 
         //Socket actions
-        SocketIO.init(vm.project._id.$oid, rootScope.user._id.$oid);
-
         SocketIO.on('backlog_order', function () {
             getTicketsForProject(vm.project._id.$oid, false);
         });

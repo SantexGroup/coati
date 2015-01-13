@@ -467,7 +467,7 @@ class TicketColumnTransition(mongoengine.Document):
 
 class UserActivity(mongoengine.Document):
     project = mongoengine.ReferenceField('Project')
-    when = mongoengine.DateTimeField()
+    when = mongoengine.DateTimeField(default=datetime.now())
     verb = mongoengine.StringField()
     author = mongoengine.ReferenceField('User')
     data = mongoengine.StringField()
@@ -481,7 +481,7 @@ class UserActivity(mongoengine.Document):
     @classmethod
     def post_save(cls, sender, document, **kwargs):
         # project notify
-        r = RedisClient(channel=str(document.project.pk))
+        r = RedisClient(channel='coati')
         r.store(document.verb, str(document.author.pk))
 
         if document.to is not None:
@@ -497,7 +497,8 @@ class UserActivity(mongoengine.Document):
 
 
 class UserNotification(mongoengine.Document):
-    activity = mongoengine.ReferenceField('UserActivity')
+    activity = mongoengine.ReferenceField('UserActivity',
+                                          reverse_delete_rule=mongoengine.CASCADE)
     user = mongoengine.ReferenceField('User')
     viewed = mongoengine.BooleanField(default=False)
 
@@ -509,8 +510,10 @@ class UserNotification(mongoengine.Document):
         data = self.to_mongo()
         data['activity'] = self.activity.to_mongo()
         author = self.activity.author.to_mongo()
-        del author['password']
-        del author['activation_token']
+        if 'password' in author.keys():
+            del author['password']
+        if 'activation_token' in author.keys():
+            del author['activation_token']
         data['activity']['author'] = author
         data['activity']['data'] = self.activity.data
         return json_util.dumps(data)

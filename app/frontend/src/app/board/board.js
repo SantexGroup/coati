@@ -167,8 +167,6 @@
 
 
         //Socket IO listeners
-
-        SocketIO.init(vm.project_pk, rootScope.user._id.$oid);
         SocketIO.on('ticket_transition', function(){
             if (vm.sprint.started) {
                 getSprintTickets(vm.sprint._id.$oid);

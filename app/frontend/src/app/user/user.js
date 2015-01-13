@@ -50,28 +50,38 @@
         rootScope.$watch('user', function (new_value) {
             if (new_value !== undefined && new_value !== null) {
                 vm.user = new_value;
+                getNotifications();
             }
         });
 
-        var getNotifications = function () {
+        var preProcessNotifications = function (list) {
             vm.notifications = [];
-            return UserService.notifications().then(function (not) {
-                angular.forEach(not, function (v, k) {
-                    var act = v;
-                    act.activity.data = JSON.parse(v.activity.data);
-                    vm.notifications.push(act);
-                });
+            vm.all_notifications = list;
+            angular.forEach(_.pull(list, 10), function (v, k) {
+                var act = v;
+                act.activity.data = JSON.parse(v.activity.data);
+                vm.notifications.push(act);
+            });
+        };
+        var getNotifications = function () {
 
+            return UserService.notifications().then(function (list) {
+                preProcessNotifications(list);
             });
         };
 
-        vm.loadNotifications = function(){
-            getNotifications().then(function(){
-                $timeout(function(){
+        vm.loadNotifications = function () {
+            timeout(function () {
+                var items = _.filter(vm.all_notifications, function(n) {
+                  return n.viewed === false;
+                });
+                if(items.length > 0) {
                     //Call to set as read
-                    UserService.mark_as_viewed();
-                }, 1500);
-            });
+                    UserService.mark_as_viewed().then(function (list) {
+                        preProcessNotifications(list);
+                    });
+                }
+            }, 1500);
         };
 
         vm.show_profile = function () {
@@ -86,8 +96,7 @@
         };
 
         //Socket actions
-        SocketIO.init('notification', '');
-        SocketIO.on('notification', function () {
+        SocketIO.on('notify', function () {
             getNotifications();
         });
 

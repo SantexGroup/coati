@@ -384,19 +384,21 @@ class TicketComments(AuthResource):
             c.comment = data.get('comment')
             c.when = datetime.now()
             c.save()
-            for m in data.get('mentions'):
-                u = User.objects.get(pk=m)
+            if data.get('mentions'):
+                for m in data.get('mentions'):
+                    u = User.objects.get(pk=m)
+                    # save activity
+                    save_notification(project_pk=c.ticket.project.pk,
+                                      author=kwargs['user_id']['pk'],
+                                      verb='mention',
+                                      user_to=u,
+                                      data=c.to_json())
+            else:
                 # save activity
                 save_notification(project_pk=c.ticket.project.pk,
                                   author=kwargs['user_id']['pk'],
-                                  verb='mention',
-                                  user_to=u,
+                                  verb='new_comment',
                                   data=c.to_json())
-            # save activity
-            save_notification(project_pk=c.ticket.project.pk,
-                              author=kwargs['user_id']['pk'],
-                              verb='new_comment',
-                              data=c.to_json())
 
             return c.to_json(), 201
         return jsonify({'error': 'Bad Request'}), 400

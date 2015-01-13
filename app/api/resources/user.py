@@ -152,3 +152,8 @@ class UserNotifications(AuthResource):
 
     def get(self, *args, **kwargs):
         return UserNotification.objects(user=kwargs['user_id']['pk']).to_json()
+
+    def put(self, *args, **kwargs):
+        UserNotification.objects(user=kwargs['user_id']['pk'])\
+            .update(set__viewed=True)
+        return jsonify({'success': True}), 200

@@ -20,6 +20,9 @@
             'notifications': function(){
               return req.$do('/user/notifications', req.METHODS.GET);
             },
+            'mark_as_viewed': function(){
+              return req.$do('/user/notifications', req.METHODS.UPDATE);
+            },
             'activateUser': function(code){
                 return req.$do('/user/activate/' + code, req.METHODS.GET);
             },

@@ -480,7 +480,7 @@ class UserActivity(mongoengine.Document):
 
     @classmethod
     def post_save(cls, sender, document, **kwargs):
-        # set in redis
+        # project notify
         r = RedisClient(channel=str(document.project.pk))
         r.store(document.verb, str(document.author.pk))
 

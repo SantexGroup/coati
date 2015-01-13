@@ -58,13 +58,13 @@
                 <li id="header_notification_bar" dropdown class="dropdown">
                     <a data-toggle="dropdown" ng-click="vm.loadNotifications();"
                        dropdown-toggle class="dropdown-toggle" href="#">
-                        <i class="icon-bell-alt"></i>
-                        <span class="badge bg-warning"><[ vm.notifications.length ]></span>
+                        <i class="icon-bell"></i>
+                        <span class="badge bg-warning"><[ (vm.notifications | filter:{viewed:false}).length ]></span>
                     </a>
                     <ul class="dropdown-menu extended notification">
                         <div class="notify-arrow-right notify-arrow-yellow"></div>
                         <li>
-                            <p class="yellow">You have <[vm.notifications.length]> new notifications</p>
+                            <p class="yellow">You have <[ (vm.notifications | filter:{viewed:false}).length ]> new notifications</p>
                         </li>
                         <li ng-repeat="n in vm.notifications">
                             <div ng-if="n.activity.verb == 'mention'">

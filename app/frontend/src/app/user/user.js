@@ -42,7 +42,7 @@
 
     };
 
-    var UserController = function (rootScope, growl, modal, UserService) {
+    var UserController = function (rootScope, timeout, growl, modal, UserService, SocketIO) {
 
         var vm = this;
         vm.notifications = [];
@@ -55,16 +55,24 @@
 
         var getNotifications = function () {
             vm.notifications = [];
-            UserService.notifications().then(function (not) {
+            return UserService.notifications().then(function (not) {
                 angular.forEach(not, function (v, k) {
                     var act = v;
                     act.activity.data = JSON.parse(v.activity.data);
                     vm.notifications.push(act);
                 });
+
             });
         };
 
-        vm.loadNotifications = getNotifications;
+        vm.loadNotifications = function(){
+            getNotifications().then(function(){
+                $timeout(function(){
+                    //Call to set as read
+                    UserService.mark_as_viewed();
+                }, 1500);
+            });
+        };
 
         vm.show_profile = function () {
             var modalInstance = modal.open({
@@ -77,13 +85,20 @@
 
         };
 
+        //Socket actions
+        SocketIO.init('notification', '');
+        SocketIO.on('notification', function () {
+            getNotifications();
+        });
+
     };
 
     ConfigModule.$inject = ['$stateProvider'];
-    UserController.$inject = ['$rootScope', 'growl', '$modal', 'UserService'];
+    UserController.$inject = ['$rootScope', '$timeout', 'growl', '$modal', 'UserService', 'SocketIO'];
     UserProfileController.$inject = ['$rootScope', '$modalInstance', 'UserService'];
 
     angular.module('Coati.User', ['ui.router',
+        'Coati.SocketIO',
         'Coati.Directives',
         'Coati.Services.User'])
         .config(ConfigModule)

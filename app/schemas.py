@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 import mongoengine
-from mongoengine import Q, signals
+from mongoengine import Q, signals, queryset_manager
 from bson import json_util
 from app.redis import RedisClient
 
@@ -14,13 +14,28 @@ TICKET_TYPE = (('U', 'User Story'),
                ('T', 'Task'))
 
 
+class CustomDocument(mongoengine.Document):
+
+    excluded_fields = []
+
+    meta = {
+        'abstract': True,
+    }
+
+    def to_dict(self):
+        data = self.to_mongo()
+        for f in self.excluded_fields:
+            if data.has_key(f):
+                del data[f]
+        return data
+
 class CustomQuerySet(mongoengine.QuerySet):
     def to_json(self, *args, **kwargs):
         return "[%s]" % (
             ",".join([doc.to_json(*args, **kwargs) for doc in self]))
 
 
-class User(mongoengine.Document):
+class User(CustomDocument):
     email = mongoengine.StringField(required=True)
     password = mongoengine.StringField(required=False)
     first_name = mongoengine.StringField(max_length=50)
@@ -32,6 +47,9 @@ class User(mongoengine.Document):
     meta = {
         'indexes': [{'fields': ['email'], 'sparse': True, 'unique': True}]
     }
+
+    excluded_fields = ['activation_token', 'password']
+
 
     @classmethod
     def pre_delete(cls, sender, document, **kwargs):
@@ -45,45 +63,7 @@ class User(mongoengine.Document):
         Comment.objects(who=document).delete()
 
 
-class Token(mongoengine.Document):
-    app_token = mongoengine.StringField()
-    social_token = mongoengine.StringField()
-    provider = mongoengine.StringField()
-    user = mongoengine.ReferenceField('User',
-                                      reverse_delete_rule=mongoengine.CASCADE)
-    expire = mongoengine.DateTimeField()
-
-    @staticmethod
-    def verify_token(token):
-        try:
-            token = Token.objects.get(app_token=token)
-            if token is None or token.expire <= datetime.now():
-                return False
-            return True
-        except mongoengine.DoesNotExist:
-            return False
-
-    @staticmethod
-    def get_token_by_user(user_id):
-        try:
-            return Token.objects.get(user=user_id)
-        except mongoengine.DoesNotExist:
-            return None
-
-    @staticmethod
-    def save_token_for_user(user, **kwargs):
-        # remove old tokens
-        Token.objects(user=user.to_dbref()).delete()
-        # store token in db
-        token = Token(user=user.to_dbref())
-        token.app_token = kwargs['app_token']
-        token.social_token = kwargs['social_token']
-        token.provider = kwargs['provider']
-        token.expire = datetime.now() + timedelta(seconds=kwargs['expire_in'])
-        return token.save()
-
-
-class Project(mongoengine.Document):
+class Project(CustomDocument):
     name = mongoengine.StringField(required=True, unique_with='owner')
     description = mongoengine.StringField()
     active = mongoengine.BooleanField(default=True)
@@ -111,10 +91,9 @@ class Project(mongoengine.Document):
         Column.objects(project=document).delete()
 
 
-
     def to_json(self):
-        data = self.to_mongo()
-        data["owner"] = self.owner.to_mongo()
+        data = self.to_dict()
+        data["owner"] = self.owner.to_dict()
         data["owner"]["id"] = str(self.owner.pk)
         data['members'] = ProjectMember.get_members_for_project(self)
         del data["owner"]["_id"]
@@ -139,7 +118,7 @@ class Project(mongoengine.Document):
         return result
 
 
-class Sprint(mongoengine.Document):
+class Sprint(CustomDocument):
     name = mongoengine.StringField(max_length=100, required=True)
     start_date = mongoengine.DateTimeField()
     end_date = mongoengine.DateTimeField()
@@ -163,7 +142,7 @@ class Sprint(mongoengine.Document):
 
 
     def to_json(self, *args, **kwargs):
-        data = self.to_mongo()
+        data = self.to_dict()
         if kwargs.get('archived'):
             tickets = SprintTicketOrder.objects(sprint=self.pk).order_by(
                 'order')
@@ -172,12 +151,16 @@ class Sprint(mongoengine.Document):
                                                 active=True).order_by('order')
         ticket_list = []
         for t in tickets:
-            tkt = t.ticket.to_mongo()
+            tkt = t.ticket.to_dict()
             tkt['order'] = t.order
+            tkt['badges'] = {
+                'comments': Comment.objects(ticket=t.ticket).count(),
+                'files': len(t.ticket.files)
+            }
             assignments = []
             for ass in t.ticket.assigned_to:
                 if ass.__class__.__name__ != 'DBRef':
-                    assignments.append(ass.to_mongo())
+                    assignments.append(ass.to_dict())
             tkt['assigned_to'] = assignments
             ticket_list.append(tkt)
         data["tickets"] = ticket_list
@@ -190,7 +173,7 @@ class Sprint(mongoengine.Document):
             assignments = []
             for ass in t.ticket.assigned_to:
                 if ass.__class__.__name__ != 'DBRef':
-                    assignments.append(ass.to_mongo())
+                    assignments.append(ass.to_dict())
 
             value = {
                 'points': t.ticket.points,
@@ -204,7 +187,7 @@ class Sprint(mongoengine.Document):
             try:
                 tt = TicketColumnTransition.objects.get(ticket=t.ticket,
                                                         latest_state=True)
-                value['who'] = tt.who.to_mongo()
+                value['who'] = tt.who.to_dict()
                 value['when'] = tt.when
                 if tt.column.done_column:
                     value['finished'] = True
@@ -233,13 +216,17 @@ class Sprint(mongoengine.Document):
         ticket_list = []
         for t in tickets:
             if t.ticket.__class__.__name__ != 'DBRef':
-                tkt = t.ticket.to_mongo()
-                tkt.order = t.order
+                tkt = t.ticket.to_dict()
+                tkt['order'] = t.order
+                tkt['badges'] = {
+                    'comments': Comment.objects(ticket=t.ticket).count(),
+                    'files': len(t.ticket.files)
+                }
                 assignments = []
                 for ass in t.ticket.assigned_to:
                     if ass.__class__.__name__ != 'DBRef':
-                        val = ass.to_mongo()
-                        val['member'] = ass.member.to_mongo()
+                        val = ass.to_dict()
+                        val['member'] = ass.member.to_dict()
                         assignments.append(val)
                 tkt['assigned_to'] = assignments
                 ticket_list.append(tkt)
@@ -250,14 +237,14 @@ class Sprint(mongoengine.Document):
             raise mongoengine.ValidationError('Project must be provided')
 
 
-class Attachment(mongoengine.Document):
+class Attachment(CustomDocument):
     name = mongoengine.StringField()
     size = mongoengine.IntField()
     type = mongoengine.StringField()
     data = mongoengine.StringField()
 
 
-class ProjectMember(mongoengine.Document):
+class ProjectMember(CustomDocument):
     member = mongoengine.ReferenceField('User',
                                         reverse_delete_rule=mongoengine.CASCADE)
     project = mongoengine.ReferenceField('Project',
@@ -271,11 +258,12 @@ class ProjectMember(mongoengine.Document):
 
     @classmethod
     def pre_delete(cls, sender, document, **kwargs):
-        Ticket.objects(assigned_to__contains=document).update(pull__assigned_to=document)
+        Ticket.objects(assigned_to__contains=document).update(
+            pull__assigned_to=document)
 
     def to_json(self, *args, **kwargs):
-        data = self.to_mongo()
-        data['member'] = self.member.to_mongo()
+        data = self.to_dict()
+        data['member'] = self.member.to_dict()
         return json_util.dumps(data)
 
     @staticmethod
@@ -284,9 +272,9 @@ class ProjectMember(mongoengine.Document):
         projects = []
         for pm in prj_mem:
             if pm.project.active:
-                projects.append(pm.project.to_mongo())
+                projects.append(pm.project.to_dict())
             elif str(pm.project.owner.pk) == member_pk:
-                projects.append(pm.project.to_mongo())
+                projects.append(pm.project.to_dict())
 
         return json_util.dumps(projects)
 
@@ -295,13 +283,13 @@ class ProjectMember(mongoengine.Document):
         prj_mem = ProjectMember.objects(project=project)
         members = []
         for pm in prj_mem:
-            val = pm.to_mongo()
-            val['member'] = pm.member.to_mongo()
+            val = pm.to_dict()
+            val['member'] = pm.member.to_dict()
             members.append(val)
         return members
 
 
-class Ticket(mongoengine.Document):
+class Ticket(CustomDocument):
     title = mongoengine.StringField(max_length=200, required=True)
     description = mongoengine.StringField()
     labels = mongoengine.ListField(mongoengine.StringField())
@@ -334,12 +322,16 @@ class Ticket(mongoengine.Document):
 
 
     def to_json(self, *args, **kwargs):
-        data = self.to_mongo()
-        data['project'] = self.project.to_mongo()
+        data = self.to_dict()
+        data['project'] = self.project.to_dict()
+        data['badges'] = {
+            'comments': Comment.objects(ticket=self).count(),
+            'files': len(self.files)
+        }
         files = []
         for f in self.files:
             if f.__class__.__name__ != 'DBRef':
-                file_att = f.to_mongo()
+                file_att = f.to_dict()
                 files.append(file_att)
         data['files'] = files
         try:
@@ -354,22 +346,22 @@ class Ticket(mongoengine.Document):
             sp = SprintTicketOrder.objects.get(ticket=self, active=True)
             if sp is not None:
                 if sp.sprint.__class__.__name__ != 'DBRef':
-                    data['sprint'] = sp.sprint.to_mongo()
+                    data['sprint'] = sp.sprint.to_dict()
         except mongoengine.DoesNotExist:
             pass
 
         assignments = []
         for ass in self.assigned_to:
             if ass.__class__.__name__ != 'DBRef':
-                val = ass.to_mongo()
-                val['member'] = ass.member.to_mongo()
+                val = ass.to_dict()
+                val['member'] = ass.member.to_dict()
                 assignments.append(val)
         data['assigned_to'] = assignments
 
         return json_util.dumps(data)
 
 
-class SprintTicketOrder(mongoengine.Document):
+class SprintTicketOrder(CustomDocument):
     ticket = mongoengine.ReferenceField('Ticket',
                                         reverse_delete_rule=mongoengine.CASCADE)
     order = mongoengine.IntField()
@@ -379,7 +371,7 @@ class SprintTicketOrder(mongoengine.Document):
     when = mongoengine.DateTimeField(default=datetime.now())
 
 
-class Comment(mongoengine.Document):
+class Comment(CustomDocument):
     comment = mongoengine.StringField()
     who = mongoengine.ReferenceField('User',
                                      reverse_delete_rule=mongoengine.NULLIFY)
@@ -392,9 +384,9 @@ class Comment(mongoengine.Document):
     }
 
     def to_json(self, *args, **kwargs):
-        data = self.to_mongo()
-        data['who'] = self.who.to_mongo()
-        data['ticket'] = self.ticket.to_mongo()
+        data = self.to_dict()
+        data['who'] = self.who.to_dict()
+        data['ticket'] = self.ticket.to_dict()
         return json_util.dumps(data)
 
     def clean(self):
@@ -404,7 +396,7 @@ class Comment(mongoengine.Document):
             raise mongoengine.ValidationError('Ticket must be provided')
 
 
-class Column(mongoengine.Document):
+class Column(CustomDocument):
     title = mongoengine.StringField(max_length=100, required=True)
     max_cards = mongoengine.IntField(default=9999)
     color_max_cards = mongoengine.StringField(default='#FF0000')
@@ -418,7 +410,7 @@ class Column(mongoengine.Document):
     }
 
     def to_json(self, *args, **kwargs):
-        data = self.to_mongo()
+        data = self.to_dict()
         ticket_column = TicketColumnTransition.objects(column=self,
                                                        latest_state=True).order_by(
             'order')
@@ -428,7 +420,9 @@ class Column(mongoengine.Document):
                 assignments = []
                 for ass in t.ticket.assigned_to:
                     if ass.__class__.__name__ != 'DBRef':
-                        assignments.append(ass.to_mongo())
+                        ma = ass.to_dict()
+                        ma['member'] = ass.member.to_dict()
+                        assignments.append(ma)
 
                 value = {
                     'points': t.ticket.points,
@@ -436,10 +430,14 @@ class Column(mongoengine.Document):
                     'order': t.order,
                     'title': t.ticket.title,
                     '_id': t.ticket.id,
-                    'who': t.who.to_mongo(),
+                    'who': t.who.to_dict(),
                     'when': t.when,
                     'type': t.ticket.type,
-                    'assigned_to': assignments
+                    'assigned_to': assignments,
+                    'badges': {
+                        'comments': Comment.objects(ticket=t.ticket).count(),
+                        'files': len(t.ticket.files)
+                    }
                 }
 
                 tickets.append(value)
@@ -451,7 +449,7 @@ class Column(mongoengine.Document):
             raise mongoengine.ValidationError('Project must be provided')
 
 
-class TicketColumnTransition(mongoengine.Document):
+class TicketColumnTransition(CustomDocument):
     ticket = mongoengine.ReferenceField('Ticket',
                                         reverse_delete_rule=mongoengine.CASCADE)
     column = mongoengine.ReferenceField('Column',
@@ -465,7 +463,7 @@ class TicketColumnTransition(mongoengine.Document):
     latest_state = mongoengine.BooleanField(default=True)
 
 
-class UserActivity(mongoengine.Document):
+class UserActivity(CustomDocument):
     project = mongoengine.ReferenceField('Project')
     when = mongoengine.DateTimeField(default=datetime.now())
     verb = mongoengine.StringField()
@@ -500,7 +498,7 @@ class UserActivity(mongoengine.Document):
                 r.store(document.verb, str(document.author.pk))
 
 
-class UserNotification(mongoengine.Document):
+class UserNotification(CustomDocument):
     activity = mongoengine.ReferenceField('UserActivity',
                                           reverse_delete_rule=mongoengine.CASCADE)
     user = mongoengine.ReferenceField('User')
@@ -511,10 +509,10 @@ class UserNotification(mongoengine.Document):
     }
 
     def to_json(self, *args, **kwargs):
-        data = self.to_mongo()
-        data['activity'] = self.activity.to_mongo()
-        data['activity']['project'] = self.activity.project.to_mongo()
-        author = self.activity.author.to_mongo()
+        data = self.to_dict()
+        data['activity'] = self.activity.to_dict()
+        data['activity']['project'] = self.activity.project.to_dict()
+        author = self.activity.author.to_dict()
         if 'password' in author.keys():
             del author['password']
         if 'activation_token' in author.keys():

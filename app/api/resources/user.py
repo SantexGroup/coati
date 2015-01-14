@@ -1,13 +1,13 @@
 import json
 import hashlib
 
-from flask import request, jsonify
+from flask import request, jsonify, current_app
 from flask.ext.restful import Resource
 from mongoengine import Q, DoesNotExist
 
 from app.api.resources.auth_resource import AuthResource
 from app.auth import generate_token
-from app.schemas import User, Token, UserNotification
+from app.schemas import User, UserNotification
 from app.utils import send_activation_email_async
 
 
@@ -81,12 +81,8 @@ class UserLogin(Resource):
                                         password=pwd.hexdigest(),
                                         active=True)
                 token = generate_token(str(user.pk))
-                Token.save_token_for_user(user,
-                                          app_token=token,
-                                          social_token='',
-                                          provider='Custom Login',
-                                          expire_in=10000)
-                return jsonify({'token': token, 'expire': 10000}), 200
+                expire = current_app.config['TOKEN_EXPIRATION_TIME']
+                return jsonify({'token': token, 'expire': expire}), 200
             except DoesNotExist:
                 return jsonify({'error': 'Login Incorrect'}), 404
         return jsonify({'error': 'Bad Request'}), 400

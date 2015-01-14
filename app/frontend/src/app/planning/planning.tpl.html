@@ -44,16 +44,17 @@
                                 <li ng-repeat="tkt in sprint.tickets track by tkt._id.$oid"
                                     class="ticket-item <[ tkt.type ]>"
                                     ui-sref="project.planning.ticket({ticket_id:tkt._id.$oid, project_pk:vm.project._id.$oid})"
-                                    title="Click to quick view">
-                                    <i class="icon-ellipsis-vertical handler"></i>
-
+                                        >
                                     <div class="task-title">
                                         <span class="task-title-sp">
                                           <[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
                                         </span>
 
                                         <div class="pull-right hidden-phone">
-                                            <span class="badge bg-info"><[ tkt.points ]></span>
+                                            <span class="badge bg-warning"><[ tkt.points ]> Pts.</span>
+                                            <span ng-if="tkt.badges.comments > 0" class="badge" title="Comments"><i class="icon-comments"></i> <[ tkt.badges.comments ]></span>
+                                            <span ng-if="tkt.badges.files > 0" class="badge"
+                                                  title="Attachments"><i class="icon-paper-clip"></i> <[ tkt.badges.files ]></span>
                                             <button title="Delete Ticket"
                                                     class="btn btn-danger btn-xs icon-trash"
                                                     ng-click="vm.delete_ticket($event, tkt);"></button>
@@ -102,16 +103,16 @@
                         <li ng-repeat="tkt in vm.tickets track by tkt._id.$oid"
                             class="user-story <[ tkt.type ]>"
                             ui-sref="project.planning.ticket({ticket_id:tkt._id.$oid, project_pk:vm.project._id.$oid})"
-                            title="Click to quick view">
-                            <i class="icon-ellipsis-vertical handler"></i>
-
+                                >
                             <div class="task-title">
                                 <span class="task-title-sp">
                                   <[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
                                 </span>
 
                                 <div class="pull-right hidden-phone">
-                                    <span class="badge bg-info"><[ tkt.points ]></span>
+                                    <span class="badge bg-warning"><[ tkt.points ]> Pts.</span>
+                                    <span ng-if="tkt.badges.comments > 0" class="badge" title="Comments"><i class="icon-comments"></i> <[ tkt.badges.comments ]></span>
+                                    <span ng-if="tkt.badges.files > 0" class="badge" title="Attachments"><i class="icon-paper-clip"></i> <[ tkt.badges.files ]></span>
                                     <button title="Delete Ticket"
                                             class="btn btn-danger btn-xs icon-trash"
                                             ng-click="vm.delete_ticket($event,tkt);"></button>

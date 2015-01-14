@@ -2,10 +2,9 @@ import json
 from functools import wraps
 
 from flask import request
-from app.auth.tools import get_data_from_token
+from app.auth.tools import get_data_from_token, verify_token
 
 from app.utils import output_json
-from app.schemas import Token
 
 __author__ = 'gastonrobledo'
 
@@ -22,7 +21,7 @@ def require_authentication(view_function):
             res.content_type = 'application/json'
             return res
         token = header.split(' ')[1]
-        if Token.verify_token(token):
+        if verify_token(token):
             kwargs['user_id'] = get_data_from_token(token)
             return view_function(*args, **kwargs)
         else:

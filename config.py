@@ -81,6 +81,8 @@ PROVIDERS_INFO = {
 }
 
 SECRET_KEY = 'AIzaSyD2QbbC8fr-Eob-qWitXDqBP1tZCBr5Gcw'
+#seconds to expire 30000 aprox 8hs
+TOKEN_EXPIRATION_TIME = 30000
 DEBUG = True
 
 if ENVIRONMENT == 'local':

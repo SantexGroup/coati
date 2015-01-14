@@ -9,7 +9,7 @@
                ng-repeat="item in vm.projects track by item._id.$oid"
                data-index="<[ $index ]>">
             <section class="panel">
-                <a href="/project/<[ item._id.$oid ]>">
+                <a ui-sref="project.planning({project_pk: item._id.$oid })">
                     <header class="panel-heading alt">
                         <span><[ item.name ]></span>
 

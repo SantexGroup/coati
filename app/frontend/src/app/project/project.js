@@ -21,6 +21,7 @@
                 data: {
                     pageTitle: 'Project Details'
                 },
+                abstract: true,
                 reload: true
             });
     };
@@ -40,26 +41,9 @@
             return project.owner.id === rootScope.user._id.$oid;
         };
 
-        if (state.current.tab_active) {
-            //get project
-            vm.tab_active = state.current.tab_active;
-            vm[vm.tab_active] = true;
-
-        } else {
-            state.go('project.planning', {project_pk: state.params.project_pk}, {reload: true});
+        if(state.current.tab_active !== undefined){
+            vm[state.current.tab_active] = true;
         }
-
-        rootScope.$on("$stateChangeSuccess", function (event, toState, toParams, fromState, fromParams) {
-            vm.tab_active = state.current.tab_active;
-            if(state.current.name.indexOf('project') !== -1) {
-                if (vm.tab_active === undefined) {
-                    state.go('project.planning', {project_pk: state.params.project_pk}, {reload: true});
-                } else {
-                    vm[vm.tab_active] = true;
-                    vm[fromState.tab_active] = false;
-                }
-            }
-        });
 
         SocketIO.channel(scope.project._id.$oid);
     };

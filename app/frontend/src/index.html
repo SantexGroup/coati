@@ -74,6 +74,7 @@
                             ng-class="{new:!n.viewed}">
                             <ng-include ng-if="n.activity.verb == 'mention'" src="'user/notifications/mention.tpl.html'"></ng-include>
                             <ng-include ng-if="n.activity.verb == 'new_comment'" src="'user/notifications/new_comment.tpl.html'"></ng-include>
+                            <ng-include ng-if="n.activity.verb == 'update_ticket'" src="'user/notifications/update_ticket.tpl.html'"></ng-include>
                         </li>
                         <li>
                             <a href="javascript:;" ui-sref="notifications">See all notifications</a>

@@ -26,6 +26,8 @@
                         vm.project = $stateParams.project_pk;
 
                         var modalInstance = $modal.open({
+                            backdrop: true,
+                            windowClass: 'right fade',
                             resolve: {
                                 item: function () {
                                     var promise = $q.defer();
@@ -48,10 +50,12 @@
                             }
                         });
                         modalInstance.result.then(function () {
-                            $state.go('^');
+                            $state.go('^', {}, {reload:true});
                         });
                     });
-                }]
+                }],
+                reload: true,
+                tab_active: 'planning'
             });
     };
 

@@ -75,7 +75,7 @@
             vm.all_notifications = list;
             angular.forEach(list, function (v, k) {
                 var act = v;
-                act.activity.data = JSON.parse(v.activity.data);
+                act.data = JSON.parse(v.activity.data);
                 vm.notifications.push(act);
             });
         };
@@ -98,7 +98,7 @@
                 });
                 if (items.length > 0) {
                     //Call to set as read
-                    UserService.mark_as_viewed().then(function (list) {
+                    UserService.mark_as_viewed(10).then(function (list) {
                         preProcessNotifications(list);
                     });
                 }

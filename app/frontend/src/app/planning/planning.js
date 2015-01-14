@@ -13,8 +13,7 @@
             tab_active: 'planning',
             data: {
                 pageTitle: 'Project Planning'
-            },
-            reload: true
+            }
         });
     };
 

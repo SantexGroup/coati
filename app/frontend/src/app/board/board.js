@@ -13,9 +13,7 @@
             tab_active: 'board',
             data: {
                 pageTitle: 'Project Board'
-            },
-            reloadOnSearch: false,
-            reload: true
+            }
         });
     };
 

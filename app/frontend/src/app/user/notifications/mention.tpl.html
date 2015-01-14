@@ -1,4 +1,4 @@
-<a href="javascript:;" ui-sref="project.planning.ticket({ticket_id:n.activity.data.ticket._id.$oid, project_pk:n.activity.project._id.$oid})" ng-class="{'unread': !n.viewed}">
+<a href="javascript:;" ui-sref="project.planning.ticket({ticket_id:n.data.ticket._id.$oid, project_pk:n.activity.project._id.$oid})" ng-class="{'unread': !n.viewed}">
     <img ng-if="!n.activity.author.picture" alt=""
          src="/static/assets/img/koala.png">
     <img ng-if="n.activity.author.picture" alt=""
@@ -7,7 +7,7 @@
         ]> <[ n.activity.author.last_name
         ]></strong> mentioned you in
         <strong>
-            <[ n.activity.project.prefix]>-<[ n.activity.data.ticket.number ]>: <[n.activity.data.ticket.title ]>
+            <[ n.activity.project.prefix]>-<[ n.data.ticket.number ]>: <[n.data.ticket.title ]>
         </strong>
     </span>
 </a>

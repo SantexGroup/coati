@@ -15,32 +15,38 @@
         <section class="panel">
             <header class="panel-heading tab-bg-dark-navy-blue ">
                 <ul class="nav nav-tabs">
-                    <li ng-class="{active: vm.planning}">
-                        <a data-toggle="tab"
-                           ng-click="vm.switchView('project.planning');">Planning</a>
+                    <li ui-sref-active="active">
+                        <a href="#"
+                           ui-sref="project.planning({project_pk: project._id.$oid})"
+                           ui-sref-opts="{reload: true}"
+                                >Planning</a>
                     </li>
-                    <li ng-class="{active: vm.board}">
-                        <a data-toggle="tab"
-                           ng-click="vm.switchView('project.board');">Board</a>
+                    <li ui-sref-active="active">
+                        <a ui-sref="project.board({project_pk: project._id.$oid})"
+                           ui-sref-opts="{reload: true}">Board</a>
                     </li>
-                    <li ng-class="{active: vm.reports}">
-                        <a data-toggle="tab"
-                           ng-click="vm.switchView('project.reports');">Reports</a>
+                    <li ui-sref-active="active">
+                        <a ui-sref="project.reports({project_pk: project._id.$oid})"
+                           ui-sref-opts="{reload: true}"
+                                >Reports</a>
                     </li>
-                    <li ng-class="{active: vm.archived}">
-                        <a data-toggle="tab"
-                           ng-click="vm.switchView('project.archived');">Archived
+                    <li ui-sref-active="active">
+                        <a ui-sref="project.archived({project_pk: project._id.$oid})"
+                           ui-sref-opts="{reload: true}"
+                                >Archived
                             Sprints</a>
                     </li>
-                     <li ng-class="{active: vm.closed_tickets}">
-                        <a data-toggle="tab"
-                           ng-click="vm.switchView('project.closed_tickets');">Archived
+                    <li ui-sref-active="active">
+                        <a
+                                ui-sref="project.closed_tickets({project_pk: project._id.$oid})"
+                                ui-sref-opts="{reload: true}">Archived
                             Tickets</a>
                     </li>
                     <li ng-show="vm.check_permission()"
-                        ng-class="{active: vm.settings}">
-                        <a data-toggle="tab"
-                           ng-click="vm.switchView('project.settings');">Project
+                        ui-sref-active="active">
+                        <a
+                                ui-sref="project.settings({project_pk: project._id.$oid})"
+                                ui-sref-opts="{reload: true}">Project
                             Settings</a>
                     </li>
                 </ul>
@@ -64,7 +70,8 @@
                         <div ui-view="project-archived"></div>
                     </div>
                     <div id="tickets-archived-overview"
-                         class="tab-pane" ng-class="{active: vm.closed_tickets}">
+                         class="tab-pane"
+                         ng-class="{active: vm.closed_tickets}">
                         <div ui-view="closed_tickets"></div>
                     </div>
                     <div id="settings" class="tab-pane"

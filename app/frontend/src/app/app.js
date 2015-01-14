@@ -121,7 +121,7 @@
                 vm.loading_results = false;
                 return rta.map(function (item) {
                     var result = {
-                        label: item.project.prefix + '-' + item.number  +': ' + item.title,
+                        label: item.project.prefix + '-' + item.number + ': ' + item.title,
                         description: item.description,
                         data: item
                     };
@@ -131,8 +131,7 @@
         };
 
 
-
-        vm.on_select_result = function(item, model, label, value){
+        vm.on_select_result = function (item, model, label, value) {
             showTicketDetails(model.data);
             return model.label;
         };
@@ -172,7 +171,7 @@
 
     angular.module('Coati', [
         'templates-app', 'templates-common',
-        'ui.router', 'ui.bootstrap', 'angular-growl', 'xeditable','Coati.SocketIO',
+        'ui.router', 'ui.bootstrap', 'angular-growl', 'xeditable', 'Coati.SocketIO',
         'Coati.Config', 'Coati.Directives', 'Coati.Services.Ticket',
         'Coati.Home',
         'Coati.Login', 'Coati.Helpers',

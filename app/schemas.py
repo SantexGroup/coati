@@ -520,7 +520,7 @@ class UserNotification(mongoengine.Document):
         if 'activation_token' in author.keys():
             del author['activation_token']
         data['activity']['author'] = author
-        data['activity']['data'] = self.activity.data
+        data['activity']['data'] = json_util.loads(self.activity.data)
         return json_util.dumps(data)
 
 # Signals

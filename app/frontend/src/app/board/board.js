@@ -51,13 +51,6 @@
         };
 
         var showTicketDetails = function (id) {
-            vm.already_showed = true;
-
-            var args = location.search();
-            if (!args.ticket) {
-                location.search('ticket', id);
-            }
-
             vm.modal_ticket_instance = modal.open({
                 controller: 'TicketDetailController as vm',
                 templateUrl: 'ticket/ticket_detail_view.tpl.html',
@@ -71,16 +64,12 @@
                 }
             });
             vm.modal_ticket_instance.result.then(function () {
-                vm.already_showed = false;
                 getColumnConfiguration(vm.project_pk);
                 getSprintTickets(vm.sprint._id.$oid);
-                location.search('');
 
             }, function () {
-                vm.already_showed = false;
                 getColumnConfiguration(vm.project_pk);
                 getSprintTickets(vm.sprint._id.$oid);
-                location.search('');
             });
 
         };
@@ -195,24 +184,6 @@
                 getColumnConfiguration(vm.project_pk);
             }
         });
-
-
-        //This is for control back button and show modal or not
-        rootScope.$watch(function () {
-            return location.search();
-        }, function () {
-            var params = location.search();
-            if (params.ticket && !vm.already_showed) {
-                if (vm.project) {
-                    showTicketDetails(params.ticket);
-                }
-            } else {
-                if (vm.already_showed && vm.modal_ticket_instance && !params.ticket) {
-                    vm.modal_ticket_instance.close();
-                    vm.already_showed = false;
-                }
-            }
-        }, true);
 
     };
 

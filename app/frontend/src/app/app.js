@@ -93,28 +93,6 @@
             }
         });
 
-        var showTicketDetails = function (tkt) {
-            if (tkt) {
-                tkt.pk = tkt._id.$oid;
-            }
-            var modal_instance = modal.open({
-                controller: 'TicketDetailController as vm',
-                templateUrl: 'ticket/ticket_detail_view.tpl.html',
-                resolve: {
-                    item: function () {
-                        return {
-                            'project': tkt.project,
-                            'ticket_id': tkt._id.$oid
-                        };
-                    }
-                }
-            });
-
-            modal_instance.result.then(function () {
-                vm.ticket_found = null;
-            });
-        };
-
         vm.searchTickets = function (query) {
             vm.loading_results = true;
             return TicketService.search(query).then(function (rta) {
@@ -132,7 +110,6 @@
 
 
         vm.on_select_result = function (item, model, label, value) {
-            showTicketDetails(model.data);
             return model.label;
         };
 

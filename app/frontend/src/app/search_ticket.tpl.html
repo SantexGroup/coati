@@ -1,4 +1,4 @@
-<a>
+<a ui-sref="project.planning.ticket({project_pk:match.model.data.project._id.$oid, ticket_id:match.model.data._id.$oid})">
     <span ng-bind-html="(match.model.label | typeaheadHighlight:query) | trustedHtml"></span>
     <small ng-bind-html="(match.model.description | typeaheadHighlight:query) | trustedHtml"></small>
 </a>

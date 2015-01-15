@@ -50,39 +50,17 @@
             SprintService.get_chart(sprint_id).then(function (chart_data) {
                 vm.tickets = chart_data.all_tickets;
                 vm.chartData = {
-                    title: {
-                        text: 'BurnDown Chart',
-                        x: -20 //center
-                    },
-                    xAxis: {
-                        categories: chart_data.dates,
-                        labels: {
-                            overflow: 'justify'
-                        }
-                    },
-                    yAxis: {
-                        title: {
-                            text: 'Points'
-                        },
-                        plotLines: [
-                            {
-                                value: 0,
-                                width: 1,
-                                color: '#808080'
-                            }
-                        ]
-                    },
-                    series: [
+                    labels: chart_data.dates,
+                    datasets: [
                         {
-                            name: 'Ideal',
+                            label: 'Ideal',
                             data: chart_data.ideal
                         },
                         {
-                            name: 'Remaining',
+                            label: 'Remaining',
                             data: chart_data.points_remaining
                         }
                     ]
-
                 };
             });
         };

@@ -144,18 +144,36 @@
         vm.startSprint = function (sprint) {
             var modal_instance = modal.open({
                 controller: 'StartSprintController as vm',
-                templateUrl: 'sprint/start_sprint.tpl.html',
+                templateUrl: 'sprint/sprint_form.tpl.html',
                 resolve: {
                     sprint: function () {
-                        //TODO: Use config to get the sprint default duration
-                        sprint.sprint_duration = vm.project.sprint_duration || 10;
+                        sprint.sprint_duration = vm.project.sprint_duration;
                         return angular.copy(sprint);
-                    }
+                    },
+                    to_start: true
                 }
             });
             modal_instance.result.then(function () {
                 growl.addSuccessMessage('The sprint was started successfully');
                 vm.one_started = true;
+                getSprintsWithTickets(vm.project._id.$oid);
+            });
+        };
+
+        vm.edit_sprint = function(sprint){
+          var modal_instance = modal.open({
+                controller: 'StartSprintController as vm',
+                templateUrl: 'sprint/sprint_form.tpl.html',
+                resolve: {
+                    sprint: function () {
+                        sprint.sprint_duration = vm.project.sprint_duration;
+                        return angular.copy(sprint);
+                    },
+                    to_start: false
+                }
+            });
+            modal_instance.result.then(function () {
+                growl.addSuccessMessage('The sprint was updated successfully');
                 getSprintsWithTickets(vm.project._id.$oid);
             });
         };

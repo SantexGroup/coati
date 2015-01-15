@@ -27,6 +27,11 @@
                                ng-click="vm.startSprint(sprint);">Start
                                 Sprint</a>
                             <a ng-if="sprint.started && !sprint.finalized"
+                               class="btn btn-primary btn-sm"
+                               href="javascript:;"
+                               ng-click="vm.edit_sprint(sprint);">Edit
+                                Sprint</a>
+                            <a ng-if="sprint.started && !sprint.finalized"
                                class="btn btn-danger btn-sm" href="javascript:;"
                                ng-click="vm.stopSprint(sprint);">Stop Sprint</a>
                             <a class="btn btn-sm btn-danger"

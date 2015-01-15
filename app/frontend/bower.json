@@ -27,7 +27,8 @@
     "ng-tags-input": "v2.1.1",
     "ng-file-upload": "",
     "lodash": "",
-    "angular-xeditable": ""
+    "angular-xeditable": "",
+    "chartjs": "1.0.1"
   },
   "devDependencies": {
     "angular-mocks": ""

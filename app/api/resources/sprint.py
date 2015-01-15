@@ -77,6 +77,7 @@ class SprintInstance(AuthResource):
         if data:
             sp = Sprint.objects.get(pk=sp_id)
             sp.name = data.get('name', sp.name)
+
             if data.get('for_starting'):
 
                 # sum all the ticket for the initial planning value
@@ -86,12 +87,10 @@ class SprintInstance(AuthResource):
                     total_planned_points += s.ticket.points
 
                 sp.total_points_when_started = total_planned_points
-                time_start = timedelta(minutes=datetime.now().minute,
-                                       hours=datetime.now().hour)
-                time_end = timedelta(minutes=59, hours=23)
+
                 sp.start_date = parser.parse(
-                    data.get('start_date')) + time_start
-                sp.end_date = parser.parse(data.get('end_date')) + time_end
+                    data.get('sd'))
+                sp.end_date = parser.parse(data.get('ed'))
                 sp.started = True
             elif data.get('for_finalized'):
                 sp.finalized = True
@@ -112,7 +111,9 @@ class SprintInstance(AuthResource):
 
                 Ticket.objects(pk__in=tickets_to_close_id).update(
                     set__closed=True)
-
+            elif data.get('for_editing'):
+                sp.start_date = parser.parse(data.get('start_date'))
+                sp.end_date = parser.parse(data.get('end_date'))
             sp.save()
 
             # save activity
@@ -125,18 +126,19 @@ class SprintInstance(AuthResource):
 
         return jsonify({"error": 'Bad Request'}), 400
 
-    def delete(self, sp_id, *args, **kwargs):
-        sp = Sprint.objects.get(pk=sp_id)
 
-        # save activity
-        save_notification(project_pk=sp.project.pk,
-                          author=kwargs['user_id']['pk'],
-                          verb='delete_sprint',
-                          data=sp.to_json())
+def delete(self, sp_id, *args, **kwargs):
+    sp = Sprint.objects.get(pk=sp_id)
 
-        sp.delete()
+    # save activity
+    save_notification(project_pk=sp.project.pk,
+                      author=kwargs['user_id']['pk'],
+                      verb='delete_sprint',
+                      data=sp.to_json())
 
-        return sp.to_json(), 204
+    sp.delete()
+
+    return sp.to_json(), 204
 
 
 class SprintActive(AuthResource):
@@ -180,7 +182,9 @@ class SprintChart(AuthResource):
                 for sto in tickets_in_sprint:
                     ideal_planned += sto.ticket.points
             else:
-                ideal_planned = planned
+                ideal_planned = planned if planned > 0 else 20
+            if ideal_planned == 0:
+                ideal_planned = 20
             # get done column
             col = Column.objects.get(project=sprint.project,
                                      done_column=True)
@@ -196,7 +200,7 @@ class SprintChart(AuthResource):
             days.append(sd)
             counter = 1
 
-            while len(days) <= duration:
+            while counter < duration:
                 d = sd + timedelta(days=counter)
                 if d.weekday() != 5 and d.weekday() != 6:
                     days.append(d)
@@ -204,10 +208,10 @@ class SprintChart(AuthResource):
 
             formatted_days = []
             for day in days:
-                planned_counter = (planned_counter - ideal_planned / duration)
+                planned_counter = round(planned_counter - ideal_planned / duration)
                 if planned_counter > -1 and len(ideal) < len(days):
                     ideal.append(planned_counter)
-                formatted_days.append(datetime.strftime(day, '%d, %b %Y'))
+                formatted_days.append(datetime.strftime(day, '%d %a, %b %Y'))
                 start_date = day
                 end_date = start_date + timedelta(hours=23, minutes=59)
 

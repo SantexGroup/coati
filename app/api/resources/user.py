@@ -131,12 +131,8 @@ class UserActivate(Resource):
             user.active = True
             user.save()
             token = generate_token(str(user.pk))
-            Token.save_token_for_user(user,
-                                      app_token=token,
-                                      social_token='',
-                                      provider='Custom Login',
-                                      expire_in=10000)
-            return jsonify({'token': token, 'expire': 10000}), 200
+            return jsonify({'token': token,
+                            'expire': current_app.config['TOKEN_EXPIRATION_TIME']}), 200
         except DoesNotExist:
             return jsonify({'error': 'Bad Request'}), 400
 
@@ -156,7 +152,7 @@ class UserNotifications(AuthResource):
 
     def put(self, *args, **kwargs):
         UserNotification.objects(user=kwargs['user_id']['pk']).update(set__viewed=True)
-        data = UserNotification.objects(user=kwargs['user_id']['pk']).order_by('activity__when').to_json()
+        data = UserNotification.objects(user=kwargs['user_id']['pk']).order_by('activity__when')
         if request.args.get('total'):
             data = data[:int(request.args.get('total'))]
-        return data, 200
+        return data.to_json(), 200

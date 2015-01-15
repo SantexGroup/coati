@@ -13,6 +13,9 @@ TICKET_TYPE = (('U', 'User Story'),
                ('E', 'Epic'),
                ('T', 'Task'))
 
+PROJECT_TYPE = (('S', 'Scrum'),
+               ('K', 'Kanban'))
+
 
 class CustomDocument(mongoengine.Document):
 
@@ -71,8 +74,9 @@ class Project(CustomDocument):
                                        reverse_delete_rule=mongoengine.CASCADE)
     prefix = mongoengine.StringField()
     sprint_duration = mongoengine.IntField()
-    # true = Scrum, false = Kanban
-    project_type = mongoengine.BooleanField(default=True)
+    project_type = mongoengine.StringField(max_length=1,
+                                           choices=PROJECT_TYPE,
+                                           default='S')
 
     meta = {
         'indexes': ['name'],

@@ -1,17 +1,17 @@
-from app.utils import save_notification
 
-__author__ = 'gastonrobledo'
 import json
 from datetime import timedelta, datetime
 
 from dateutil import parser
 from flask import jsonify, request
+from mongoengine import DoesNotExist
 
 from app.schemas import (Sprint, Project, SprintTicketOrder, Ticket,
-                         Column, TicketColumnTransition, UserActivity, User)
-from app.redis import RedisClient
+                         Column, TicketColumnTransition)
 from app.api.resources.auth_resource import AuthResource
-from mongoengine import DoesNotExist
+from app.utils import save_notification
+
+
 
 
 class SprintOrder(AuthResource):
@@ -89,8 +89,8 @@ class SprintInstance(AuthResource):
                 sp.total_points_when_started = total_planned_points
 
                 sp.start_date = parser.parse(
-                    data.get('sd'))
-                sp.end_date = parser.parse(data.get('ed'))
+                    data.get('start_date')).date()
+                sp.end_date = parser.parse(data.get('end_date')).date()
                 sp.started = True
             elif data.get('for_finalized'):
                 sp.finalized = True
@@ -112,8 +112,8 @@ class SprintInstance(AuthResource):
                 Ticket.objects(pk__in=tickets_to_close_id).update(
                     set__closed=True)
             elif data.get('for_editing'):
-                sp.start_date = parser.parse(data.get('start_date'))
-                sp.end_date = parser.parse(data.get('end_date'))
+                sp.start_date = parser.parse(data.get('start_date')).date()
+                sp.end_date = parser.parse(data.get('end_date')).date()
             sp.save()
 
             # save activity
@@ -174,24 +174,19 @@ class SprintChart(AuthResource):
     def get(self, sprint_id, *args, **kwargs):
         sprint = Sprint.objects.get(pk=sprint_id)
         if sprint:
-            duration = sprint.project.sprint_duration
+
             tickets_in_sprint = SprintTicketOrder.objects(sprint=sprint)
             planned = sprint.total_points_when_started
+            starting_points = planned
             ideal_planned = 0
             if tickets_in_sprint:
                 for sto in tickets_in_sprint:
                     ideal_planned += sto.ticket.points
-            else:
-                ideal_planned = planned if planned > 0 else 20
-            if ideal_planned == 0:
-                ideal_planned = 20
             # get done column
             col = Column.objects.get(project=sprint.project,
                                      done_column=True)
             sd = sprint.start_date
             days = []
-
-            starting_points = planned
 
             points_remaining = []
             ideal = [ideal_planned]
@@ -200,27 +195,37 @@ class SprintChart(AuthResource):
             days.append(sd)
             counter = 1
 
-            while counter < duration:
+            duration = (sprint.end_date - sprint.start_date).days
+
+            while counter <= duration:
                 d = sd + timedelta(days=counter)
-                if d.weekday() != 5 and d.weekday() != 6:
-                    days.append(d)
+                #if d.weekday() != 5 and d.weekday() != 6:
+                days.append(d)
                 counter += 1
 
             formatted_days = []
+            delta = float(ideal_planned) / float(duration)
             for day in days:
-                planned_counter = round(planned_counter - ideal_planned / duration)
-                if planned_counter > -1 and len(ideal) < len(days):
-                    ideal.append(planned_counter)
+                planned_counter -= delta
+                ideal.append(round(planned_counter, 2))
                 formatted_days.append(datetime.strftime(day, '%d %a, %b %Y'))
                 start_date = day
                 end_date = start_date + timedelta(hours=23, minutes=59)
 
                 if start_date.date() <= datetime.now().date():
 
+                    # tickets after started sprint
+                    std = start_date + timedelta(minutes=5)
+                    spt_list = SprintTicketOrder.objects(sprint=sprint,
+                                                         when__gt=std,
+                                                         when__lt=end_date)
+                    for spt in spt_list:
+                        starting_points += spt.ticket.points
+
                     tct_list = TicketColumnTransition.objects(column=col,
                                                               sprint=sprint,
-                                                              when__gte=start_date.date(),
-                                                              when__lt=end_date.date(),
+                                                              when__gte=start_date,
+                                                              when__lt=end_date,
                                                               latest_state=True)
                     points_burned_for_date = 0
                     tickets = []
@@ -232,13 +237,6 @@ class SprintChart(AuthResource):
                         points_burned_for_date += tct.ticket.points
                     starting_points -= points_burned_for_date
 
-                    # tickets after started sprint
-                    std = start_date + timedelta(minutes=5)
-                    spt_list = SprintTicketOrder.objects(sprint=sprint,
-                                                         when__gt=std,
-                                                         when__lt=end_date)
-                    for spt in spt_list:
-                        starting_points += spt.ticket.points
                     points_remaining.append(starting_points)
 
             # days.insert(0, 'Start')

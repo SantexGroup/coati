@@ -18,7 +18,7 @@
         });
     };
 
-    var ProjectCtrlReports = function (state, SprintService) {
+    var ProjectCtrlReports = function (scope, state, SprintService) {
         var vm = this;
         vm.is_not_started = false;
 
@@ -54,10 +54,14 @@
                     datasets: [
                         {
                             label: 'Ideal',
-                            data: chart_data.ideal
+                            data: chart_data.ideal,
+                            strokeColor: "rgba(46,159,12,1)",
+                            pointColor: "rgba(129,244,143,1)"
                         },
                         {
                             label: 'Remaining',
+                            strokeColor: "rgba(255,0,0, 1) ",
+                            pointColor: "rgba(254,146,146,1)",
                             data: chart_data.points_remaining
                         }
                     ]
@@ -78,13 +82,13 @@
                 vm.chartData = null;
             }
         };
-
+        vm.project = scope.$parent.project;
         getSprints(state.params.project_pk);
 
     };
 
     Config.$inject = ['$stateProvider'];
-    ProjectCtrlReports.$inject = ['$state', 'SprintService'];
+    ProjectCtrlReports.$inject = ['$scope', '$state', 'SprintService'];
 
     angular.module('Coati.Report', ['ui.router',
         'Coati.Directives',

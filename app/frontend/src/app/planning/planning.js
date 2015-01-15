@@ -148,9 +148,9 @@
                 resolve: {
                     sprint: function () {
                         sprint.sprint_duration = vm.project.sprint_duration;
+                        sprint.to_start = true;
                         return angular.copy(sprint);
-                    },
-                    to_start: true
+                    }
                 }
             });
             modal_instance.result.then(function () {
@@ -167,9 +167,9 @@
                 resolve: {
                     sprint: function () {
                         sprint.sprint_duration = vm.project.sprint_duration;
+                        sprint.to_start = false;
                         return angular.copy(sprint);
-                    },
-                    to_start: false
+                    }
                 }
             });
             modal_instance.result.then(function () {

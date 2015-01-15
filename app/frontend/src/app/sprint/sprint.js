@@ -61,7 +61,7 @@
 
     };
 
-    var StartSprintController = function (scope, conf, filter, modalInstance, SprintService, sprint, to_start) {
+    var StartSprintController = function (scope, conf, filter, modalInstance, SprintService, sprint) {
         var vm = this;
         vm.sprint = sprint;
         vm.form = {};
@@ -71,7 +71,7 @@
 
 
 
-        if(to_start) {
+        if(vm.sprint.to_start) {
             vm.min_date = today;
             vm.max_date = new Date(today.getTime() + vm.sprint.sprint_duration * 24 * 60 * 60 * 1000);
             //set defaults
@@ -119,7 +119,7 @@
 
         vm.save = function () {
             if (vm.form.sprint_form.$valid) {
-                if(to_start) {
+                if(vm.sprint.to_start) {
                     vm.sprint.for_starting = true;
                 }else{
                     vm.sprint.for_editing = true;

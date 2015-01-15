@@ -138,8 +138,18 @@
                         scaleGridLineColor : "rgba(0,0,0,.05)",
                         scaleGridLineWidth : 1,
                         datasetFill : false,
-                        responsive: true
+                        responsive: true,
+                        tooltipFontSize: 10,
+                        // String - Tooltip font weight style
+                        tooltipFontStyle: "normal",
+                        // String - Tooltip label font colour
+                        tooltipFontColor: "#fff",
+                        // Number - Tooltip title font size in pixels
+                        tooltipTitleFontSize: 12,
+                        tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= math.round(value) %>",
+                        legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
                     };
+
                     return new Chart(ctx).Line(scope.chartData, options);
                 });
             }

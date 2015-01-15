@@ -182,13 +182,15 @@ class Sprint(CustomDocument):
                                         t.ticket.title),
                 '_id': t.ticket.id,
                 'type': t.ticket.type,
-                'added_after': t.when > self.start_date
+                'added_after': t.when > self.start_date,
+                'number': t.ticket.number
             }
             try:
                 tt = TicketColumnTransition.objects.get(ticket=t.ticket,
                                                         latest_state=True)
                 value['who'] = tt.who.to_dict()
                 value['when'] = tt.when
+                value['where'] = tt.column.title
                 if tt.column.done_column:
                     value['finished'] = True
                 else:

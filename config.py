@@ -1,11 +1,13 @@
 __author__ = 'gastonrobledo'
 
 ENVIRONMENT = "local"
-CURRENT_DOMAIN = 'http://localhost:5000'
+
 
 # You must configure these 3 values from Google APIs console
 # https://code.google.com/apis/console
 if ENVIRONMENT == 'local':
+    CURRENT_DOMAIN = 'http://localhost:5000'
+    SOCKET_IO = 'http://localhost:9000'
     PROVIDERS = {
         'google': {
             'base_url': 'https://www.google.com/accounts/',
@@ -40,6 +42,8 @@ if ENVIRONMENT == 'local':
         }
     }
 else:
+    CURRENT_DOMAIN = 'http://agile.santextest.com'
+    SOCKET_IO = 'http://agile.santextest.com:8001'
     PROVIDERS = {
         'google': {
             'base_url': 'https://www.google.com/accounts/',

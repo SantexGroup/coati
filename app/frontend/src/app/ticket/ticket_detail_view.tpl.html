@@ -105,8 +105,8 @@
     <div class="col-md-12">
         <label>Labels:</label>
 
-        <p class="labels-ticket" e-form="labels_form"
-                              ng-click="vm.show(labels_form)" editable-tags="vm.labels"
+        <p class="labels-ticket" editable-tags="vm.labels" e-form="labels_form"
+                              ng-click="vm.show(labels_form)"
            e-style="display:inline-block;min-width:400px;"
            oncancel="vm.prepareLabelsToSave($data, false);"
            onbeforesave="vm.prepareLabelsToSave($data, true);">

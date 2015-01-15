@@ -288,6 +288,7 @@
 
     ImageFunction.$inject = ['$q'];
     contentEditable.$inject = ['$sce'];
+    editableTagInput.$inject = ['editableDirectiveFactory'];
     CalculateWithBoard.$inject = ['$rootScope', '$timeout'];
 
     angular.module('Coati.Directives', ['Coati.Config'])

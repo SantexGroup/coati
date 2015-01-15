@@ -148,8 +148,11 @@
 
     angular.module('Coati', [
         'templates-app', 'templates-common',
-        'ui.router', 'ui.bootstrap', 'angular-growl', 'xeditable', 'Coati.SocketIO',
-        'Coati.Config', 'Coati.Directives', 'Coati.Services.Ticket',
+        'ui.router', 'ui.bootstrap', 'angular-growl', 'xeditable',
+        'Coati.SocketIO',
+        'Coati.Config',
+        'Coati.Directives',
+        'Coati.Services.Ticket',
         'Coati.Home',
         'Coati.Login', 'Coati.Helpers',
         'Coati.User', 'Coati.Project', 'Coati.Ticket', 'Coati.Sprint'])

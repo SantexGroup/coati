@@ -13,8 +13,7 @@
             tab_active: 'planning',
             data: {
                 pageTitle: 'Project Planning'
-            },
-            reload: true
+            }
         });
     };
 
@@ -145,11 +144,11 @@
         vm.startSprint = function (sprint) {
             var modal_instance = modal.open({
                 controller: 'StartSprintController as vm',
-                templateUrl: 'sprint/start_sprint.tpl.html',
+                templateUrl: 'sprint/sprint_form.tpl.html',
                 resolve: {
                     sprint: function () {
-                        //TODO: Use config to get the sprint default duration
-                        sprint.sprint_duration = vm.project.sprint_duration || 10;
+                        sprint.sprint_duration = vm.project.sprint_duration;
+                        sprint.to_start = true;
                         return angular.copy(sprint);
                     }
                 }
@@ -157,6 +156,24 @@
             modal_instance.result.then(function () {
                 growl.addSuccessMessage('The sprint was started successfully');
                 vm.one_started = true;
+                getSprintsWithTickets(vm.project._id.$oid);
+            });
+        };
+
+        vm.edit_sprint = function(sprint){
+          var modal_instance = modal.open({
+                controller: 'StartSprintController as vm',
+                templateUrl: 'sprint/sprint_form.tpl.html',
+                resolve: {
+                    sprint: function () {
+                        sprint.sprint_duration = vm.project.sprint_duration;
+                        sprint.to_start = false;
+                        return angular.copy(sprint);
+                    }
+                }
+            });
+            modal_instance.result.then(function () {
+                growl.addSuccessMessage('The sprint was updated successfully');
                 getSprintsWithTickets(vm.project._id.$oid);
             });
         };
@@ -306,8 +323,6 @@
         getSprintsWithTickets(vm.project._id.$oid);
 
         //Socket actions
-        SocketIO.init(vm.project._id.$oid, rootScope.user._id.$oid);
-
         SocketIO.on('backlog_order', function () {
             getTicketsForProject(vm.project._id.$oid, false);
         });

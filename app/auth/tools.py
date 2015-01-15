@@ -1,5 +1,6 @@
 import json
 import time
+from datetime import timedelta, datetime
 from urllib2 import Request, urlopen, URLError
 
 from itsdangerous import JSONWebSignatureSerializer
@@ -7,7 +8,7 @@ from flask import current_app, redirect, url_for, g, request
 from flask.ext.oauth import OAuth, OAuthException
 from mongoengine import DoesNotExist
 
-from app.schemas import User, Token
+from app.schemas import User
 from app.utils import deserialize_data
 
 
@@ -42,15 +43,9 @@ def authorize_data():
         user = get_user_data(g.access_token, provider, provider_name)
         if user:
             token = generate_token(str(user.pk))
-            Token.save_token_for_user(user,
-                                      app_token=token,
-                                      social_token=g.access_token,
-                                      provider=provider.name,
-                                      expire_in=10000)
-
             return '%s?token=%s&expire=%s&next=%s' % (provider_data.get('callback'),
                                                       token,
-                                                      10000,
+                                                      current_app.config['TOKEN_EXPIRATION_TIME'],
                                                       provider_data.get('next'))
     return provider_data.get('callback')
 
@@ -124,9 +119,22 @@ def extract_data(data, provider, provider_name):
     return u
 
 
+def verify_token(token):
+    token_data = get_data_from_token(token)
+    if token_data:
+        expired = token_data.get('expire')
+        if datetime.fromtimestamp(expired) >= datetime.now():
+            return True
+    return False
+
+
 def generate_token(user_id):
     s = JSONWebSignatureSerializer(current_app.config['SECRET_KEY'])
-    return s.dumps({'pk': user_id, 'time': time.time()})
+    created = time.mktime(datetime.now().timetuple())
+    seconds = current_app.config['TOKEN_EXPIRATION_TIME']
+    exp_date = datetime.now() + timedelta(seconds=seconds)
+    expired = time.mktime(exp_date.timetuple())
+    return s.dumps({'pk': user_id, 'created': created, 'expire': expired })
 
 
 def get_data_from_token(token):

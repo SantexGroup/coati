@@ -71,7 +71,7 @@
         };
     };
 
-    var AppController = function (scope, rootScope, state, stateParams, modal, tokens, TicketService) {
+    var AppController = function (scope, rootScope, state, stateParams, modal, tokens, TicketService, SocketIO) {
         var vm = this;
         rootScope.$on('$stateChangeStart', function (event, toState) {
 
@@ -93,35 +93,13 @@
             }
         });
 
-        var showTicketDetails = function (tkt) {
-            if (tkt) {
-                tkt.pk = tkt._id.$oid;
-            }
-            var modal_instance = modal.open({
-                controller: 'TicketDetailController as vm',
-                templateUrl: 'ticket/ticket_detail_view.tpl.html',
-                resolve: {
-                    item: function () {
-                        return {
-                            'project': tkt.project,
-                            'ticket_id': tkt._id.$oid
-                        };
-                    }
-                }
-            });
-
-            modal_instance.result.then(function () {
-                vm.ticket_found = null;
-            });
-        };
-
         vm.searchTickets = function (query) {
             vm.loading_results = true;
             return TicketService.search(query).then(function (rta) {
                 vm.loading_results = false;
                 return rta.map(function (item) {
                     var result = {
-                        label: item.project.prefix + '-' + item.number  +': ' + item.title,
+                        label: item.project.prefix + '-' + item.number + ': ' + item.title,
                         description: item.description,
                         data: item
                     };
@@ -131,12 +109,12 @@
         };
 
 
-
-        vm.on_select_result = function(item, model, label, value){
-            showTicketDetails(model.data);
+        vm.on_select_result = function (item, model, label, value) {
             return model.label;
         };
 
+        //Init Socket interaction
+        SocketIO.init();
     };
 
     var RunApp = function (rootScope, state, stateParams, objects, editableOptions, editableThemes) {
@@ -166,11 +144,11 @@
     filterTrustedHTML.$inject = ['$sce'];
     RunApp.$inject = ['$rootScope', '$state', '$stateParams', '$objects', 'editableOptions', 'editableThemes'];
     ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider'];
-    AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', '$modal', 'tokens', 'TicketService'];
+    AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', '$modal', 'tokens', 'TicketService', 'SocketIO'];
 
     angular.module('Coati', [
         'templates-app', 'templates-common',
-        'ui.router', 'ui.bootstrap', 'angular-growl', 'xeditable',
+        'ui.router', 'ui.bootstrap', 'angular-growl', 'xeditable', 'Coati.SocketIO',
         'Coati.Config', 'Coati.Directives', 'Coati.Services.Ticket',
         'Coati.Home',
         'Coati.Login', 'Coati.Helpers',

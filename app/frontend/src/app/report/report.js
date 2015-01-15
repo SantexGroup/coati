@@ -18,13 +18,22 @@
         });
     };
 
-    var ProjectCtrlReports = function (state, SprintService) {
+    var ProjectCtrlReports = function (scope, state, SprintService) {
         var vm = this;
         vm.is_not_started = false;
 
         var getSprints = function (project_id) {
             SprintService.all(project_id).then(function (sprints) {
                 vm.sprints = sprints;
+
+                vm.sprint_selected = _.find(sprints, function(s){
+                    return s.started && !s.finalized;
+                });
+                if(vm.sprint_selected){
+                    vm.is_not_started = false;
+                    getSprintReport(vm.sprint_selected._id.$oid);
+                }
+
             });
         };
 
@@ -41,39 +50,21 @@
             SprintService.get_chart(sprint_id).then(function (chart_data) {
                 vm.tickets = chart_data.all_tickets;
                 vm.chartData = {
-                    title: {
-                        text: 'BurnDown Chart',
-                        x: -20 //center
-                    },
-                    xAxis: {
-                        categories: chart_data.dates,
-                        labels: {
-                            overflow: 'justify'
-                        }
-                    },
-                    yAxis: {
-                        title: {
-                            text: 'Points'
-                        },
-                        plotLines: [
-                            {
-                                value: 0,
-                                width: 1,
-                                color: '#808080'
-                            }
-                        ]
-                    },
-                    series: [
+                    labels: chart_data.dates,
+                    datasets: [
                         {
-                            name: 'Ideal',
-                            data: chart_data.ideal
+                            label: 'Ideal',
+                            data: chart_data.ideal,
+                            strokeColor: "rgba(46,159,12,1)",
+                            pointColor: "rgba(129,244,143,1)"
                         },
                         {
-                            name: 'Remaining',
+                            label: 'Remaining',
+                            strokeColor: "rgba(255,0,0, 1) ",
+                            pointColor: "rgba(254,146,146,1)",
                             data: chart_data.points_remaining
                         }
                     ]
-
                 };
             });
         };
@@ -91,13 +82,13 @@
                 vm.chartData = null;
             }
         };
-
+        vm.project = scope.$parent.project;
         getSprints(state.params.project_pk);
 
     };
 
     Config.$inject = ['$stateProvider'];
-    ProjectCtrlReports.$inject = ['$state', 'SprintService'];
+    ProjectCtrlReports.$inject = ['$scope', '$state', 'SprintService'];
 
     angular.module('Coati.Report', ['ui.router',
         'Coati.Directives',

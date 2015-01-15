@@ -81,7 +81,8 @@ module.exports = {
             'vendor/ng-file-upload/angular-file-upload.min.js',
             'vendor/ng-file-upload/angular-file-upload-shim.min.js',
             'vendor/angular-ui-sortable/sortable.min.js',
-            'vendor/angular-xeditable/dist/js/xeditable.min.js'
+            'vendor/angular-xeditable/dist/js/xeditable.min.js',
+            'vendor/chartjs/Chart.min.js'
         ],
         maps: [
             'vendor/angular/angular.min.js.map',

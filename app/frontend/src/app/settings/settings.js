@@ -203,8 +203,6 @@
         getColumnConfiguration(vm.project._id.$oid);
         getMembers(vm.project._id.$oid);
 
-        SocketIO.init(vm.project._id.$oid, rootScope.user._id.$oid);
-
     };
 
     var ColumnFormController = function (modalInstance, ProjectService, project, column) {

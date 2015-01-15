@@ -5,11 +5,11 @@
         <p data-ng-show="vm.projects.length < 1">You don't have Projects created
             yet!</p>
         <!--widget start-->
-        <aside class="profile-nav alt blue-border col-md-3"
+        <aside class="project-item col-md-3"
                ng-repeat="item in vm.projects track by item._id.$oid"
                data-index="<[ $index ]>">
             <section class="panel">
-                <a href="/project/<[ item._id.$oid ]>">
+                <a ui-sref="project.planning({project_pk: item._id.$oid })">
                     <header class="panel-heading alt">
                         <span><[ item.name ]></span>
 

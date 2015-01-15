@@ -1,13 +1,13 @@
 import json
 import hashlib
 
-from flask import request, jsonify
+from flask import request, jsonify, current_app
 from flask.ext.restful import Resource
 from mongoengine import Q, DoesNotExist
 
 from app.api.resources.auth_resource import AuthResource
 from app.auth import generate_token
-from app.schemas import User, Token
+from app.schemas import User, UserNotification
 from app.utils import send_activation_email_async
 
 
@@ -63,13 +63,13 @@ class UserLogged(AuthResource):
         if kwargs['user_id']:
             return User.objects.get(pk=kwargs['user_id']['pk']).to_json()
         return jsonify({}), 204
-    
+
 
 class UserLogin(Resource):
 
     def __init__(self):
         super(UserLogin, self).__init__()
-    
+
     def post(self, *args, **kwargs):
         data = request.get_json(force=True, silent=True)
         if data:
@@ -81,12 +81,8 @@ class UserLogin(Resource):
                                         password=pwd.hexdigest(),
                                         active=True)
                 token = generate_token(str(user.pk))
-                Token.save_token_for_user(user,
-                                          app_token=token,
-                                          social_token='',
-                                          provider='Custom Login',
-                                          expire_in=10000)
-                return jsonify({'token': token, 'expire': 10000}), 200
+                expire = current_app.config['TOKEN_EXPIRATION_TIME']
+                return jsonify({'token': token, 'expire': expire}), 200
             except DoesNotExist:
                 return jsonify({'error': 'Login Incorrect'}), 404
         return jsonify({'error': 'Bad Request'}), 400
@@ -143,3 +139,24 @@ class UserActivate(Resource):
             return jsonify({'token': token, 'expire': 10000}), 200
         except DoesNotExist:
             return jsonify({'error': 'Bad Request'}), 400
+
+
+class UserNotifications(AuthResource):
+
+    def __init__(self):
+        super(UserNotifications, self).__init__()
+
+    def get(self, *args, **kwargs):
+        data = UserNotification.objects(user=kwargs['user_id']['pk'])\
+                   .order_by('viewed')\
+                   .order_by('activity__when')
+        if request.args.get('total'):
+            data = data[:int(request.args.get('total'))]
+        return data.to_json(), 200
+
+    def put(self, *args, **kwargs):
+        UserNotification.objects(user=kwargs['user_id']['pk']).update(set__viewed=True)
+        data = UserNotification.objects(user=kwargs['user_id']['pk']).order_by('activity__when').to_json()
+        if request.args.get('total'):
+            data = data[:int(request.args.get('total'))]
+        return data, 200

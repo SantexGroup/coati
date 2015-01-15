@@ -16,7 +16,47 @@
             },
             reloadOnSearch: false,
             reload: true
-        });
+        })
+            .state('project.planning.ticket', {
+                url: '/ticket/:ticket_id',
+                onEnter: ['$timeout', '$q', '$stateParams', '$state', '$modal', 'ProjectService', function ($timeout, $q, $stateParams, $state, $modal, ProjectService) {
+
+                    var vm = this;
+                    $timeout(function () {
+                        vm.project = $stateParams.project_pk;
+
+                        var modalInstance = $modal.open({
+                            backdrop: true,
+                            windowClass: 'right fade',
+                            resolve: {
+                                item: function () {
+                                    var promise = $q.defer();
+                                    ProjectService.get(vm.project).then(function(prj){
+                                        promise.resolve({
+                                            'project': prj ,
+                                            'ticket_id': $stateParams.ticket_id
+                                        });
+                                    }, function(){
+                                        promise.reject('Error');
+                                    });
+                                    return promise.promise;
+                                }
+                            },
+                            templateUrl: "ticket/ticket_detail_view.tpl.html",
+                            controller: 'TicketDetailController',
+                            controllerAs: 'vm',
+                            data: {
+                                pageTitle: 'Ticket Detail'
+                            }
+                        });
+                        modalInstance.result.then(function () {
+                            $state.go('^', {}, {reload:true});
+                        });
+                    });
+                }],
+                reload: true,
+                tab_active: 'planning'
+            });
     };
 
     var TicketFormController = function (modalInstance, conf, TicketService, SprintService, item) {
@@ -94,6 +134,7 @@
 
     var TicketDetailController = function (rootScope, filter, tmo, modalInstance, conf, downloader, ProjectService, TicketService, SocketIO, item) {
         var vm = this;
+
 
         vm.files = [];
         vm.file_uploaded = 0;
@@ -267,7 +308,6 @@
                 vm.saveTicket(vm.ticket);
             }
         };
-        SocketIO.init(vm.project._id.$oid, rootScope.user);
 
         SocketIO.on('update_ticket', function () {
             getTicket(item.ticket_id);
@@ -283,9 +323,9 @@
 
         vm.project = scope.$parent.project;
 
-        var getArchivedTickets = function(project_id){
+        var getArchivedTickets = function (project_id) {
             vm.loading_tickets = true;
-            TicketService.closed_tickets(project_id).then(function(tickets){
+            TicketService.closed_tickets(project_id).then(function (tickets) {
                 vm.tickets = tickets;
                 vm.loading_tickets = false;
             });

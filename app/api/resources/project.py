@@ -1,12 +1,13 @@
-import json, urllib2, base64
+import json
+import urllib2
+import base64
+
 from flask import jsonify
 from flask.ext.restful import request
 from mongoengine import DoesNotExist
 
 from app.schemas import User, Project, Column, ProjectMember, Ticket, \
-    Attachment, \
-    UserActivity
-from app.redis import RedisClient
+    Attachment
 from app.api.resources.auth_resource import AuthResource
 from app.utils import send_new_member_email_async, save_notification
 

@@ -205,6 +205,7 @@ class SprintChart(AuthResource):
 
             formatted_days = []
             delta = float(ideal_planned) / float(duration)
+            burned = 0
             for day in days:
                 planned_counter -= delta
                 ideal.append(round(planned_counter, 2))
@@ -214,20 +215,21 @@ class SprintChart(AuthResource):
 
                 if start_date.date() <= datetime.now().date():
 
+                    points_burned_for_date = 0
                     # tickets after started sprint
-                    std = start_date + timedelta(minutes=5)
+                    std = start_date + timedelta(hours=23, minutes=59)
                     spt_list = SprintTicketOrder.objects(sprint=sprint,
                                                          when__gt=std,
                                                          when__lt=end_date)
                     for spt in spt_list:
-                        starting_points += spt.ticket.points
+                        points_burned_for_date -= spt.ticket.points
 
                     tct_list = TicketColumnTransition.objects(column=col,
                                                               sprint=sprint,
                                                               when__gte=start_date,
                                                               when__lt=end_date,
                                                               latest_state=True)
-                    points_burned_for_date = 0
+
                     tickets = []
                     for tct in tct_list:
                         tickets.append(
@@ -235,6 +237,7 @@ class SprintChart(AuthResource):
                                                tct.ticket.number,
                                                tct.ticket.points))
                         points_burned_for_date += tct.ticket.points
+
                     starting_points -= points_burned_for_date
 
                     points_remaining.append(starting_points)

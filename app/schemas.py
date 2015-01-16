@@ -186,7 +186,7 @@ class Sprint(CustomDocument):
                                         t.ticket.title),
                 '_id': t.ticket.id,
                 'type': t.ticket.type,
-                'added_after': t.when.date() > self.start_date.date(),
+                'added_after': t.when > self.start_date,
                 'number': t.ticket.number
             }
             try:

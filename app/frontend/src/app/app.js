@@ -153,6 +153,7 @@
         'Coati.Config',
         'Coati.Directives',
         'Coati.Services.Ticket',
+        'Coati.Errors',
         'Coati.Home',
         'Coati.Login', 'Coati.Helpers',
         'Coati.User', 'Coati.Project', 'Coati.Ticket', 'Coati.Sprint'])

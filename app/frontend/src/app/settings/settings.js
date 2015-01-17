@@ -212,7 +212,7 @@
         vm.save = function () {
             if (vm.form.column_form.$valid) {
                 if (column) {
-                    ProjectService.update_column(column.pk, vm.column).then(function () {
+                    ProjectService.update_column(project, column.pk, vm.column).then(function () {
                         modalInstance.close('ok');
                     }, function (err) {
                         modalInstance.dismiss('error');
@@ -240,7 +240,7 @@
         var vm = this;
         vm.column = column;
         vm.erase = function () {
-            ProjectService.delete_column(vm.column.pk).then(function () {
+            ProjectService.delete_column(vm.column.project.$oid, vm.column.pk).then(function () {
                 modalInstance.close('delete');
             });
         };

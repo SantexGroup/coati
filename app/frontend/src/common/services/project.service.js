@@ -17,37 +17,37 @@
             'erase': function(project_pk){
                 return req.$do('/project/' + project_pk, req.METHODS.DELETE);
             },
-            'get_columns': function (project_id) {
-                return req.$do('/project/' + project_id + '/columns', req.METHODS.GET);
+            'get_columns': function (project_pk) {
+                return req.$do('/project/' + project_pk + '/columns', req.METHODS.GET);
             },
-            'update_column': function(col_id, data){
-                 return req.$do('/project/column/' + col_id, req.METHODS.UPDATE, data);
+            'update_column': function(project_pk, col_id, data){
+                 return req.$do('/project/' + project_pk + '/column/' + col_id, req.METHODS.UPDATE, data);
             },
-            'delete_column': function (col_id) {
-                return req.$do('/project/column/' + col_id, req.METHODS.DELETE);
+            'delete_column': function (project_pk, col_id) {
+                return req.$do('/project/' + project_pk + '/column/' + col_id, req.METHODS.DELETE);
             },
-            'add_column': function (project_id, data) {
-                return req.$do('/project/' + project_id + '/columns', req.METHODS.POST, data);
+            'add_column': function (project_pk, data) {
+                return req.$do('/project/' + project_pk + '/columns', req.METHODS.POST, data);
             },
-            'order_columns': function (project_id, data) {
-                return req.$do('/project/' + project_id + '/order_columns', req.METHODS.POST, data);
+            'order_columns': function (project_pk, data) {
+                return req.$do('/project/' + project_pk + '/order_columns', req.METHODS.POST, data);
             },
-            'get_members': function(project_id){
-                return req.$do('/project/' + project_id + '/members', req.METHODS.GET);
+            'get_members': function(project_pk){
+                return req.$do('/project/' + project_pk + '/members', req.METHODS.GET);
             },
-            'add_members': function(project_id, members){
-                return req.$do('/project/' + project_id + '/members', req.METHODS.POST, members);
+            'add_members': function(project_pk, members){
+                return req.$do('/project/' + project_pk + '/members', req.METHODS.POST, members);
             },
-            'remove_member': function(project_id, member){
+            'remove_member': function(project_pk, member){
                 var data = {'member': member};
-                return req.$do('/project/' + project_id + '/members', req.METHODS.DELETE, data);
+                return req.$do('/project/' + project_pk + '/members', req.METHODS.DELETE, data);
             },
-            'set_as_owner': function(project_id, member){
+            'set_as_owner': function(project_pk, member){
                 var data = {'member': member};
-                return req.$do('/project/' + project_id + '/members', req.METHODS.UPDATE, data);
+                return req.$do('/project/' + project_pk + '/members', req.METHODS.UPDATE, data);
             },
-            'import_file': function(project__id, file, extra_data){
-                return file_upload.$do('/project/' + project__id + '/import', file, extra_data);
+            'import_file': function(project_pk, file, extra_data){
+                return file_upload.$do('/project/' + project_pk + '/import', file, extra_data);
             }
         };
     };

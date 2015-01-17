@@ -23,7 +23,7 @@
         vm.project_pk = state.params.project_pk;
 
         var getSprintTickets = function (sprint_id) {
-            SprintService.get_tickets(sprint_id).then(function (tickets) {
+            SprintService.get_tickets(vm.project_pk, sprint_id).then(function (tickets) {
                 vm.tickets = tickets;
             });
         };
@@ -115,7 +115,7 @@
                                 order: new_order,
                                 sprint: vm.sprint._id.$oid
                             };
-                            TicketService.order_ticket_column(target.col._id.$oid, data);
+                            TicketService.order_ticket_column(vm.project_pk, target.col._id.$oid, data);
                         }
 
                     } else {
@@ -133,7 +133,7 @@
                             } else {
                                 data.backlog = target.vm.sprint._id.$oid;
                             }
-                            TicketService.transition(data);
+                            TicketService.transition(vm.project_pk, data);
                         }
 
                     }

@@ -65,11 +65,11 @@ class SprintInstance(AuthResource):
     def __init__(self):
         super(SprintInstance, self).__init__()
 
-    def get(self, sp_id, *args, **kwargs):
+    def get(self, project_pk, sp_id, *args, **kwargs):
         sp = Sprint.objects.get(pk=sp_id)
         return sp.to_json, 200
 
-    def put(self, sp_id, *args, **kwargs):
+    def put(self, project_pk, sp_id, *args, **kwargs):
         data = request.get_json(force=True, silent=True)
         if data:
             sp = Sprint.objects.get(pk=sp_id)
@@ -114,7 +114,7 @@ class SprintInstance(AuthResource):
             sp.save()
 
             # save activity
-            save_notification(project_pk=sp.project.pk,
+            save_notification(project_pk=project_pk,
                               author=kwargs['user_id']['pk'],
                               verb='update_sprint',
                               data=sp.to_json())
@@ -123,19 +123,18 @@ class SprintInstance(AuthResource):
 
         return jsonify({"error": 'Bad Request'}), 400
 
+    def delete(self, project_pk, sp_id, *args, **kwargs):
+        sp = Sprint.objects.get(pk=sp_id)
 
-def delete(self, sp_id, *args, **kwargs):
-    sp = Sprint.objects.get(pk=sp_id)
+        # save activity
+        save_notification(project_pk=project_pk,
+                          author=kwargs['user_id']['pk'],
+                          verb='delete_sprint',
+                          data=sp.to_json())
 
-    # save activity
-    save_notification(project_pk=sp.project.pk,
-                      author=kwargs['user_id']['pk'],
-                      verb='delete_sprint',
-                      data=sp.to_json())
+        sp.delete()
 
-    sp.delete()
-
-    return sp.to_json(), 204
+        return sp.to_json(), 204
 
 
 class SprintActive(AuthResource):
@@ -157,7 +156,7 @@ class SprintTickets(AuthResource):
     def __init__(self):
         super(SprintTickets, self).__init__()
 
-    def get(self, sprint_id, *args, **kwargs):
+    def get(self, project_pk, sprint_id, *args, **kwargs):
         sprint = Sprint.objects.get(pk=sprint_id)
         if sprint:
             return sprint.get_tickets_board_backlog()
@@ -168,7 +167,7 @@ class SprintChart(AuthResource):
     def __init__(self):
         super(SprintChart, self).__init__()
 
-    def get(self, sprint_id, *args, **kwargs):
+    def get(self, project_pk, sprint_id, *args, **kwargs):
         sprint = Sprint.objects.get(pk=sprint_id)
         if sprint:
             # include the weekends??

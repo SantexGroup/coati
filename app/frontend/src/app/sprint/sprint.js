@@ -61,7 +61,7 @@
 
     };
 
-    var StartSprintController = function (scope, conf, filter, modalInstance, SprintService, sprint) {
+    var StartSprintController = function (scope, conf, filter, modalInstance, SprintService, sprint, project) {
         var vm = this;
         vm.sprint = sprint;
         vm.form = {};
@@ -124,7 +124,7 @@
                 }else{
                     vm.sprint.for_editing = true;
                 }
-                SprintService.update(vm.sprint).then(function (sp) {
+                SprintService.update(project,  vm.sprint).then(function (sp) {
                     modalInstance.close();
                 }, function (err) {
                     modalInstance.dismiss('error');
@@ -140,14 +140,14 @@
         };
     };
 
-    var StopSprintController = function (modalInstance, SprintService, sprint) {
+    var StopSprintController = function (modalInstance, SprintService, sprint, project) {
         var vm = this;
 
         vm.sprint = sprint;
 
         vm.stopSprint = function () {
             vm.sprint.for_finalized = true;
-            SprintService.update(vm.sprint).then(function (sp) {
+            SprintService.update(project, vm.sprint).then(function (sp) {
                 modalInstance.close();
             }, function (err) {
                 modalInstance.dismiss('error');
@@ -161,8 +161,8 @@
 
     Config.$inject = ['$stateProvider'];
     ArchivedSprintController.$inject = ['$rootScope', '$scope', '$modal', 'SprintService', 'SocketIO'];
-    StartSprintController.$inject = ['$scope', 'Conf', '$filter', '$modalInstance', 'SprintService', 'sprint'];
-    StopSprintController.$inject = ['$modalInstance', 'SprintService', 'sprint'];
+    StartSprintController.$inject = ['$scope', 'Conf', '$filter', '$modalInstance', 'SprintService', 'sprint', 'project'];
+    StopSprintController.$inject = ['$modalInstance', 'SprintService', 'sprint', 'project'];
 
     angular.module('Coati.Sprint', ['ui.router',
         'Coati.Config',

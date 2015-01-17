@@ -47,7 +47,7 @@
 
         var getSprintReport = function (sprint_id) {
 
-            SprintService.get_chart(sprint_id).then(function (chart_data) {
+            SprintService.get_chart(vm.project._id.$oid, sprint_id).then(function (chart_data) {
                 vm.tickets = chart_data.all_tickets;
                 vm.chartData = {
                     labels: chart_data.dates,

@@ -8,9 +8,8 @@ from flask import current_app, redirect, url_for, g, request
 from flask.ext.oauth import OAuth, OAuthException
 from mongoengine import DoesNotExist
 
-from app.schemas import User
+from app.schemas import User, ProjectMember
 from app.utils import deserialize_data
-
 
 
 def get_provider(oauth_provider):
@@ -43,10 +42,11 @@ def authorize_data():
         user = get_user_data(g.access_token, provider, provider_name)
         if user:
             token = generate_token(str(user.pk))
-            return '%s?token=%s&expire=%s&next=%s' % (provider_data.get('callback'),
-                                                      token,
-                                                      current_app.config['TOKEN_EXPIRATION_TIME'],
-                                                      provider_data.get('next'))
+            return '%s?token=%s&expire=%s&next=%s' % (
+            provider_data.get('callback'),
+            token,
+            current_app.config['TOKEN_EXPIRATION_TIME'],
+            provider_data.get('next'))
     return provider_data.get('callback')
 
 
@@ -134,9 +134,18 @@ def generate_token(user_id):
     seconds = current_app.config['TOKEN_EXPIRATION_TIME']
     exp_date = datetime.now() + timedelta(seconds=seconds)
     expired = time.mktime(exp_date.timetuple())
-    return s.dumps({'pk': user_id, 'created': created, 'expire': expired })
+    return s.dumps({'pk': user_id, 'created': created, 'expire': expired})
 
 
 def get_data_from_token(token):
     s = JSONWebSignatureSerializer(current_app.config['SECRET_KEY'])
     return s.loads(token)
+
+
+def check_user_permissions(user_id, project_pk):
+    if project_pk:
+        has_perm = ProjectMember.objects(member=user_id,
+                                         project=project_pk).count()
+        return True if has_perm > 0 else False
+    else:
+        return True

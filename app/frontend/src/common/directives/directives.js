@@ -245,7 +245,6 @@
                             scope.vm.mentions.push(item.getAttribute('data-token'));
                         });
                     }
-                    console.log(html);
                     ngModel.$setViewValue(html);
                 }
 

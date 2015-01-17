@@ -93,7 +93,7 @@
                 }
 
                 if (item.ticket) {
-                    TicketService.update(vm.ticket._id.$oid, vm.ticket).then(function (tkt) {
+                    TicketService.update(item.project, vm.ticket._id.$oid, vm.ticket).then(function (tkt) {
                         modalInstance.close();
                     }, function (err) {
                         modalInstance.dismiss('error');
@@ -117,11 +117,11 @@
         };
     };
 
-    var TicketDeleteController = function (modalInstance, TicketService, item) {
+    var TicketDeleteController = function (modalInstance, TicketService, item, project) {
         var vm = this;
         vm.ticket = item;
         vm.erase = function () {
-            TicketService.delete_ticket(vm.ticket.pk).then(function () {
+            TicketService.delete_ticket(project, vm.ticket.pk).then(function () {
                 modalInstance.close('delete');
             });
         };
@@ -144,7 +144,7 @@
         vm.no_editing = item.disabled || false;
 
         var getComments = function (ticket_id) {
-            TicketService.get_comments(ticket_id).then(function (comments) {
+            TicketService.get_comments(vm.project._id.$oid, ticket_id).then(function (comments) {
                 vm.comments = comments;
             });
         };
@@ -157,7 +157,7 @@
 
         var getTicket = function (ticket_id, show_loading) {
             vm.loading = (show_loading !== undefined ? show_loading : true);
-            TicketService.get(ticket_id).then(function (tkt) {
+            TicketService.get(vm.project._id.$oid, ticket_id).then(function (tkt) {
                 vm.ticket = tkt;
                 vm.labels = tkt.labels;
                 vm.loading = false;
@@ -168,7 +168,7 @@
         };
 
         var do_upload = function (file) {
-            file.upload = TicketService.upload_attachments(vm.ticket._id.$oid, file,
+            file.upload = TicketService.upload_attachments(vm.project._id.$oid, vm.ticket._id.$oid, file,
                 {'name': file.name, 'size': file.size, 'type': file.type})
                 .progress(function (evt) {
                     //console.log('progress: ' + parseInt(100.0 * evt.loaded / evt.total, 10) + '% file :'+ evt.config.file.name);
@@ -195,7 +195,7 @@
         vm.saveTicket = function (ticket) {
             if (ticket) {
                 ticket.sprint = undefined;
-                TicketService.update(ticket._id.$oid, ticket).then(function (tkt) {
+                TicketService.update(vm.project._id.$oid, ticket._id.$oid, ticket).then(function (tkt) {
                     vm.ticket = tkt;
                 });
             }
@@ -216,7 +216,7 @@
         };
 
         vm.delete_file = function (f) {
-            TicketService.delete_attachment(vm.ticket._id.$oid, f._id.$oid).then(function () {
+            TicketService.delete_attachment(vm.project._id.$oid, vm.ticket._id.$oid, f._id.$oid).then(function () {
                 _.pull(vm.ticket.files, f);
             });
         };
@@ -238,13 +238,13 @@
 
         vm.assign_to_ticket = function (m) {
             if (m.checked) {
-                TicketService.assign_member(vm.ticket._id.$oid, m._id.$oid).then(function () {
+                TicketService.assign_member(vm.project._id.$oid, vm.ticket._id.$oid, m._id.$oid).then(function () {
                     getTicket(vm.ticket._id.$oid);
                 }, function () {
                     m.checked = false;
                 });
             } else {
-                TicketService.remove_member(vm.ticket._id.$oid, m._id.$oid).then(function () {
+                TicketService.remove_member(vm.project._id.$oid, vm.ticket._id.$oid, m._id.$oid).then(function () {
                     getTicket(vm.ticket._id.$oid);
                 }, function () {
                     m.checked = true;
@@ -273,7 +273,7 @@
                 vm.process_comment = true;
                 tmo(function () {
                     var comment = {'comment': vm.comment, 'mentions': vm.mentions};
-                    TicketService.add_comment(vm.ticket._id.$oid, comment).then(function (tkt) {
+                    TicketService.add_comment(vm.project._id.$oid, vm.ticket._id.$oid, comment).then(function (tkt) {
                         rootScope.$broadcast('comment_saved');
                         vm.comments.unshift(tkt);
                         vm.process_comment = false;
@@ -363,7 +363,7 @@
     TicketArchivedController.$inject = ['$scope', '$modal', 'TicketService'];
     TicketDetailController.$inject = ['$rootScope', '$filter', '$timeout', '$modalInstance', 'Conf', '$file_download', 'ProjectService', 'TicketService', 'SocketIO', 'item'];
     TicketFormController.$inject = ['$modalInstance', 'Conf', 'TicketService', 'SprintService', 'item'];
-    TicketDeleteController.$inject = ['$modalInstance', 'TicketService', 'item'];
+    TicketDeleteController.$inject = ['$modalInstance', 'TicketService', 'item', 'project'];
 
     angular.module('Coati.Ticket', ['ui.router', 'ngTagsInput', 'xeditable',
         'angularFileUpload',

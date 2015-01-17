@@ -13,6 +13,7 @@
             DEFAULT_CONTENT_TYPE: 'application/json; charset=utf-8',
             SOCKET_URL: 'http://localhost:8001',
             STATE_401: 'login',
+            STATE_403: 'error_403',
             DATE_FORMAT: 'MM/dd/yyyy',
             TICKET_TYPES: [
                 {value:"U", name: 'User Story'},

@@ -14,11 +14,10 @@ TICKET_TYPE = (('U', 'User Story'),
                ('T', 'Task'))
 
 PROJECT_TYPE = (('S', 'Scrum'),
-               ('K', 'Kanban'))
+                ('K', 'Kanban'))
 
 
 class CustomDocument(mongoengine.Document):
-
     excluded_fields = []
 
     meta = {
@@ -31,6 +30,7 @@ class CustomDocument(mongoengine.Document):
             if data.has_key(f):
                 del data[f]
         return data
+
 
 class CustomQuerySet(mongoengine.QuerySet):
     def to_json(self, *args, **kwargs):
@@ -56,8 +56,6 @@ class User(CustomDocument):
 
     @classmethod
     def pre_delete(cls, sender, document, **kwargs):
-        # delete tokens
-        Token.objects(user=document).delete()
         # delete projects
         Project.objects(owner=document).delete()
         # delete from project members

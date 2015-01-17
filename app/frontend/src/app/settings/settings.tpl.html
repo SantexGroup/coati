@@ -185,14 +185,12 @@
                         </button>
                     </header>
                     <div class="panel-body">
-                        <div class="task-content">
+                        <div class="task-content tasks-widget">
                             <ul class="task-list"
                                 ui-sortable="vm.sortColumnOptions"
                                 ng-model="vm.columns">
                                 <li ng-repeat="col in vm.columns track by col._id.$oid"
                                     class="user-story">
-                                    <i class="icon-ellipsis-vertical"></i>
-
                                     <div class="task-title">
                                                     <span class="task-title-sp">
                                                       <[ col.title ]>

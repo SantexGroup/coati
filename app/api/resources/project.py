@@ -91,7 +91,7 @@ class ProjectInstance(AuthResource):
         project.private = data.get('private')
         project.sprint_duration = data.get('sprint_duration')
         project.prefix = data.get('prefix')
-        project.project_type = data.get('project_type')
+        project.project_type = 'S' if data.get('project_type', 'S') else 'S'
         project.save()
 
         # save activity
@@ -151,10 +151,10 @@ class ProjectColumn(AuthResource):
     def __init__(self):
         super(ProjectColumn, self).__init__()
 
-    def get(self, column_pk, *args, **kwargs):
+    def get(self, project_pk, column_pk, *args, **kwargs):
         return Column.objects.get(pk=column_pk).to_json()
 
-    def put(self, column_pk, *args, **kwargs):
+    def put(self, project_pk, column_pk, *args, **kwargs):
         col = Column.objects.get(pk=column_pk)
         data = request.get_json(force=True, silent=True)
         if col and data:
@@ -180,7 +180,7 @@ class ProjectColumn(AuthResource):
             return col.to_json(), 200
         return jsonify({"error": 'Bad Request'}), 400
 
-    def delete(self, column_pk, *args, **kwargs):
+    def delete(self, project_pk, column_pk, *args, **kwargs):
         col = Column.objects.get(pk=column_pk)
         if col:
             # save activity

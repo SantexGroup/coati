@@ -7,7 +7,7 @@
 <p><[ vm.project.description ]></p>
 <div class="row" id="planning">
     <div class="col-md-12" id="planning-list">
-        <ul class="sprint-section" ui-sortable="vm.sortSprintOptions"
+        <ul ng-if="vm.project.project_type == 'S'" class="sprint-section" ui-sortable="vm.sortSprintOptions"
             ng-model="vm.sprints">
             <li ng-repeat="sprint in vm.sprints"
                 class="sprint-item">
@@ -88,7 +88,7 @@
                 <div class="add-task-row pull-right">
                     <span class="badge bg-inverse">Total Tickets: <[ vm.tickets.length ]></span>
                     <span class="badge bg-inverse">Total Points: <[ vm.tickets | sumValue:'points' ]></span>
-                    <a class="btn btn-primary btn-sm" href="javascript:;"
+                    <a ng-if="vm.project.project_type == 'S'" class="btn btn-primary btn-sm" href="javascript:;"
                        ng-click="vm.create_sprint();">Create
                         Sprint</a>
                 </div>
@@ -115,7 +115,7 @@
                                 </span>
 
                                 <div class="pull-right hidden-phone">
-                                    <span class="badge bg-warning"><[ tkt.points ]> Pts.</span>
+                                    <span class="badge bg-warning" ng-if="vm.project.project_type == 'S'"><[ tkt.points ]> Pts.</span>
                                     <span ng-if="tkt.badges.comments > 0" class="badge" title="Comments"><i class="icon-comments"></i> <[ tkt.badges.comments ]></span>
                                     <span ng-if="tkt.badges.files > 0" class="badge" title="Attachments"><i class="icon-paper-clip"></i> <[ tkt.badges.files ]></span>
                                     <button title="Delete Ticket"

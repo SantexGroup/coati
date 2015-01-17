@@ -42,19 +42,20 @@
                     <input type="checkbox" name="active"
                            ng-model="vm.project.active">
                 </div>
-                <!--<div class="form-group">
+                <div class="form-group">
                     <label>Project Type</label>
 
                     <div class="input-group">
-                        <input type="radio" name="project_type"
+                        <input type="radio" ng-checked="vm.project.project_type == 'S'" name="project_type"
                                ng-model="vm.project.project_type"
                                ng-value="true"> Scrum
                         <input type="radio" name="project_type"
+                               ng-checked="vm.project.project_type == 'k'"
                                ng-model="vm.project.project_type"
                                ng-value="false"> Kanban
                     </div>
-                </div>-->
-                <div class="form-group">
+                </div>
+                <div class="form-group" ng-if="vm.project.project_type == 'S'">
                     <label>Sprint Duration</label>
                     <select ng-model="vm.project.sprint_duration"
                             required

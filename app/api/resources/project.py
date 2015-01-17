@@ -40,9 +40,10 @@ class ProjectList(AuthResource):
         prj.private = data.get('private')
         prj.prefix = data.get('prefix', data.get('name')[:3].upper())
         prj.description = data.get('description')
+        prj.project_type = data.get('project_type', 'S')
 
         # Add initial config
-        prj.sprint_duration = 10
+        prj.sprint_duration = 15
         prj.save()
 
         # add owner as member

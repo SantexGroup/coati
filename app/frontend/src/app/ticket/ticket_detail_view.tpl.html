@@ -30,8 +30,8 @@
 <div class="col-md-12">
 <div class="row">
     <div class="col-md-10">
-        <label>Points</label>
-                        <span class="badge bg-important"
+        <label ng-if="vm.project.project_type == 'S'">Points</label>
+                        <span ng-if="vm.project.project_type == 'S'" class="badge bg-important"
                               editable-text="vm.ticket.points"
                               onbeforesave="vm.saveTicket(vm.ticket);"
                               e-form="points_form"

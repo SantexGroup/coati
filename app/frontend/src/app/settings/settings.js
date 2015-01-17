@@ -205,7 +205,7 @@
 
     };
 
-    var ColumnFormController = function (modalInstance, ProjectService, project, column) {
+    var ColumnFormController = function (log, modalInstance, ProjectService, project, column) {
         var vm = this;
         vm.column = column || {};
         vm.form = {};
@@ -216,14 +216,14 @@
                         modalInstance.close('ok');
                     }, function (err) {
                         modalInstance.dismiss('error');
-                        console.log(err);
+                        log.error(err);
                     });
                 } else {
                     ProjectService.add_column(project, vm.column).then(function () {
                         modalInstance.close('ok');
                     }, function (err) {
                         modalInstance.dismiss('error');
-                        console.log(err);
+                        log.error(err);
                     });
                 }
             } else {
@@ -288,7 +288,7 @@
 
     Config.$inject = ['$stateProvider', 'tagsInputConfigProvider'];
     ProjectCtrlSettings.$inject = ['$rootScope', '$timeout', '$filter', '$scope', '$state', '$modal', 'growl', 'ProjectService', 'SocketIO'];
-    ColumnFormController.$inject = ['$modalInstance', 'ProjectService', 'project', 'column'];
+    ColumnFormController.$inject = ['$log', '$modalInstance', 'ProjectService', 'project', 'column'];
     ColumnDeleteController.$inject = ['$modalInstance', 'ProjectService', 'column'];
     MembersController.$inject = ['$modalInstance', 'UserService', 'ProjectService', 'project'];
     RemoveMemberController.$inject = ['$modalInstance', 'ProjectService', 'item'];

@@ -51,6 +51,7 @@
                 vm.tickets = chart_data.all_tickets;
                 vm.chartData = {
                     labels: chart_data.dates,
+                    name: 'Burndown',
                     datasets: [
                         {
                             label: 'Ideal Planned',

@@ -202,11 +202,12 @@ class SprintChart(AuthResource):
             counter = 1
             while counter <= duration:
                 d = sprint.start_date + timedelta(days=counter)
+                if d.date() <= sprint.end_date.date():
+                    if weekends:
+                        if d.weekday() != 5 and d.weekday() != 6:
+                            continue
+                    days.append(d)
                 counter += 1
-                if weekends:
-                    if d.weekday() != 5 and d.weekday() != 6:
-                        continue
-                days.append(d)
 
             # calculate deltas for ideal lines
             delta_planned = float(points_planned) / float(duration)
@@ -223,8 +224,10 @@ class SprintChart(AuthResource):
             for day in days:
                 planned_counter -= delta_planned
                 real_counter -= delta_real
-                ideal_planned.append(round(planned_counter, 2))
-                ideal_real.append(round(real_counter, 2))
+                if planned_counter >= 0:
+                    ideal_planned.append(round(planned_counter, 2))
+                if real_counter >= 0:
+                    ideal_real.append(round(real_counter, 2))
                 # format the dates
                 formatted_days.append(datetime.strftime(day, '%d %a, %b %Y'))
                 start_date = day

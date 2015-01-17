@@ -59,7 +59,7 @@
             });
     };
 
-    var TicketFormController = function (modalInstance, conf, TicketService, SprintService, item) {
+    var TicketFormController = function (log, modalInstance, conf, TicketService, SprintService, item) {
         var vm = this;
 
         vm.form = {};
@@ -97,14 +97,14 @@
                         modalInstance.close();
                     }, function (err) {
                         modalInstance.dismiss('error');
-                        console.log(err);
+                        log.error(err);
                     });
                 } else {
                     TicketService.save(item.project, vm.ticket).then(function (tkt) {
                         modalInstance.close();
                     }, function (err) {
                         modalInstance.dismiss('error');
-                        console.log(err);
+                        log.error(err);
                     });
                 }
             } else {
@@ -362,7 +362,7 @@
     Config.$inject = ['$stateProvider'];
     TicketArchivedController.$inject = ['$scope', '$modal', 'TicketService'];
     TicketDetailController.$inject = ['$rootScope', '$filter', '$timeout', '$modalInstance', 'Conf', '$file_download', 'ProjectService', 'TicketService', 'SocketIO', 'item'];
-    TicketFormController.$inject = ['$modalInstance', 'Conf', 'TicketService', 'SprintService', 'item'];
+    TicketFormController.$inject = ['$log', '$modalInstance', 'Conf', 'TicketService', 'SprintService', 'item'];
     TicketDeleteController.$inject = ['$modalInstance', 'TicketService', 'item', 'project'];
 
     angular.module('Coati.Ticket', ['ui.router', 'ngTagsInput', 'xeditable',

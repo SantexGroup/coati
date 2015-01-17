@@ -61,7 +61,7 @@
 
     };
 
-    var StartSprintController = function (scope, conf, filter, modalInstance, SprintService, sprint, project) {
+    var StartSprintController = function (log, scope, conf, filter, modalInstance, SprintService, sprint, project) {
         var vm = this;
         vm.sprint = sprint;
         vm.form = {};
@@ -128,7 +128,7 @@
                     modalInstance.close();
                 }, function (err) {
                     modalInstance.dismiss('error');
-                    console.log(err);
+                    log.error(err);
                 });
             } else {
                 vm.submitted = true;
@@ -161,7 +161,7 @@
 
     Config.$inject = ['$stateProvider'];
     ArchivedSprintController.$inject = ['$rootScope', '$scope', '$modal', 'SprintService', 'SocketIO'];
-    StartSprintController.$inject = ['$scope', 'Conf', '$filter', '$modalInstance', 'SprintService', 'sprint', 'project'];
+    StartSprintController.$inject = ['$log', '$scope', 'Conf', '$filter', '$modalInstance', 'SprintService', 'sprint', 'project'];
     StopSprintController.$inject = ['$modalInstance', 'SprintService', 'sprint', 'project'];
 
     angular.module('Coati.Sprint', ['ui.router',

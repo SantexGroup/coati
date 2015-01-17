@@ -124,21 +124,29 @@
             transclude: true,
             replace: true,
             link: function (scope, element, attrs) {
+                var chart;
                 scope.$watch(function () {
                     return scope.chartData;
-                }, function (value) {
-                    var newSettings;
+                }, function (value, old_value) {
                     if (!value) {
-                        $(element).empty();
+                        element.parent().find('.chart-legend').remove();
+                        element.empty();
                         return;
+                    } else {
+                        element.parent().find('.chart-legend').remove();
+                    }
+
+                    if(chart !== undefined){
+                        chart.destroy();
                     }
                     var ctx = element[0].getContext("2d");
                     var options = {
-                        scaleShowGridLines : true,
-                        scaleGridLineColor : "rgba(0,0,0,.05)",
-                        scaleGridLineWidth : 1,
-                        datasetFill : false,
+                        scaleShowGridLines: true,
+                        scaleGridLineColor: "rgba(0,0,0,.05)",
+                        scaleGridLineWidth: 1,
+                        datasetFill: false,
                         responsive: true,
+                        showTooltip: true,
                         tooltipFontSize: 10,
                         // String - Tooltip font weight style
                         tooltipFontStyle: "normal",
@@ -146,11 +154,13 @@
                         tooltipFontColor: "#fff",
                         // Number - Tooltip title font size in pixels
                         tooltipTitleFontSize: 12,
-                        tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= math.round(value) %>",
-                        legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+                        tooltipTemplate: "<%=label%>: <%= Math.round(value) %>",
+                        multiTooltipTemplate: "<%=datasetLabel%>: <%= Math.round(value) %>",
+                        legendTemplate: "<ul class=\"chart-legend\"><% for (var i=0; i<datasets.length; i++){%><li class=\"legend-item\"><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
                     };
-
-                    return new Chart(ctx).Line(scope.chartData, options);
+                    chart = new Chart(ctx).Line(scope.chartData, options);
+                    element.parent().prepend(chart.generateLegend());
+                    return chart;
                 });
             }
         };
@@ -237,11 +247,11 @@
                     }
 
 
-                    if(attrs.mentions){
+                    if (attrs.mentions) {
 
                         var spans = element.find('span');
                         scope.vm.mentions = [];
-                        angular.forEach(spans, function(item, key){
+                        angular.forEach(spans, function (item, key) {
                             scope.vm.mentions.push(item.getAttribute('data-token'));
                         });
                     }
@@ -264,7 +274,7 @@
                     scope.$apply(read);
                 });
 
-                scope.$on('comment_saved', function(){
+                scope.$on('comment_saved', function () {
                     element.empty();
                 });
 

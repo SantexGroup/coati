@@ -73,7 +73,7 @@
                                                     <li ng-repeat="m in tkt.assigned_to"
                                                         title="<[ m.member.email ]>">
                                                         <img ng-if="m.member.picture"
-                                                             src="<[ m.member.picture ]>"/>
+                                                             ng-src="<[ m.member.picture ]>"/>
                                                         <img ng-if="!m.member.picture"
                                                              src="/static/assets/img/koala.png"/>
                                                     </li>

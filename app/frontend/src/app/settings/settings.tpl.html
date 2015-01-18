@@ -94,7 +94,7 @@
                  ng-repeat="m in vm.members"
                  tooltip="<[ m.member.first_name ? m.member.first_name + ' ' + m.member.last_name : m.member.email ]>">
                 <img dropdown-toggle ng-if="m.member.picture"
-                     src="<[ m.member.picture ]>">
+                     ng-src="<[ m.member.picture ]>">
                 <img dropdown-toggle ng-if="!m.member.picture"
                      src="/static/assets/img/koala.png">
                 <ul role="menu" class="dropdown-menu">

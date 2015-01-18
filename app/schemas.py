@@ -63,6 +63,10 @@ class User(CustomDocument):
         # delete comment
         Comment.objects(who=document).delete()
 
+    def to_json(self, *args, **kwargs):
+        data = self.to_dict()
+        return json_util.dumps(data)
+
 
 class Project(CustomDocument):
     name = mongoengine.StringField(required=True, unique_with='owner')

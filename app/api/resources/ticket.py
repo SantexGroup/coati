@@ -265,6 +265,7 @@ class TicketTransition(AuthResource):
     def post(self, project_pk, *args, **kwargs):
         data = request.get_json(force=True, silent=True)
         if data:
+            project = Project.objects.get(pk=project_pk)
             if data.get('backlog'):
                 tkt = Ticket.objects.get(pk=data.get('ticket'))
                 latest_state = TicketColumnTransition.objects(ticket=tkt,
@@ -293,11 +294,14 @@ class TicketTransition(AuthResource):
                 tkt = Ticket.objects.get(pk=data.get('ticket'))
                 col = Column.objects.get(pk=data.get('column'))
                 sp = data.get('sprint')
-                if tkt and col and sp:
+                if tkt and col:
+                    filters = dict(ticket=tkt,
+                                      latest_state=True)
+                    if project.project_type == 'S':
+                        filters.update(dict(sprint=sp))
 
-                    latest_state = TicketColumnTransition.objects(ticket=tkt,
-                                                                  sprint=sp,
-                                                                  latest_state=True)
+                    latest_state = TicketColumnTransition.objects(**filters)
+
                     if latest_state:
                         tct = latest_state[0]
                         tct.latest_state = False
@@ -308,7 +312,8 @@ class TicketTransition(AuthResource):
                     transition.column = col
                     transition.order = TicketColumnTransition.objects(
                         column=col).count()
-                    transition.sprint = Sprint.objects.get(pk=sp)
+                    if project.project_type == 'S':
+                        transition.sprint = Sprint.objects.get(pk=sp)
                     transition.latest_state = True
                     transition.when = datetime.now()
                     transition.who = User.objects.get(
@@ -317,11 +322,15 @@ class TicketTransition(AuthResource):
 
                     # execute order
                     for index, tkt_id in enumerate(data.get('order')):
-                        tkt_trans_order = TicketColumnTransition.objects.get(
+                        filters = dict(
                             ticket=tkt_id,
                             column=col,
-                            sprint=sp,
-                            latest_state=True)
+                            latest_state=True
+                        )
+                        if project.project_type == 'S':
+                            filters.update(dict(sprint=sp))
+
+                        tkt_trans_order = TicketColumnTransition.objects.get(**filters)
                         tkt_trans_order.order = index
                         tkt_trans_order.save()
 
@@ -518,3 +527,10 @@ class TicketClosed(AuthResource):
     def get(self, project_pk, *args, **kwargs):
         return Ticket.objects(project=project_pk, closed=True).to_json()
 
+
+class TicketBoardProject(AuthResource):
+    def __init__(self):
+        super(TicketBoardProject, self).__init__()
+
+    def get(self, project_pk, *args, **kwargs):
+        return Project.objects.get(pk=project_pk).get_tickets_board().to_json()

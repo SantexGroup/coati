@@ -99,6 +99,10 @@ class Project(CustomDocument):
 
     def to_json(self):
         data = self.to_dict()
+        if isinstance(self.project_type, bool) and self.project_type:
+            data["project_type"] = 'S'
+        elif isinstance(self.project_type, bool) and not self.project_type:
+            data["project_type"] = 'K'
         data["owner"] = self.owner.to_dict()
         data["owner"]["id"] = str(self.owner.pk)
         data['members'] = ProjectMember.get_members_for_project(self)
@@ -121,6 +125,23 @@ class Project(CustomDocument):
                                 (Q(closed=False) | Q(closed__exists=False))
         ).order_by('order')
 
+        return result
+
+    def get_tickets_board(self):
+        tickets = []
+        col_ids = []
+        column_list = Column.objects(project=self)
+        for c in column_list:
+            col_ids.append(str(c.pk))
+        tct_list = TicketColumnTransition.objects(column__in=col_ids,
+                                                  latest_state=True)
+        for t in tct_list:
+            tickets.append(str(t.ticket.pk))
+
+        result = Ticket.objects(Q(project=self) &
+                                Q(id__nin=tickets) &
+                                (Q(closed=False) | Q(
+                                    closed__exists=False))).order_by('order')
         return result
 
 

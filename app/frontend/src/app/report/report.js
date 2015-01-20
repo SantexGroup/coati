@@ -96,10 +96,10 @@
 
     };
 
-    Config.$inject = ['$stateProvider'];
+    Config.$inject = ['$stateProvider', '$translateProvider'];
     ProjectCtrlReports.$inject = ['$state', 'SprintService'];
 
-    angular.module('Coati.Report', ['ui.router',
+    angular.module('Coati.Report', ['ui.router', 'pascalprecht.translate',
         'Coati.Directives',
         'Coati.Services.Sprint'])
         .config(Config)

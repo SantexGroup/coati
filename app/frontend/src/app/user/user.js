@@ -66,11 +66,11 @@
 
     };
 
-    ConfigModule.$inject = ['$stateProvider'];
+    ConfigModule.$inject = ['$stateProvider', '$translateProvider'];
     UserController.$inject = ['$rootScope', 'growl', '$modal'];
     UserProfileController.$inject = ['$rootScope', '$modalInstance', 'UserService'];
 
-    angular.module('Coati.User', ['ui.router',
+    angular.module('Coati.User', ['ui.router', 'pascalprecht.translate',
         'Coati.Directives',
         'Coati.Services.User'])
         .config(ConfigModule)

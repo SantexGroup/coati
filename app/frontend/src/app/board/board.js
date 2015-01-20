@@ -220,10 +220,11 @@
 
     };
 
-    Config.$inject = ['$stateProvider'];
+    Config.$inject = ['$stateProvider', '$translateProvider'];
     ProjectCtrlBoard.$inject = ['$rootScope', '$state', '$location', '$modal', 'SprintService', 'ProjectService', 'TicketService', 'SocketIO'];
 
     angular.module('Coati.Board', ['ui.router',
+        'pascalprecht.translate',
         'Coati.SocketIO',
         'Coati.Directives',
         'Coati.Services.Project',

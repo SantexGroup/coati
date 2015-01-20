@@ -97,12 +97,12 @@
     };
 
     ResolveProject.$inject = ['$stateParams', 'ProjectService'];
-    Config.$inject = ['$stateProvider'];
+    Config.$inject = ['$stateProvider', '$translateProvider'];
     ProjectCtrl.$inject = ['$scope', '$rootScope', '$state', 'project'];
     ProjectDeleteController.$inject = ['$modalInstance', 'ProjectService', 'project'];
     ProjectFormCtrl.$inject = ['$state', '$modalInstance', 'ProjectService', 'growl'];
 
-    angular.module('Coati.Project', ['ui.router',
+    angular.module('Coati.Project', ['ui.router', 'pascalprecht.translate',
         'Coati.Settings',
         'Coati.Planning',
         'Coati.Board',

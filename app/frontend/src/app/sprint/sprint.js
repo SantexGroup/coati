@@ -141,12 +141,12 @@
         };
     };
 
-    Config.$inject = ['$stateProvider'];
+    Config.$inject = ['$stateProvider', '$translateProvider'];
     ArchivedSprintController.$inject = ['$rootScope', '$scope', '$modal', 'SprintService', 'SocketIO'];
     StartSprintController.$inject = ['$scope','Conf', '$filter', '$modalInstance', 'SprintService', 'sprint'];
     StopSprintController.$inject = ['$modalInstance', 'SprintService', 'sprint'];
 
-    angular.module('Coati.Sprint', ['ui.router',
+    angular.module('Coati.Sprint', ['ui.router', 'pascalprecht.translate',
         'Coati.Config',
         'Coati.SocketIO',
         'Coati.Directives',

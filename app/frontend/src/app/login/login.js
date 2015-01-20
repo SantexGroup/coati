@@ -136,14 +136,14 @@
         };
     };
 
-    Config.$inject = ['$stateProvider'];
+    Config.$inject = ['$stateProvider', '$translateProvider'];
     LoginController.$inject = ['$state', 'LoginService'];
     ActivateController.$inject = ['$state', 'UserService'];
     LoginAuthController.$inject = ['$rootScope', '$state', 'UserService', 'tokens'];
     RegisterController.$inject = ['$state', 'UserService'];
 
     angular.module('Coati.Login',
-        ['ui.router', 'ui.bootstrap',
+        ['ui.router', 'ui.bootstrap', 'pascalprecht.translate',
             'Coati.Directives',
             'Coati.Helpers',
             'Coati.Services.Login',

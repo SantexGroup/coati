@@ -1,10 +1,8 @@
 <div class="row">
     <div class="col-md-12 projects">
-        <h3>Welcome to Coati Agile Project.</h3>
+        <h3><[ 'WELCOME MESSAGE' | translate]></h3>
 
-        <p data-ng-show="vm.projects.length < 1">You don't have Projects created
-            yet!</p>
-        <p><h1><[ 'BATMAN' | translate ]></h1></p>
+        <p data-ng-show="vm.projects.length < 1"><[ 'NO PROJECTS' | translate ]></p>
         <!--widget start-->
         <aside class="profile-nav alt blue-border col-md-3"
                ng-repeat="item in vm.projects track by item._id.$oid"
@@ -38,10 +36,10 @@
         <aside class="profile-nav alt col-md-3 new-project" ng-click="vm.create_project();">
             <section class="panel">
                 <header class="panel-heading alt">
-                    <span>New Project...</span>
+                    <span><[ 'NEW PROJECT' | translate]...></span>
                 </header>
                 <div class="panel-body">
-                    <p>Click here to create a new project...</p>
+                    <p><[ 'CREATE PROJECT' | translate]></p>
                 </div>
             </section>
         </aside>

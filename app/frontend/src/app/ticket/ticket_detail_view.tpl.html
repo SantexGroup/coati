@@ -19,20 +19,20 @@
 <div class="col-md-12">
 <div class="row">
     <div class="col-md-10">
-        <label>Points</label>
+        <label><[ 'POINTS' | translate ]></label>
                         <span class="badge bg-important"
                               editable-text="vm.ticket.points"
                               onbeforesave="vm.saveTicket(vm.ticket);">
                             <[ vm.ticket.points ]>
                         </span>
-        <label>Ticket Type:</label>
+        <label><[ 'TICKET TYPE' | translate ]>:</label>
                         <span class="badge <[ vm.ticket.type]>"
                               editable-select="vm.ticket.type"
                               e-ng-options="t.value as t.name for t in vm.types"
                               onbeforesave="vm.saveTicket(vm.ticket);">
                             <[ vm.types | ticketTypes:vm.ticket.type ]>
                         </span>
-        <label>In Column:</label>
+        <label><[ 'IN COLUMN' | translate ]>:</label>
                         <span ng-if="!vm.ticket.in_column"
                               class="badge bg-warning">Backlog</span>
                         <span ng-if="vm.ticket.in_column"
@@ -41,7 +41,7 @@
     <div class="col-md-2" dropdown>
         <button class="btn btn-xs btn-success dropdown-toggle"
                 dropdown-toggle type="button">
-            Members <span class="caret"></span>
+            <[ 'MEMBERS' | translate ]> <span class="caret"></span>
         </button>
         <ul role="menu" class="dropdown-menu members-menu">
             <li ng-repeat="m in vm.members"
@@ -73,7 +73,7 @@
 <hr>
 <div class="row">
     <div class="col-md-12">
-        <label>Description:</label>
+        <label><[ 'DESCRIPTION' | translate ]>:</label>
 
         <p editable-textarea="vm.ticket.description" e-rows="5"
            e-cols="70" onbeforesave="vm.saveTicket(vm.ticket);">
@@ -83,7 +83,7 @@
 <hr>
 <div class="row">
     <div class="col-md-12">
-        <label>Labels:</label>
+        <label><[ 'LABELS' | translate ]>:</label>
 
         <p class="labels-ticket" editable-tags="vm.labels"
            e-style="display:inline-block;min-width:400px;"
@@ -101,7 +101,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="attachments">
-            <label>Attachements:</label>
+            <label><[ 'ATTACHMENTS' | translate ]>:</label>
 
             <div class="attachments_stored">
                 <div style="margin-right: 3px;margin-bottom:3px"
@@ -118,12 +118,12 @@
                         <li><a href="javascript:;"
                                ng-click="vm.download(f);">
                             <i class="icon-download"></i>
-                            Download</a>
+                            <[ 'DOWNLOAD' | translate ]></a>
                         </li>
                         <li><a href="javascript:;"
                                ng-click="vm.delete_file(f);">
                             <i class="icon-trash"></i>
-                            Delete</a>
+                            <[ 'DELETE' | translate ]></a>
                         </li>
                     </ul>
                 </div>
@@ -131,12 +131,12 @@
             <button class="btn pull-left btn-sm btn-primary"
                     ng-file-select ng-model="vm.files"
                     ng-file-change="vm.prepare_upload()"
-                    multiple="true">Select Files...
+                    multiple="true"><[ 'SELECT FILES' | translate ]>
             </button>
             <button ng-show="vm.files.length"
                     ng-click="vm.confirm_upload();"
                     class="btn pull-right btn-sm btn-success">
-                Upload Files
+                <[ 'UPLOAD FILES' | translate ]>
             </button>
             <div style="clear:both"></div>
             <div class="files" ng-show="vm.files.length">
@@ -168,7 +168,7 @@
                                 <button class="btn btn-xs btn-danger"
                                         ng-show="f.upload != null && f.progress < 100 && !f.aborted"
                                         ng-click="vm.abort_upload(f);">
-                                    Cancel
+                                    <[ 'CANCEL' | translate ]>
                                 </button>
                             </div>
                         </div>
@@ -196,9 +196,7 @@
             <button id="add-comment"
                     class="btn btn-success pull-right"
                     ng-disabled="vm.process_comment"
-                    ng-click="vm.add_new_comment($event)">Add
-                New
-                Comment
+                    ng-click="vm.add_new_comment($event)"><[ 'NEW COMMENT' | translate ]>
             </button>
             <div style="clear:both"></div>
         </div>

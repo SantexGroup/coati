@@ -3,14 +3,14 @@
         <div class="col-md-4">
             <section class="panel tasks-widget backlog">
                 <header class="panel-heading">
-                    Project Data
+                    <[ 'PROJECT DATA' | translate ]>
                 </header>
                 <div class="panel-body">
                     <form name="vm.form.project_form"
                           ng-submit="vm.save()"
                           novalidate>
                         <div class="form-group">
-                            <label>Name</label>
+                            <label><[ 'NAME' | translate ]></label>
                             <input ng-model="vm.project.name"
                                    required
                                    name="name"
@@ -18,17 +18,16 @@
                                    class="form-control input-small"
                                    type="text">
                             <label for="name" class="error"
-                                   data-ng-show="vm.form.project_form.name.$invalid && vm.submitted">Please
-                                enter a project name</label>
+                                   data-ng-show="vm.form.project_form.name.$invalid && vm.submitted"><[ 'INVALID PROJECT NAME' | translate ]></label>
                         </div>
                         <div class="form-group">
-                            <label>Description</label>
+                            <label><[ 'PROJECT DESCRIPTION' | translate ]></label>
                             <textarea class="form-control" rows="3"
                                       name="description"
                                       data-ng-model="vm.project.description"></textarea>
                         </div>
                         <div class="form-group">
-                            <label>Prefix</label>
+                            <label><[ 'PROJECT PREFIX' | translate ]></label>
                             <input class="form-control"
                                    data-ng-class="{'error': vm.form.project_form.prefix.$invalid && vm.submitted}"
                                    autocomplete="off"
@@ -38,7 +37,7 @@
                                    name="prefix" type="text">
                         </div>
                         <div class="form-group">
-                            <label>Active</label>
+                            <label><[ 'PROJECT ACTIVE' | translate ]></label>
                             <input type="checkbox" name="active"
                                    ng-model="vm.project.active">
                         </div>
@@ -55,25 +54,24 @@
                             </div>
                         </div>-->
                         <div class="form-group">
-                            <label>Sprint Duration</label>
+                            <label><[ 'SPRINT DURATION' | translate ]></label>
                             <select ng-model="vm.project.sprint_duration"
                                     required
                                     name="sprint_duration"
                                     data-ng-class="{'error': vm.form.settings_form.sprint_duration.$invalid && vm.submitted}"
                                     class="form-control">
-                                <option value="10">2 Weeks</option>
-                                <option value="5">1 Week</option>
+                                <option value="10"><[ '2 WEEKS' | translate ]></option>
+                                <option value="5"><[ '1 WEEK' | translate ]></option>
                             </select>
                             <label for="sprint_duration" class="error"
-                                   data-ng-show="vm.form.settings_form.sprint_duration.$invalid && vm.submitted">Please
-                                enter a sprint duration in days</label>
+                                   data-ng-show="vm.form.settings_form.sprint_duration.$invalid && vm.submitted"><[ 'SPRINT DURATION ERROR' | translate ]></label>
                         </div>
                         <button class="btn btn-primary"
-                                type="submit">Update Settings
+                                type="submit"><[ 'UPDATE SETTINGS' | translate ]>
                         </button>
                         <button class="btn btn-danger"
                                 type="button" ng-click="vm.delete_project();">
-                            Remove Project
+                            <[ 'REMOVE PROJECT' | translate ]>
                         </button>
                     </form>
                 </div>
@@ -86,7 +84,7 @@
                     <button class="btn btn-primary pull-right"
                             style="margin-top:-5px;"
                             ng-click="vm.add_new_member();" type="button">Add
-                        New Member
+                        <[ 'NEW MEMBER' | translate ]>
                     </button>
                 </header>
                 <div class="panel-body">
@@ -101,18 +99,18 @@
                             <li ng-if="!m.is_owner"><a href="javascript:;"
                                                        ng-click="vm.set_as_owner(m);">
                                 <i class="icon-level-up"></i>
-                                Set as Owner</a>
+                                <[ 'SET AS OWNER' | translate ]></a>
                             </li>
                             <li ng-if="m.is_owner">
                                 <a href="javascript:;">
                                     <i class="icon-user"></i>
-                                    Owner
+                                    <[ 'OWNER' | translate ]>
                                 </a>
                             </li>
                             <li ng-if="!m.is_owner"><a href="javascript:;"
                                    ng-click="vm.remove_member(m);">
                                 <i class="icon-trash"></i>
-                                Remove from Project</a>
+                                <[ 'REMOVE MEMBER' | translate ]></a>
                             </li>
                         </ul>
                     </div>
@@ -125,15 +123,14 @@
                     Board Settings
                     <button class="btn btn-primary pull-right"
                             style="margin-top:-5px;"
-                            ng-click="vm.add_or_edit();" type="button">Add
-                        New Column
+                            ng-click="vm.add_or_edit();" type="button"><[ 'ADD NEW COLUMN' | translate ]>
                     </button>
                 </header>
                 <div class="panel-body">
                     <div class="columns-in-project">
                         <section class="panel">
                             <header class="panel-heading">
-                                <span>Column Configuration</span>
+                                <span><[ 'COLUMN CONFIGURATION' | translate ]></span>
                             </header>
                             <div class="panel-body">
                                 <div class="task-content">
@@ -169,10 +166,9 @@
                                 </div>
                                 <p>
 
-                                <div class="badge bg-important">Alert when
-                                    exceed this number of tickets
+                                <div class="badge bg-important"><[ 'ALERT TICKET AMOUNT' | translate ]>
                                 </div>
-                                <div class="badge bg-success">Done Column
+                                <div class="badge bg-success"><[ 'DONE COLUMN' | translate ]>
                                 </div>
                                 </p>
                             </div>

@@ -1,18 +1,18 @@
-<h2>Burndown Chart</h2>
+<h2><[ 'BURNDOWN CHART' | translate ]></h2>
 <div class="row">
     <div class="col-md-12">
         <div class="form-group">
-            <label>Sprint</label>
+            <label><[ 'SPRINT' | translate ]></label>
             <select class="form-control"
                     name="sprint"
                     data-ng-model="vm.sprint_selected"
                     data-ng-options="s.name group by vm.getSprintType(s) for s in vm.sprints"
                     data-ng-change="vm.getReport();">
-                <option value="">Select a Sprint</option>
+                <option value=""><[ 'SPRINT SELECTION' | translate ]></option>
             </select>
         </div>
         <p ng-show="vm.is_not_started">
-            The Sprint wasn't ever started.
+            <[ 'SPRINT NOT STARTED' | translate ]>
         </p>
 
         <div class="col-md-8">
@@ -20,21 +20,21 @@
                    chart-obj="chartObj"></chart>
         </div>
         <div class="col-md-4" ng-show="vm.sprint_selected && !vm.is_not_started">
-            <label>Done tickets</label>
+            <label><[ 'DONE TICKETS' | translate ]></label>
             <ul>
                 <li ng-repeat="tkt in vm.tickets|filter:{finished: true}">
                     <span><[ tkt.title ]></span>
                     <span class="badge bg-warning"><[ tkt.points ]></span>
                 </li>
             </ul>
-            <label>Pending tickets</label>
+            <label><[ 'PENDING TICKETS' | translate ]></label>
             <ul>
                 <li ng-repeat="tkt in vm.tickets|filter:{finished: false}">
                     <span><[ tkt.title ]></span>
                     <span class="badge bg-warning"><[ tkt.points ]></span>
                 </li>
             </ul>
-            <label>Added after sprint started</label>
+            <label><[ 'ADDED TICKETS' | translate ]></label>
             <ul>
                 <li ng-repeat="tkt in vm.tickets|filter:{added_after: true}">
                     <span><[ tkt.title ]></span>

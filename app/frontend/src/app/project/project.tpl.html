@@ -5,24 +5,23 @@
                 <ul class="nav nav-tabs">
                     <li ng-class="{active: vm.planning}">
                         <a data-toggle="tab"
-                           ng-click="vm.switchView('project.planning');">Planning</a>
+                           ng-click="vm.switchView('project.planning');"><[ 'PLANNING' | translate ]></a>
                     </li>
                     <li ng-class="{active: vm.board}">
                         <a data-toggle="tab"
-                           ng-click="vm.switchView('project.board');">Board</a>
+                           ng-click="vm.switchView('project.board');"><[ 'BOARD' | translate ]></a>
                     </li>
                     <li ng-class="{active: vm.reports}">
                         <a data-toggle="tab"
-                           ng-click="vm.switchView('project.reports');">Reports</a>
+                           ng-click="vm.switchView('project.reports');"><[ 'REPORTS' | translate ]></a>
                     </li>
                     <li ng-class="{active: vm.archived}">
                         <a data-toggle="tab"
-                           ng-click="vm.switchView('project.archived');">Archived Sprints</a>
+                           ng-click="vm.switchView('project.archived');"><[ 'ARCHIVED SPRINTS' | translate ]></a>
                     </li>
                     <li ng-show="vm.check_permission()" ng-class="{active: vm.settings}">
                         <a data-toggle="tab"
-                           ng-click="vm.switchView('project.settings');">Project
-                            Settings</a>
+                           ng-click="vm.switchView('project.settings');"><[ 'PROJECT SETTINGS' | translate ]></a>
                     </li>
                 </ul>
             </header>

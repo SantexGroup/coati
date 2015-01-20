@@ -4,7 +4,7 @@
     <base href="/">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-ng-bind="pageTitle">Coati Agile Board</title>
+    <title data-ng-bind="pageTitle"><[ 'PAGE TITLE' | translate ]></title>
     <link rel="shortcut icon"
           href="{{ url_for('static', filename='assets/koala.ico')}}?v2"/>
     <!-- Bootstrap core CSS -->
@@ -49,11 +49,11 @@
                         <div class="log-arrow-up"></div>
                         <li><a href="javascript:;"
                                ng-click="vm.show_profile();"><i
-                                class=" icon-suitcase"></i> Profile</a>
+                                class=" icon-suitcase"></i> <[ 'PROFILE' | translate ]></a>
                         </li>
                         <li><a ng-href="/auth/logout" href="/logout"
                                target="_self"><i
-                                class="icon-key"></i> Log Out</a>
+                                class="icon-key"></i> <[ 'LOG OUT' | translate ]></a>
                         </li>
                     </ul>
                 </li>

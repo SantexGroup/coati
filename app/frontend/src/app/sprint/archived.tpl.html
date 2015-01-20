@@ -9,12 +9,12 @@
                         <i class="icon-ellipsis-vertical handler"></i>
                         <span editable-text="sprint.name" onbeforesave="vm.renameSprint(sprint);"><[ sprint.name ]></span>
                         <span class="badge"><[ sprint.tickets.length ]></span>
-                        <span ng-if="sprint.started" class="sprint_dates">(<[ sprint.start_date.$date | date:'short' ]> to <[ sprint.end_date.$date | date:'short']>)</span>
+                        <span ng-if="sprint.started" class="sprint_dates">(<[ sprint.start_date.$date | date:'short' ]> <[ 'TO' | translate ]> <[ sprint.end_date.$date | date:'short']>)</span>
                         <div class="options pull-right">
-                            <span class="badge bg-inverse">Total Points: <[ sprint.tickets | sumValue:'points' ]></span>
+                            <span class="badge bg-inverse"><[ 'TOTAL POINTS' | translate ]>: <[ sprint.tickets | sumValue:'points' ]></span>
                             <a class="btn btn-sm btn-danger"
                                ng-click="vm.remove_sprint(sprint._id.$oid)">
-                                <i class="icon-remove"></i> Remove
+                                <i class="icon-remove"></i> <[ 'REMOVE' | translate ]>
                             </a>
                         </div>
                         <div style="clear:both"></div>

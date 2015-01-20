@@ -1,17 +1,17 @@
 <section class="panel">
     <header class="panel-heading">
         <h4 class="modal-title">
-            Delete Column
+            <[ 'DELETE COLUMN' | translate ]>
         </h4>
     </header>
     <div class="panel-body">
         <div class="col-md-12">
-            <p>Are you sure to delete the column "<[ vm.column.title ]>"?</p>
+            <p><[ 'DELETE COLUMN CONFIRM' | translate ]> "<[ vm.column.title ]>"?</p>
             <button class="btn btn-danger"
-                        data-ng-click="vm.erase();">Confirm Delete
+                        data-ng-click="vm.erase();"><[ 'DELETE CONFIRM' | translate ]>
                 </button>
                 <button class="btn btn-warning"
-                        data-ng-click="vm.cancel();">Cancel
+                        data-ng-click="vm.cancel();"><[ 'CANCEL' | translate ]>
                 </button>
         </div>
     </div>

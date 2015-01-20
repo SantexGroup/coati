@@ -1,8 +1,7 @@
 <h3>
     <[ vm.project.name ]>
     <a class="btn btn-success btn-sm pull-right" href="javascript:;"
-       ng-click="vm.add_or_edit($event);">Add New
-        Ticket</a>
+       ng-click="vm.add_or_edit($event);"><[ 'NEW TICKET' | translate ]></a>
 </h3>
 <p><[ vm.project.description ]></p>
 <div class="row" id="planning">
@@ -15,21 +14,20 @@
                          ng-class="{started:sprint.started}">
                     <header class="panel-heading">
                         <span editable-text="sprint.name" onbeforesave="vm.renameSprint(sprint);"><[ sprint.name ]></span>
-                        <span ng-if="sprint.started" class="sprint_dates">(<[ sprint.start_date.$date | date:'MM/dd/yyyy' ]> to <[ sprint.end_date.$date | date:'MM/dd/yyyy']>)</span>
+                        <span ng-if="sprint.started" class="sprint_dates">(<[ sprint.start_date.$date | date:'MM/dd/yyyy' ]> <[ 'TO' | translate ]> <[ sprint.end_date.$date | date:'MM/dd/yyyy']>)</span>
 
                         <div class="options pull-right">
-                            <span class="badge bg-inverse">Total Tickets: <[ sprint.tickets.length ]></span>
-                            <span class="badge bg-inverse">Total Points: <[ sprint.tickets | sumValue:'points' ]></span>
+                            <span class="badge bg-inverse"><[ 'TOTAL TICKETS' | translate ]>: <[ sprint.tickets.length ]></span>
+                            <span class="badge bg-inverse"><[ 'TOTAL POINTS' | translate ]>: <[ sprint.tickets | sumValue:'points' ]></span>
                             <a ng-if="$index == 0 && !vm.one_started && !sprint.finalized && !sprint.started"
                                class="btn btn-primary btn-sm" href="javascript:;"
-                               ng-click="vm.startSprint(sprint);">Start
-                                Sprint</a>
+                               ng-click="vm.startSprint(sprint);"><[ 'START SPRINT' | translate ]></a>
                             <a ng-if="sprint.started && !sprint.finalized"
                                class="btn btn-danger btn-sm" href="javascript:;"
-                               ng-click="vm.stopSprint(sprint);">Stop Sprint</a>
+                               ng-click="vm.stopSprint(sprint);"><[ 'STOP SPRINT' | translate ]></a>
                             <a class="btn btn-sm btn-danger"
                                ng-click="vm.remove_sprint(sprint._id.$oid)">
-                                <i class="icon-remove"></i> Remove
+                                <i class="icon-remove"></i> <[ 'REMOVE' | translate]>
                             </a>
                         </div>
                         <div style="clear:both"></div>
@@ -65,13 +63,12 @@
 
         <section class="panel tasks-widget backlog">
             <header class="panel-heading">
-                <span>Backlog</span>
+                <span><[ 'BACKLOG' | translate ]></span>
                 <div class="add-task-row pull-right">
-                    <span class="badge bg-inverse">Total Tickets: <[ vm.tickets.length ]></span>
-                    <span class="badge bg-inverse">Total Points: <[ vm.tickets | sumValue:'points' ]></span>
+                    <span class="badge bg-inverse"><[ 'TOTAL TICKETS' | translate]>: <[ vm.tickets.length ]></span>
+                    <span class="badge bg-inverse"><[ 'TOTAL POINTS' | translate]>: <[ vm.tickets | sumValue:'points' ]></span>
                     <a class="btn btn-primary btn-sm" href="javascript:;"
-                       ng-click="vm.create_sprint();">Create
-                        Sprint</a>
+                       ng-click="vm.create_sprint();"><[ 'CREATE SPRINT' | translate ]></a>
                 </div>
                 <div style="clear:both"></div>
             </header>

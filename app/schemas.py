@@ -150,14 +150,14 @@ class Sprint(CustomDocument):
     def to_json(self, *args, **kwargs):
         data = self.to_dict()
         if kwargs.get('archived'):
-            tickets = SprintTicketOrder.objects(sprint=self.pk).order_by(
-                'order')
+            tickets = SprintTicketOrder.objects(sprint=self.pk,
+                                                active=False).order_by('order')
         else:
             tickets = SprintTicketOrder.objects(sprint=self.pk,
                                                 active=True).order_by('order')
         ticket_list = []
         for t in tickets:
-            tkt = t.ticket.to_dict()
+            tkt = t.ticket_repr
             tkt['order'] = t.order
             tkt['badges'] = {
                 'comments': Comment.objects(ticket=t.ticket).count(),
@@ -180,16 +180,16 @@ class Sprint(CustomDocument):
             for ass in t.ticket.assigned_to:
                 if ass.__class__.__name__ != 'DBRef':
                     assignments.append(ass.to_dict())
-
+            tkt = t.ticket_repr
             value = {
-                'points': t.ticket.points,
+                'points': tkt.get('points'),
                 'title': '%s-%s: %s' % (t.ticket.project.prefix,
-                                        t.ticket.number,
-                                        t.ticket.title),
+                                        tkt.get('number'),
+                                        tkt.get('title')),
                 '_id': t.ticket.id,
-                'type': t.ticket.type,
+                'type': tkt.get('type'),
                 'added_after': t.when > self.start_date,
-                'number': t.ticket.number
+                'number': tkt.get('number')
             }
             try:
                 tt = TicketColumnTransition.objects.get(ticket=t.ticket,
@@ -224,7 +224,7 @@ class Sprint(CustomDocument):
         ticket_list = []
         for t in tickets:
             if t.ticket.__class__.__name__ != 'DBRef':
-                tkt = t.ticket.to_dict()
+                tkt = t.ticket_repr
                 tkt['order'] = t.order
                 tkt['badges'] = {
                     'comments': Comment.objects(ticket=t.ticket).count(),
@@ -372,6 +372,7 @@ class Ticket(CustomDocument):
 class SprintTicketOrder(CustomDocument):
     ticket = mongoengine.ReferenceField('Ticket',
                                         reverse_delete_rule=mongoengine.CASCADE)
+    ticket_repr = mongoengine.DictField()
     order = mongoengine.IntField()
     sprint = mongoengine.ReferenceField('Sprint',
                                         reverse_delete_rule=mongoengine.CASCADE)

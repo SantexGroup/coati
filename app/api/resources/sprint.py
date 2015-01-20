@@ -142,7 +142,8 @@ class SprintActive(AuthResource):
         super(SprintActive, self).__init__()
 
     def get(self, project_pk, *args, **kwargs):
-        sprints = Sprint.objects(project=project_pk, started=True,
+        sprints = Sprint.objects(project=project_pk,
+                                 started=True,
                                  finalized=False)
         sprint = None
         if sprints:
@@ -173,15 +174,19 @@ class SprintChart(AuthResource):
             # include the weekends??
             weekends = bool(request.args.get('weekends', False))
             # get tickets of the sprint
-            tickets_in_sprint = SprintTicketOrder.objects(sprint=sprint)
+            tickets_in_sprint = SprintTicketOrder.objects(sprint=sprint,
+                                                          active=(sprint.started and not sprint.finalized))
             # get the points planned when it started
-            points_planned = sprint.total_points_when_started
+            planned_sprint_points = sprint.total_points_when_started
 
             # get the sum of points of the entire sprint
-            actual_sprint_points = 0
+            y1_total_sprint_points = 0
             if tickets_in_sprint:
                 for sto in tickets_in_sprint:
-                    actual_sprint_points += sto.ticket.points
+                    y1_total_sprint_points += sto.ticket_repr.get('points')
+
+            if planned_sprint_points > y1_total_sprint_points:
+                planned_sprint_points = y1_total_sprint_points
 
             # get done column
             col = Column.objects.get(project=sprint.project,
@@ -190,8 +195,8 @@ class SprintChart(AuthResource):
             # define the lists
             days = []
             points_remaining = []
-            ideal_planned = [points_planned]
-            ideal_real = [actual_sprint_points]
+            ideal_planned = [y1_total_sprint_points]
+            ideal_real = [y1_total_sprint_points]
 
             # add the first date, the sprint started date
             days.append(sprint.start_date)
@@ -210,65 +215,112 @@ class SprintChart(AuthResource):
                 counter += 1
 
             # calculate deltas for ideal lines
-            delta_planned = float(points_planned) / float(duration)
-            delta_real = float(actual_sprint_points) / float(duration)
+            delta_planned = float(y1_total_sprint_points) / float(duration)
+            delta_real = float(y1_total_sprint_points) / float(duration)
             # define initial counters
-            planned_counter = points_planned
-            real_counter = actual_sprint_points
-            starting_points = actual_sprint_points
+            planned_counter = y1_total_sprint_points
+            real_counter = y1_total_sprint_points
+            starting_points = planned_sprint_points
+
+            # get team velocity
+            x2_limit_date = datetime.now()
+            if datetime.now() > sprint.end_date:
+                x2_limit_date = sprint.end_date
+            total_burned_points = 0
+            tickets_done = TicketColumnTransition.objects(column=col,
+                                                          sprint=sprint,
+                                                          when__gte=sprint.start_date,
+                                                          when__lte=x2_limit_date,
+                                                          latest_state=True)
+
+            for td in tickets_done:
+                spo_done = SprintTicketOrder.objects.get(ticket=td.ticket,
+                                                         sprint=sprint)
+                total_burned_points += spo_done.ticket_repr.get('points')
+            # adding 1 day to include limits
+            used_days = (x2_limit_date.date() - sprint.start_date.date()).days
+            if used_days < 1:
+                velocity = float(y1_total_sprint_points) / float(duration)
+            else:
+                y2_remaining_points = y1_total_sprint_points - total_burned_points
+                velocity = float(
+                    y1_total_sprint_points - y2_remaining_points) / float(used_days)
+            delta_real = velocity or delta_real
+
+            eta = y1_total_sprint_points / delta_real
 
             # list of formatted dates
             formatted_days = []
-
+            # tickets added o burned
+            tickets = []
             # iterate each day to see the burned or added points
             for day in days:
                 planned_counter -= delta_planned
                 real_counter -= delta_real
-                if planned_counter >= 0:
+                if planned_counter > 0:
                     ideal_planned.append(round(planned_counter, 2))
-                if real_counter >= 0:
+                else:
+                    ideal_planned.append(0)
+                if real_counter > 0:
                     ideal_real.append(round(real_counter, 2))
+                else:
+                    ideal_real.append(0)
                 # format the dates
                 formatted_days.append(datetime.strftime(day, '%d %a, %b %Y'))
-                start_date = day
-                end_date = start_date + timedelta(hours=23, minutes=59)
+                start_date = day if sprint.start_date < day else sprint.start_date
+                end_date = (start_date + timedelta(hours=23, minutes=59)).date()
 
-                if start_date.date() <= datetime.now().date():
+                if start_date.date() <= x2_limit_date.date():
 
                     points_burned_for_date = 0
+                    points_added = 0
                     # get tickets after started sprint
-                    std = start_date + timedelta(hours=23, minutes=59)
-                    spt_list = SprintTicketOrder.objects(sprint=sprint,
-                                                         when__gt=std,
-                                                         when__lt=end_date)
+                    filters = dict(sprint=sprint,
+                                   when__gt=start_date,
+                                   when__lt=end_date)
+                    if start_date > sprint.start_date:
+                        filters.update(dict(when__gt=start_date.date()))
+
+                    spt_list = SprintTicketOrder.objects(**filters)
                     for spt in spt_list:
-                        points_burned_for_date -= spt.ticket.points
+                        tickets.append(
+                            u'Added: %s-%s (%s)' % (spt.ticket.project.prefix,
+                                                    spt.ticket.number,
+                                                    spt.ticket.points))
+                        points_added += spt.ticket_repr.get('points')
 
                     # get tickets in done column
                     tct_list = TicketColumnTransition.objects(column=col,
                                                               sprint=sprint,
-                                                              when__gte=start_date,
+                                                              when__gte=start_date.date(),
                                                               when__lt=end_date,
                                                               latest_state=True)
 
-                    tickets = []
                     for tct in tct_list:
+                        spo = SprintTicketOrder.objects.get(ticket=tct.ticket,
+                                                            sprint=sprint)
                         tickets.append(
-                            u'- %s-%s (%s)' % (tct.ticket.project.prefix,
-                                               tct.ticket.number,
-                                               tct.ticket.points))
-                        points_burned_for_date += tct.ticket.points
+                            u'Burned: %s-%s (%s)' % (tct.ticket.project.prefix,
+                                                     tct.ticket.number,
+                                                     spo.ticket_repr.get('points')))
+                        points_burned_for_date += spo.ticket_repr.get('points')
 
-                    if starting_points > 0:
+                    if points_burned_for_date > 0:
                         starting_points -= points_burned_for_date
+                    if points_added > 0:
+                        starting_points += points_added
 
                     points_remaining.append(starting_points)
 
             data = {
                 'points_remaining': points_remaining,
+                'tickets': tickets,
                 'dates': formatted_days,
                 'ideal_planned': ideal_planned,
                 'ideal_real': ideal_real,
+                'eta': sprint.start_date + timedelta(days=eta),
+                'velocity': delta_real,
+                'planned_points': sprint.total_points_when_started,
                 'all_tickets': json.loads(
                     sprint.get_tickets_with_latest_status())
             }

@@ -791,7 +791,7 @@ a.unread {
 }
 
 .chart-legend {
-  width: 315px;
+  width: 340px;
   display: block;
   margin: 0px auto;
 }
@@ -812,8 +812,28 @@ a.unread {
   margin-right: 5px;
 }
 
-.user_picture img{
+.user_picture img {
   width: 22px;
   height: 22px;
   object-fit: cover;
+}
+
+#chart-tooltip {
+  opacity: 1;
+  position: absolute;
+  background: rgba(0, 0, 0, .7);
+  color: white;
+  padding: 3px;
+  border-radius: 3px;
+  -webkit-transition: all .1s ease;
+  transition: all .1s ease;
+  pointer-events: none;
+  -webkit-transform: translate(-50%, 0);
+  transform: translate(-50%, 0);
+}
+
+.chartjs-tooltip-key {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
 }

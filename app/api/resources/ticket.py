@@ -42,9 +42,18 @@ class TicketInstance(AuthResource):
                 except DoesNotExist:
                     # remove old data if this already exists
                     spo = SprintTicketOrder(sprint=sprint, ticket=tkt)
+                    spo.ticket_repr = tkt.to_dict()
                     spo.order = SprintTicketOrder.objects(sprint=sprint,
                                                           active=True).count()
                 spo.save()
+
+            try:
+                spo = SprintTicketOrder.objects.get(ticket=tkt,
+                                                    active=True)
+                spo.ticket_repr = tkt.to_dict()
+                spo.save()
+            except DoesNotExist:
+                pass
 
             # save activity
             save_notification(project_pk=project_pk,
@@ -112,6 +121,7 @@ class TicketProjectList(AuthResource):
         if data.get('sprint'):
             sprint = Sprint.objects.get(pk=data.get('sprint')['pk'])
             spo = SprintTicketOrder(sprint=sprint, ticket=tkt)
+            spo.ticket_repr = tkt.to_dict()
             spo.order = SprintTicketOrder.objects(sprint=sprint,
                                                   active=True).count()
             spo.save()
@@ -196,6 +206,7 @@ class TicketMovement(AuthResource):
                 tkt_ord_sprint = SprintTicketOrder()
                 tkt_ord_sprint.sprint = sprint
                 tkt_ord_sprint.ticket = ticket
+                tkt_ord_sprint.ticket_repr = ticket.to_dict()
                 tkt_ord_sprint.when = datetime.now()
                 tkt_ord_sprint.save()
 
@@ -216,6 +227,7 @@ class TicketMovement(AuthResource):
                 tkt_ord_sprint = SprintTicketOrder()
                 tkt_ord_sprint.sprint = sprint
                 tkt_ord_sprint.ticket = ticket
+                tkt_ord_sprint.ticket_repr = ticket.to_dict()
                 tkt_ord_sprint.when = datetime.now()
                 tkt_ord_sprint.save()
 

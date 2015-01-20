@@ -19,13 +19,13 @@
         });
     };
 
-    var ArchivedSprintController = function(rootScope, scope, modal, SprintService, SocketIO){
+    var ArchivedSprintController = function (rootScope, scope, modal, SprintService, SocketIO) {
 
         var vm = this;
 
         vm.project = scope.$parent.project;
 
-        var getSprintsWithTickets = function(project_id){
+        var getSprintsWithTickets = function (project_id) {
             SprintService.archived(project_id).then(function (sprints) {
                 vm.sprints = sprints;
             });
@@ -45,7 +45,8 @@
                     item: function () {
                         return {
                             'project': vm.project,
-                            'ticket_id': tkt._id.$oid
+                            'ticket_id': tkt._id.$oid,
+                            'disabled': true
                         };
                     }
                 }
@@ -58,8 +59,6 @@
 
         getSprintsWithTickets(vm.project._id.$oid);
 
-        SocketIO.init(vm.project._id.$oid, rootScope.user._id.$oid);
-
     };
 
     var StartSprintController = function (scope, conf, filter, modalInstance, SprintService, sprint) {
@@ -70,24 +69,39 @@
 
         var today = new Date();
 
-        vm.min_date = today;
-        vm.max_date = addDays(today, vm.sprint.sprint_duration);
 
-        //set defaults
-        vm.sprint.start_date = filter('date')(vm.min_date, vm.format);
-        vm.sprint.end_date = filter('date')(vm.max_date, vm.format);
+
+        if(vm.sprint.to_start) {
+            vm.min_date = today;
+            vm.max_date = new Date(today.getTime() + vm.sprint.sprint_duration * 24 * 60 * 60 * 1000);
+            //set defaults
+            vm.sprint.start_date = vm.min_date;
+            vm.sprint.end_date = vm.max_date;
+        }else{
+            vm.min_date = new Date(vm.sprint.start_date.$date);
+            vm.max_date = new Date(vm.sprint.end_date.$date);
+            vm.sprint.start_date = vm.min_date;
+            vm.sprint.end_date = vm.max_date;
+        }
 
         //check change of start date
-        scope.$watch('vm.sprint.start_date', function () {
-            vm.max_date = filter('date')(addDays(vm.sprint.start_date, vm.sprint.sprint_duration), vm.format);
-            vm.sprint.end_date = filter('date')(vm.max_date, vm.format);
+        scope.$watch(function(){
+            return vm.sprint.start_date;
+        }, function (new_val) {
+            if(new_val instanceof Date) {
+                var md = new Date(new_val.getTime() + vm.sprint.sprint_duration * 24 * 60 * 60 * 1000);
+                vm.max_date = md;
+                vm.sprint.end_date = vm.max_date;
+            }
         });
 
         // Datapicker options
         vm.dateOptions = {
             formatYear: 'yyyy',
             startingDay: 1,
-            showWeeks: false
+            showWeeks: false,
+            formatMonth: 'MMM',
+            showButtonBar: false
         };
         // Datapicker open
         vm.openStartDate = function ($event) {
@@ -105,7 +119,11 @@
 
         vm.save = function () {
             if (vm.form.sprint_form.$valid) {
-                vm.sprint.for_starting = true;
+                if(vm.sprint.to_start) {
+                    vm.sprint.for_starting = true;
+                }else{
+                    vm.sprint.for_editing = true;
+                }
                 SprintService.update(vm.sprint).then(function (sp) {
                     modalInstance.close();
                 }, function (err) {
@@ -127,7 +145,7 @@
 
         vm.sprint = sprint;
 
-        vm.stopSprint = function(){
+        vm.stopSprint = function () {
             vm.sprint.for_finalized = true;
             SprintService.update(vm.sprint).then(function (sp) {
                 modalInstance.close();
@@ -143,7 +161,7 @@
 
     Config.$inject = ['$stateProvider', '$translateProvider'];
     ArchivedSprintController.$inject = ['$rootScope', '$scope', '$modal', 'SprintService', 'SocketIO'];
-    StartSprintController.$inject = ['$scope','Conf', '$filter', '$modalInstance', 'SprintService', 'sprint'];
+    StartSprintController.$inject = ['$scope', 'Conf', '$filter', '$modalInstance', 'SprintService', 'sprint'];
     StopSprintController.$inject = ['$modalInstance', 'SprintService', 'sprint'];
 
     angular.module('Coati.Sprint', ['ui.router', 'pascalprecht.translate',

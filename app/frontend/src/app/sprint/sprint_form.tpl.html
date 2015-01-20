@@ -16,7 +16,7 @@
                            required
                            name="name"
                            data-ng-class="{'error': vm.form.sprint_form.name.$invalid && vm.submitted}"
-                           class="form-control form-control-inline input-medium default-date-picker"
+                           class="form-control form-control-inline input-medium"
                            type="text">
                     <label for="name" class="error"
                            data-ng-show="vm.form.sprint_form.name.$invalid && vm.submitted"><[ 'SPRINT NAME ERROR' | translate ]></label>
@@ -25,11 +25,12 @@
                     <label><[ 'START DATE' | translate ]></label>
 
                     <p class="input-group">
-                        <input type="text" class="form-control"
+                        <input type="text" class="form-control date"
                                data-ng-class="{'error': vm.form.sprint_form.start_date.$invalid && vm.submitted}"
                                datepicker-popup="<[ vm.format ]>"
                                datepicker-options="vm.dateOptions"
                                ng-model="vm.sprint.start_date"
+                               show-button-bar="false"
                                min="vm.min_date"
                                is-open="vm.startDateOpened"
                                ng-required="true" close-text="Close">
@@ -51,6 +52,7 @@
                                data-ng-class="{'error': vm.form.sprint_form.end_date.$invalid && vm.submitted}"
                                datepicker-popup="<[ vm.format ]>"
                                datepicker-options="vm.dateOptions"
+                               show-button-bar="false"
                                ng-model="vm.sprint.end_date"
                                min="vm.sprint.start_date"
                                max="vm.max_date"
@@ -71,7 +73,7 @@
                 <button class="btn btn-primary"
                         type="submit"><[ 'SAVE' | translate ]>
                 </button>
-                <button class="btn btn-warning"
+                <button class="btn btn-warning" type="button"
                         data-ng-click="vm.cancel();"><[ 'Cancel' | translate ]>
                 </button>
 

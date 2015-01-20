@@ -1,0 +1,16 @@
+<ul class="dropdown-menu extended notification" ng-show="isOpen()"
+    ng-style="{top: position.top+'px', left: position.left+'px'}"
+    style="display: block;" role="listbox" aria-hidden="{{!isOpen()}}">
+    <div class="notify-arrow notify-arrow-green"></div>
+    <li>
+        <p class="green">Search Results:</p>
+    </li>
+    <li ng-repeat="match in matches track by $index"
+        ng-class="{active: isActive($index) }"
+        class="truncate_long_texts"
+        ng-mouseenter="selectActive($index)" ng-click="selectMatch($index)"
+        role="option" id="{{match.id}}">
+        <div typeahead-match index="$index" match="match" query="query"
+             template-url="templateUrl"></div>
+    </li>
+</ul>

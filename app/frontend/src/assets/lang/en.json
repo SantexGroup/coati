@@ -104,5 +104,22 @@
     "EMAIL": "Email",
     "UPDATE": "Update",
     "PROFILE": "Profile",
-    "LOG OUT": "Log Out"
+    "LOG OUT": "Log Out",
+    "TOTAL SPRINTS": "Total Sprints",
+    "BOARD SETTINGS": "Board Settings",
+    "TRELLO IMPORT": "Import Trello Cards & Columns",
+    "TRELLO IMPORT WARNING": "This will only import active cards and active columns.",
+    "TRELLO IMPORT FILE": "Select Trello JSON File...",
+    "TOTAL ACTIVE CARDS": "Total Active Cards",
+    "TOTAL ACTIVE COLUMNS": "Total Active Columns",
+    "TRELLO IMPORT SELECT": "Select what do you want to import",
+    "CARDS": "Cards",
+    "COLUMNS": "Columns",
+    "PROCESS FILE": "Process File",
+    "PROCESSING": "Processing....",
+    "COLUMN CONFIGURATION": "Column Configuration",
+    "NO TICKETS DONE": "There are not tickets in done status",
+    "NO PENDING TICKETS": "There are not tickets pending",
+    "NO ADDED TICKETS": "There are not tickets added after the sprint init",
+    "ARCHIVED TICKETS": "Archived Tickets"
 }

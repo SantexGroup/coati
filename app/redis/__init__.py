@@ -13,8 +13,8 @@ class RedisClient():
     def get(self, key):
         return self.redis_instance.get(key)
 
-    def store(self, message_type, **kwargs):
+    def store(self, message_type, author_id):
         data = json.dumps({'type': message_type,
-                           'user_id': kwargs['user_id']['pk']})
+                           'user_id': author_id})
         self.redis_instance.connection.publish(self.channel, data)
 

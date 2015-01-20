@@ -1,0 +1,38 @@
+<table role="grid" aria-labelledby="{{uniqueId}}-title"
+       aria-activedescendant="{{activeDateId}}" class="table-condensed">
+    <thead>
+    <tr>
+        <th class="pull-left" ng-click="move(-1)" tabindex="-1">
+            <i class="glyphicon glyphicon-chevron-left"></i>
+        </th>
+        <th colspan="{{5 + showWeeks}}" id="{{uniqueId}}-title" role="heading"
+            aria-live="assertive"
+            aria-atomic="true"
+            class="switch text-center" ng-click="toggleMode()"
+            tabindex="-1">{{title}}
+        </th>
+        <th class="pull-right"
+            ng-click="move(1)" tabindex="-1">
+            <i class="glyphicon glyphicon-chevron-right"></i>
+        </th>
+    </tr>
+    <tr>
+        <th ng-show="showWeeks" class="text-center"></th>
+        <th ng-repeat="label in labels track by $index" class="dow text-center">
+            <small aria-label="{{label.full}}">{{label.abbr}}</small>
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="row in rows track by $index">
+        <td ng-show="showWeeks" class="text-center h6"><em>{{
+            weekNumbers[$index] }}</em></td>
+        <td ng-repeat="dt in row track by dt.date" class="text-center day"
+            role="gridcell" id="{{dt.uid}}" aria-disabled="{{!!dt.disabled}}"
+            ng-class="{active: isActive(dt), 'btn-info': dt.selected, 'text-info': dt.current}"
+            ng-click="select(dt.date)" ng-disabled="dt.disabled">
+            {{dt.label}}
+        </td>
+    </tr>
+    </tbody>
+</table>

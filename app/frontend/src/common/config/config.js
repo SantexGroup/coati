@@ -11,7 +11,7 @@
             BASE_API_URL: '/api',
             CALLBACK_URL: '/login/auth',
             DEFAULT_CONTENT_TYPE: 'application/json; charset=utf-8',
-            SOCKET_URL: 'http://localhost:9000',
+            SOCKET_URL: 'http://localhost:8001',
             STATE_401: 'login',
             DATE_FORMAT: 'MM/dd/yyyy',
             TICKET_TYPES: [

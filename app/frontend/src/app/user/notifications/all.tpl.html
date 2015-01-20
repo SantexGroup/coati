@@ -1,0 +1,30 @@
+<div class="row" id="notifications">
+    <div class="col-md-12" id="planning-list">
+        <ul class="breadcrumb">
+            <li><a href="/"><i class="icon-home"></i>&nbsp;Home</a></li>
+            <li class="active">All Notifications</li>
+        </ul>
+        <section class="panel tasks-widget backlog">
+            <header class="panel-heading">
+                <span>Notifications</span>
+
+                <div class="add-task-row pull-right">
+                    <span class="badge bg-inverse">Total Messages: <[ vm.notifications.length ]></span>
+                </div>
+                <div style="clear:both"></div>
+            </header>
+            <div class="panel-body">
+                <ul class="notification-list">
+                    <li ng-repeat="n in vm.notifications"
+                        ng-class="{new:!n.viewed}">
+                        <ng-include ng-if="n.activity.verb == 'mention'"
+                                    src="'user/notifications/mention.tpl.html'"></ng-include>
+                        <ng-include ng-if="n.activity.verb == 'new_comment'"
+                                    src="'user/notifications/new_comment.tpl.html'"></ng-include>
+
+                    </li>
+                </ul>
+            </div>
+        </section>
+    </div>
+</div>

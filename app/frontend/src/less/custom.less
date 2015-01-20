@@ -110,10 +110,8 @@ label.control-label {
   position: relative;
 }
 
-.list-area .cols .cards > li > .options {
-  position: absolute;
-  right: 2px;
-  top: 0px;
+#board-area .options .badge{
+  font-size: 10px !important;
 }
 
 .list-area .cols .cards_placeholder {
@@ -363,7 +361,11 @@ input.error {
 }
 
 .ticket-item.T, .user-story.T {
-  border-left: 3px solid #fffe15;
+  border-left: 3px solid #f70cff;
+}
+
+.ticket-item.NEW, .user-story.NEW {
+  border-left: 3px solid #1232ff;
 }
 
 .badge.U {
@@ -387,25 +389,23 @@ input.error {
 }
 
 .badge.T {
-  background-color: #fffe15;
+  background-color: #f70cff;
 }
 
-.ticket-item i, .user-story i {
-  position: absolute;
-  left: 6px;
-  padding: 4px 10px 0 10px;
-  cursor: pointer;
+.ticket-item.U, .user-story.U {
+  border-left: 3px solid #78CD51;
 }
+
 
 .handler {
   cursor: move !important;
 }
 
-.columns-in-project header {
+.columns-in-project header, .import_from_file header {
   background: none;
 }
 
-.columns-in-project .panel-body {
+.columns-in-project .panel-body, .import_from_file .panel-body {
   border: none;
 }
 
@@ -653,36 +653,139 @@ input.error {
   font-weight: 700;
 }
 
-.message-body{
-  margin:0px !important;
+.message-body {
+  margin: 0px !important;
 }
+
 .message-body img {
-  width:22px;
+  width: 22px;
   height: 22px;
   object-fit: cover;
 }
-.msg-time-chat:before{
-  display:none !important;
+
+.msg-time-chat:before {
+  display: none !important;
 }
 
 .comments {
   margin-top: 10px;
 }
-.user-search img{
-  width:22px;
+
+.user-search img {
+  width: 22px;
   height: 22px;
   object-fit: cover;
 }
 
-[contentEditable=true]:empty:not(:focus):before{
-  content:attr(data-ph);
-  color:grey;
-  font-style:italic;
+[contentEditable=true]:empty:not(:focus):before {
+  content: attr(data-ph);
+  color: grey;
+  font-style: italic;
 }
-.editable-textarea{
+
+.editable-textarea {
   display: block !important;
 }
+
 .sprint_dates {
   font-size: 11px;
   color: #336ad0;
+}
+
+.ticket_loading {
+  min-height: 300px;
+  padding: 50px;
+}
+
+
+.dropdown-menu > .active > a, .dropdown-menu > .active > a:hover, .dropdown-menu > .active > a:focus {
+  background-color: #357ebd;
+  background-image: -webkit-gradient(linear, left 0, left 100%, from(#00DEFA), to(#49B4B8));
+  background-image: -webkit-linear-gradient(top, #00DEFA 0, #49B4B8 100%);
+  background-image: -moz-linear-gradient(top, #00DEFA 0, #49B4B8 100%);
+  background-image: linear-gradient(to bottom, #00DEFA 0, #49B4B8 100%);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00DEFA', endColorstr='#49B4B8', GradientType=0)
+}
+
+/* */
+
+.dropdown-menu.extended > .active > a,
+.dropdown-menu.extended > .active > a:hover,
+.dropdown-menu.extended > .active > a:focus {
+  background-color: #F7F8F9 !important;
+}
+
+.dropdown-menu > li > a{
+  white-space: normal !important;
+}
+
+#search_bar {
+  position: relative;
+}
+
+#search_bar .spinner {
+  display: inline-block;
+  position: absolute;
+  right: 5px;
+  top: 8px;
+  margin: 0px !important;
+}
+
+.new-ticket {
+  opacity: 0.5;
+  background-color: #ddf !important;
+}
+
+.new-ticket:hover {
+  opacity: 1;
+}
+
+.notify-arrow-right {
+  border-style: solid;
+  border-width: 0 9px 9px;
+  height: 0;
+  margin-top: 0;
+  opacity: 0;
+  position: absolute;
+  right: 7px;
+  top: -18px;
+  transition: all 0.25s ease 0s;
+  width: 0;
+  z-index: 10;
+  margin-top: 10px;
+  opacity: 1;
+}
+
+a.unread {
+  background-color: #eee;
+}
+
+#header_notification_bar img,
+.notification-list img {
+  width: 22px;
+  height: 22px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.notification-list a {
+  font-size: 12px;
+  list-style: none;
+  border-bottom: 1px solid #EBEBEB !important;
+  display: inline-block;
+  width: 100%;
+  padding: 15px 10px !important;
+}
+
+.notification-list a:hover {
+  color: #2E2E2E;
+  background-color: #F7F8F9 !important;
+}
+
+.project-item .panel{
+  padding: 0px 0px 15px;
+}
+.report-tickets {
+  padding: 0px 30px;
 }

@@ -1,5 +1,64 @@
 (function (angular) {
 
+    var Config = function (stateProvider) {
+        stateProvider.state('project.closed_tickets', {
+            url: '/archived-tickets',
+            views: {
+                "closed_tickets": {
+                    controller: 'TicketArchivedController',
+                    controllerAs: 'vm',
+                    templateUrl: 'ticket/archived_tickets.tpl.html'
+                }
+            },
+            tab_active: 'closed_tickets',
+            data: {
+                pageTitle: 'Archived Tickets'
+            },
+            reloadOnSearch: false,
+            reload: true
+        })
+            .state('project.planning.ticket', {
+                url: '/ticket/:ticket_id',
+                onEnter: ['$timeout', '$q', '$stateParams', '$state', '$modal', 'ProjectService', function ($timeout, $q, $stateParams, $state, $modal, ProjectService) {
+
+                    var vm = this;
+                    $timeout(function () {
+                        vm.project = $stateParams.project_pk;
+
+                        var modalInstance = $modal.open({
+                            backdrop: true,
+                            windowClass: 'right fade',
+                            resolve: {
+                                item: function () {
+                                    var promise = $q.defer();
+                                    ProjectService.get(vm.project).then(function(prj){
+                                        promise.resolve({
+                                            'project': prj ,
+                                            'ticket_id': $stateParams.ticket_id
+                                        });
+                                    }, function(){
+                                        promise.reject('Error');
+                                    });
+                                    return promise.promise;
+                                }
+                            },
+                            templateUrl: "ticket/ticket_detail_view.tpl.html",
+                            controller: 'TicketDetailController',
+                            controllerAs: 'vm',
+                            data: {
+                                pageTitle: 'Ticket Detail'
+                            }
+                        });
+                        modalInstance.result.then(function () {
+                            $state.go('^', {}, {reload:true});
+                        });
+                    });
+                }],
+                reload: true,
+                tab_active: 'planning'
+            });
+    };
+
     var TicketFormController = function (modalInstance, conf, TicketService, SprintService, item) {
         var vm = this;
 
@@ -76,12 +135,13 @@
     var TicketDetailController = function (rootScope, filter, tmo, modalInstance, conf, downloader, ProjectService, TicketService, SocketIO, item) {
         var vm = this;
 
+
         vm.files = [];
         vm.file_uploaded = 0;
         vm.members_filtered = [];
         vm.mentions = [];
-
         vm.types = conf.TICKET_TYPES;
+        vm.no_editing = item.disabled || false;
 
         var getComments = function (ticket_id) {
             TicketService.get_comments(ticket_id).then(function (comments) {
@@ -95,14 +155,13 @@
             });
         };
 
-        var getTicket = function (ticket_id) {
+        var getTicket = function (ticket_id, show_loading) {
+            vm.loading = (show_loading !== undefined ? show_loading : true);
             TicketService.get(ticket_id).then(function (tkt) {
                 vm.ticket = tkt;
                 vm.labels = tkt.labels;
-
+                vm.loading = false;
                 getComments(tkt._id.$oid);
-
-
             }, function () {
                 modalInstance.dismiss('error loading ticket');
             });
@@ -126,6 +185,12 @@
         vm.project = item.project;
         getTicket(item.ticket_id);
         getMembers();
+
+        vm.show = function (form) {
+            if (!vm.no_editing) {
+                form.$show();
+            }
+        };
 
         vm.saveTicket = function (ticket) {
             if (ticket) {
@@ -253,11 +318,56 @@
 
     };
 
+    var TicketArchivedController = function (scope, modal, TicketService) {
+        var vm = this;
+
+        vm.project = scope.$parent.project;
+
+        var getArchivedTickets = function (project_id) {
+            vm.loading_tickets = true;
+            TicketService.closed_tickets(project_id).then(function (tickets) {
+                vm.tickets = tickets;
+                vm.loading_tickets = false;
+            });
+        };
+
+        vm.showDetails = function (e, tkt) {
+            if (tkt) {
+                tkt = angular.copy(tkt);
+                tkt.pk = tkt._id.$oid;
+
+            }
+            var modal_instance = modal.open({
+                controller: 'TicketDetailController as vm',
+                templateUrl: 'ticket/ticket_detail_view.tpl.html',
+                resolve: {
+                    item: function () {
+                        return {
+                            'project': vm.project,
+                            'ticket_id': tkt._id.$oid,
+                            'disabled': true
+                        };
+                    }
+                }
+            });
+            modal_instance.result.then(function () {
+                getArchivedTickets(vm.project._id.$oid);
+            });
+            e.stopPropagation();
+        };
+
+        getArchivedTickets(vm.project._id.$oid);
+    };
+
+    Config.$inject = ['$stateProvider'];
+    TicketArchivedController.$inject = ['$scope', '$modal', 'TicketService'];
     TicketDetailController.$inject = ['$rootScope', '$filter', '$timeout', '$modalInstance', 'Conf', '$file_download', 'ProjectService', 'TicketService', 'SocketIO', 'item'];
     TicketFormController.$inject = ['$modalInstance', 'Conf', 'TicketService', 'SprintService', 'item'];
     TicketDeleteController.$inject = ['$modalInstance', 'TicketService', 'item'];
 
-    angular.module('Coati.Ticket', ['ui.router', 'ngTagsInput', 'angularFileUpload', 'mentio', 'pascalprecht.translate',
+    angular.module('Coati.Ticket', ['ui.router', 'ngTagsInput', 'xeditable', 'pascalprecht.translate',
+        'angularFileUpload',
+        'mentio',
         'Coati.Config',
         'Coati.SocketIO',
         'Coati.Helpers',
@@ -265,8 +375,10 @@
         'Coati.Services.Project',
         'Coati.Services.Ticket',
         'Coati.Services.Sprint'])
+        .config(Config)
         .controller('TicketFormController', TicketFormController)
         .controller('TicketDeleteController', TicketDeleteController)
+        .controller('TicketArchivedController', TicketArchivedController)
         .controller('TicketDetailController', TicketDetailController);
 
 

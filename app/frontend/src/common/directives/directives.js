@@ -114,24 +114,16 @@
         };
     };
 
-    var Chart = function () {
+    var ChartDraw = function () {
         return {
             restrict: 'E',
-            template: '<div></div>',
+            template: '<canvas></canvas>',
             scope: {
                 chartData: "=value"
             },
             transclude: true,
             replace: true,
             link: function (scope, element, attrs) {
-                var chartsDefaults = {
-                    chart: {
-                        renderTo: element[0],
-                        type: attrs.type || null,
-                        height: attrs.height || null,
-                        width: attrs.width || null
-                    }
-                };
                 scope.$watch(function () {
                     return scope.chartData;
                 }, function (value) {
@@ -140,9 +132,25 @@
                         $(element).empty();
                         return;
                     }
-                    newSettings = {};
-                    angular.extend(newSettings, chartsDefaults, scope.chartData);
-                    return new Highcharts.Chart(newSettings);
+                    var ctx = element[0].getContext("2d");
+                    var options = {
+                        scaleShowGridLines : true,
+                        scaleGridLineColor : "rgba(0,0,0,.05)",
+                        scaleGridLineWidth : 1,
+                        datasetFill : false,
+                        responsive: true,
+                        tooltipFontSize: 10,
+                        // String - Tooltip font weight style
+                        tooltipFontStyle: "normal",
+                        // String - Tooltip label font colour
+                        tooltipFontColor: "#fff",
+                        // Number - Tooltip title font size in pixels
+                        tooltipTitleFontSize: 12,
+                        tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= math.round(value) %>",
+                        legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+                    };
+
+                    return new Chart(ctx).Line(scope.chartData, options);
                 });
             }
         };
@@ -214,6 +222,7 @@
         });
     };
 
+
     var contentEditable = function ($sce) {
         return {
             restrict: 'A', // only activate on element attribute
@@ -266,19 +275,30 @@
     };
 
 
-
+    var datepicker_fix = function () {
+        return {
+            restrict: 'EAC',
+            require: 'ngModel',
+            link: function (scope, element, attr, controller) {
+                //remove the default formatter from the input directive to prevent conflict
+                controller.$formatters.shift();
+            }
+        };
+    };
 
     ImageFunction.$inject = ['$q'];
     contentEditable.$inject = ['$sce'];
+    editableTagInput.$inject = ['editableDirectiveFactory'];
     CalculateWithBoard.$inject = ['$rootScope', '$timeout'];
 
     angular.module('Coati.Directives', ['Coati.Config'])
         .directive('image', ImageFunction)
-        .directive('chart', Chart)
+        .directive('chart', ChartDraw)
         .directive('onEsc', OnEscape)
         .directive('onEnter', OnEnter)
         .directive('prepareBoard', CalculateWithBoard)
         .directive('editableTags', editableTagInput)
+        .directive('datepickerPopup', datepicker_fix)
         .directive('contenteditable', contentEditable);
 
 

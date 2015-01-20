@@ -1,0 +1,12 @@
+<a href="javascript:;" ui-sref="project.planning.ticket({ticket_id:n.data.ticket._id.$oid, project_pk:n.activity.project._id.$oid})" ng-class="{'unread': !n.viewed}">
+    <img ng-if="!n.activity.author.picture" alt=""
+         src="/static/assets/img/koala.png">
+    <img ng-if="n.activity.author.picture" alt=""
+         ng-src="<[ n.activity.author.picture ]>">
+    <strong><[ n.activity.author.first_name ]>
+        <[ n.activity.author.last_name
+        ]></strong> update in <strong><[ n.activity.project.name ]></strong> the ticket
+    <strong>
+        <[ n.activity.project.prefix]>-<[ n.data.number ]>: <[ n.data.title ]>
+    </strong>
+</a>

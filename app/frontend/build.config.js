@@ -31,7 +31,7 @@ module.exports = {
         coffeeunit: [ 'src/**/*.spec.coffee' ],
 
         atpl: [ 'src/app/**/*.tpl.html' ],
-        ctpl: [ 'src/common/**/*.tpl.html' ],
+        ctpl: [ 'src/common/**/*.tpl.html', 'src/common/**/*.html' ],
 
         html: [ 'src/index.html' ],
         less: 'src/less/main.less'
@@ -83,7 +83,8 @@ module.exports = {
             'vendor/angular-ui-sortable/sortable.min.js',
             'vendor/angular-xeditable/dist/js/xeditable.min.js',
             'vendor/angular-translate/angular-translate.min.js',
-            'vendor/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js'
+            'vendor/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js',
+            'vendor/chartjs/Chart.min.js'
         ],
         maps: [
             'vendor/angular/angular.min.js.map',

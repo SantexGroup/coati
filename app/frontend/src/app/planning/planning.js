@@ -13,8 +13,7 @@
             tab_active: 'planning',
             data: {
                 pageTitle: 'Project Planning'
-            },
-            reload: true
+            }
         });
     };
 
@@ -35,9 +34,11 @@
             });
         };
 
-        var getTicketsForProject = function (project_id) {
+        var getTicketsForProject = function (project_id, show_loading) {
+            vm.loading_backlog = (show_loading !== undefined ? show_loading : true);
             TicketService.query(project_id).then(function (tkts) {
                 vm.tickets = tkts;
+                vm.loading_backlog = false;
             });
         };
 
@@ -57,7 +58,7 @@
             });
             modal_instance.result.then(function () {
                 getSprintsWithTickets(vm.project._id.$oid);
-                getTicketsForProject(vm.project._id.$oid);
+                getTicketsForProject(vm.project._id.$oid, false);
                 //Notify
                 growl.addSuccessMessage('The ticket was saved successfully');
             });
@@ -99,9 +100,24 @@
             });
             modal_instance.result.then(function () {
                 getSprintsWithTickets(vm.project._id.$oid);
-                getTicketsForProject(vm.project._id.$oid);
+                getTicketsForProject(vm.project._id.$oid, false);
             });
             e.stopPropagation();
+        };
+
+        vm.saveQuickTicket = function(sprint){
+            var new_ticket = {
+                title: vm.new_ticket,
+                sprint: sprint
+            };
+            if(new_ticket.sprint){
+                new_ticket.sprint.pk = sprint._id.$oid;
+            }
+            TicketService.save(vm.project._id.$oid, new_ticket).then(function (tkt) {
+                getSprintsWithTickets(vm.project._id.$oid);
+                getTicketsForProject(vm.project._id.$oid, false);
+                vm.new_ticket = null;
+            });
         };
 
         vm.delete_ticket = function (e, tkt) {
@@ -119,7 +135,7 @@
             });
             modal_instance.result.then(function () {
                 getSprintsWithTickets(vm.project._id.$oid);
-                getTicketsForProject(vm.project._id.$oid);
+                getTicketsForProject(vm.project._id.$oid, false);
                 growl.addSuccessMessage('The ticket was deleted successfully');
             });
             e.stopPropagation();
@@ -128,11 +144,11 @@
         vm.startSprint = function (sprint) {
             var modal_instance = modal.open({
                 controller: 'StartSprintController as vm',
-                templateUrl: 'sprint/start_sprint.tpl.html',
+                templateUrl: 'sprint/sprint_form.tpl.html',
                 resolve: {
                     sprint: function () {
-                        //TODO: Use config to get the sprint default duration
-                        sprint.sprint_duration = vm.project.sprint_duration || 10;
+                        sprint.sprint_duration = vm.project.sprint_duration;
+                        sprint.to_start = true;
                         return angular.copy(sprint);
                     }
                 }
@@ -140,6 +156,24 @@
             modal_instance.result.then(function () {
                 growl.addSuccessMessage('The sprint was started successfully');
                 vm.one_started = true;
+                getSprintsWithTickets(vm.project._id.$oid);
+            });
+        };
+
+        vm.edit_sprint = function(sprint){
+          var modal_instance = modal.open({
+                controller: 'StartSprintController as vm',
+                templateUrl: 'sprint/sprint_form.tpl.html',
+                resolve: {
+                    sprint: function () {
+                        sprint.sprint_duration = vm.project.sprint_duration;
+                        sprint.to_start = false;
+                        return angular.copy(sprint);
+                    }
+                }
+            });
+            modal_instance.result.then(function () {
+                growl.addSuccessMessage('The sprint was updated successfully');
                 getSprintsWithTickets(vm.project._id.$oid);
             });
         };
@@ -156,7 +190,7 @@
             });
             modal_instance.result.then(function () {
                 growl.addSuccessMessage('The sprint was stopped successfully');
-                getTicketsForProject(vm.project._id.$oid);
+                getTicketsForProject(vm.project._id.$oid, false);
                 getSprintsWithTickets(vm.project._id.$oid);
             });
         };
@@ -278,7 +312,7 @@
         vm.remove_sprint = function (sprint_id) {
             SprintService.erase(sprint_id).then(function () {
                 getSprintsWithTickets(vm.project._id.$oid);
-                getTicketsForProject(vm.project._id.$oid);
+                getTicketsForProject(vm.project._id.$oid, false);
                 growl.addSuccessMessage('The sprint was deleted successfully');
             });
         };
@@ -289,15 +323,13 @@
         getSprintsWithTickets(vm.project._id.$oid);
 
         //Socket actions
-        SocketIO.init(vm.project._id.$oid, rootScope.user._id.$oid);
-
         SocketIO.on('backlog_order', function () {
-            getTicketsForProject(vm.project._id.$oid);
+            getTicketsForProject(vm.project._id.$oid, false);
         });
 
         SocketIO.on('ticket_movement', function () {
             getSprintsWithTickets(vm.project._id.$oid);
-            getTicketsForProject(vm.project._id.$oid);
+            getTicketsForProject(vm.project._id.$oid, false);
         });
         SocketIO.on('order_sprints', function () {
             getSprintsWithTickets(vm.project._id.$oid);
@@ -313,7 +345,7 @@
         });
         SocketIO.on('update_ticket', function () {
             getSprintsWithTickets(vm.project._id.$oid);
-            getTicketsForProject(vm.project._id.$oid);
+            getTicketsForProject(vm.project._id.$oid, false);
         });
 
     };

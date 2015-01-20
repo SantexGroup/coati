@@ -1,6 +1,6 @@
 (function(angular){
 
-    var ProjectService = function(req){
+    var ProjectService = function(req, file_upload){
         return {
             'query': function(){
               return req.$do('/projects', req.METHODS.GET);
@@ -45,11 +45,14 @@
             'set_as_owner': function(project_id, member){
                 var data = {'member': member};
                 return req.$do('/project/' + project_id + '/members', req.METHODS.UPDATE, data);
+            },
+            'import_file': function(project__id, file, extra_data){
+                return file_upload.$do('/project/' + project__id + '/import', file, extra_data);
             }
         };
     };
 
-    ProjectService.$inject = ['$requests'];
+    ProjectService.$inject = ['$requests', '$file_uploads'];
 
     angular.module('Coati.Services.Project', ['Coati.Helpers'])
         .factory('ProjectService', ProjectService);

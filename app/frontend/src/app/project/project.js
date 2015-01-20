@@ -21,12 +21,13 @@
                 data: {
                     pageTitle: 'Project Details'
                 },
+                abstract: true,
                 reload: true
             });
     };
 
 
-    var ProjectCtrl = function (scope, rootScope, state, project) {
+    var ProjectCtrl = function (scope, rootScope, state, project, SocketIO) {
         //Keep the project in this scope so any child can access it without re-call.
         scope.project = project;
 
@@ -40,26 +41,11 @@
             return project.owner.id === rootScope.user._id.$oid;
         };
 
-        if (state.current.tab_active) {
-            //get project
-            vm.tab_active = state.current.tab_active;
-            vm[vm.tab_active] = true;
-
-        } else {
-            state.go('project.planning', {project_pk: state.params.project_pk}, {reload: true});
+        if(state.current.tab_active !== undefined){
+            vm[state.current.tab_active] = true;
         }
 
-        rootScope.$on("$stateChangeSuccess", function (event, toState, toParams, fromState, fromParams) {
-            vm.tab_active = state.current.tab_active;
-            if(state.current.name.indexOf('project') !== -1) {
-                if (vm.tab_active === undefined) {
-                    state.go('project.planning', {project_pk: state.params.project_pk}, {reload: true});
-                } else {
-                    vm[vm.tab_active] = true;
-                    vm[fromState.tab_active] = false;
-                }
-            }
-        });
+        SocketIO.channel(scope.project._id.$oid);
     };
 
     var ProjectFormCtrl = function (state, modalInstance, ProjectService, growl) {
@@ -98,11 +84,12 @@
 
     ResolveProject.$inject = ['$stateParams', 'ProjectService'];
     Config.$inject = ['$stateProvider', '$translateProvider'];
-    ProjectCtrl.$inject = ['$scope', '$rootScope', '$state', 'project'];
+    ProjectCtrl.$inject = ['$scope', '$rootScope', '$state', 'project', 'SocketIO'];
     ProjectDeleteController.$inject = ['$modalInstance', 'ProjectService', 'project'];
     ProjectFormCtrl.$inject = ['$state', '$modalInstance', 'ProjectService', 'growl'];
 
     angular.module('Coati.Project', ['ui.router', 'pascalprecht.translate',
+        'Coati.SocketIO',
         'Coati.Settings',
         'Coati.Planning',
         'Coati.Board',

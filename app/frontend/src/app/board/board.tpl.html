@@ -30,14 +30,15 @@
                                         </div>
                                         <div class="row options">
                                             <div class="col-md-12">
-                                                <span class="badge bg-warning"><[ tkt.points ]></span>
+                                                <span class="badge bg-warning"><[ tkt.points ]> Pts.</span>
+                                                <span ng-if="tkt.badges.comments > 0" class="badge" title="Comments"><i class="icon-comments"></i> <[ tkt.badges.comments ]></span>
+                                                <span ng-if="tkt.badges.files > 0" class="badge" title="Attachments"><i class="icon-paper-clip"></i> <[ tkt.badges.files ]></span>
                                                 <ul class="members pull-right">
                                                     <li ng-repeat="m in tkt.assigned_to"
-                                                        title="<[ m.email ]>">
-                                                        <img ng-if="m.picture"
-                                                             src="<[ m.picture ]>">
-                                                        <img ng-if="!m.picture"
-                                                             src="/static/assets/img/koala.png">
+                                                        title="<[ m.member.email ]>">
+                                                        <[ m.member.picture ]>
+                                                        <img ng-if="m.member.picture" ng-src="<[ m.member.picture ]>">
+                                                        <img ng-if="!m.member.picture" src="/static/assets/img/koala.png">
                                                     </li>
                                                 </ul>
                                             </div>
@@ -65,13 +66,15 @@
                                         </div>
                                         <div class="row options">
                                             <div class="col-md-12">
-                                                <span class="badge bg-warning"><[ tkt.points ]></span>
+                                                <span class="badge bg-warning"><[ tkt.points ]> Pts.</span>
+                                                <span ng-if="tkt.badges.comments > 0" class="badge" title="Comments"><i class="icon-comments"></i> <[ tkt.badges.comments ]></span>
+                                                <span ng-if="tkt.badges.files > 0" class="badge" title="Attachments"><i class="icon-paper-clip"></i> <[ tkt.badges.files ]></span>
                                                 <ul class="members pull-right">
                                                     <li ng-repeat="m in tkt.assigned_to"
-                                                        title="<[ m.email ]>">
-                                                        <img ng-if="m.picture"
-                                                             src="<[ m.picture ]>"/>
-                                                        <img ng-if="!m.picture"
+                                                        title="<[ m.member.email ]>">
+                                                        <img ng-if="m.member.picture"
+                                                             src="<[ m.member.picture ]>"/>
+                                                        <img ng-if="!m.member.picture"
                                                              src="/static/assets/img/koala.png"/>
                                                     </li>
                                                 </ul>

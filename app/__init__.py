@@ -39,6 +39,6 @@ api.init_app(app)
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def index(path):
-    return render_template('index.html')
+    return render_template('index.html', config=app.config)
 
 

@@ -1,6 +1,6 @@
 (function (angular) {
 
-    function ConfigApp(interpolate, location, urlRoute, growlProvider) {
+    function ConfigApp(interpolate, location, urlRoute, growlProvider, $translateProvider) {
         urlRoute.when('/', '/home/');
         location.html5Mode({
             enabled: true,
@@ -11,6 +11,11 @@
         interpolate.endSymbol(']>');
         growlProvider.globalTimeToLive(5000);
         growlProvider.onlyUniqueMessages(true);
+        $translateProvider.useStaticFilesLoader({
+            prefix: '/static/assets/lang/',
+            suffix: '.json'
+        });
+        $translateProvider.use('en');
     }
 
 
@@ -121,11 +126,11 @@
     // Injections
     filterTrustedHTML.$inject = ['$sce'];
     RunApp.$inject = ['$rootScope', '$state', '$stateParams', '$objects', 'editableOptions', 'editableThemes'];
-    ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider'];
+    ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider', '$translateProvider'];
     AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', 'tokens'];
 
     angular.module('Coati', [
-        'templates-app', 'templates-common',
+        'templates-app', 'templates-common', 'pascalprecht.translate',
         'ui.router', 'ui.bootstrap', 'angular-growl', 'xeditable',
         'Coati.Config', 'Coati.Directives', 'Coati.Home',
         'Coati.Login', 'Coati.Helpers',

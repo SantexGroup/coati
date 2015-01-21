@@ -18,10 +18,10 @@ class TicketInstance(AuthResource):
     def __init__(self):
         super(TicketInstance, self).__init__()
 
-    def get(self, tkt_id, *args, **kwargs):
+    def get(self, project_pk, tkt_id, *args, **kwargs):
         return Ticket.objects.get(pk=tkt_id).to_json()
 
-    def put(self, tkt_id, *args, **kwargs):
+    def put(self, project_pk, tkt_id, *args, **kwargs):
         tkt = Ticket.objects.get(pk=tkt_id)
         data = request.get_json(force=True, silent=True)
         if tkt and data:
@@ -42,12 +42,21 @@ class TicketInstance(AuthResource):
                 except DoesNotExist:
                     # remove old data if this already exists
                     spo = SprintTicketOrder(sprint=sprint, ticket=tkt)
+                    spo.ticket_repr = tkt.to_dict()
                     spo.order = SprintTicketOrder.objects(sprint=sprint,
                                                           active=True).count()
                 spo.save()
 
+            try:
+                spo = SprintTicketOrder.objects.get(ticket=tkt,
+                                                    active=True)
+                spo.ticket_repr = tkt.to_dict()
+                spo.save()
+            except DoesNotExist:
+                pass
+
             # save activity
-            save_notification(project_pk=tkt.project.pk,
+            save_notification(project_pk=project_pk,
                               author=kwargs['user_id']['pk'],
                               verb='update_ticket',
                               data=tkt.to_json())
@@ -55,11 +64,11 @@ class TicketInstance(AuthResource):
             return tkt.to_json(), 200
         return jsonify({'error': 'Bad Request'}), 400
 
-    def delete(self, tkt_id, *args, **kwargs):
+    def delete(self, project_pk, tkt_id, *args, **kwargs):
         tkt = Ticket.objects.get(pk=tkt_id)
         if tkt:
             # save activity
-            save_notification(project_pk=tkt.project.pk,
+            save_notification(project_pk=project_pk,
                               author=kwargs['user_id']['pk'],
                               verb='delete_ticket',
                               data=tkt.to_json())
@@ -112,12 +121,13 @@ class TicketProjectList(AuthResource):
         if data.get('sprint'):
             sprint = Sprint.objects.get(pk=data.get('sprint')['pk'])
             spo = SprintTicketOrder(sprint=sprint, ticket=tkt)
+            spo.ticket_repr = tkt.to_dict()
             spo.order = SprintTicketOrder.objects(sprint=sprint,
                                                   active=True).count()
             spo.save()
 
         # save activity
-        save_notification(project_pk=tkt.project.pk,
+        save_notification(project_pk=project_pk,
                           author=kwargs['user_id']['pk'],
                           verb='new_ticket',
                           data=tkt.to_json())
@@ -155,7 +165,7 @@ class TicketOrderSprint(AuthResource):
     def __init__(self):
         super(TicketOrderSprint, self).__init__()
 
-    def post(self, sprint_pk, *args, **kwargs):
+    def post(self, project_pk, sprint_pk, *args, **kwargs):
         """
         update order
         """
@@ -169,7 +179,7 @@ class TicketOrderSprint(AuthResource):
                 tkt_order.order = index
                 tkt_order.save()
             # save activity
-            save_notification(project_pk=sprint.project.pk,
+            save_notification(project_pk=project_pk,
                               author=kwargs['user_id']['pk'],
                               verb='sprint_ticket_order',
                               data=data)
@@ -182,7 +192,7 @@ class TicketMovement(AuthResource):
     def __init__(self):
         super(TicketMovement, self).__init__()
 
-    def post(self, *args, **kwargs):
+    def post(self, project_pk, *args, **kwargs):
 
         data = request.get_json(force=True, silent=True)
         if data:
@@ -196,6 +206,7 @@ class TicketMovement(AuthResource):
                 tkt_ord_sprint = SprintTicketOrder()
                 tkt_ord_sprint.sprint = sprint
                 tkt_ord_sprint.ticket = ticket
+                tkt_ord_sprint.ticket_repr = ticket.to_dict()
                 tkt_ord_sprint.when = datetime.now()
                 tkt_ord_sprint.save()
 
@@ -216,6 +227,7 @@ class TicketMovement(AuthResource):
                 tkt_ord_sprint = SprintTicketOrder()
                 tkt_ord_sprint.sprint = sprint
                 tkt_ord_sprint.ticket = ticket
+                tkt_ord_sprint.ticket_repr = ticket.to_dict()
                 tkt_ord_sprint.when = datetime.now()
                 tkt_ord_sprint.save()
 
@@ -249,7 +261,7 @@ class TicketMovement(AuthResource):
                     tkt_order.save()
 
             # save activity
-            save_notification(project_pk=ticket.project.pk,
+            save_notification(project_pk=project_pk,
                               author=kwargs['user_id']['pk'],
                               verb='ticket_movement',
                               data=data)
@@ -262,7 +274,7 @@ class TicketTransition(AuthResource):
     def __init__(self):
         super(TicketTransition, self).__init__()
 
-    def post(self, *args, **kwargs):
+    def post(self, project_pk, *args, **kwargs):
         data = request.get_json(force=True, silent=True)
         if data:
             if data.get('backlog'):
@@ -326,7 +338,7 @@ class TicketTransition(AuthResource):
                         tkt_trans_order.save()
 
                     # save activity
-                    save_notification(project_pk=tkt.project.pk,
+                    save_notification(project_pk=project_pk,
                                       author=kwargs['user_id']['pk'],
                                       verb='ticket_transition',
                                       data=transition.to_json())
@@ -341,7 +353,7 @@ class TicketColumnOrder(AuthResource):
     def __init__(self):
         super(TicketColumnOrder, self).__init__()
 
-    def post(self, column, *args, **kwargs):
+    def post(self, project_pk, column, *args, **kwargs):
         data = request.get_json(force=True, silent=True)
         if data:
             # Search already state
@@ -359,7 +371,7 @@ class TicketColumnOrder(AuthResource):
                     tkt_trans_order.save()
 
                 # save activity
-                save_notification(project_pk=col.project.pk,
+                save_notification(project_pk=project_pk,
                                   author=kwargs['user_id']['pk'],
                                   verb='ticket_colunm_order',
                                   data=data)
@@ -373,10 +385,10 @@ class TicketComments(AuthResource):
     def __init__(self):
         super(TicketComments, self).__init__()
 
-    def get(self, tkt_id, *args, **kwargs):
+    def get(self, project_pk, tkt_id, *args, **kwargs):
         return Comment.objects(ticket=tkt_id).order_by('-when').to_json()
 
-    def post(self, tkt_id, *args, **kwargs):
+    def post(self, project_pk, tkt_id, *args, **kwargs):
         data = request.get_json(force=True, silent=True)
         if data:
             c = Comment(ticket=tkt_id)
@@ -388,14 +400,14 @@ class TicketComments(AuthResource):
                 for m in data.get('mentions'):
                     u = User.objects.get(pk=m)
                     # save activity
-                    save_notification(project_pk=c.ticket.project.pk,
+                    save_notification(project_pk=project_pk,
                                       author=kwargs['user_id']['pk'],
                                       verb='mention',
                                       user_to=u,
                                       data=c.to_json())
             else:
                 # save activity
-                save_notification(project_pk=c.ticket.project.pk,
+                save_notification(project_pk=project_pk,
                                   author=kwargs['user_id']['pk'],
                                   verb='new_comment',
                                   data=c.to_json())
@@ -408,10 +420,10 @@ class TicketAttachments(AuthResource):
     def __init__(self):
         super(TicketAttachments, self).__init__()
 
-    def get(self, tkt_id, *args, **kwargs):
+    def get(self, project_pk, tkt_id, *args, **kwargs):
         pass
 
-    def post(self, tkt_id, *args, **kwargs):
+    def post(self, project_pk, tkt_id, *args, **kwargs):
         file_item = request.files.get('file')
         data = request.form
         ticket = Ticket.objects.get(pk=tkt_id)
@@ -426,7 +438,7 @@ class TicketAttachments(AuthResource):
             ticket.save()
 
             # save activity
-            save_notification(project_pk=ticket.project.pk,
+            save_notification(project_pk=project_pk,
                               author=kwargs['user_id']['pk'],
                               verb='new_attachment',
                               data=att.to_json())
@@ -440,17 +452,17 @@ class AttachmentInstance(AuthResource):
     def __init__(self):
         super(AttachmentInstance, self).__init__()
 
-    def get(self, tkt_id, att_id, *args, **kwargs):
+    def get(self, project_pk, tkt_id, att_id, *args, **kwargs):
         return Attachment.objects.get(pk=att_id).to_json()
 
-    def delete(self, tkt_id, att_id, *args, **kwargs):
+    def delete(self, project_pk, tkt_id, att_id, *args, **kwargs):
         att = Attachment.objects.get(pk=att_id)
 
         tkt = Ticket.objects.get(pk=tkt_id)
         Ticket.objects(pk=tkt_id).update_one(pull__files=att)
 
         # save activity
-        save_notification(project_pk=tkt.project.pk,
+        save_notification(project_pk=project_pk,
                           author=kwargs['user_id']['pk'],
                           verb='delete_attachment',
                           data=att.to_json())
@@ -463,7 +475,7 @@ class MemberTicketInstance(AuthResource):
     def __init__(self):
         super(MemberTicketInstance, self).__init__()
 
-    def put(self, tkt_id, member_id, *args, **kwargs):
+    def put(self, project_pk, tkt_id, member_id, *args, **kwargs):
         try:
             tkt = Ticket.objects.get(pk=tkt_id)
             m = ProjectMember.objects.get(pk=member_id)
@@ -472,7 +484,7 @@ class MemberTicketInstance(AuthResource):
                 tkt.save()
 
                 # save activity
-                save_notification(project_pk=tkt.project.pk,
+                save_notification(project_pk=project_pk,
                                   author=kwargs['user_id']['pk'],
                                   verb='new_assigment',
                                   data=tkt.to_json())
@@ -481,13 +493,13 @@ class MemberTicketInstance(AuthResource):
         except DoesNotExist as ex:
             return jsonify({'error': 'Bad Request'}), 400
 
-    def delete(self, tkt_id, member_id, *args, **kwargs):
+    def delete(self, project_pk, tkt_id, member_id, *args, **kwargs):
         try:
             tkt = Ticket.objects.get(pk=tkt_id)
             Ticket.objects(pk=tkt_id).update_one(pull__assigned_to=member_id)
 
             # save activity
-            save_notification(project_pk=tkt.project.pk,
+            save_notification(project_pk=project_pk,
                               author=kwargs['user_id']['pk'],
                               verb='delete_assignment',
                               data=tkt.to_json())

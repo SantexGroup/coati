@@ -1,39 +1,36 @@
-(function(angular){
+(function (angular) {
 
-    var SprintService = function(req){
+    var SprintService = function (req) {
         return {
             'query': function (project_pk) {
-                return req.$do('/sprints/' + project_pk, req.METHODS.GET);
+                return req.$do('/project/' + project_pk + '/sprints', req.METHODS.GET);
             },
             'all': function (project_pk) {
-                return req.$do('/sprints/' + project_pk + '/all', req.METHODS.GET);
+                return req.$do('/project/' + project_pk + '/sprints/all', req.METHODS.GET);
             },
             'archived': function (project_pk) {
-                return req.$do('/sprints/' + project_pk + '/archived', req.METHODS.GET);
+                return req.$do('/project/' + project_pk + '/sprints/archived', req.METHODS.GET);
             },
             'save': function (project_pk, sp) {
-                return req.$do('/sprints/' + project_pk, req.METHODS.POST, sp);
+                return req.$do('/project/' + project_pk + '/sprints', req.METHODS.POST, sp);
             },
-            'erase': function (sprint_id) {
-                return req.$do('/sprint/' + sprint_id, req.METHODS.DELETE);
+            'erase': function (project_pk, sprint_id) {
+                return req.$do('/project/' + project_pk + '/sprint/' + sprint_id, req.METHODS.DELETE);
             },
-            'update': function (sprint) {
-                return req.$do('/sprint/' + sprint._id.$oid, req.METHODS.UPDATE, sprint);
+            'update': function (project_pk, sprint) {
+                return req.$do('/project/' + project_pk + '/sprint/' + sprint._id.$oid, req.METHODS.UPDATE, sprint);
             },
             'update_order': function (project_pk, data) {
-                return req.$do('/sprints/' + project_pk + '/order', req.METHODS.POST, data);
+                return req.$do('/project/' + project_pk + '/sprints/order', req.METHODS.POST, data);
             },
-            'get_started': function(project_pk){
-                return req.$do('/sprints/' + project_pk + '/started', req.METHODS.GET);
+            'get_started': function (project_pk) {
+                return req.$do('/project/' + project_pk + '/sprints/started', req.METHODS.GET);
             },
-            'stop_sprint': function(project_pk){
-                return req.$do('/sprints/' + project_pk + '/started', req.METHODS.GET);
+            'get_tickets': function (project_pk, sprint_id) {
+                return req.$do('/project/' + project_pk + '/sprint/' + sprint_id + '/tickets', req.METHODS.GET);
             },
-            'get_tickets': function(sprint_id){
-               return req.$do('/sprint/' + sprint_id + '/tickets', req.METHODS.GET);
-            },
-            'get_chart': function(sprint_id){
-                return req.$do('/sprint/' + sprint_id + '/chart', req.METHODS.GET);
+            'get_chart': function (project_pk, sprint_id) {
+                return req.$do('/project/' + project_pk + '/sprint/' + sprint_id + '/chart', req.METHODS.GET);
             }
         };
     };

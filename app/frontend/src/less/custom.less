@@ -110,7 +110,7 @@ label.control-label {
   position: relative;
 }
 
-#board-area .options .badge{
+#board-area .options .badge {
   font-size: 10px !important;
 }
 
@@ -299,9 +299,10 @@ input.error {
   background: none !important;
 }
 
-.task-list .ticket-item, .task-list .user-story {
+.task-list .ticket-item,
+.task-list .user-story {
   font-size: 12px;
-  padding: 15px 0 15px 35px !important;
+  padding: 15px 0 15px 10px !important;
   position: relative;
   background: #f5f6f8;
   margin-bottom: 2px;
@@ -395,7 +396,6 @@ input.error {
 .ticket-item.U, .user-story.U {
   border-left: 3px solid #78CD51;
 }
-
 
 .handler {
   cursor: move !important;
@@ -697,7 +697,6 @@ input.error {
   padding: 50px;
 }
 
-
 .dropdown-menu > .active > a, .dropdown-menu > .active > a:hover, .dropdown-menu > .active > a:focus {
   background-color: #357ebd;
   background-image: -webkit-gradient(linear, left 0, left 100%, from(#00DEFA), to(#49B4B8));
@@ -716,7 +715,7 @@ input.error {
   background-color: #F7F8F9 !important;
 }
 
-.dropdown-menu > li > a{
+.dropdown-menu > li > a {
   white-space: normal !important;
 }
 
@@ -783,9 +782,58 @@ a.unread {
   background-color: #F7F8F9 !important;
 }
 
-.project-item .panel{
+.project-item .panel {
   padding: 0px 0px 15px;
 }
+
 .report-tickets {
   padding: 0px 30px;
+}
+
+.chart-legend {
+  width: 340px;
+  display: block;
+  margin: 0px auto;
+}
+
+.chart-legend .legend-item {
+  float: left;
+  margin-right: 10px;
+}
+
+.chart-legend .legend-item:last-child {
+  clear: right;
+}
+
+.chart-legend .legend-item span {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.user_picture img {
+  width: 22px;
+  height: 22px;
+  object-fit: cover;
+}
+
+#chart-tooltip {
+  opacity: 1;
+  position: absolute;
+  background: rgba(0, 0, 0, .7);
+  color: white;
+  padding: 3px;
+  border-radius: 3px;
+  -webkit-transition: all .1s ease;
+  transition: all .1s ease;
+  pointer-events: none;
+  -webkit-transform: translate(-50%, 0);
+  transform: translate(-50%, 0);
+}
+
+.chartjs-tooltip-key {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
 }

@@ -147,12 +147,13 @@
     AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', '$modal', 'tokens', 'TicketService', 'SocketIO'];
 
     angular.module('Coati', [
-        'templates-app', 'templates-common',
+        'templates-app', 'templates-common', 'angular-loading-bar',
         'ui.router', 'ui.bootstrap', 'angular-growl', 'xeditable',
         'Coati.SocketIO',
         'Coati.Config',
         'Coati.Directives',
         'Coati.Services.Ticket',
+        'Coati.Errors',
         'Coati.Home',
         'Coati.Login', 'Coati.Helpers',
         'Coati.User', 'Coati.Project', 'Coati.Ticket', 'Coati.Sprint'])

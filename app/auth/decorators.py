@@ -2,7 +2,8 @@ import json
 from functools import wraps
 
 from flask import request
-from app.auth.tools import get_data_from_token, verify_token
+from app.auth.tools import get_data_from_token, verify_token, \
+    check_user_permissions
 
 from app.utils import output_json
 
@@ -23,7 +24,16 @@ def require_authentication(view_function):
         token = header.split(' ')[1]
         if verify_token(token):
             kwargs['user_id'] = get_data_from_token(token)
-            return view_function(*args, **kwargs)
+            if check_user_permissions(kwargs['user_id']['pk'],
+                                      kwargs.get('project_pk')):
+
+                return view_function(*args, **kwargs)
+            else:
+                res = output_json(
+                    json.dumps({'error': 'You do not have permissions.'}),
+                    code=403)
+                res.content_type = 'application/json'
+                return res
         else:
             res = output_json(
                 json.dumps({'error': 'Authorization token invalid'}),

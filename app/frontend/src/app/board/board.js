@@ -17,13 +17,16 @@
         });
     };
 
-    var ProjectCtrlBoard = function (rootScope, state, location, modal, SprintService, ProjectService, TicketService, SocketIO) {
+    var ProjectCtrlBoard = function (rootScope, scope, state, location, modal, SprintService, ProjectService, TicketService, SocketIO) {
         var vm = this;
 
-        vm.project_pk = state.params.project_pk;
+        vm.project_pk = scope.$parent.project._id.$oid;
+
+        // set the active tab
+        scope.$parent.vm[state.current.tab_active] = true;
 
         var getSprintTickets = function (sprint_id) {
-            SprintService.get_tickets(sprint_id).then(function (tickets) {
+            SprintService.get_tickets(vm.project_pk, sprint_id).then(function (tickets) {
                 vm.tickets = tickets;
             });
         };
@@ -115,7 +118,7 @@
                                 order: new_order,
                                 sprint: vm.sprint._id.$oid
                             };
-                            TicketService.order_ticket_column(target.col._id.$oid, data);
+                            TicketService.order_ticket_column(vm.project_pk, target.col._id.$oid, data);
                         }
 
                     } else {
@@ -133,7 +136,7 @@
                             } else {
                                 data.backlog = target.vm.sprint._id.$oid;
                             }
-                            TicketService.transition(data);
+                            TicketService.transition(vm.project_pk, data);
                         }
 
                     }
@@ -188,7 +191,7 @@
     };
 
     Config.$inject = ['$stateProvider'];
-    ProjectCtrlBoard.$inject = ['$rootScope', '$state', '$location', '$modal', 'SprintService', 'ProjectService', 'TicketService', 'SocketIO'];
+    ProjectCtrlBoard.$inject = ['$rootScope', '$scope', '$state', '$location', '$modal', 'SprintService', 'ProjectService', 'TicketService', 'SocketIO'];
 
     angular.module('Coati.Board', ['ui.router',
         'Coati.SocketIO',

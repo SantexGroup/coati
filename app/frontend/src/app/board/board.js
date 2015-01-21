@@ -19,7 +19,7 @@
 
     var ProjectCtrlBoard = function (rootScope, scope, state, location, modal, SprintService, ProjectService, TicketService, SocketIO) {
         var vm = this;
-
+        vm.enabled = false;
         vm.project_pk = scope.$parent.project._id.$oid;
         vm.project = scope.$parent.project;
 

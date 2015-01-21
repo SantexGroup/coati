@@ -236,14 +236,15 @@
             }
         };
         vm.archive_ticket = function () {
-            vm.ticket.close = true;
-            TicketService.update(item.project, vm.ticket._id.$oid, vm.ticket).then(function (tkt) {
+            vm.ticket.closed = true;
+            TicketService.update(vm.project._id.$oid, vm.ticket._id.$oid, vm.ticket).then(function (tkt) {
                 modalInstance.close();
             }, function (err) {
                 modalInstance.dismiss('error');
                 log.error(err);
             });
         };
+
         vm.assign_to_ticket = function (m) {
             if (!m.is_member) {
                 TicketService.assign_member(vm.project._id.$oid, vm.ticket._id.$oid, m._id.$oid).then(function () {
@@ -337,6 +338,10 @@
                 vm.tickets = tickets;
                 vm.loading_tickets = false;
             });
+        };
+
+        vm.is_scrumm = function(){
+            return vm.project.project_type === 'S';
         };
 
         vm.showDetails = function (e, tkt) {

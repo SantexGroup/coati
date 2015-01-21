@@ -92,7 +92,7 @@ class ProjectInstance(AuthResource):
         project.private = data.get('private')
         project.sprint_duration = data.get('sprint_duration')
         project.prefix = data.get('prefix')
-        project.project_type = 'S' if data.get('project_type', 'S') else 'S'
+        project.project_type = data.get('project_type', 'S')
         project.save()
 
         # save activity

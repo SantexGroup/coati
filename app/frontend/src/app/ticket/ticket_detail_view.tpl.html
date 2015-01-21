@@ -56,7 +56,7 @@
                               class="badge bg-warning"><[ vm.ticket.in_column ]></span>
         </div>
         <div class="col-md-2">
-            <button type="button" ng-click="vm.archive_ticket();" class="btn btn-xs btn-danger">
+            <button type="button" ng-if="!vm.is_scrumm()" ng-click="vm.archive_ticket();" class="btn btn-xs btn-danger">
                 Archive Ticket
             </button>
         </div>

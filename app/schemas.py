@@ -116,9 +116,10 @@ class Project(CustomDocument):
     def get_tickets(self):
         tickets = []
         sprints = Sprint.objects(project=self)
-        for s in sprints:
-            for spo in SprintTicketOrder.objects(sprint=s, active=True):
-                tickets.append(str(spo.ticket.pk))
+        if self.project_type == u'S':
+            for s in sprints:
+                for spo in SprintTicketOrder.objects(sprint=s, active=True):
+                    tickets.append(str(spo.ticket.pk))
 
         result = Ticket.objects(Q(project=self) &
                                 Q(id__nin=tickets) &

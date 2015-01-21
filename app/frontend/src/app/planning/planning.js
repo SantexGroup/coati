@@ -13,7 +13,8 @@
             tab_active: 'planning',
             data: {
                 pageTitle: 'Project Planning'
-            }
+            },
+            reload: true
         });
     };
 
@@ -323,6 +324,9 @@
 
         // get the project from the parent controller.
         vm.project = scope.$parent.project;
+        // set the active tab
+        scope.$parent.vm[state.current.tab_active] = true;
+
         getTicketsForProject(vm.project._id.$oid);
         getSprintsWithTickets(vm.project._id.$oid);
 

@@ -24,6 +24,8 @@
         var vm = this;
 
         vm.project = scope.$parent.project;
+        // set the active tab
+        scope.$parent.vm[state.current.tab_active] = true;
 
         var getSprintsWithTickets = function (project_id) {
             SprintService.archived(project_id).then(function (sprints) {

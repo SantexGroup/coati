@@ -82,7 +82,8 @@ module.exports = {
             'vendor/ng-file-upload/angular-file-upload-shim.min.js',
             'vendor/angular-ui-sortable/sortable.min.js',
             'vendor/angular-xeditable/dist/js/xeditable.min.js',
-            'vendor/chartjs/Chart.min.js'
+            'vendor/chartjs/Chart.min.js',
+            'vendor/angular-loading-bar/build/loading-bar.min.js'
         ],
         maps: [
             'vendor/angular/angular.min.js.map',
@@ -92,7 +93,8 @@ module.exports = {
             'vendor/angular/angular-csp.css',
             'vendor/angular-notifications/notification.min.css',
             'vendor/ng-tags-input/ng-tags-input.min.css',
-            'vendor/angular-xeditable/dist/css/xeditable.css'
+            'vendor/angular-xeditable/dist/css/xeditable.css',
+            'vendor/angular-loading-bar/build/loading-bar.min.css'
         ],
         assets: [],
         fonts: [

@@ -94,6 +94,8 @@
             }
         };
         vm.project = scope.$parent.project;
+        // set the active tab
+        scope.$parent.vm[state.current.tab_active] = true;
         getSprints(state.params.project_pk);
 
     };

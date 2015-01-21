@@ -114,7 +114,7 @@
         };
     };
 
-    var ChartDraw = function () {
+    var ChartDraw = function (filter) {
         return {
             restrict: 'E',
             template: '<canvas></canvas>',
@@ -136,11 +136,12 @@
                         element.parent().find('.chart-legend').remove();
                     }
 
-                    if(chart !== undefined){
+                    if (chart !== undefined) {
                         chart.destroy();
                     }
                     var ctx = element[0].getContext("2d");
                     var options = {
+                        bezierCurve: false,
                         scaleShowGridLines: true,
                         scaleGridLineColor: "rgba(0,0,0,.05)",
                         scaleGridLineWidth: 1,
@@ -156,10 +157,57 @@
                         tooltipTitleFontSize: 12,
                         tooltipTemplate: "<%=label%>: <%= Math.round(value) %>",
                         multiTooltipTemplate: "<%=datasetLabel%>: <%= Math.round(value) %>",
+                        /*customTooltips: function (tooltip) {
+                            console.log(arguments);
+                            // tooltip will be false if tooltip is not visible or should be hidden
+                            var tooltipEl = $('#chart-tooltip');
+                            if (!tooltip) {
+                                tooltipEl.css({
+                                    opacity: 0
+                                });
+                                return;
+                            }
+
+                            tooltipEl.removeClass('above below');
+                            tooltipEl.addClass(tooltip.yAlign);
+
+                            var innerHtml = '';
+                            for (var i = tooltip.labels.length - 1; i >= 0; i--) {
+                                innerHtml += [
+                                    '<div class="chartjs-tooltip-section">',
+                                        '	<span class="chartjs-tooltip-key" style="background-color:' + tooltip.legendColors[i].fill + '"></span>',
+                                        '	<span class="chartjs-tooltip-value">' + tooltip.labels[i] + '</span>',
+                                        '   <span class="chartjs-tickets"></span>',
+                                    '</div>'
+                                ].join('');
+                            }
+                            tooltipEl.html(innerHtml);
+
+                            tooltipEl.css({
+                                opacity: 1,
+                                left: tooltip.chart.canvas.offsetLeft + tooltip.x + 'px',
+                                top: tooltip.chart.canvas.offsetTop + tooltip.y + 'px',
+                                fontFamily: tooltip.fontFamily,
+                                fontSize: tooltip.fontSize,
+                                fontStyle: tooltip.fontStyle
+                            });
+
+                        },*/
                         legendTemplate: "<ul class=\"chart-legend\"><% for (var i=0; i<datasets.length; i++){%><li class=\"legend-item\"><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
                     };
+                    Chart.defaults.global.pointHitDetectionRadius = 1;
                     chart = new Chart(ctx).Line(scope.chartData, options);
-                    element.parent().prepend(chart.generateLegend());
+                    var legend = $(chart.generateLegend());
+                    var vel = $('<li class="legend-item" />');
+                    vel.html('Velocity: ' + (Math.round(scope.chartData.velocity * 100) / 100));
+                    var eta = $('<li class="legend-item" />');
+                    eta.html('ETA: ' + filter('date')(new Date(scope.chartData.eta), 'MMM dd, yyyy'));
+                    var pp = $('<li class="legend-item" />');
+                    pp.html('Planned Points: ' + scope.chartData.planned_points);
+                    legend.append(vel);
+                    legend.append(eta);
+                    legend.append(pp);
+                    element.parent().prepend(legend);
                     return chart;
                 });
             }
@@ -298,6 +346,7 @@
     ImageFunction.$inject = ['$q'];
     contentEditable.$inject = ['$sce'];
     editableTagInput.$inject = ['editableDirectiveFactory'];
+    ChartDraw.$inject = ['$filter'];
     CalculateWithBoard.$inject = ['$rootScope', '$timeout'];
 
     angular.module('Coati.Directives', ['Coati.Config'])

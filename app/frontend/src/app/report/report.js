@@ -51,6 +51,10 @@
                 vm.tickets = chart_data.all_tickets;
                 vm.chartData = {
                     labels: chart_data.dates,
+                    tickets: chart_data.tickets,
+                    velocity: chart_data.velocity,
+                    eta: chart_data.eta,
+                    planned_points: chart_data.planned_points,
                     name: 'Burndown',
                     datasets: [
                         {
@@ -60,7 +64,7 @@
                             pointColor: "rgba(129,244,143,1)"
                         },
                         {
-                            label: 'Ideal Real',
+                            label: 'Velocity Trend',
                             data: chart_data.ideal_real,
                             strokeColor: "rgba(194,28,253,1)",
                             pointColor: "rgba(226,173,251,1)"
@@ -90,6 +94,8 @@
             }
         };
         vm.project = scope.$parent.project;
+        // set the active tab
+        scope.$parent.vm[state.current.tab_active] = true;
         getSprints(state.params.project_pk);
 
     };

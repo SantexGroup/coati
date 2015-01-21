@@ -28,7 +28,8 @@
     "ng-file-upload": "",
     "lodash": "",
     "angular-xeditable": "",
-    "chartjs": "1.0.1"
+    "chartjs": "1.0.1",
+    "angular-loading-bar": "0.6.0"
   },
   "devDependencies": {
     "angular-mocks": ""

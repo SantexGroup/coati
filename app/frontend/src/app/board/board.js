@@ -20,7 +20,15 @@
     var ProjectCtrlBoard = function (rootScope, scope, state, location, modal, SprintService, ProjectService, TicketService, SocketIO) {
         var vm = this;
 
+        vm.project_pk = scope.$parent.project._id.$oid;
         vm.project = scope.$parent.project;
+
+        // set the active tab
+        scope.$parent.vm[state.current.tab_active] = true;
+
+        vm.is_scrumm = function(){
+          return vm.project.project_type === "S";
+        };
 
         var getSprintTickets = function (sprint_id) {
             SprintService.get_tickets(vm.project._id.$oid, sprint_id).then(function (tickets) {
@@ -28,8 +36,8 @@
             });
         };
 
-        var getProjectTickets = function () {
-            TicketService.board(vm.project._id.$oid).then(function (tkts) {
+        var getProjectTickets = function (project_pk) {
+            TicketService.board(project_pk).then(function (tkts) {
                 vm.tickets = tkts;
             });
         };
@@ -47,6 +55,17 @@
             });
         };
 
+        var reloadData = function(){
+            getColumnConfiguration(vm.project._id.$oid);
+            if (vm.is_scrumm()) {
+                if (vm.sprint.started) {
+                    getSprintTickets(vm.project._id.$oid);
+                }
+            } else {
+                getProjectTickets(vm.project._id.$oid);
+            }
+        };
+
         var showTicketDetails = function (id) {
             vm.modal_ticket_instance = modal.open({
                 controller: 'TicketDetailController as vm',
@@ -61,12 +80,9 @@
                 }
             });
             vm.modal_ticket_instance.result.then(function () {
-                getColumnConfiguration(vm.project._id.$oid);
-                getSprintTickets(vm.sprint._id.$oid);
-
+                reloadData();
             }, function () {
-                getColumnConfiguration(vm.project._id.$oid);
-                getSprintTickets(vm.sprint._id.$oid);
+               reloadData();
             });
 
         };
@@ -138,79 +154,36 @@
             }
         };
 
-        if (vm.project.project_type === "S") {
+        if (vm.is_scrumm()) {
             SprintService.get_started(vm.project._id.$oid).then(function (sprint) {
                 vm.sprint = sprint;
                 if (vm.sprint.started) {
                     vm.enabled = vm.sprint.started;
-                    getColumnConfiguration(vm.project._id.$oid);
-                    getSprintTickets(vm.sprint._id.$oid);
+                    reloadData();
                     getMembers();
                 }
             });
         } else {
             vm.enabled = true;
-            getColumnConfiguration(vm.project._id.$oid);
-            getProjectTickets();
+            reloadData();
             getMembers();
         }
 
-
         //Socket IO listeners
         SocketIO.on('ticket_transition', function () {
-            if (vm.project.project_type === "S") {
-                if (vm.sprint.started) {
-                    getSprintTickets(vm.sprint._id.$oid);
-                    getColumnConfiguration(vm.project._id.$oid);
-                }
-            } else {
-                getColumnConfiguration(vm.project._id.$oid);
-                getProjectTickets();
-            }
+            reloadData();
         });
         SocketIO.on('new_column', function () {
-            if (vm.project.project_type === "S") {
-                if (vm.sprint.started) {
-                    getSprintTickets(vm.sprint._id.$oid);
-                    getColumnConfiguration(vm.project._id.$oid);
-                }
-            } else {
-                getColumnConfiguration(vm.project._id.$oid);
-                getProjectTickets();
-            }
+            reloadData();
         });
         SocketIO.on('delete_column', function () {
-            if (vm.project.project_type === "S") {
-                if (vm.sprint.started) {
-                    getSprintTickets(vm.sprint._id.$oid);
-                    getColumnConfiguration(vm.project._id.$oid);
-                }
-            } else {
-                getColumnConfiguration(vm.project._id.$oid);
-                getProjectTickets();
-            }
+            reloadData();
         });
         SocketIO.on('order_columns', function () {
-            if (vm.project.project_type === "S") {
-                if (vm.sprint.started) {
-                    getSprintTickets(vm.sprint._id.$oid);
-                    getColumnConfiguration(vm.project._id.$oid);
-                }
-            } else {
-                getColumnConfiguration(vm.project._id.$oid);
-                getProjectTickets();
-            }
+            reloadData();
         });
         SocketIO.on('update_ticket', function () {
-            if (vm.project.project_type === "S") {
-                if (vm.sprint.started) {
-                    getSprintTickets(vm.sprint._id.$oid);
-                    getColumnConfiguration(vm.project._id.$oid);
-                }
-            } else {
-                getColumnConfiguration(vm.project._id.$oid);
-                getProjectTickets();
-            }
+            reloadData();
         });
 
     };

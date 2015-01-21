@@ -2,7 +2,8 @@ from flask.ext.restful import Api
 from resources.sprint import SprintList, SprintInstance, SprintOrder, \
     SprintActive, SprintTickets, SprintChart, SprintArchivedList, SprintAllList
 from resources.project import ProjectList, ProjectInstance, ProjectColumns, \
-    ProjectColumnsOrder, ProjectColumn, ProjectMembers, ProjectImport
+    ProjectColumnsOrder, ProjectColumn, ProjectMembers, ProjectImport, \
+    ProjectMemberInstance
 from resources.ticket import TicketOrderProject, TicketOrderSprint, TicketProjectList, \
     TicketMovement, TicketInstance, TicketTransition, TicketColumnOrder, \
     TicketComments, TicketAttachments, AttachmentInstance, MemberTicketInstance, \
@@ -23,6 +24,7 @@ def init_app(app, decorators=None):
     api.add_resource(ProjectColumns, '/project/<string:project_pk>/columns')
     api.add_resource(ProjectColumnsOrder, '/project/<string:project_pk>/order_columns')
     api.add_resource(ProjectMembers, '/project/<string:project_pk>/members')
+    api.add_resource(ProjectMemberInstance, '/project/<string:project_pk>/members/<string:member_pk>')
     api.add_resource(ProjectImport, '/project/<string:project_pk>/import')
     api.add_resource(ProjectColumn, '/project/<string:project_pk>/column/<string:column_pk>')
 

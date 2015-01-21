@@ -39,12 +39,10 @@
                 return req.$do('/project/' + project_pk + '/members', req.METHODS.POST, members);
             },
             'remove_member': function(project_pk, member){
-                var data = {'member': member};
-                return req.$do('/project/' + project_pk + '/members', req.METHODS.DELETE, data);
+                return req.$do('/project/' + project_pk + '/members/' + member, req.METHODS.DELETE);
             },
             'set_as_owner': function(project_pk, member){
-                var data = {'member': member};
-                return req.$do('/project/' + project_pk + '/members', req.METHODS.UPDATE, data);
+                return req.$do('/project/' + project_pk + '/members/' + member, req.METHODS.UPDATE);
             },
             'import_file': function(project_pk, file, extra_data){
                 return file_upload.$do('/project/' + project_pk + '/import', file, extra_data);

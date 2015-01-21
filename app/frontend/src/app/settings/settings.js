@@ -200,6 +200,8 @@
 
         // get the project from the parent controller.
         vm.project = scope.$parent.project;
+        // set the active tab
+        scope.$parent.vm[state.current.tab_active] = true;
         getColumnConfiguration(vm.project._id.$oid);
         getMembers(vm.project._id.$oid);
 

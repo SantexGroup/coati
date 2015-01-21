@@ -324,8 +324,14 @@
 
         // get the project from the parent controller.
         vm.project = scope.$parent.project;
+
+
         // set the active tab
         scope.$parent.vm[state.current.tab_active] = true;
+
+        vm.is_scrumm = function(){
+          return vm.project.project_type === "S";
+        };
 
         getTicketsForProject(vm.project._id.$oid);
         getSprintsWithTickets(vm.project._id.$oid);

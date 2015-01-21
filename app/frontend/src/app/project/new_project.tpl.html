@@ -32,12 +32,28 @@
                     <input class="form-control"
                            data-ng-class="{'error': vm.form.project_form.prefix.$invalid && vm.submitted}"
                            autocomplete="off"
-                           placeholder="Prefix" data-ng-model="vm.project.prefix"
+                           placeholder="Prefix"
+                           data-ng-model="vm.project.prefix"
                            name="prefix" type="text">
                 </div>
                 <div class="form-group">
+                    <label>Project Type</label>
+                    <select ng-model="vm.project.project_type"
+                            required
+                            name="project_type"
+                            data-ng-class="{'error': vm.form.project_form.project_type.$invalid && vm.submitted}"
+                            class="form-control"
+                            ng-init="vm.project.project_type='S'">
+                        <option value="S">Scrum</option>
+                        <option value="K">Kanban</option>
+                    </select>
+                    <small>Scrum: will allow create sprints and have burndown chart.</small>
+                    <small>Kanban: will allow to have a board and move tickets.</small>
+                </div>
+                <div class="form-group">
                     <label>Active</label>
-                    <input type="checkbox" ng-init="vm.project.active=true" name="active" ng-model="vm.project.active">
+                    <input type="checkbox" ng-checked="true"
+                           name="active" ng-model="vm.project.active">
                 </div>
 
                 <button class="btn btn-primary"

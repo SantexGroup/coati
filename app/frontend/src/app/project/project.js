@@ -38,7 +38,11 @@
         };
 
         vm.check_permission = function () {
-            return project.owner.id === rootScope.user._id.$oid;
+            return scope.project.owner.id === rootScope.user._id.$oid;
+        };
+
+        vm.is_scrumm = function(){
+          return scope.project.project_type === "S";
         };
 
         if(state.current.tab_active !== undefined){

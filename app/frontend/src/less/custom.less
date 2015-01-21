@@ -837,3 +837,33 @@ a.unread {
   width: 10px;
   height: 10px;
 }
+
+.ticket-members {
+  padding: 0px;
+  margin: 0px;
+}
+
+.ticket-members li {
+  float: left;
+  margin-right: 2px;
+  position: relative;
+  cursor: pointer;
+}
+
+.ticket-members li img {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+}
+
+.ticket-members li:last-child {
+  clear: right;
+}
+
+.ticket-members .assigned-member {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  color: greenyellow;
+  font-size: 18px;
+}

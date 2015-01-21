@@ -19,7 +19,7 @@
         });
     };
 
-    var ArchivedSprintController = function (rootScope, scope, modal, SprintService, SocketIO) {
+    var ArchivedSprintController = function (rootScope, scope, state, modal, SprintService, SocketIO) {
 
         var vm = this;
 
@@ -162,7 +162,7 @@
     };
 
     Config.$inject = ['$stateProvider'];
-    ArchivedSprintController.$inject = ['$rootScope', '$scope', '$modal', 'SprintService', 'SocketIO'];
+    ArchivedSprintController.$inject = ['$rootScope', '$scope', '$state', '$modal', 'SprintService', 'SocketIO'];
     StartSprintController.$inject = ['$log', '$scope', 'Conf', '$filter', '$modalInstance', 'SprintService', 'sprint', 'project'];
     StopSprintController.$inject = ['$modalInstance', 'SprintService', 'sprint', 'project'];
 

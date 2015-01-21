@@ -31,12 +31,12 @@
                             resolve: {
                                 item: function () {
                                     var promise = $q.defer();
-                                    ProjectService.get(vm.project).then(function(prj){
+                                    ProjectService.get(vm.project).then(function (prj) {
                                         promise.resolve({
-                                            'project': prj ,
+                                            'project': prj,
                                             'ticket_id': $stateParams.ticket_id
                                         });
-                                    }, function(){
+                                    }, function () {
                                         promise.reject('Error');
                                     });
                                     return promise.promise;
@@ -50,7 +50,7 @@
                             }
                         });
                         modalInstance.result.then(function () {
-                            $state.go('^', {}, {reload:true});
+                            $state.go('^', {}, {reload: true});
                         });
                     });
                 }],
@@ -132,7 +132,7 @@
 
     };
 
-    var TicketDetailController = function (rootScope, filter, tmo, modalInstance, conf, downloader, ProjectService, TicketService, SocketIO, item) {
+    var TicketDetailController = function (rootScope,log, filter, tmo, modalInstance, conf, downloader, ProjectService, TicketService, SocketIO, item) {
         var vm = this;
 
 
@@ -230,24 +230,33 @@
             if (vm.ticket !== undefined) {
                 return _.find(vm.ticket.assigned_to, function (obj) {
                     var valid = obj._id.$oid === m._id.$oid;
-                    m.checked = valid;
+                    m.is_member = valid;
                     return valid;
                 });
             }
         };
+        vm.archive_ticket = function () {
+            vm.ticket.closed = true;
+            TicketService.update(vm.project._id.$oid, vm.ticket._id.$oid, vm.ticket).then(function (tkt) {
+                modalInstance.close();
+            }, function (err) {
+                modalInstance.dismiss('error');
+                log.error(err);
+            });
+        };
 
         vm.assign_to_ticket = function (m) {
-            if (m.checked) {
+            if (!m.is_member) {
                 TicketService.assign_member(vm.project._id.$oid, vm.ticket._id.$oid, m._id.$oid).then(function () {
                     getTicket(vm.ticket._id.$oid);
                 }, function () {
-                    m.checked = false;
+                    m.is_member = false;
                 });
             } else {
                 TicketService.remove_member(vm.project._id.$oid, vm.ticket._id.$oid, m._id.$oid).then(function () {
                     getTicket(vm.ticket._id.$oid);
                 }, function () {
-                    m.checked = true;
+                    m.is_member = true;
                 });
             }
         };
@@ -331,6 +340,10 @@
             });
         };
 
+        vm.is_scrumm = function(){
+            return vm.project.project_type === 'S';
+        };
+
         vm.showDetails = function (e, tkt) {
             if (tkt) {
                 tkt = angular.copy(tkt);
@@ -356,12 +369,16 @@
             e.stopPropagation();
         };
 
+        vm.is_scrumm = function () {
+            return vm.project.project_type === "S";
+        };
+
         getArchivedTickets(vm.project._id.$oid);
     };
 
     Config.$inject = ['$stateProvider'];
     TicketArchivedController.$inject = ['$scope', '$modal', 'TicketService'];
-    TicketDetailController.$inject = ['$rootScope', '$filter', '$timeout', '$modalInstance', 'Conf', '$file_download', 'ProjectService', 'TicketService', 'SocketIO', 'item'];
+    TicketDetailController.$inject = ['$rootScope', '$log', '$filter', '$timeout', '$modalInstance', 'Conf', '$file_download', 'ProjectService', 'TicketService', 'SocketIO', 'item'];
     TicketFormController.$inject = ['$log', '$modalInstance', 'Conf', 'TicketService', 'SprintService', 'item'];
     TicketDeleteController.$inject = ['$modalInstance', 'TicketService', 'item', 'project'];
 

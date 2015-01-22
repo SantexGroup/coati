@@ -7,9 +7,9 @@
                 <span ng-if="vm.planning"><[ 'PLANNING' | translate ]></span>
                 <span ng-if="vm.board"><[ 'BOARD' | translate ]></span>
                 <span ng-if="vm.reports"><[ 'REPORTS' | translate ]></span>
-                <span ng-if="vm.archived"><[ 'ARCHIVED SPRINTS' | translate ]></span>
-                <span ng-if="vm.closed_tickets"><[ 'ARCHIVED TICKETS' | translate ]></span>
-                <span ng-if="vm.settings"><[ 'PROJECT SETTINGS' | translate ]></span>
+                <span ng-if="vm.archived"><[ 'ARCHIVED_SPRINTS' | translate ]></span>
+                <span ng-if="vm.closed_tickets"><[ 'ARCHIVED_TICKETS' | translate ]></span>
+                <span ng-if="vm.settings"><[ 'PROJECT_SETTINGS' | translate ]></span>
             </li>
         </ul>
         <section class="panel">
@@ -30,16 +30,16 @@
                     </li>
                     <li ui-sref-active="active" ng-if="vm.is_scrumm()">
                         <a ui-sref="project.archived({project_pk: project._id.$oid})"
-                           ui-sref-opts="{reload: true}"><[ 'ARCHIVED SPRINTS' | translate ]></a>
+                           ui-sref-opts="{reload: true}"><[ 'ARCHIVED_SPRINTS' | translate ]></a>
                     </li>
                     <li ui-sref-active="active">
                         <a ui-sref="project.closed_tickets({project_pk: project._id.$oid})"
-                                ui-sref-opts="{reload: true}"><[ 'ARCHIVED TICKETS' | translate ]></a>
+                                ui-sref-opts="{reload: true}"><[ 'ARCHIVED_TICKETS' | translate ]></a>
                     </li>
                     <li ng-show="vm.check_permission()"
                         ui-sref-active="active">
                         <a ui-sref="project.settings({project_pk: project._id.$oid})"
-                                ui-sref-opts="{reload: true}"><[ 'PROJECT SETTINGS' | translate ]></a>
+                                ui-sref-opts="{reload: true}"><[ 'PROJECT_SETTINGS' | translate ]></a>
                     </li>
                 </ul>
             </header>

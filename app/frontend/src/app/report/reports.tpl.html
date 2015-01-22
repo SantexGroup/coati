@@ -1,4 +1,4 @@
-<h2><[ 'BURNDOWN CHART' | translate ]></h2>
+<h2><[ 'BURNDOWN_CHART' | translate ]></h2>
 <div class="row">
     <div class="col-md-12">
         <div class="form-group">
@@ -8,11 +8,11 @@
                     data-ng-model="vm.sprint_selected"
                     data-ng-options="s.name group by vm.getSprintType(s) for s in vm.sprints"
                     data-ng-change="vm.getReport();">
-                <option value=""><[ 'SPRINT SELECTION' | translate ]></option>
+                <option value=""><[ 'SPRINT_SELECTION' | translate ]></option>
             </select>
         </div>
         <p ng-show="vm.is_not_started">
-            <[ 'SPRINT NOT STARTED' | translate ]>
+            <[ 'SPRINT_NOT_STARTED' | translate ]>
         </p>
 
         <div class="col-md-6" style="position: relative">
@@ -23,7 +23,7 @@
              ng-show="vm.sprint_selected && !vm.is_not_started">
             <section class="panel tasks-widget sprint-item">
                 <header class="panel-heading">
-                    <span><[ 'DONE TICKETS' | translate ]></span>
+                    <span><[ 'DONE_TICKETS' | translate ]></span>
                 </header>
                 <div class="panel-body">
                     <div class="task-content">
@@ -31,7 +31,7 @@
                             <li ng-if="(vm.tickets|filter:{finished:true}).length < 1">
                                 <div class="task-title">
                                     <span class="task-title-sp">
-                                      <[ 'NO TICKETS DONE' | translate ]>
+                                      <[ 'NO_TICKETS_DONE' | translate ]>
                                     </span>
                                 </div>
                             </li>
@@ -53,7 +53,7 @@
             </section>
             <section class="panel tasks-widget sprint-item">
                 <header class="panel-heading">
-                    <span><[ 'PENDING TICKETS' | translate ]></span>
+                    <span><[ 'PENDING_TICKETS' | translate ]></span>
                 </header>
                 <div class="panel-body">
                     <div class="task-content">
@@ -61,7 +61,7 @@
                             <li ng-if="(vm.tickets|filter:{finished:false}).length < 1">
                                 <div class="task-title">
                                     <span class="task-title-sp">
-                                      <[ 'NO PENDING TICKETS' | translate ]>
+                                      <[ 'NO_PENDING_TICKETS' | translate ]>
                                     </span>
                                 </div>
                             </li>
@@ -84,7 +84,7 @@
             </section>
             <section class="panel tasks-widget sprint-item">
                 <header class="panel-heading">
-                    <span><[ 'ADDED TICKETS' | translate ]></span>
+                    <span><[ 'ADDED_TICKETS' | translate ]></span>
                 </header>
                 <div class="panel-body">
                     <div class="task-content">
@@ -92,7 +92,7 @@
                             <li ng-if="(vm.tickets|filter:{added_after: true}).length < 1">
                                 <div class="task-title">
                                     <span class="task-title-sp">
-                                      <[ 'NO ADDED TICKETS' | translate ]>
+                                      <[ 'NO_ADDED_TICKETS' | translate ]>
                                     </span>
                                 </div>
                             </li>

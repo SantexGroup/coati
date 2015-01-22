@@ -3,7 +3,7 @@
 <div class="col-md-4">
     <section class="panel tasks-widget backlog">
         <header class="panel-heading">
-            <[ 'PROJECT DATA' | translate ]>
+            <[ 'PROJECT_DATA' | translate ]>
         </header>
         <div class="panel-body">
             <form name="vm.form.project_form"
@@ -18,7 +18,7 @@
                            class="form-control"
                            type="text">
                     <label for="name" class="error"
-                           data-ng-show="vm.form.project_form.name.$invalid && vm.submitted"><[ 'INVALID PROJECT NAME' | translate ]></label>
+                           data-ng-show="vm.form.project_form.name.$invalid && vm.submitted"><[ 'INVALID_PROJECT_NAME' | translate ]></label>
                 </div>
                 <div class="form-group">
                     <label><[ 'DESCRIPTION' | translate ]></label>
@@ -37,12 +37,12 @@
                            name="prefix" type="text">
                 </div>
                 <div class="form-group">
-                    <label><[ 'PROJECT ACTIVE' | translate ]></label>
+                    <label><[ 'PROJECT_ACTIVE' | translate ]></label>
                     <input type="checkbox" name="active"
                            ng-model="vm.project.active">
                 </div>
                 <div class="form-group">
-                    <label><[ 'PROJECT TYPE' | translate ]></label>
+                    <label><[ 'PROJECT_TYPE' | translate ]></label>
                     <select ng-model="vm.project.project_type"
                             required
                             name="project_type"
@@ -51,28 +51,28 @@
                         <option value="S"><[ 'SCRUM' | translate ]></option>
                         <option value="K"><[ 'KANBAN' | translate ]></option>
                     </select>
-                    <small><[ 'SCRUM DESCRIPTION' | translate ]></small>
-                    <small><[ 'KANBAN DESCRIPTION' | translate ]</small>
+                    <small><[ 'SCRUM_DESCRIPTION' | translate ]></small>
+                    <small><[ 'KANBAN_DESCRIPTION' | translate ]</small>
                 </div>
                 <div class="form-group" ng-if="vm.project.project_type == 'S'">
-                    <label><[ 'SPRINT DURATION' | translate ]></label>
+                    <label><[ 'SPRINT_DURATION' | translate ]></label>
                     <select ng-model="vm.project.sprint_duration"
                             required
                             name="sprint_duration"
                             data-ng-class="{'error': vm.form.settings_form.sprint_duration.$invalid && vm.submitted}"
                             class="form-control">
-                        <option value="15"><[ '2 WEEKS' | translate ]></option>
-                        <option value="7"><[ '1 WEEK' | translate ]></option>
+                        <option value="15"><[ '2_WEEKS' | translate ]></option>
+                        <option value="7"><[ '1_WEEK' | translate ]></option>
                     </select>
                     <label for="sprint_duration" class="error"
-                           data-ng-show="vm.form.settings_form.sprint_duration.$invalid && vm.submitted"><[ 'SPRINT DURATION ERROR' | translate ]></label>
+                           data-ng-show="vm.form.settings_form.sprint_duration.$invalid && vm.submitted"><[ 'SPRINT_DURATION_ERROR' | translate ]></label>
                 </div>
                 <button class="btn btn-primary"
-                        type="submit"><[ 'UPDATE SETTINGS' | translate ]>
+                        type="submit"><[ 'UPDATE_SETTINGS' | translate ]>
                 </button>
                 <button class="btn btn-danger"
                         type="button" ng-click="vm.delete_project();">
-                    <[ 'REMOVE PROJECT' | translate ]>
+                    <[ 'REMOVE_PROJECT' | translate ]>
                 </button>
             </form>
         </div>
@@ -84,7 +84,7 @@
             Members
             <button class="btn btn-primary pull-right"
                     style="margin-top:-5px;"
-                    ng-click="vm.add_new_member();" type="button"><[ 'NEW MEMBER' | translate ]>
+                    ng-click="vm.add_new_member();" type="button"><[ 'NEW_MEMBER' | translate ]>
             </button>
         </header>
         <div class="panel-body">
@@ -99,7 +99,7 @@
                     <li ng-if="!m.is_owner"><a href="javascript:;"
                                                ng-click="vm.set_as_owner(m);">
                         <i class="icon-level-up"></i>
-                        <[ 'SET AS OWNER' | translate ]></a>
+                        <[ 'SET_AS_OWNER' | translate ]></a>
                     </li>
                     <li ng-if="m.is_owner">
                         <a href="javascript:;">
@@ -110,7 +110,7 @@
                     <li ng-if="!m.is_owner"><a href="javascript:;"
                                                ng-click="vm.remove_member(m);">
                         <i class="icon-trash"></i>
-                        <[ 'REMOVE MEMBER' | translate]></a>
+                        <[ 'REMOVE_MEMBER' | translate]></a>
                     </li>
                 </ul>
             </div>
@@ -120,31 +120,31 @@
     </section>
     <section class="panel backlog">
         <header class="panel-heading">
-            <[ 'BOARD SETTINGS' | translate ]>
+            <[ 'BOARD_SETTINGS' | translate ]>
         </header>
         <div class="panel-body">
             <div class="import_from_file">
                 <section class="panel">
                     <header class="panel-heading">
-                        <span><[ 'TRELLO IMPORT' | translate ]></span>
+                        <span><[ 'TRELLO_IMPORT' | translate ]></span>
                     </header>
                     <div class="panel-body">
-                        <p><[ 'TRELLO IMPORT WARNING' | translate ]></p>
+                        <p><[ 'TRELLO_IMPORT_WARNING' | translate ]></p>
                         <button class="btn btn-sm btn-primary"
                                 ng-file-select ng-model="vm.json_file"
                                 ng-file-change="vm.prepare_upload()"
                                 accept="application/json"
-                                multiple="false"><[ 'TRELLO IMPORT FILE' | translate ]>
+                                multiple="false"><[ 'TRELLO_IMPORT_FILE' | translate ]>
                         </button>
 
                         <div ng-show="vm.json_file"
                              style="clear:both;margin-top:10px">
-                            <label><[ 'TOTAL ACTIVE CARDS' | translate ]>:</label>
+                            <label><[ 'TOTAL_ACTIVE_CARDS' | translate ]>:</label>
                             <span ng-bind="(vm.json_file.data.cards | filter: {'closed': false}).length"></span>
-                            <label><[ 'TOTAL ACTIVE COLUMNS' | translate ]>:</label>
+                            <label><[ 'TOTAL_ACTIVE_COLUMNS' | translate ]>:</label>
                             <span ng-bind="(vm.json_file.data.lists | filter: {'closed': false}).length"></span>
                             <div class="form-group">
-                                <label><[ 'TRELLO IMPORT SELECT' | translate ]>:</label>
+                                <label><[ 'TRELLO_IMPORT_SELECT' | translate ]>:</label>
                                 <input type="checkbox" ng-model="vm.import_cards" ng-init="vm.import_cards=true"> <[ 'CARDS' | translate ]>
                                 <input type="checkbox" ng-model="vm.import_cols" ng-init="vm.import_cols=true"> <[ 'COLUMNS' | translate ]>
                             </div>
@@ -154,7 +154,7 @@
                                         style="display: inline-block;margin-top:10px"
                                         ng-click="vm.confirm_upload();"
                                         class="pull-left btn btn-sm btn-success">
-                                    <span ng-if="!vm.uploading"><[ 'PROCESS FILE' | translate ]></span>
+                                    <span ng-if="!vm.uploading"><[ 'PROCESS_FILE' | translate ]></span>
                                     <span ng-if="vm.uploading"><[ 'PROCESSING ' | translate ]></span>
                                 </button>
                                 <div class="spinner" ng-hide="!vm.uploading"
@@ -173,11 +173,11 @@
             <div class="columns-in-project">
                 <section class="panel">
                     <header class="panel-heading">
-                        <span><[ 'Column Configuration' | translate ]></span>
+                        <span><[ 'COLUMN_CONFIGURATION' | translate ]></span>
                         <button class="btn btn-primary pull-right"
                                 style="margin-top:-5px;"
                                 ng-click="vm.add_or_edit();"
-                                type="button"><[ 'ADD NEW COLUMN' | translate ]>
+                                type="button"><[ 'ADD_NEW_COLUMN' | translate ]>
                         </button>
                     </header>
                     <div class="panel-body">
@@ -212,9 +212,9 @@
                         </div>
                         <p>
 
-                        <div class="badge bg-important"><[ 'ALERT TICKET AMOUNT' | translate ]>
+                        <div class="badge bg-important"><[ 'ALERT_TICKET_AMOUNT' | translate ]>
                         </div>
-                        <div class="badge bg-success"><[ 'DONE COLUMN' | translate ]>
+                        <div class="badge bg-success"><[ 'DONE_COLUMN' | translate ]>
                         </div>
                         </p>
                     </div>

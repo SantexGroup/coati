@@ -1,8 +1,8 @@
 <div class="row">
     <div class="col-md-12 projects">
-        <h3><[ 'WELCOME MESSAGE' | translate]></h3>
+        <h3><[ 'WELCOME_MESSAGE' | translate ]></h3>
 
-        <p data-ng-show="vm.projects.length < 1"><[ 'NO PROJECTS' | translate ]></p>
+        <p data-ng-show="vm.projects.length < 1"><[ 'NO_PROJECTS' | translate ]></p>
         <!--widget start-->
         <aside class="project-item col-md-3"
                ng-repeat="item in vm.projects track by item._id.$oid"
@@ -36,10 +36,10 @@
         <aside class="profile-nav alt col-md-3 new-project" ng-click="vm.create_project();">
             <section class="panel">
                 <header class="panel-heading alt">
-                    <span><[ 'NEW PROJECT' | translate ]>...</span>
+                    <span><[ 'NEW_PROJECT' | translate ]>...</span>
                 </header>
                 <div class="panel-body">
-                    <p><[ 'CREATE PROJECT' | translate ]></p>
+                    <p><[ 'CREATE_PROJECT' | translate ]></p>
                 </div>
             </section>
         </aside>

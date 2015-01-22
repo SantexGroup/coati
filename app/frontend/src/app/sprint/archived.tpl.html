@@ -2,10 +2,10 @@
     <div class="col-md-12" id="planning-list">
         <section class="panel tasks-widget backlog">
             <header class="panel-heading">
-                <span><[ 'ARCHIVED SPRINTS' | translate ]></span>
+                <span><[ 'ARCHIVED_SPRINTS' | translate ]></span>
 
                 <div class="add-task-row pull-right">
-                    <span class="badge bg-inverse"><[ 'TOTAL SPRINTS' | translate ]> : <[ vm.sprints.length ]></span>
+                    <span class="badge bg-inverse"><[ 'TOTAL_SPRINTS' | translate ]> : <[ vm.sprints.length ]></span>
                 </div>
                 <div style="clear:both"></div>
             </header>
@@ -21,7 +21,7 @@
                                       class="sprint_dates">(<[ sprint.start_date.$date | date:'short' ]> <[ 'TO' | translate ]> <[ sprint.end_date.$date | date:'short']>)</span>
 
                                 <div class="options pull-right">
-                                    <span class="badge bg-inverse"><[ 'TOTAL POINTS' | translate ]>: <[ sprint.tickets | sumValue:'points' ]></span>
+                                    <span class="badge bg-inverse"><[ 'TOTAL_POINTS' | translate ]>: <[ sprint.tickets | sumValue:'points' ]></span>
                                     <a class="btn btn-sm btn-danger"
                                        ng-click="vm.remove_sprint(sprint._id.$oid)">
                                         <i class="icon-remove"></i> <[ 'REMOVE' | translate ]>

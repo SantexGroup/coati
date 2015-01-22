@@ -40,7 +40,7 @@
                                   ng-click="vm.show(points_form)">
                                 <[ vm.ticket.points ]>
                             </span>
-        <label><[ 'TICKET TYPE' | translate ]>:</label>
+        <label><[ 'TICKET_TYPE' | translate ]>:</label>
                         <span class="badge <[ vm.ticket.type]>"
                               editable-select="vm.ticket.type"
                               e-form="type_form"
@@ -49,7 +49,7 @@
                               onbeforesave="vm.saveTicket(vm.ticket);">
                             <[ vm.types | ticketTypes:vm.ticket.type ]>
                         </span>
-        <label><[ 'IN COLUMN' | translate ]>:</label>
+        <label><[ 'IN_COLUMN' | translate ]>:</label>
                         <span ng-if="!vm.ticket.in_column"
                               class="badge bg-warning">Backlog</span>
                         <span ng-if="vm.ticket.in_column"
@@ -91,7 +91,7 @@
            e-cols="70" onbeforesave="vm.saveTicket(vm.ticket);">
             <[ vm.ticket.description ]>
                 <span ng-if="!vm.ticket.description"
-                      class="ng-scope"><[ 'NO DESCRIPTION' | translate ]></span>
+                      class="ng-scope"><[ 'NO_DESCRIPTION' | translate ]></span>
         </p>
     </div>
 </div>
@@ -147,12 +147,12 @@
             <button class="btn pull-left btn-sm btn-primary"
                     ng-file-select ng-model="vm.files"
                     multiple="true"
-                    ng-disabled="vm.no_editing"><[ 'SELECT FILES' | translate ]>
+                    ng-disabled="vm.no_editing"><[ 'SELECT_FILES' | translate ]>
             </button>
             <button ng-show="vm.files.length"
                     ng-click="vm.confirm_upload();"
                     class="btn pull-right btn-sm btn-success">
-                <[ 'UPLOAD FILES' | translate ]>
+                <[ 'UPLOAD_FILES' | translate ]>
             </button>
             <div style="clear:both"></div>
             <div class="files" ng-show="vm.files.length">
@@ -213,7 +213,7 @@
             <button id="add-comment"
                     class="btn btn-success pull-right"
                     ng-disabled="vm.process_comment || vm.no_editing"
-                    ng-click="vm.add_new_comment($event)"><[ 'NEW COMMENT' | translate ]>
+                    ng-click="vm.add_new_comment($event)"><[ 'NEW_COMMENT' | translate ]>
             </button>
             <div style="clear:both"></div>
         </div>

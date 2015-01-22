@@ -1,7 +1,7 @@
 <section class="panel">
     <header class="panel-heading">
         <h4 class="modal-title">
-            <[ 'NEW PROJECT' | translate ]>
+            <[ 'NEW_PROJECT' | translate ]>
         </h4>
     </header>
     <div class="panel-body">
@@ -27,7 +27,7 @@
                               data-ng-model="vm.project.description"></textarea>
                 </div>
                 <div class="form-group">
-                    <label><[ 'PROJECT PREFIX' | translate ]></label>
+                    <label><[ 'PROJECT_PREFIX' | translate ]></label>
                     <input class="form-control"
                            data-ng-class="{'error': vm.form.project_form.prefix.$invalid && vm.submitted}"
                            autocomplete="off"
@@ -36,7 +36,7 @@
                            name="prefix" type="text">
                 </div>
                 <div class="form-group">
-                    <label><[ 'PROJECT TYPE' | translate ]></label>
+                    <label><[ 'PROJECT_TYPE' | translate ]></label>
                     <select ng-model="vm.project.project_type"
                             required
                             name="project_type"
@@ -46,11 +46,11 @@
                         <option value="S"><[ 'SCRUM' | translate ]></option>
                         <option value="K"><[ 'KANBAN' | translate ]></option>
                     </select>
-                    <small><[ 'SCRUM DESCRIPTION' | translate ]></small>
-                    <small><[ 'KANBAN DESCRIPTION' | translate ]</small>
+                    <small><[ 'SCRUM_DESCRIPTION' | translate ]></small>
+                    <small><[ 'KANBAN_DESCRIPTION' | translate ]</small>
                 </div>
                 <div class="form-group">
-                    <label><[ 'PROJECT ACTIVE' | translate ]></label>
+                    <label><[ 'PROJECT_ACTIVE' | translate ]></label>
                     <input type="checkbox" ng-checked="true"
                            name="active" ng-model="vm.project.active">
                 </div>

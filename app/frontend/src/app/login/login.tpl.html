@@ -1,7 +1,7 @@
 <form class="form-signin" name="vm.form.login" ng-submit="vm.login_user()"
       novalidate>
-    <h2 class="form-signin-heading"><[ 'PAGE TITLE' | translate ]>
-        <small><[ 'COATI MOTTO' | translate ]></small>
+    <h2 class="form-signin-heading"><[ 'PAGE_TITLE' | translate ]>
+        <small><[ 'COATI_MOTTO' | translate ]></small>
         <span class="beta"  style="right: 45px;font-size: 10px;top: 12px;">Beta</span>
     </h2>
 
@@ -14,7 +14,7 @@
                    placeholder="E-Mail" data-ng-model="vm.login.email"
                    name="email" type="email" required>
             <label class="error"
-                   data-ng-show="vm.form.login.email.$invalid && vm.submitted"><[ 'INVALID EMAIL' | translate ]></label>
+                   data-ng-show="vm.form.login.email.$invalid && vm.submitted"><[ 'INVALID_EMAIL' | translate ]></label>
         </div>
         <div class="form-group">
             <input class="form-control"
@@ -23,16 +23,16 @@
                    placeholder="Password" data-ng-model="vm.login.password"
                    name="password" type="password" required>
             <label class="error"
-                   data-ng-show="vm.form.login.password.$invalid && vm.submitted"><[ 'INVALID PASSWORD' | translate ]></label>
+                   data-ng-show="vm.form.login.password.$invalid && vm.submitted"><[ 'INVALID_PASSWORD' | translate ]></label>
         </div>
         <button class="btn btn-primary"
-                type="submit"><[ 'LOG IN' | translate ]>
+                type="submit"><[ 'LOG_IN' | translate ]>
         </button>
         <a href="/register"><[ 'REGISTER' | translate ]></a>
         <label style="display: block;" class="error" ng-if="vm.error"><[vm.error]></label>
         <hr>
 
-        <p><[ 'SOCIAL LOGIN' | translate ]></p>
+        <p><[ 'SOCIAL_LOGIN' | translate ]></p>
 
         <div class="login-social-link">
             <a href="javascript:;" ng-click="vm.authenticate('github')" class="btn-github"

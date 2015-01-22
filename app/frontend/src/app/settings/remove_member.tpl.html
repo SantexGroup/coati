@@ -1,14 +1,14 @@
 <section class="panel">
     <header class="panel-heading">
         <h4 class="modal-title">
-            <[ 'REMOVE MEMBER' | translate ]>
+            <[ 'REMOVE_MEMBER' | translate ]>
         </h4>
     </header>
     <div class="panel-body">
         <div class="col-md-12">
-            <p ng-if="vm.member.member.first_name"><[ 'REMOVE MEMBER CONFIRM' | translate ]> "<[ vm.member.member.first_name ]> <[ vm.member.member.last_name ]>"?</p>
-            <p ng-if="!vm.member.member.first_name"><[ 'REMOVE MEMBER CONFIRM' | translate ]> "<[ vm.member.member.email ]>"?</p>
-            <button class="btn btn-danger" data-ng-click="vm.erase();"><[ 'DELETE CONFIRM' | translate]>
+            <p ng-if="vm.member.member.first_name"><[ 'REMOVE_MEMBER_CONFIRM' | translate ]> "<[ vm.member.member.first_name ]> <[ vm.member.member.last_name ]>"?</p>
+            <p ng-if="!vm.member.member.first_name"><[ 'REMOVE_MEMBER_CONFIRM' | translate ]> "<[ vm.member.member.email ]>"?</p>
+            <button class="btn btn-danger" data-ng-click="vm.erase();"><[ 'DELETE_CONFIRM' | translate]>
                 </button>
                 <button class="btn btn-warning"
                         data-ng-click="vm.cancel();"><[ 'CANCEL' | translate ]>

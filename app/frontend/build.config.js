@@ -102,7 +102,8 @@ module.exports = {
             'vendor/ng-tags-input/ng-tags-input.min.css',
             'vendor/angular-xeditable/dist/css/xeditable.css',
             'vendor/angular-loading-bar/build/loading-bar.min.css',
-            'vendor/angular-material/angular-material.min.css'
+            'vendor/angular-material/angular-material.min.css',
+            'vendor/angular-material/themes/blue-theme.css'
         ],
         assets: [],
         fonts: [

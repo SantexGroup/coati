@@ -1,48 +1,34 @@
-<div class="row">
-    <div class="col-md-12 projects">
-        <h3>Welcome to Coati Agile Project.</h3>
-
+<div class="projects">
+    <md-toolbar>
+        <h1 class="md-toolbar-tools">
+            <span>Project List</span>
+        </h1>
+    </md-toolbar>
+    <md-content>
         <p data-ng-show="vm.projects.length < 1">You don't have Projects created
             yet!</p>
-        <!--widget start-->
-        <aside class="project-item col-md-3"
-               ng-repeat="item in vm.projects track by item._id.$oid"
-               data-index="<[ $index ]>">
-            <section class="panel">
-                <a ui-sref="project.planning({project_pk: item._id.$oid })">
-                    <header class="panel-heading alt">
-                        <span><[ item.name ]></span>
+        <md-list>
+            <md-item
+                    data-ng-repeat="item in vm.projects track by item._id.$oid">
+                <md-item-content
+                        ui-sref="project.planning({project_pk: item._id.$oid })">
+                    <div class="md-tile-left">
+                        <md-button class="md-fab">
+                            <[ item.project_type ]>
+                        </md-button>
 
-                        <div class="pull-right">
-                        <span ng-class="{active: item.active, deactivated: !item.active}"
-                              title="Green: Active, Red: Inactive"><i
-                                class="icon-circle"></i></span>
-                        </div>
-                    </header>
-                </a>
+                    </div>
+                    <div class="md-tile-content">
+                        <h3>
+                            <[ item.name ]>
+                        </h3>
 
-                <div class="panel-body">
-                    <p><[ item.description ]></p>
-                    <ul class="nav nav-pills nav-stacked">
-                        <li>
-                        <span class="label"
-                              data-ng-class="{true: 'label-sucess', false: 'label-danger'}[item.active]"></span>
-                        </li>
-                    </ul>
-                </div>
-
-            </section>
-        </aside>
-        <!--widget end-->
-        <aside class="profile-nav alt col-md-3 new-project" ng-click="vm.create_project();">
-            <section class="panel">
-                <header class="panel-heading alt">
-                    <span>New Project...</span>
-                </header>
-                <div class="panel-body">
-                    <p>Click here to create a new project...</p>
-                </div>
-            </section>
-        </aside>
-    </div>
+                        <p><[ item.description ]></p>
+                    </div>
+                </md-item-content>
+                <md-divider ng-if="!$last"></md-divider>
+            </md-item>
+        </md-list>
+    </md-content>
 </div>
+

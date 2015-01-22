@@ -16,118 +16,16 @@
 
 <body ui-view="master_view" ng-cloak
       data-ng-class="{true:'body-500', false:''}[actual_path == 'error_403']">
-<section id="container">
-    <!--header start-->
-    <header layout="row" class="header white-bg">
-        <div class="sidebar-toggle-box">
-            <img src="{{ url_for('static', filename='assets/img/koala.png')}}"/>
-        </div>
-        <!--logo start-->
-        <a href="/" class="logo">Coati<span> Agile Board</span>
-        </a>
-        <span class="beta">Beta</span>
-        <!--logo end-->
-        <div class="top-nav ">
-            <!--search & user info start-->
-            <ul class="nav pull-left top-menu">
-                <li id="search_bar">
-                    <div class="spinner" ng-hide="!main.loading_results"
-                         style="display: inline-block;">
-                        <div class="rect1"></div>
-                        <div class="rect2"></div>
-                        <div class="rect3"></div>
-                        <div class="rect4"></div>
-                        <div class="rect5"></div>
-                    </div>
-                    <input type="text" ng-model="main.ticket_found"
-                           placeholder="Search..."
-                           typeahead-template-url="search_ticket.tpl.html"
-                           typeahead-min-length="3"
-                           typeahead-wait-ms="300"
-                           typeahead-focus-first="false"
-                           typeahead-editable="false"
-                           typeahead-input-formatter="$model.label"
-                           typeahead-on-select="main.on_select_result($item, $model, $label, $viewValue)"
-                           typeahead="ticket for ticket in main.searchTickets($viewValue)"
-                           class="form-control search">
-
-                </li>
-            </ul>
-            <ul class="nav pull-right top-menu user-options"
-                ng-controller="UserCtrl as vm">
-                <li id="header_notification_bar" dropdown class="dropdown">
-                    <a data-toggle="dropdown" ng-click="vm.loadNotifications();"
-                       dropdown-toggle class="dropdown-toggle" href="#">
-                        <i class="icon-bell"></i>
-                        <span class="badge bg-warning"
-                              ng-if="(vm.all_notifications | filter:{viewed:false}).length > 0"><[ (vm.all_notifications | filter:{viewed:false}).length ]></span>
-                    </a>
-                    <ul class="dropdown-menu extended notification">
-                        <div class="notify-arrow-right notify-arrow-yellow"></div>
-                        <li>
-                            <p class="yellow">
-                                <span ng-if="(vm.all_notifications | filter:{viewed:false}).length > 0">You have <[ (vm.all_notifications | filter:{viewed:false}).length ]> new notifications</span>
-                                <span ng-if="(vm.all_notifications | filter:{viewed:false}).length < 1">Notification List</span>
-                            </p>
-                        </li>
-                        <li ng-repeat="n in vm.notifications"
-                            ng-class="{new:!n.viewed}">
-                            <ng-include ng-if="n.activity.verb == 'mention'" src="'user/notifications/mention.tpl.html'"></ng-include>
-                            <ng-include ng-if="n.activity.verb == 'new_comment'" src="'user/notifications/new_comment.tpl.html'"></ng-include>
-                            <ng-include ng-if="n.activity.verb == 'update_ticket'" src="'user/notifications/update_ticket.tpl.html'"></ng-include>
-                        </li>
-                        <li>
-                            <a href="javascript:;" ui-sref="notifications">See all notifications</a>
-                        </li>
-                    </ul>
-                </li>
-                <!-- user login dropdown start-->
-                <li dropdown>
-                    <a class="dropdown-toggle user_picture" dropdown-toggle
-                       href="javascript:;">
-                        <img ng-if="!vm.user.picture" alt=""
-                             src="{{ url_for('static', filename='assets/img/koala.png')}}">
-                        <img ng-if="vm.user.picture" alt=""
-                             ng-src="<[ vm.user.picture ]>">
-                        <span class="username"><[ vm.user.email ]></span>
-                        <b class="caret"></b>
-                    </a>
-                    <ul class="dropdown-menu logout">
-                        <div class="log-arrow-up"></div>
-                        <li><a href="javascript:;"
-                               ng-click="vm.show_profile();"><i
-                                class=" icon-suitcase"></i> Profile</a>
-                        </li>
-                        <li><a ng-href="/auth/logout" href="/logout"
-                               target="_self"><i
-                                class="icon-key"></i> Log Out</a>
-                        </li>
-                    </ul>
-                </li>
-                <!-- user login dropdown end -->
-            </ul>
-            <!--search & user info end-->
-        </div>
-    </header>
-    <!--header end-->
-    <!--main content start-->
-    <section layout="row" id="main-content">
-        <div growl></div>
-        <section class="wrapper" ui-view="main">
-        </section>
-    </section>
-    <!--main content end-->
-    <!--footer start-->
-    <footer class="site-footer" layout="row" layout-align="center center">
-        <div flex>
-            2014 - Coati Team - <%= version %>
-            <a href="#" class="go-top">
-                <i class="icon-angle-up"></i>
-            </a>
-        </div>
-    </footer>
-    <!--footer end-->
-</section>
+<!--header start-->
+<md-toolbar class="header-toolbar" layout="row" layout-align="top center">
+    <h1>COATI AGILE BOARD</h1>
+    <small><%= version %></small>
+</md-toolbar>
+<!--header end-->
+<!--main content start-->
+<md-content layout="row" layout-align="top center" class="main-content" ui-view="main">
+</md-content>
+<!--main content end-->
 <% scripts.forEach( function ( file ) { %>
 <script type="text/javascript"
         src="{{ url_for('static', filename='<%= file %>')}}"></script>

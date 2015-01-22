@@ -1,6 +1,6 @@
 (function (angular) {
 
-    function ConfigApp(interpolate, location, urlRoute, growlProvider) {
+    function ConfigApp(interpolate, location, urlRoute, growlProvider, themeProvider) {
         urlRoute.when('/', '/home/');
         location.html5Mode({
             enabled: true,
@@ -11,6 +11,7 @@
         interpolate.endSymbol(']>');
         growlProvider.globalTimeToLive(5000);
         growlProvider.onlyUniqueMessages(true);
+        themeProvider.setDefaultTheme('blue');
     }
 
 
@@ -143,11 +144,11 @@
     // Injections
     filterTrustedHTML.$inject = ['$sce'];
     RunApp.$inject = ['$rootScope', '$state', '$stateParams', '$objects', 'editableOptions', 'editableThemes'];
-    ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider'];
+    ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider', '$mdThemingProvider'];
     AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', '$modal', 'tokens', 'TicketService', 'SocketIO'];
 
     angular.module('Coati', [
-        'templates-app', 'templates-common', 'angular-loading-bar',
+        'templates-app', 'templates-common', 'angular-loading-bar', 'ngMaterial',
         'ui.router', 'ui.bootstrap', 'angular-growl', 'xeditable',
         'Coati.SocketIO',
         'Coati.Config',

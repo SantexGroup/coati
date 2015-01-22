@@ -68,7 +68,11 @@ module.exports = {
         js: [
             'vendor/jquery/dist/jquery.min.js',
             'vendor/jquery-ui/ui/minified/jquery-ui.min.js',
+            'vendor/hammerjs/hammer.min.js',
             'vendor/angular/angular.min.js',
+            'vendor/angular-animate/angular-animate.min.js',
+            'vendor/angular-aria/angular-aria.min.js',
+            'vendor/angular-material/angular-material.min.js',
             'vendor/lodash/dist/lodash.min.js',
             'vendor/angular-ui-router/release/angular-ui-router.js',
             'vendor/angular-ui-utils/modules/route/route.js',
@@ -87,14 +91,18 @@ module.exports = {
         ],
         maps: [
             'vendor/angular/angular.min.js.map',
-            'vendor/jquery/dist/jquery.min.map'
+            'vendor/jquery/dist/jquery.min.map',
+            'vendor/angular-aria/angular-aria.min.js.map',
+            'vendor/angular-animate/angular-animate.min.js.map',
+            'vendor/hammerjs/hammer.min.map'
         ],
         css: [
             'vendor/angular/angular-csp.css',
             'vendor/angular-notifications/notification.min.css',
             'vendor/ng-tags-input/ng-tags-input.min.css',
             'vendor/angular-xeditable/dist/css/xeditable.css',
-            'vendor/angular-loading-bar/build/loading-bar.min.css'
+            'vendor/angular-loading-bar/build/loading-bar.min.css',
+            'vendor/angular-material/angular-material.min.css'
         ],
         assets: [],
         fonts: [

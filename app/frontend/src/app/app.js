@@ -1,6 +1,6 @@
 (function (angular) {
 
-    function ConfigApp(interpolate, location, urlRoute, growlProvider, $translateProvider) {
+    function ConfigApp(interpolate, location, urlRoute, growlProvider, translateProvider) {
         urlRoute.when('/', '/home/');
         location.html5Mode({
             enabled: true,
@@ -11,11 +11,11 @@
         interpolate.endSymbol(']>');
         growlProvider.globalTimeToLive(5000);
         growlProvider.onlyUniqueMessages(true);
-        $translateProvider.useStaticFilesLoader({
+        translateProvider.useStaticFilesLoader({
             prefix: '/static/assets/lang/',
             suffix: '.json'
         });
-        $translateProvider.use('en');
+        translateProvider.preferredLanguage('en');
     }
 
 
@@ -76,7 +76,7 @@
         };
     };
 
-    var AppController = function (scope, rootScope, state, stateParams, modal, tokens, TicketService, SocketIO) {
+    var AppController = function (scope, rootScope, state, stateParams, modal, tokens, TicketService, SocketIO, translateProvider) {
         var vm = this;
         rootScope.$on('$stateChangeStart', function (event, toState) {
 
@@ -118,6 +118,10 @@
             return model.label;
         };
 
+        vm.changeLanguage = function(lang) {
+            translateProvider.use(lang);
+        };
+
         //Init Socket interaction
         SocketIO.init();
     };
@@ -149,7 +153,7 @@
     filterTrustedHTML.$inject = ['$sce'];
     RunApp.$inject = ['$rootScope', '$state', '$stateParams', '$objects', 'editableOptions', 'editableThemes'];
     ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider', '$translateProvider'];
-    AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', '$modal', 'tokens', 'TicketService', 'SocketIO'];
+    AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', '$modal', 'tokens', 'TicketService', 'SocketIO', '$translate'];
 
     angular.module('Coati', [
         'templates-app', 'templates-common', 'pascalprecht.translate',

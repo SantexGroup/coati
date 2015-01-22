@@ -1,9 +1,7 @@
-<div class="projects">
-    <md-toolbar>
-        <h1 class="md-toolbar-tools">
-            <span>Project List</span>
-        </h1>
-    </md-toolbar>
+<div class="projects" flex="66">
+    <h3>
+        <span>Project List</span>
+    </h3>
     <md-content>
         <p data-ng-show="vm.projects.length < 1">You don't have Projects created
             yet!</p>
@@ -13,15 +11,16 @@
                 <md-item-content
                         ui-sref="project.planning({project_pk: item._id.$oid })">
                     <div class="md-tile-left">
-                        <md-button class="md-fab">
+                        <md-button class="md-fab md-primary"
+                                   data-ng-class="{'md-green-theme': item.project_type =='S', 'md-orange-theme': item.project_type =='K'}">
                             <[ item.project_type ]>
                         </md-button>
 
                     </div>
                     <div class="md-tile-content">
-                        <h3>
+                        <h4>
                             <[ item.name ]>
-                        </h3>
+                        </h4>
 
                         <p><[ item.description ]></p>
                     </div>

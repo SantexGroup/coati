@@ -74,6 +74,8 @@
 
     var AppController = function (scope, rootScope, state, stateParams, modal, tokens, TicketService, SocketIO) {
         var vm = this;
+        vm.opened_sidebar = false;
+        
         rootScope.$on('$stateChangeStart', function (event, toState) {
 
             if (angular.isDefined(toState.data.pageTitle)) {

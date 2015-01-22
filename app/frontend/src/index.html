@@ -18,12 +18,26 @@
       data-ng-class="{true:'body-500', false:''}[actual_path == 'error_403']">
 <!--header start-->
 <md-toolbar class="header-toolbar" layout="row" layout-align="top center">
-    <h1>COATI AGILE BOARD</h1>
-    <small><%= version %></small>
+    <md-button data-ng-click="main.opened_sidebar=!main.opened_sidebar">
+        <md-icon icon="/static/assets/img/icons/image/ic_dehaze_24px.svg"
+                 style="width:24px; height:24px;"></md-icon>
+    </md-button>
+    <h1 flow-order="2">COATI AGILE BOARD</h1>
+    <small flow-order="3"><%= version %></small>
 </md-toolbar>
 <!--header end-->
 <!--main content start-->
-<md-content layout="row" layout-align="top center" class="main-content" ui-view="main">
+<md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left"
+            md-is-locked-open="main.opened_sidebar">
+    <md-toolbar class="md-theme-indigo">
+        <h1 class="md-toolbar-tools">Options</h1>
+    </md-toolbar>
+    <md-content class="md-padding">
+       Something
+    </md-content>
+</md-sidenav>
+<md-content layout="column" layout-align="center center" class="main-content"
+            ui-view="main">
 </md-content>
 <!--main content end-->
 <% scripts.forEach( function ( file ) { %>

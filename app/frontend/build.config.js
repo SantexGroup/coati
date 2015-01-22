@@ -103,7 +103,9 @@ module.exports = {
             'vendor/angular-xeditable/dist/css/xeditable.css',
             'vendor/angular-loading-bar/build/loading-bar.min.css',
             'vendor/angular-material/angular-material.min.css',
-            'vendor/angular-material/themes/blue-theme.css'
+            'vendor/angular-material/themes/blue-theme.css',
+            'vendor/angular-material/themes/green-theme.css',
+            'vendor/angular-material/themes/orange-theme.css'
         ],
         assets: [],
         fonts: [

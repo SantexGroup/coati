@@ -1,6 +1,6 @@
 {
   "name": "CoatiAgileBoard",
-  "version": "0.3.2-BETA",
+  "version": "0.4.2",
   "directory": "vendor",
   "ignore": [
     "src",
@@ -30,7 +30,8 @@
     "angular-xeditable": "",
     "chartjs": "1.0.1",
     "angular-translate": "",
-    "angular-translate-loader-static-files": ""
+    "angular-translate-loader-static-files": "",
+    "angular-loading-bar": "0.6.0"
   },
   "devDependencies": {
     "angular-mocks": ""

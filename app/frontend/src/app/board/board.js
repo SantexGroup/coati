@@ -17,19 +17,33 @@
         });
     };
 
-    var ProjectCtrlBoard = function (rootScope, state, location, modal, SprintService, ProjectService, TicketService, SocketIO) {
+    var ProjectCtrlBoard = function (rootScope, scope, state, location, modal, SprintService, ProjectService, TicketService, SocketIO) {
         var vm = this;
+        vm.enabled = false;
+        vm.project_pk = scope.$parent.project._id.$oid;
+        vm.project = scope.$parent.project;
 
-        vm.project_pk = state.params.project_pk;
+        // set the active tab
+        scope.$parent.vm[state.current.tab_active] = true;
+
+        vm.is_scrumm = function(){
+          return vm.project.project_type === "S";
+        };
 
         var getSprintTickets = function (sprint_id) {
-            SprintService.get_tickets(sprint_id).then(function (tickets) {
+            SprintService.get_tickets(vm.project._id.$oid, sprint_id).then(function (tickets) {
                 vm.tickets = tickets;
             });
         };
 
+        var getProjectTickets = function (project_pk) {
+            TicketService.board(project_pk).then(function (tkts) {
+                vm.tickets = tkts;
+            });
+        };
+
         var getMembers = function () {
-            ProjectService.get_members(vm.project_pk).then(function (usrs) {
+            ProjectService.get_members(vm.project._id.$oid).then(function (usrs) {
                 vm.users = usrs;
             });
         };
@@ -41,13 +55,15 @@
             });
         };
 
-        var getProjectData = function (project_pk) {
-            ProjectService.get(project_pk).then(function (prj) {
-                vm.project = prj;
-                if (state.params.ticket) {
-                    showTicketDetails(state.params.ticket);
+        var reloadData = function(){
+            getColumnConfiguration(vm.project._id.$oid);
+            if (vm.is_scrumm()) {
+                if (vm.sprint.started) {
+                    getSprintTickets(vm.project._id.$oid);
                 }
-            });
+            } else {
+                getProjectTickets(vm.project._id.$oid);
+            }
         };
 
         var showTicketDetails = function (id) {
@@ -64,12 +80,9 @@
                 }
             });
             vm.modal_ticket_instance.result.then(function () {
-                getColumnConfiguration(vm.project_pk);
-                getSprintTickets(vm.sprint._id.$oid);
-
+                reloadData();
             }, function () {
-                getColumnConfiguration(vm.project_pk);
-                getSprintTickets(vm.sprint._id.$oid);
+               reloadData();
             });
 
         };
@@ -106,16 +119,16 @@
                     ticket = ui.item.sortable.model;
                     /* this happens with the order in the same sortable */
                     if (this.sender == null) {
-                        if(target.col) {
+                        if (target.col) {
                             angular.forEach(ui.item.sortable.sourceModel, function (v, k) {
                                 new_order.push(v._id.$oid);
                             });
                             //update order
                             data = {
                                 order: new_order,
-                                sprint: vm.sprint._id.$oid
+                                sprint: vm.sprint ? vm.sprint._id.$oid : null
                             };
-                            TicketService.order_ticket_column(target.col._id.$oid, data);
+                            TicketService.order_ticket_column(vm.project._id.$oid, target.col._id.$oid, data);
                         }
 
                     } else {
@@ -125,15 +138,15 @@
                         var data = {
                             ticket: ticket._id.$oid,
                             order: new_order,
-                            sprint: vm.sprint._id.$oid
+                            sprint: vm.sprint ? vm.sprint._id.$oid : null
                         };
-                        if(target) {
+                        if (target) {
                             if (target.col) {
                                 data.column = target.col._id.$oid;
                             } else {
                                 data.backlog = target.vm.sprint._id.$oid;
                             }
-                            TicketService.transition(data);
+                            TicketService.transition(vm.project._id.$oid, data);
                         }
 
                     }
@@ -141,54 +154,42 @@
             }
         };
 
-
-        SprintService.get_started(vm.project_pk).then(function (sprint) {
-            vm.sprint = sprint;
-            if (vm.sprint.started) {
-                getColumnConfiguration(vm.project_pk);
-                getProjectData(vm.project_pk);
-                getSprintTickets(vm.sprint._id.$oid);
-                getMembers();
-            }
-        });
-
+        if (vm.is_scrumm()) {
+            SprintService.get_started(vm.project._id.$oid).then(function (sprint) {
+                vm.sprint = sprint;
+                if (vm.sprint.started) {
+                    vm.enabled = vm.sprint.started;
+                    reloadData();
+                    getMembers();
+                }
+            });
+        } else {
+            vm.enabled = true;
+            reloadData();
+            getMembers();
+        }
 
         //Socket IO listeners
-        SocketIO.on('ticket_transition', function(){
-            if (vm.sprint.started) {
-                getSprintTickets(vm.sprint._id.$oid);
-                getColumnConfiguration(vm.project_pk);
-            }
+        SocketIO.on('ticket_transition', function () {
+            reloadData();
         });
-        SocketIO.on('new_column', function(){
-            if (vm.sprint.started) {
-                getSprintTickets(vm.sprint._id.$oid);
-                getColumnConfiguration(vm.project_pk);
-            }
+        SocketIO.on('new_column', function () {
+            reloadData();
         });
-        SocketIO.on('delete_column', function(){
-            if (vm.sprint.started) {
-                getSprintTickets(vm.sprint._id.$oid);
-                getColumnConfiguration(vm.project_pk);
-            }
+        SocketIO.on('delete_column', function () {
+            reloadData();
         });
-        SocketIO.on('order_columns', function(){
-            if (vm.sprint.started) {
-                getSprintTickets(vm.sprint._id.$oid);
-                getColumnConfiguration(vm.project_pk);
-            }
+        SocketIO.on('order_columns', function () {
+            reloadData();
         });
         SocketIO.on('update_ticket', function () {
-            if (vm.sprint.started) {
-                getSprintTickets(vm.sprint._id.$oid);
-                getColumnConfiguration(vm.project_pk);
-            }
+            reloadData();
         });
 
     };
 
     Config.$inject = ['$stateProvider', '$translateProvider'];
-    ProjectCtrlBoard.$inject = ['$rootScope', '$state', '$location', '$modal', 'SprintService', 'ProjectService', 'TicketService', 'SocketIO'];
+    ProjectCtrlBoard.$inject = ['$rootScope', '$scope', '$state', '$location', '$modal', 'SprintService', 'ProjectService', 'TicketService', 'SocketIO'];
 
     angular.module('Coati.Board', ['ui.router',
         'pascalprecht.translate',

@@ -200,30 +200,32 @@
 
         // get the project from the parent controller.
         vm.project = scope.$parent.project;
+        // set the active tab
+        scope.$parent.vm[state.current.tab_active] = true;
         getColumnConfiguration(vm.project._id.$oid);
         getMembers(vm.project._id.$oid);
 
     };
 
-    var ColumnFormController = function (modalInstance, ProjectService, project, column) {
+    var ColumnFormController = function (log, modalInstance, ProjectService, project, column) {
         var vm = this;
         vm.column = column || {};
         vm.form = {};
         vm.save = function () {
             if (vm.form.column_form.$valid) {
                 if (column) {
-                    ProjectService.update_column(column.pk, vm.column).then(function () {
+                    ProjectService.update_column(project, column.pk, vm.column).then(function () {
                         modalInstance.close('ok');
                     }, function (err) {
                         modalInstance.dismiss('error');
-                        console.log(err);
+                        log.error(err);
                     });
                 } else {
                     ProjectService.add_column(project, vm.column).then(function () {
                         modalInstance.close('ok');
                     }, function (err) {
                         modalInstance.dismiss('error');
-                        console.log(err);
+                        log.error(err);
                     });
                 }
             } else {
@@ -240,7 +242,7 @@
         var vm = this;
         vm.column = column;
         vm.erase = function () {
-            ProjectService.delete_column(vm.column.pk).then(function () {
+            ProjectService.delete_column(vm.column.project.$oid, vm.column.pk).then(function () {
                 modalInstance.close('delete');
             });
         };
@@ -288,7 +290,7 @@
 
     Config.$inject = ['$stateProvider', 'tagsInputConfigProvider', '$translateProvider'];
     ProjectCtrlSettings.$inject = ['$rootScope', '$timeout', '$filter', '$scope', '$state', '$modal', 'growl', 'ProjectService', 'SocketIO'];
-    ColumnFormController.$inject = ['$modalInstance', 'ProjectService', 'project', 'column'];
+    ColumnFormController.$inject = ['$log', '$modalInstance', 'ProjectService', 'project', 'column'];
     ColumnDeleteController.$inject = ['$modalInstance', 'ProjectService', 'column'];
     MembersController.$inject = ['$modalInstance', 'UserService', 'ProjectService', 'project'];
     RemoveMemberController.$inject = ['$modalInstance', 'ProjectService', 'item'];

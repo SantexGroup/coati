@@ -84,7 +84,8 @@ module.exports = {
             'vendor/angular-xeditable/dist/js/xeditable.min.js',
             'vendor/angular-translate/angular-translate.min.js',
             'vendor/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js',
-            'vendor/chartjs/Chart.min.js'
+            'vendor/chartjs/Chart.min.js',
+            'vendor/angular-loading-bar/build/loading-bar.min.js'
         ],
         maps: [
             'vendor/angular/angular.min.js.map',
@@ -94,7 +95,8 @@ module.exports = {
             'vendor/angular/angular-csp.css',
             'vendor/angular-notifications/notification.min.css',
             'vendor/ng-tags-input/ng-tags-input.min.css',
-            'vendor/angular-xeditable/dist/css/xeditable.css'
+            'vendor/angular-xeditable/dist/css/xeditable.css',
+            'vendor/angular-loading-bar/build/loading-bar.min.css'
         ],
         assets: [],
         fonts: [

@@ -32,7 +32,7 @@
                                 replace-spaces-with-dashes="false"
                                 placeholder="Add Label"></tags-input>
                 </div>
-                <div class="form-group">
+                <div class="form-group" ng-if="vm.project.project_type == 'S'">
                     <label><[ 'POINTS' | translate]></label>
                     <input class="form-control"
                            autocomplete="off"
@@ -47,7 +47,7 @@
                             ng-options="t.value as t.name for t in vm.types">
                     </select>
                 </div>
-                <div class="form-group">
+                <div class="form-group" ng-if="vm.project.project_type == 'S'">
                     <label><[ 'SPRINT' | translate ]></label>
                     <select class="form-control"
                             data-ng-model="vm.ticket.sprint"

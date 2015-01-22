@@ -31,19 +31,35 @@
                     <input class="form-control"
                            data-ng-class="{'error': vm.form.project_form.prefix.$invalid && vm.submitted}"
                            autocomplete="off"
-                           placeholder="Prefix" data-ng-model="vm.project.prefix"
+                           placeholder="Prefix"
+                           data-ng-model="vm.project.prefix"
                            name="prefix" type="text">
                 </div>
                 <div class="form-group">
+                    <label><[ 'PROJECT TYPE' | translate ]></label>
+                    <select ng-model="vm.project.project_type"
+                            required
+                            name="project_type"
+                            data-ng-class="{'error': vm.form.project_form.project_type.$invalid && vm.submitted}"
+                            class="form-control"
+                            ng-init="vm.project.project_type='S'">
+                        <option value="S"><[ 'SCRUM' | translate ]></option>
+                        <option value="K"><[ 'KANBAN' | translate ]></option>
+                    </select>
+                    <small><[ 'SCRUM DESCRIPTION' | translate ]></small>
+                    <small><[ 'KANBAN DESCRIPTION' | translate ]</small>
+                </div>
+                <div class="form-group">
                     <label><[ 'PROJECT ACTIVE' | translate ]></label>
-                    <input type="checkbox" ng-init="vm.project.active=true" name="active" ng-model="vm.project.active">
+                    <input type="checkbox" ng-checked="true"
+                           name="active" ng-model="vm.project.active">
                 </div>
 
                 <button class="btn btn-primary"
                         type="submit"><[ 'SAVE' | translate ]>
                 </button>
                 <button class="btn btn-warning" type="button"
-                        data-ng-click="vm.cancel();"><[ 'CANCEL' | translate]>
+                        data-ng-click="vm.cancel();"><[ 'CANCEL' | translate ]>
                 </button>
 
             </form>

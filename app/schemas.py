@@ -13,9 +13,11 @@ TICKET_TYPE = (('U', 'User Story'),
                ('E', 'Epic'),
                ('T', 'Task'))
 
+PROJECT_TYPE = (('S', 'Scrum'),
+                ('K', 'Kanban'))
+
 
 class CustomDocument(mongoengine.Document):
-
     excluded_fields = []
 
     meta = {
@@ -28,6 +30,7 @@ class CustomDocument(mongoengine.Document):
             if data.has_key(f):
                 del data[f]
         return data
+
 
 class CustomQuerySet(mongoengine.QuerySet):
     def to_json(self, *args, **kwargs):
@@ -53,14 +56,16 @@ class User(CustomDocument):
 
     @classmethod
     def pre_delete(cls, sender, document, **kwargs):
-        # delete tokens
-        Token.objects(user=document).delete()
         # delete projects
         Project.objects(owner=document).delete()
         # delete from project members
         ProjectMember.objects(member=document).delete()
         # delete comment
         Comment.objects(who=document).delete()
+
+    def to_json(self, *args, **kwargs):
+        data = self.to_dict()
+        return json_util.dumps(data)
 
 
 class Project(CustomDocument):
@@ -71,8 +76,9 @@ class Project(CustomDocument):
                                        reverse_delete_rule=mongoengine.CASCADE)
     prefix = mongoengine.StringField()
     sprint_duration = mongoengine.IntField()
-    # true = Scrum, false = Kanban
-    project_type = mongoengine.BooleanField(default=True)
+    project_type = mongoengine.StringField(max_length=1,
+                                           choices=PROJECT_TYPE,
+                                           default='S')
 
     meta = {
         'indexes': ['name'],
@@ -93,6 +99,10 @@ class Project(CustomDocument):
 
     def to_json(self):
         data = self.to_dict()
+        if isinstance(self.project_type, bool) and self.project_type:
+            data["project_type"] = 'S'
+        elif isinstance(self.project_type, bool) and not self.project_type:
+            data["project_type"] = 'K'
         data["owner"] = self.owner.to_dict()
         data["owner"]["id"] = str(self.owner.pk)
         data['members'] = ProjectMember.get_members_for_project(self)
@@ -106,15 +116,33 @@ class Project(CustomDocument):
     def get_tickets(self):
         tickets = []
         sprints = Sprint.objects(project=self)
-        for s in sprints:
-            for spo in SprintTicketOrder.objects(sprint=s, active=True):
-                tickets.append(str(spo.ticket.pk))
+        if self.project_type == u'S':
+            for s in sprints:
+                for spo in SprintTicketOrder.objects(sprint=s, active=True):
+                    tickets.append(str(spo.ticket.pk))
 
         result = Ticket.objects(Q(project=self) &
                                 Q(id__nin=tickets) &
                                 (Q(closed=False) | Q(closed__exists=False))
         ).order_by('order')
 
+        return result
+
+    def get_tickets_board(self):
+        tickets = []
+        col_ids = []
+        column_list = Column.objects(project=self)
+        for c in column_list:
+            col_ids.append(str(c.pk))
+        tct_list = TicketColumnTransition.objects(column__in=col_ids,
+                                                  latest_state=True)
+        for t in tct_list:
+            tickets.append(str(t.ticket.pk))
+
+        result = Ticket.objects(Q(project=self) &
+                                Q(id__nin=tickets) &
+                                (Q(closed=False) | Q(
+                                    closed__exists=False))).order_by('order')
         return result
 
 
@@ -144,14 +172,14 @@ class Sprint(CustomDocument):
     def to_json(self, *args, **kwargs):
         data = self.to_dict()
         if kwargs.get('archived'):
-            tickets = SprintTicketOrder.objects(sprint=self.pk).order_by(
-                'order')
+            tickets = SprintTicketOrder.objects(sprint=self.pk,
+                                                active=False).order_by('order')
         else:
             tickets = SprintTicketOrder.objects(sprint=self.pk,
                                                 active=True).order_by('order')
         ticket_list = []
         for t in tickets:
-            tkt = t.ticket.to_dict()
+            tkt = t.ticket_repr
             tkt['order'] = t.order
             tkt['badges'] = {
                 'comments': Comment.objects(ticket=t.ticket).count(),
@@ -174,16 +202,16 @@ class Sprint(CustomDocument):
             for ass in t.ticket.assigned_to:
                 if ass.__class__.__name__ != 'DBRef':
                     assignments.append(ass.to_dict())
-
+            tkt = t.ticket_repr
             value = {
-                'points': t.ticket.points,
+                'points': tkt.get('points'),
                 'title': '%s-%s: %s' % (t.ticket.project.prefix,
-                                        t.ticket.number,
-                                        t.ticket.title),
+                                        tkt.get('number'),
+                                        tkt.get('title')),
                 '_id': t.ticket.id,
-                'type': t.ticket.type,
+                'type': tkt.get('type'),
                 'added_after': t.when > self.start_date,
-                'number': t.ticket.number
+                'number': tkt.get('number')
             }
             try:
                 tt = TicketColumnTransition.objects.get(ticket=t.ticket,
@@ -218,7 +246,7 @@ class Sprint(CustomDocument):
         ticket_list = []
         for t in tickets:
             if t.ticket.__class__.__name__ != 'DBRef':
-                tkt = t.ticket.to_dict()
+                tkt = t.ticket_repr
                 tkt['order'] = t.order
                 tkt['badges'] = {
                     'comments': Comment.objects(ticket=t.ticket).count(),
@@ -366,6 +394,7 @@ class Ticket(CustomDocument):
 class SprintTicketOrder(CustomDocument):
     ticket = mongoengine.ReferenceField('Ticket',
                                         reverse_delete_rule=mongoengine.CASCADE)
+    ticket_repr = mongoengine.DictField()
     order = mongoengine.IntField()
     sprint = mongoengine.ReferenceField('Sprint',
                                         reverse_delete_rule=mongoengine.CASCADE)

@@ -1,12 +1,13 @@
-import json, urllib2, base64
+import json
+import urllib2
+import base64
+
 from flask import jsonify
 from flask.ext.restful import request
 from mongoengine import DoesNotExist
 
 from app.schemas import User, Project, Column, ProjectMember, Ticket, \
-    Attachment, \
-    UserActivity
-from app.redis import RedisClient
+    Attachment
 from app.api.resources.auth_resource import AuthResource
 from app.utils import send_new_member_email_async, save_notification
 
@@ -39,9 +40,10 @@ class ProjectList(AuthResource):
         prj.private = data.get('private')
         prj.prefix = data.get('prefix', data.get('name')[:3].upper())
         prj.description = data.get('description')
+        prj.project_type = data.get('project_type', 'S')
 
         # Add initial config
-        prj.sprint_duration = 10
+        prj.sprint_duration = 15
         prj.save()
 
         # add owner as member
@@ -90,7 +92,7 @@ class ProjectInstance(AuthResource):
         project.private = data.get('private')
         project.sprint_duration = data.get('sprint_duration')
         project.prefix = data.get('prefix')
-        # project.project_type = bool(data.get('project_type'))
+        project.project_type = data.get('project_type', 'S')
         project.save()
 
         # save activity
@@ -150,10 +152,10 @@ class ProjectColumn(AuthResource):
     def __init__(self):
         super(ProjectColumn, self).__init__()
 
-    def get(self, column_pk, *args, **kwargs):
+    def get(self, project_pk, column_pk, *args, **kwargs):
         return Column.objects.get(pk=column_pk).to_json()
 
-    def put(self, column_pk, *args, **kwargs):
+    def put(self, project_pk, column_pk, *args, **kwargs):
         col = Column.objects.get(pk=column_pk)
         data = request.get_json(force=True, silent=True)
         if col and data:
@@ -179,7 +181,7 @@ class ProjectColumn(AuthResource):
             return col.to_json(), 200
         return jsonify({"error": 'Bad Request'}), 400
 
-    def delete(self, column_pk, *args, **kwargs):
+    def delete(self, project_pk, column_pk, *args, **kwargs):
         col = Column.objects.get(pk=column_pk)
         if col:
             # save activity
@@ -214,41 +216,45 @@ class ProjectColumnsOrder(AuthResource):
         return jsonify({"error": 'Bad Request'}), 400
 
 
-class ProjectMembers(AuthResource):
+class ProjectMemberInstance(AuthResource):
     def __init__(self):
-        super(ProjectMembers, self).__init__()
+        super(ProjectMemberInstance, self).__init__()
 
-    def get(self, project_pk, *args, **kwargs):
-        return ProjectMember.objects(project=project_pk).to_json()
+    def get(self, project_pk, member_pk, *args, **kwargs):
+        return ProjectMember.objects.get(pk=member_pk).to_json()
 
-    def put(self, project_pk, *args, **kwargs):
+    def put(self, project_pk, member_pk, *args, **kwargs):
+        try:
+            pm = ProjectMember.objects.get(pk=member_pk)
+            project = Project.objects.get(pk=project_pk)
+            pm.is_owner = True
+            project.owner = pm.member
+            ProjectMember.objects(project=project_pk).update(
+                set__is_owner=False)
+            pm.save()
+            return jsonify({'success': True}), 200
+        except DoesNotExist:
+            return jsonify({'error': 'Not Found'}), 404
+
+    def delete(self, project_pk, member_pk, *args, **kwargs):
         data = request.get_json(force=True, silent=True)
         if data:
             try:
-                pm = ProjectMember.objects.get(pk=data.get('member'))
-                project = Project.objects.get(pk=project_pk)
-                pm.is_owner = True
-                project.owner = pm.member
-                ProjectMember.objects(project=project_pk).update(
-                    set__is_owner=False)
-                pm.save()
-                return jsonify({'success': True}), 200
-            except DoesNotExist:
-                return jsonify({'error': 'Not Found'}), 404
-
-        return jsonify({'error': 'Bad Request'}), 400
-
-    def delete(self, project_pk, *args, **kwargs):
-        data = request.get_json(force=True, silent=True)
-        if data:
-            try:
-                pm = ProjectMember.objects.get(pk=data.get('member'))
+                pm = ProjectMember.objects.get(pk=member_pk)
                 pm.delete()
                 return jsonify({'success': True}), 200
             except DoesNotExist:
                 return jsonify({'error': 'Not Found'}), 404
 
         return jsonify({'error': 'Bad Request'}), 400
+
+
+class ProjectMembers(AuthResource):
+    def __init__(self):
+        super(ProjectMembers, self).__init__()
+
+    def get(self, project_pk, *args, **kwargs):
+        return ProjectMember.objects(project=project_pk).to_json()
 
     def post(self, project_pk, *args, **kwargs):
         data = request.get_json(force=True, silent=True)

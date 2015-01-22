@@ -19,11 +19,13 @@
         });
     };
 
-    var ArchivedSprintController = function (rootScope, scope, modal, SprintService, SocketIO) {
+    var ArchivedSprintController = function (rootScope, scope, state, modal, SprintService, SocketIO) {
 
         var vm = this;
 
         vm.project = scope.$parent.project;
+        // set the active tab
+        scope.$parent.vm[state.current.tab_active] = true;
 
         var getSprintsWithTickets = function (project_id) {
             SprintService.archived(project_id).then(function (sprints) {
@@ -61,7 +63,7 @@
 
     };
 
-    var StartSprintController = function (scope, conf, filter, modalInstance, SprintService, sprint) {
+    var StartSprintController = function (log, scope, conf, filter, modalInstance, SprintService, sprint, project) {
         var vm = this;
         vm.sprint = sprint;
         vm.form = {};
@@ -124,11 +126,11 @@
                 }else{
                     vm.sprint.for_editing = true;
                 }
-                SprintService.update(vm.sprint).then(function (sp) {
+                SprintService.update(project,  vm.sprint).then(function (sp) {
                     modalInstance.close();
                 }, function (err) {
                     modalInstance.dismiss('error');
-                    console.log(err);
+                    log.error(err);
                 });
             } else {
                 vm.submitted = true;
@@ -140,14 +142,14 @@
         };
     };
 
-    var StopSprintController = function (modalInstance, SprintService, sprint) {
+    var StopSprintController = function (modalInstance, SprintService, sprint, project) {
         var vm = this;
 
         vm.sprint = sprint;
 
         vm.stopSprint = function () {
             vm.sprint.for_finalized = true;
-            SprintService.update(vm.sprint).then(function (sp) {
+            SprintService.update(project, vm.sprint).then(function (sp) {
                 modalInstance.close();
             }, function (err) {
                 modalInstance.dismiss('error');
@@ -160,9 +162,9 @@
     };
 
     Config.$inject = ['$stateProvider', '$translateProvider'];
-    ArchivedSprintController.$inject = ['$rootScope', '$scope', '$modal', 'SprintService', 'SocketIO'];
-    StartSprintController.$inject = ['$scope', 'Conf', '$filter', '$modalInstance', 'SprintService', 'sprint'];
-    StopSprintController.$inject = ['$modalInstance', 'SprintService', 'sprint'];
+    ArchivedSprintController.$inject = ['$rootScope', '$scope', '$state', '$modal', 'SprintService', 'SocketIO'];
+    StartSprintController.$inject = ['$log', '$scope', 'Conf', '$filter', '$modalInstance', 'SprintService', 'sprint', 'project'];
+    StopSprintController.$inject = ['$modalInstance', 'SprintService', 'sprint', 'project'];
 
     angular.module('Coati.Sprint', ['ui.router', 'pascalprecht.translate',
         'Coati.Config',

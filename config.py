@@ -7,7 +7,7 @@ ENVIRONMENT = "local"
 # https://code.google.com/apis/console
 if ENVIRONMENT == 'local':
     CURRENT_DOMAIN = 'http://localhost:5000'
-    SOCKET_IO = 'http://localhost:9000'
+    SOCKET_IO = 'http://localhost:8001'
     PROVIDERS = {
         'google': {
             'base_url': 'https://www.google.com/accounts/',

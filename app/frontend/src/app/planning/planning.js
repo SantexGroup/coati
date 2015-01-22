@@ -13,7 +13,8 @@
             tab_active: 'planning',
             data: {
                 pageTitle: 'Project Planning'
-            }
+            },
+            reload: true
         });
     };
 
@@ -71,14 +72,6 @@
             });
         };
 
-        vm.showQuickDetail = function (tkt) {
-            vm.loaded = false;
-            vm.ticket_clicked = true;
-            TicketService.get(tkt._id.$oid).then(function (tkt_item) {
-                vm.ticket_detail = tkt_item;
-                vm.loaded = true;
-            });
-        };
 
         vm.showDetails = function (e, tkt) {
             if (tkt) {
@@ -130,6 +123,9 @@
                 resolve: {
                     item: function () {
                         return ticket;
+                    },
+                    project: function(){
+                        return vm.project._id.$oid;
                     }
                 }
             });
@@ -150,6 +146,9 @@
                         sprint.sprint_duration = vm.project.sprint_duration;
                         sprint.to_start = true;
                         return angular.copy(sprint);
+                    },
+                    project: function(){
+                        return vm.project._id.$oid;
                     }
                 }
             });
@@ -169,6 +168,9 @@
                         sprint.sprint_duration = vm.project.sprint_duration;
                         sprint.to_start = false;
                         return angular.copy(sprint);
+                    },
+                    project: function(){
+                        return vm.project._id.$oid;
                     }
                 }
             });
@@ -185,6 +187,9 @@
                 resolve: {
                     sprint: function () {
                         return angular.copy(sprint);
+                    },
+                    project: function(){
+                        return vm.project._id.$oid;
                     }
                 }
             });
@@ -240,7 +245,7 @@
                             angular.forEach(target.sprint.tickets, function (v, k) {
                                 new_order.push(v._id.$oid);
                             });
-                            TicketService.update_sprint_order(target.sprint._id.$oid, new_order);
+                            TicketService.update_sprint_order(vm.project._id.$oid, target.sprint._id.$oid, new_order);
                         } else {
                             angular.forEach(target.vm.tickets, function (v, k) {
                                 new_order.push(v._id.$oid);
@@ -296,7 +301,7 @@
                             source: source,
                             dest: dest
                         };
-                        TicketService.movement(data);
+                        TicketService.movement(vm.project._id.$oid, data);
                     }
                 }
             }
@@ -310,7 +315,7 @@
         };
 
         vm.remove_sprint = function (sprint_id) {
-            SprintService.erase(sprint_id).then(function () {
+            SprintService.erase(vm.project._id.$oid, sprint_id).then(function () {
                 getSprintsWithTickets(vm.project._id.$oid);
                 getTicketsForProject(vm.project._id.$oid, false);
                 growl.addSuccessMessage('The sprint was deleted successfully');
@@ -319,6 +324,15 @@
 
         // get the project from the parent controller.
         vm.project = scope.$parent.project;
+
+
+        // set the active tab
+        scope.$parent.vm[state.current.tab_active] = true;
+
+        vm.is_scrumm = function(){
+          return vm.project.project_type === "S";
+        };
+
         getTicketsForProject(vm.project._id.$oid);
         getSprintsWithTickets(vm.project._id.$oid);
 

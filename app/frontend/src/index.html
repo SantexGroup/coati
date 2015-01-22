@@ -15,7 +15,7 @@
 </head>
 
 <body ui-view="master_view" ng-cloak
-      data-ng-class="{true:'body-404', false:''}[actual_path == 'not_found']">
+      data-ng-class="{true:'body-500', false:''}[actual_path == 'error_403']">
 <section id="container">
     <!--header start-->
     <header class="header white-bg">
@@ -87,7 +87,7 @@
                     </ul>
                 </li>
                 <!-- user login dropdown start-->
-                <li dropdown update-profile>
+                <li dropdown>
                     <a class="dropdown-toggle user_picture" dropdown-toggle
                        href="javascript:;">
                         <img ng-if="!vm.user.picture" alt=""

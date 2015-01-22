@@ -24,11 +24,11 @@
                         <a ui-sref="project.board({project_pk: project._id.$oid})"
                            ui-sref-opts="{reload: true}"><[ 'BOARD' | translate ]></a>
                     </li>
-                    <li ui-sref-active="active">
+                    <li ui-sref-active="active" ng-if="vm.is_scrumm()">
                         <a ui-sref="project.reports({project_pk: project._id.$oid})"
                            ui-sref-opts="{reload: true}"><[ 'REPORTS' | translate ]></a>
                     </li>
-                    <li ui-sref-active="active">
+                    <li ui-sref-active="active" ng-if="vm.is_scrumm()">
                         <a ui-sref="project.archived({project_pk: project._id.$oid})"
                            ui-sref-opts="{reload: true}"><[ 'ARCHIVED SPRINTS' | translate ]></a>
                     </li>

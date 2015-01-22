@@ -15,7 +15,7 @@
             <[ 'SPRINT NOT STARTED' | translate ]>
         </p>
 
-        <div class="col-md-6">
+        <div class="col-md-6" style="position: relative">
             <chart value="vm.chartData" type="line" width="600" height="400"
                    chart-obj="chartObj"></chart>
         </div>
@@ -39,7 +39,7 @@
                                 class="ticket-item <[ tkt.type ]>">
                                 <div class="task-title">
                                         <span class="task-title-sp">
-                                          <[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
+                                         <[ tkt.title ]>
                                         </span>
 
                                     <div class="pull-right hidden-phone">
@@ -69,7 +69,7 @@
                                 class="ticket-item <[ tkt.type ]>">
                                 <div class="task-title">
                                         <span class="task-title-sp">
-                                          <[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
+                                          <[ tkt.title ]>
                                         </span>
 
                                     <div class="pull-right hidden-phone">
@@ -100,7 +100,7 @@
                                 class="ticket-item <[ tkt.type ]>">
                                 <div class="task-title">
                                         <span class="task-title-sp">
-                                          <[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
+                                         <[ tkt.title ]>
                                         </span>
 
                                     <div class="pull-right hidden-phone">

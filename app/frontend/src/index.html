@@ -55,7 +55,8 @@
             </ul>
             <ul class="nav pull-center top-menu">
                 <li>
-                    <button ng-click="main.changeLanguage('EN')">ENG</button><button ng-click="main.changeLanguage('ES')">ES</button>
+                    <img ng-click="main.changeLanguage('EN')" src="{{ url_for('static', filename='assets/img/flags/us.png')}}"/>
+                    <img ng-click="main.changeLanguage('ES')" src="{{ url_for('static', filename='assets/img/flags/es.png')}}"/>
                 </li>
             </ul>
             <ul class="nav pull-right top-menu user-options"

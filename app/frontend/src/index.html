@@ -3,7 +3,8 @@
 <head>
     <base href="/">
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="initial-scale=1, maximum-scale=1, user-scalable=no">
     <title data-ng-bind="pageTitle">Coati Agile Board</title>
     <link rel="shortcut icon"
           href="{{ url_for('static', filename='assets/koala.ico')}}?v2"/>
@@ -16,30 +17,33 @@
 
 <body ui-view="master_view" ng-cloak
       data-ng-class="{true:'body-500', false:''}[actual_path == 'error_403']">
-<!--header start-->
-<md-toolbar class="header-toolbar" layout="row" layout-align="top center">
-    <md-button data-ng-click="main.opened_sidebar=!main.opened_sidebar">
-        <md-icon icon="/static/assets/img/icons/image/ic_dehaze_24px.svg"
-                 style="width:24px; height:24px;"></md-icon>
-    </md-button>
-    <h1 flow-order="2">COATI AGILE BOARD</h1>
-    <small flow-order="3"><%= version %></small>
-</md-toolbar>
-<!--header end-->
-<!--main content start-->
-<md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left"
-            md-is-locked-open="main.opened_sidebar">
-    <md-toolbar class="md-theme-indigo">
-        <h1 class="md-toolbar-tools">Options</h1>
+<section id="container" layout="column" layout-fill>
+    <!--header start-->
+    <md-toolbar class="header-toolbar" layout="row" layout-align="top center">
+        <md-button data-ng-click="main.opened_sidebar=!main.opened_sidebar">
+            <md-icon icon="/static/assets/img/icons/image/ic_dehaze_24px.svg"
+                     style="width:24px; height:24px;"></md-icon>
+        </md-button>
+        <h1 flow-order="2">COATI AGILE BOARD</h1>
+        <small flow-order="3"><%= version %></small>
     </md-toolbar>
-    <md-content class="md-padding">
-       Something
+    <!--header end-->
+    <!--main content start-->
+    <md-content flex
+                class="md-padding"
+                ui-view="main">
     </md-content>
-</md-sidenav>
-<md-content layout="column" layout-align="center center" class="main-content"
-            ui-view="main">
-</md-content>
-<!--main content end-->
+    <!--main content end-->
+    <md-sidenav md-theme="alternative" class="md-whiteframe-z2" md-component-id="left"
+                md-is-locked-open="main.opened_sidebar">
+        <md-toolbar class="md-theme-indigo">
+            <h1 class="md-toolbar-tools">Options</h1>
+        </md-toolbar>
+        <md-content class="md-padding">
+            Something
+        </md-content>
+    </md-sidenav>
+</section>
 <% scripts.forEach( function ( file ) { %>
 <script type="text/javascript"
         src="{{ url_for('static', filename='<%= file %>')}}"></script>

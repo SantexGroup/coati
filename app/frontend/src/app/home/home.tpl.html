@@ -1,18 +1,18 @@
-<div class="projects" flex="66">
+<div class="projects" flex>
     <h3>
         <span>Project List</span>
     </h3>
     <md-content>
         <p data-ng-show="vm.projects.length < 1">You don't have Projects created
             yet!</p>
-        <md-list>
+        <md-list md-theme="alternative">
             <md-item
                     data-ng-repeat="item in vm.projects track by item._id.$oid">
                 <md-item-content
                         ui-sref="project.planning({project_pk: item._id.$oid })">
                     <div class="md-tile-left">
-                        <md-button class="md-fab md-primary"
-                                   data-ng-class="{'md-green-theme': item.project_type =='S', 'md-orange-theme': item.project_type =='K'}">
+                        <md-button class="md-fab"
+                                   data-ng-class="{'md-primary': item.project_type =='S', 'md-accent': item.project_type =='K'}">
                             <[ item.project_type ]>
                         </md-button>
 

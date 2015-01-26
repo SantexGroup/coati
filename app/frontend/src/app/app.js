@@ -11,7 +11,12 @@
         interpolate.endSymbol(']>');
         growlProvider.globalTimeToLive(5000);
         growlProvider.onlyUniqueMessages(true);
-        themeProvider.setDefaultTheme('blue');
+        themeProvider.theme('default')
+            .primaryColor('blue')
+            .accentColor('green');
+        themeProvider.theme('alternative')
+            .primaryColor('orange')
+            .accentColor('pink');
     }
 
 

@@ -77,9 +77,12 @@
         };
     };
 
-    var AppController = function (scope, rootScope, state, stateParams, modal, tokens, TicketService, SocketIO) {
+    var AppController = function (scope, rootScope, state, stateParams, modal, tokens, TicketService, mdSidenav, SocketIO) {
         var vm = this;
-        vm.opened_sidebar = false;
+
+        vm.show_side = function(){
+            mdSidenav('menu-general').toggle();
+        };
         
         rootScope.$on('$stateChangeStart', function (event, toState) {
 
@@ -152,7 +155,7 @@
     filterTrustedHTML.$inject = ['$sce'];
     RunApp.$inject = ['$rootScope', '$state', '$stateParams', '$objects', 'editableOptions', 'editableThemes'];
     ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider', '$mdThemingProvider'];
-    AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', '$modal', 'tokens', 'TicketService', 'SocketIO'];
+    AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', '$modal', 'tokens', 'TicketService', '$mdSidenav', 'SocketIO'];
 
     angular.module('Coati', [
         'templates-app', 'templates-common', 'angular-loading-bar', 'ngMaterial',

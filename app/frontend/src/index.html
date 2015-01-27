@@ -20,12 +20,22 @@
 <section id="container" layout="column" layout-fill>
     <!--header start-->
     <md-toolbar class="header-toolbar" layout="row" layout-align="top center">
-        <md-button data-ng-click="main.opened_sidebar=!main.opened_sidebar">
+        <md-button flex="5" data-ng-click="main.show_side();">
             <md-icon icon="/static/assets/img/icons/image/ic_dehaze_24px.svg"
                      style="width:24px; height:24px;"></md-icon>
         </md-button>
-        <h1 flow-order="2">COATI AGILE BOARD</h1>
-        <small flow-order="3"><%= version %></small>
+        <h1 flex="15" flow-order="2">COATI AGILE BOARD</h1>
+        <small flex="5" flow-order="3"><%= version %></small>
+        <div flex="75" layout="row" layout-align="end center">
+            <md-button md-theme="alternative"
+                       class="md-fab md-primary user-logged"
+                       aria-label="<[ vm.user.first_name ]> <[ vm.user.last_name ]>"
+                       ng-controller="UserCtrl as vm">
+                <img ng-if="!vm.user.picture"
+                     src="{{ url_for('static', filename='assets/img/koala.png')}}">
+                <img ng-if="vm.user.picture" ng-src="<[ vm.user.picture ]>">
+            </md-button>
+        </div>
     </md-toolbar>
     <!--header end-->
     <!--main content start-->
@@ -34,13 +44,74 @@
                 ui-view="main">
     </md-content>
     <!--main content end-->
-    <md-sidenav md-theme="alternative" class="md-whiteframe-z2" md-component-id="left"
-                md-is-locked-open="main.opened_sidebar">
-        <md-toolbar class="md-theme-indigo">
-            <h1 class="md-toolbar-tools">Options</h1>
+    <md-sidenav md-theme="alternative" class="md-whiteframe-z2 menu-general"
+                md-component-id="menu-general">
+        <md-toolbar>
+            <h4>Options</h4>
         </md-toolbar>
-        <md-content class="md-padding">
-            Something
+        <md-content class="options">
+             <md-list>
+                <md-item>
+                    <md-item-content>
+                        <div class="md-tile-left">
+                            <img src="/static/assets/img/icons/action/ic_assignment_24px.svg">
+                        </div>
+                        <div class="md-tile-content">
+                            Planning
+                        </div>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content>
+                        <div class="md-tile-left">
+                            <img src="/static/assets/img/icons/action/ic_view_column_24px.svg">
+                        </div>
+                        <div class="md-tile-content">
+                            Board
+                        </div>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content>
+                        <div class="md-tile-left">
+                            <img src="/static/assets/img/icons/action/ic_trending_down_24px.svg">
+                        </div>
+                        <div class="md-tile-content">
+                            Reports
+                        </div>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content>
+                        <div class="md-tile-left">
+                            <img src="/static/assets/img/icons/action/ic_done_all_24px.svg">
+                        </div>
+                        <div class="md-tile-content">
+                            Archived Sprints
+                        </div>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content>
+                        <div class="md-tile-left">
+                            <img src="/static/assets/img/icons/action/ic_assignment_turned_in_24px.svg">
+                        </div>
+                        <div class="md-tile-content">
+                            Archived Tickets
+                        </div>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content>
+                        <div class="md-tile-left">
+                            <img src="/static/assets/img/icons/action/ic_settings_24px.svg">
+                        </div>
+                        <div class="md-tile-content">
+                            Project Settings
+                        </div>
+                    </md-item-content>
+                </md-item>
+            </md-list>
         </md-content>
     </md-sidenav>
 </section>

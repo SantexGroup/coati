@@ -123,5 +123,11 @@
     "NO_ADDED_TICKETS": "There are not tickets added after the sprint init",
     "ARCHIVED_TICKETS": "Archived Tickets",
     "EDIT_SPRINT": "Edit Sprint",
-    "CLICK_NEW_TICKET": "Click here to add a new Ticket..."
+    "CLICK_NEW_TICKET": "Click here to add a new Ticket...",
+    "PROJECT_TYPE": "Project type",
+    "SCRUM": "Scrum",
+    "SCRUM_DESCRIPTION": "Scrum: will allow create sprints and have burndown chart.",
+    "KANBAN": "Kanban",
+    "KANBAN_DESCRIPTION": "Kanban: will allow to have a board and move tickets.",
+    "NO_DESCRIPTION": "No Description"
 }

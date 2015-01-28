@@ -8,7 +8,7 @@
         <div class="col-md-12">
             <p ng-if="vm.member.member.first_name"><[ 'REMOVE_MEMBER_CONFIRM' | translate ]> "<[ vm.member.member.first_name ]> <[ vm.member.member.last_name ]>"?</p>
             <p ng-if="!vm.member.member.first_name"><[ 'REMOVE_MEMBER_CONFIRM' | translate ]> "<[ vm.member.member.email ]>"?</p>
-            <button class="btn btn-danger" data-ng-click="vm.erase();"><[ 'DELETE_CONFIRM' | translate]>
+            <button class="btn btn-danger" data-ng-click="vm.erase();"><[ 'DELETE_CONFIRM' | translate ]>
                 </button>
                 <button class="btn btn-warning"
                         data-ng-click="vm.cancel();"><[ 'CANCEL' | translate ]>

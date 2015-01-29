@@ -296,6 +296,7 @@
     RemoveMemberController.$inject = ['$modalInstance', 'ProjectService', 'item'];
 
     angular.module('Coati.Settings', ['ui.router', 'ngTagsInput',
+        'colorpicker.module',
         'Coati.SocketIO',
         'Coati.Directives',
         'Coati.Services.User',

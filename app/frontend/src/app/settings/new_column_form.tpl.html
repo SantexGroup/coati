@@ -28,12 +28,16 @@
                            placeholder="9999" data-ng-model="vm.column.max_cards"
                            name="max_cards" type="text">
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="position: relative;">
                     <label>Color Alert</label>
-                    <input class="form-control"
+                    <div class="form-control"
                            autocomplete="off"
-                           placeholder="#FF0000" data-ng-model="vm.column.color_max_cards"
-                           name="color_max_cards" type="text">
+                           colorpicker="hex"
+                           colorpicker-parent="true"
+                           style="width:32px"
+                           ng-style="{'background-color': vm.column.color_max_cards}"
+                           data-ng-model="vm.column.color_max_cards">
+                    </div>
                 </div>
 
                 <div class="form-group">

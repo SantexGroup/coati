@@ -30,7 +30,8 @@
     "angular-xeditable": "",
     "chartjs": "1.0.1",
     "angular-loading-bar": "0.6.0",
-    "angular-bootstrap-colorpicker": "3.0.11"
+    "angular-bootstrap-colorpicker": "3.0.11",
+    "angular-markdown-directive": ""
   },
   "devDependencies": {
     "angular-mocks": ""

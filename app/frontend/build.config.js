@@ -84,7 +84,10 @@ module.exports = {
             'vendor/angular-xeditable/dist/js/xeditable.min.js',
             'vendor/chartjs/Chart.min.js',
             'vendor/angular-loading-bar/build/loading-bar.min.js',
-            'vendor/angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.min.js'
+            'vendor/angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.min.js',
+            'vendor/angular-sanitize/angular-sanitize.min.js',
+            'vendor/showdown/compressed/Showdown.min.js',
+            'vendor/angular-markdown-directive/markdown.js'
         ],
         maps: [
             'vendor/angular/angular.min.js.map',

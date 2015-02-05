@@ -85,14 +85,14 @@
     <div class="col-md-12">
         <label>Description:</label>
 
-        <p editable-textarea="vm.ticket.description" e-form="decription_form"
+        <btf-markdown editable-textarea="vm.ticket.description" e-form="decription_form"
            ng-click="vm.show(decription_form)" ng-disabled="vm.no_editing"
            e-rows="5"
            e-cols="70" onbeforesave="vm.saveTicket(vm.ticket);">
             <[ vm.ticket.description ]>
                 <span ng-if="!vm.ticket.description"
                       class="ng-scope">No Description</span>
-        </p>
+        </btf-markdown>
     </div>
 </div>
 <hr>

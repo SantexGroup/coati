@@ -1,6 +1,9 @@
 (function (angular) {
 
-    var Config = function (stateProvider) {
+    var Config = function (stateProvider, markdownConverterProvider) {
+        markdownConverterProvider.config({
+            extensions: ['github']
+        });
         stateProvider.state('project.closed_tickets', {
             url: '/archived-tickets',
             views: {
@@ -132,7 +135,7 @@
 
     };
 
-    var TicketDetailController = function (rootScope,log, filter, tmo, modalInstance, conf, downloader, ProjectService, TicketService, SocketIO, item) {
+    var TicketDetailController = function (rootScope, log, filter, tmo, modalInstance, conf, downloader, ProjectService, TicketService, SocketIO, item) {
         var vm = this;
 
 
@@ -340,7 +343,7 @@
             });
         };
 
-        vm.is_scrumm = function(){
+        vm.is_scrumm = function () {
             return vm.project.project_type === 'S';
         };
 
@@ -376,7 +379,7 @@
         getArchivedTickets(vm.project._id.$oid);
     };
 
-    Config.$inject = ['$stateProvider'];
+    Config.$inject = ['$stateProvider', 'markdownConverterProvider'];
     TicketArchivedController.$inject = ['$scope', '$modal', 'TicketService'];
     TicketDetailController.$inject = ['$rootScope', '$log', '$filter', '$timeout', '$modalInstance', 'Conf', '$file_download', 'ProjectService', 'TicketService', 'SocketIO', 'item'];
     TicketFormController.$inject = ['$log', '$modalInstance', 'Conf', 'TicketService', 'SprintService', 'item'];
@@ -385,6 +388,8 @@
     angular.module('Coati.Ticket', ['ui.router', 'ngTagsInput', 'xeditable',
         'angularFileUpload',
         'mentio',
+        'ngSanitize',
+        'btford.markdown',
         'Coati.Config',
         'Coati.SocketIO',
         'Coati.Helpers',

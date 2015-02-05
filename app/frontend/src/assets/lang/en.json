@@ -1,4 +1,6 @@
 {
+    "SPANISH": "Spanish",
+    "ENGLISH": "English",
     "PAGE_TITLE": "Coati Agile Board",
     "NO_SPRINT_STARTED": "No sprint was started, please start a sprint to see the board!",
     "ACTIVE_SPRINT": "Active Sprint",

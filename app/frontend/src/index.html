@@ -14,7 +14,7 @@
     <% }); %>
 </head>
 
-<body ui-view="master_view" ng-cloak
+<body ui-view="master_view" ng-cloak translate-cloak
       data-ng-class="{true:'body-500', false:''}[actual_path == 'error_403']">
 <section id="container">
     <!--header start-->
@@ -53,14 +53,27 @@
 
                 </li>
             </ul>
-            <ul class="nav pull-center top-menu">
-                <li>
-                    <img ng-click="main.changeLanguage('EN')" src="{{ url_for('static', filename='assets/img/flags/us.png')}}"/>
-                    <img ng-click="main.changeLanguage('ES')" src="{{ url_for('static', filename='assets/img/flags/es.png')}}"/>
-                </li>
-            </ul>
             <ul class="nav pull-right top-menu user-options"
                 ng-controller="UserCtrl as vm">
+                <li dropdown>
+                    <a dropdown-toggle href="#">
+                       <img ng-src="/static/assets/img/flags/<[ main.selectedLanguage ]>.png"/>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                          <a href="#" ng-click="main.switchLanguage('en')">
+                              <img src="/static/assets/img/flags/en.png" />
+                              <span><[ 'ENGLISH' | translate ]></span>
+                          </a>
+                        </li>
+                        <li>
+                            <a href="#" ng-click="main.switchLanguage('es')">
+                                <img src="/static/assets/img/flags/es.png" />
+                                <span><[ 'SPANISH' | translate ]></span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 <li id="header_notification_bar" dropdown class="dropdown">
                     <a data-toggle="dropdown" ng-click="vm.loadNotifications();"
                        dropdown-toggle class="dropdown-toggle" href="#">

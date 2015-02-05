@@ -15,7 +15,8 @@
             prefix: '/static/assets/lang/',
             suffix: '.json'
         });
-        translateProvider.preferredLanguage('en');
+        translateProvider.preferredLanguage('en')
+            .fallbackLanguage('en');
     }
 
 
@@ -76,7 +77,7 @@
         };
     };
 
-    var AppController = function (scope, rootScope, state, stateParams, modal, tokens, TicketService, SocketIO, translateProvider) {
+    var AppController = function (scope, rootScope, state, stateParams, modal, tokens, TicketService, SocketIO, translate) {
         var vm = this;
         rootScope.$on('$stateChangeStart', function (event, toState) {
 
@@ -118,10 +119,12 @@
             return model.label;
         };
 
-        vm.changeLanguage = function(lang) {
-            translateProvider.use(lang);
-        };
+        vm.selectedLanguage = translate.use();
 
+        vm.switchLanguage = function (lang) {
+            vm.selectedLanguage = lang;
+            translate.use(lang);
+        };
         //Init Socket interaction
         SocketIO.init();
     };

@@ -364,10 +364,10 @@
 
     };
 
-    Config.$inject = ['$stateProvider'];
+    Config.$inject = ['$stateProvider', '$translateProvider'];
     ProjectCtrlPlanning.$inject = ['$rootScope', '$scope', '$state', '$modal', 'growl', 'ProjectService', 'TicketService', 'SprintService', 'SocketIO'];
 
-    angular.module('Coati.Planning', ['ui.router', 'ui.sortable',
+    angular.module('Coati.Planning', ['ui.router', 'ui.sortable', 'pascalprecht.translate',
         'Coati.Directives',
         'Coati.SocketIO',
         'Coati.Services.Project',

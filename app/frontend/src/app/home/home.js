@@ -33,8 +33,6 @@
     function MainController(rootScope, state, modal, ProjectService, UserService) {
         var vm = this;
 
-        vm.user = window.username;
-
         vm.getDashboard = function () {
 
             ProjectService.query().then(function(projects){
@@ -58,12 +56,12 @@
     }
 
     //Injections
-    ConfigModule.$inject = ['$stateProvider'];
+    ConfigModule.$inject = ['$stateProvider', '$translateProvider'];
     MainController.$inject = ['$rootScope', '$state', '$modal', 'ProjectService', 'UserService'];
 
 
     angular.module('Coati.Home',
-        ['ui.router', 'ui.bootstrap',
+        ['ui.router', 'ui.bootstrap','pascalprecht.translate',
             'Coati.Directives',
             'Coati.Services.Project',
             'Coati.Services.User'])

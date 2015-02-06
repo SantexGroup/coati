@@ -82,6 +82,8 @@ module.exports = {
             'vendor/ng-file-upload/angular-file-upload-shim.min.js',
             'vendor/angular-ui-sortable/sortable.min.js',
             'vendor/angular-xeditable/dist/js/xeditable.min.js',
+            'vendor/angular-translate/angular-translate.js',
+            'vendor/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js',
             'vendor/chartjs/Chart.min.js',
             'vendor/angular-loading-bar/build/loading-bar.min.js',
             'vendor/angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.min.js'

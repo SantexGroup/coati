@@ -1,7 +1,7 @@
 <section class="panel">
     <header class="panel-heading">
         <h4 class="modal-title">
-            New Project
+            <[ 'PROJECT_NEW_PROJECT' | translate ]>
         </h4>
     </header>
     <div class="panel-body">
@@ -11,24 +11,23 @@
                   novalidate>
 
                 <div class="form-group">
-                    <label>Name</label>
+                    <label><[ 'PROJECT_NAME' | translate ]></label>
                     <input class="form-control"
                            data-ng-class="{'error': vm.form.project_form.name.$invalid && vm.submitted}"
                            autocomplete="off"
                            placeholder="Name" data-ng-model="vm.project.name"
                            name="name" type="text" required>
                     <label for="name" class="error"
-                           data-ng-show="vm.form.project_form.name.$invalid && vm.submitted">Please
-                        enter a name</label>
+                           data-ng-show="vm.form.project_form.name.$invalid && vm.submitted"><[ 'PROJECT_INVALID_PROJECT_NAME' | translate ]></label>
                 </div>
                 <div class="form-group">
-                    <label>Description</label>
+                    <label><[ 'PROJECT_DESCRIPTION' | translate]></label>
                     <textarea class="form-control" rows="3"
                               name="description"
                               data-ng-model="vm.project.description"></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Prefix</label>
+                    <label><[ 'PROJECT_PREFIX' | translate ]></label>
                     <input class="form-control"
                            data-ng-class="{'error': vm.form.project_form.prefix.$invalid && vm.submitted}"
                            autocomplete="off"
@@ -37,30 +36,30 @@
                            name="prefix" type="text">
                 </div>
                 <div class="form-group">
-                    <label>Project Type</label>
+                    <label><[ 'PROJECT_TYPE' | translate ]></label>
                     <select ng-model="vm.project.project_type"
                             required
                             name="project_type"
                             data-ng-class="{'error': vm.form.project_form.project_type.$invalid && vm.submitted}"
                             class="form-control"
                             ng-init="vm.project.project_type='S'">
-                        <option value="S">Scrum</option>
-                        <option value="K">Kanban</option>
+                        <option value="S"><[ 'PROJECT_SCRUM' | translate ]></option>
+                        <option value="K"><[ 'PROJECT_KANBAN' | translate ]></option>
                     </select>
-                    <small>Scrum: will allow create sprints and have burndown chart.</small>
-                    <small>Kanban: will allow to have a board and move tickets.</small>
+                    <small><[ 'PROJECT_SCRUM_DESCRIPTION' | translate ]></small>
+                    <small><[ 'PROJECT_KANBAN_DESCRIPTION' | translate ]></small>
                 </div>
                 <div class="form-group">
-                    <label>Active</label>
+                    <label><[ 'PROJECT_ACTIVE' | translate ]></label>
                     <input type="checkbox" ng-checked="true"
                            name="active" ng-model="vm.project.active">
                 </div>
 
                 <button class="btn btn-primary"
-                        type="submit">Save
+                        type="submit"><[ 'PROJECT_SAVE' | translate ]>
                 </button>
                 <button class="btn btn-warning" type="button"
-                        data-ng-click="vm.cancel();">Cancel
+                        data-ng-click="vm.cancel();"><[ 'PROJECT_CANCEL' | translate ]>
                 </button>
 
             </form>

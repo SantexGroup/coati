@@ -1,17 +1,17 @@
 <section class="panel">
     <header class="panel-heading">
         <h4 class="modal-title">
-            Delete Project
+            <[ 'PROJECT_DELETE' | translate ]>
         </h4>
     </header>
     <div class="panel-body">
         <div class="col-md-12">
-            <p>Are you sure to delete the project "<[ vm.project.name ]>"?</p>
+            <p><[ 'PROJECT_DELETE_CONFIRM_MESSAGE' | translate ]> "<[ vm.project.name ]>"?</p>
             <button class="btn btn-danger"
-                        data-ng-click="vm.erase();">Confirm Delete
+                        data-ng-click="vm.erase();"><[ 'PROJECT_DELETE_CONFIRM' | translate ]>
                 </button>
                 <button class="btn btn-warning"
-                        data-ng-click="vm.cancel();">Cancel
+                        data-ng-click="vm.cancel();"><[ 'PROJECT_CANCEL' | translate ]>
                 </button>
         </div>
     </div>

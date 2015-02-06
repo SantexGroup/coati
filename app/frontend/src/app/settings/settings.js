@@ -288,14 +288,15 @@
         };
     };
 
-    Config.$inject = ['$stateProvider', 'tagsInputConfigProvider'];
+    Config.$inject = ['$stateProvider', 'tagsInputConfigProvider', '$translateProvider'];
     ProjectCtrlSettings.$inject = ['$rootScope', '$timeout', '$filter', '$scope', '$state', '$modal', 'growl', 'ProjectService', 'SocketIO'];
     ColumnFormController.$inject = ['$log', '$modalInstance', 'ProjectService', 'project', 'column'];
     ColumnDeleteController.$inject = ['$modalInstance', 'ProjectService', 'column'];
     MembersController.$inject = ['$modalInstance', 'UserService', 'ProjectService', 'project'];
     RemoveMemberController.$inject = ['$modalInstance', 'ProjectService', 'item'];
 
-    angular.module('Coati.Settings', ['ui.router', 'ngTagsInput',
+
+    angular.module('Coati.Settings', ['ui.router', 'ngTagsInput', 'pascalprecht.translate',
         'colorpicker.module',
         'Coati.SocketIO',
         'Coati.Directives',

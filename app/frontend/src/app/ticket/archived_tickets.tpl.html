@@ -2,9 +2,10 @@
     <div class="col-md-12">
         <section class="panel tasks-widget backlog">
             <header class="panel-heading">
-                <span>Archived Tickets</span>
+                <span><[ 'TICKET_ARCHIVED' | translate ]></span>
                 <div class="add-task-row pull-right">
-                    <span class="badge bg-inverse">Total Tickets: <[ vm.tickets.length ]></span>
+                    <span class="badge bg-inverse"><[ 'TICKET_TOTAL' | translate ]>:
+                        <[ vm.tickets.length ]></span>
                 </div>
                 <div style="clear:both"></div>
             </header>

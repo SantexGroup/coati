@@ -4,7 +4,7 @@
     <base href="/">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-ng-bind="pageTitle">Coati Agile Board</title>
+    <title data-ng-bind="pageTitle"></title>
     <link rel="shortcut icon"
           href="{{ url_for('static', filename='assets/koala.ico')}}?v2"/>
     <!-- Bootstrap core CSS -->
@@ -14,7 +14,7 @@
     <% }); %>
 </head>
 
-<body ui-view="master_view" ng-cloak
+<body ui-view="master_view" ng-cloak translate-cloak
       data-ng-class="{true:'body-500', false:''}[actual_path == 'error_403']">
 <section id="container">
     <!--header start-->
@@ -55,6 +55,25 @@
             </ul>
             <ul class="nav pull-right top-menu user-options"
                 ng-controller="UserCtrl as vm">
+                <li dropdown>
+                    <a dropdown-toggle href="#">
+                       <img ng-src="/static/assets/img/flags/<[ main.selectedLanguage ]>.png"/>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                          <a href="#" ng-click="main.switchLanguage('en')">
+                              <img src="/static/assets/img/flags/en.png" />
+                              <span><[ 'MAIN_ENGLISH' | translate ]></span>
+                          </a>
+                        </li>
+                        <li>
+                            <a href="#" ng-click="main.switchLanguage('es')">
+                                <img src="/static/assets/img/flags/es.png" />
+                                <span><[ 'MAIN_SPANISH' | translate ]></span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 <li id="header_notification_bar" dropdown class="dropdown">
                     <a data-toggle="dropdown" ng-click="vm.loadNotifications();"
                        dropdown-toggle class="dropdown-toggle" href="#">
@@ -66,8 +85,8 @@
                         <div class="notify-arrow-right notify-arrow-yellow"></div>
                         <li>
                             <p class="yellow">
-                                <span ng-if="(vm.all_notifications | filter:{viewed:false}).length > 0">You have <[ (vm.all_notifications | filter:{viewed:false}).length ]> new notifications</span>
-                                <span ng-if="(vm.all_notifications | filter:{viewed:false}).length < 1">Notification List</span>
+                                <span ng-if="(vm.all_notifications | filter:{viewed:false}).length > 0"><[ 'MAIN_NEW_NOTIFICATIONS' | translate: '{number: vm.all_notifications | filter:{viewed:false}).length}' ]></span>
+                                <span ng-if="(vm.all_notifications | filter:{viewed:false}).length < 1"><[ 'MAIN_NOTIFICATION_LIST' | translate ]></span>
                             </p>
                         </li>
                         <li ng-repeat="n in vm.notifications"
@@ -77,7 +96,9 @@
                             <ng-include ng-if="n.activity.verb == 'update_ticket'" src="'user/notifications/update_ticket.tpl.html'"></ng-include>
                         </li>
                         <li>
-                            <a href="javascript:;" ui-sref="notifications">See all notifications</a>
+                            <a href="javascript:;" ui-sref="notifications">
+                                <[ 'ALL_NOTIFICATIONS' | translate ]>
+                            </a>
                         </li>
                     </ul>
                 </li>
@@ -96,11 +117,11 @@
                         <div class="log-arrow-up"></div>
                         <li><a href="javascript:;"
                                ng-click="vm.show_profile();"><i
-                                class=" icon-suitcase"></i> Profile</a>
+                                class=" icon-suitcase"></i> <[ 'MAIN_PROFILE' | translate ]></a>
                         </li>
                         <li><a ng-href="/auth/logout" href="/logout"
                                target="_self"><i
-                                class="icon-key"></i> Log Out</a>
+                                class="icon-key"></i> <[ 'MAIN_LOG_OUT' | translate ]></a>
                         </li>
                     </ul>
                 </li>

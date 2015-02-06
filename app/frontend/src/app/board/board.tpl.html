@@ -1,10 +1,10 @@
 <div class="row">
     <div class="col-md-12" ng-hide="vm.enabled"></h3>
-        <h3>No sprint was started, please start a sprint to see the board!</h3>
+        <h3><[ 'BOARD_NO_SPRINT_STARTED' | translate ]></h3>
     </div>
     <div class="col-md-12" ng-show="vm.enabled" prepare-board>
 
-        <h3 ng-if="vm.is_scrumm()">Active Sprint: <[ vm.sprint.name ]></h3>
+        <h3 ng-if="vm.is_scrumm()"><[ 'BOARD_ACTIVE_SPRINT' | translate ]>:<[ vm.sprint.name ]></h3>
 
         <div class="pull-right">
             <!-- aca van los usuarios -->
@@ -14,8 +14,8 @@
                 <ul class="columns">
                     <li class="panel tasks-widget backlog col-md-3 column">
                         <header class="panel-heading">
-                            <span ng-if="vm.is_scrumm()">Sprint Backlog</span>
-                            <span ng-if="!vm.is_scrumm()">Backlog</span>
+                            <span ng-if="vm.is_scrumm()"><[ 'BOARD_SPRINT_BACKLOG' | translate ]></span>
+                            <span ng-if="!vm.is_scrumm()"><[ 'BOARD_BACKLOG' | translate ]></span>
                         </header>
                         <div class="panel-body">
                             <div class="task-content">

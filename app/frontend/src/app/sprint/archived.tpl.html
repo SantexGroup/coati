@@ -2,10 +2,10 @@
     <div class="col-md-12" id="planning-list">
         <section class="panel tasks-widget backlog">
             <header class="panel-heading">
-                <span>Archived Sprints</span>
+                <span><[ 'SPRINT_ARCHIVED' | translate ]></span>
 
                 <div class="add-task-row pull-right">
-                    <span class="badge bg-inverse">Total Sprints: <[ vm.sprints.length ]></span>
+                    <span class="badge bg-inverse"><[ 'SPRINT_TOTAL_SPRINTS' | translate ]> : <[ vm.sprints.length ]></span>
                 </div>
                 <div style="clear:both"></div>
             </header>
@@ -18,13 +18,13 @@
                                 <span><[ sprint.name ]></span>
                                 <span class="badge"><[ sprint.tickets.length ]></span>
                                 <span ng-if="sprint.started"
-                                      class="sprint_dates">(<[ sprint.start_date.$date | date:'short' ]> to <[ sprint.end_date.$date | date:'short']>)</span>
+                                      class="sprint_dates">(<[ sprint.start_date.$date | date:'short' ]> <[ 'SPRINT_TO' | translate ]> <[ sprint.end_date.$date | date:'short']>)</span>
 
                                 <div class="options pull-right">
-                                    <span class="badge bg-inverse">Total Points: <[ sprint.tickets | sumValue:'points' ]></span>
+                                    <span class="badge bg-inverse"><[ 'SPRINT_TOTAL_POINTS' | translate ]>: <[ sprint.tickets | sumValue:'points' ]></span>
                                     <a class="btn btn-sm btn-danger"
                                        ng-click="vm.remove_sprint(sprint._id.$oid)">
-                                        <i class="icon-remove"></i> Remove
+                                        <i class="icon-remove"></i> <[ 'SPRINT_REMOVE' | translate ]>
                                     </a>
                                 </div>
                                 <div style="clear:both"></div>

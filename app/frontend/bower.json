@@ -1,6 +1,6 @@
 {
   "name": "CoatiAgileBoard",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "directory": "vendor",
   "ignore": [
     "src",
@@ -15,7 +15,7 @@
     "README.md"
   ],
   "dependencies": {
-    "angular": "1.3.8",
+    "angular": "~1.3.11",
     "angular-bootstrap": "0.12.0",
     "angular-ui-router": "~0.2.13",
     "angular-ui-utils": "~0.1.1",
@@ -30,10 +30,15 @@
     "angular-xeditable": "",
     "chartjs": "1.0.1",
     "angular-loading-bar": "0.6.0",
-    "angular-bootstrap-colorpicker": "3.0.11"
+    "angular-bootstrap-colorpicker": "3.0.11",
+    "angular-translate": "",
+    "angular-translate-loader-static-files": ""
   },
   "devDependencies": {
     "angular-mocks": ""
   },
-  "private": true
+  "private": true,
+  "resolutions": {
+    "angular": "~1.3.11"
+  }
 }

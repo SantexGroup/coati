@@ -382,7 +382,7 @@
     TicketFormController.$inject = ['$log', '$modalInstance', 'Conf', 'TicketService', 'SprintService', 'item'];
     TicketDeleteController.$inject = ['$modalInstance', 'TicketService', 'item', 'project'];
 
-    angular.module('Coati.Ticket', ['ui.router', 'ngTagsInput', 'xeditable',
+    angular.module('Coati.Ticket', ['ui.router', 'ngTagsInput', 'xeditable', 'pascalprecht.translate',
         'angularFileUpload',
         'mentio',
         'Coati.Config',

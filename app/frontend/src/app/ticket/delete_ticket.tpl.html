@@ -1,17 +1,17 @@
 <section class="panel">
     <header class="panel-heading">
         <h4 class="modal-title">
-            Delete Ticket
+            <[ 'TICKET_DELETE' | translate ]>
         </h4>
     </header>
     <div class="panel-body">
         <div class="col-md-12">
-            <p>Are you sure to delete the ticket "<[ vm.ticket.prefix ]>-<[ vm.ticket.number ]>: <[ vm.ticket.title ]>"?</p>
+            <p><[ 'TICKET_DELETE_CONFIRM' | translate ]> "<[ vm.ticket.prefix ]>-<[ vm.ticket.number ]>: <[ vm.ticket.title ]>"?</p>
             <button class="btn btn-danger"
-                        data-ng-click="vm.erase();">Confirm Delete
+                        data-ng-click="vm.erase();"><[ 'TICKET_DELETE' | translate ]>
                 </button>
                 <button class="btn btn-warning"
-                        data-ng-click="vm.cancel();">Cancel
+                        data-ng-click="vm.cancel();"><[ 'TICKET_CANCEL' | translate ]>
                 </button>
         </div>
     </div>

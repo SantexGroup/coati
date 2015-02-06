@@ -1,8 +1,7 @@
 <h3>
     <[ vm.project.name ]>
     <a class="btn btn-success btn-sm pull-right" href="javascript:;"
-       ng-click="vm.add_or_edit($event);">Add New
-        Ticket</a>
+       ng-click="vm.add_or_edit($event);"><[ 'PLANNING_NEW_TICKET' | translate ]></a>
 </h3>
 <p><[ vm.project.description ]></p>
 <div class="row" id="planning">
@@ -14,29 +13,25 @@
                 <section class="panel tasks-widget sprint-item"
                          ng-class="{started:sprint.started}">
                     <header class="panel-heading">
-                        <span editable-text="sprint.name"
-                              onbeforesave="vm.renameSprint(sprint);"><[ sprint.name ]></span>
-                        <span ng-if="sprint.started" class="sprint_dates">(<[ sprint.start_date.$date | date:'MM/dd/yyyy' ]> to <[ sprint.end_date.$date | date:'MM/dd/yyyy']>)</span>
+                        <span editable-text="sprint.name" onbeforesave="vm.renameSprint(sprint);"><[ sprint.name ]></span>
+                        <span ng-if="sprint.started" class="sprint_dates">(<[ sprint.start_date.$date | date:'MM/dd/yyyy' ]> <[ 'PLANNING_TO' | translate ]> <[ sprint.end_date.$date | date:'MM/dd/yyyy']>)</span>
 
                         <div class="options pull-right">
-                            <span class="badge bg-inverse">Total Tickets: <[ sprint.tickets.length ]></span>
-                            <span class="badge bg-inverse">Total Points: <[ sprint.tickets | sumValue:'points' ]></span>
+                            <span class="badge bg-inverse"><[ 'PLANNING_TOTAL_TICKETS' | translate ]>: <[ sprint.tickets.length ]></span>
+                            <span class="badge bg-inverse"><[ 'PLANNING_TOTAL_POINTS' | translate ]>: <[ sprint.tickets | sumValue:'points' ]></span>
                             <a ng-if="$index == 0 && !vm.one_started && !sprint.finalized && !sprint.started"
-                               class="btn btn-primary btn-sm"
-                               href="javascript:;"
-                               ng-click="vm.startSprint(sprint);">Start
-                                Sprint</a>
+                               class="btn btn-primary btn-sm" href="javascript:;"
+                               ng-click="vm.startSprint(sprint);"><[ 'PLANNING_START_SPRINT' | translate ]></a>
                             <a ng-if="sprint.started && !sprint.finalized"
                                class="btn btn-primary btn-sm"
                                href="javascript:;"
-                               ng-click="vm.edit_sprint(sprint);">Edit
-                                Sprint</a>
+                               ng-click="vm.edit_sprint(sprint);"><['PLANNING_EDIT_SPRINT']></a>
                             <a ng-if="sprint.started && !sprint.finalized"
                                class="btn btn-danger btn-sm" href="javascript:;"
-                               ng-click="vm.stopSprint(sprint);">Stop Sprint</a>
+                               ng-click="vm.stopSprint(sprint);"><[ 'PLANNING_STOP_SPRINT' | translate ]></a>
                             <a class="btn btn-sm btn-danger"
                                ng-click="vm.remove_sprint(sprint._id.$oid)">
-                                <i class="icon-remove"></i> Remove
+                                <i class="icon-remove"></i> <[ 'PLANNING_REMOVE_SPRINT' | translate ]>
                             </a>
                         </div>
                         <div style="clear:both"></div>
@@ -71,7 +66,7 @@
                                     <div e-style="display: inline-block;width: 100%"
                                          editable-text="vm.new_ticket"
                                          onaftersave="vm.saveQuickTicket(sprint);">
-                                        Click here to add a new Ticket...
+                                        <[ 'PLANNING_FAST_NEW_TICKET' | translate ]>
                                     </div>
                                 </li>
                             </ul>
@@ -83,14 +78,13 @@
 
         <section class="panel tasks-widget backlog">
             <header class="panel-heading">
-                <span>Backlog</span>
+                <span><[ 'PLANNING_BACKLOG' | translate ]></span>
 
                 <div class="add-task-row pull-right">
-                    <span class="badge bg-inverse">Total Tickets: <[ vm.tickets.length ]></span>
-                    <span class="badge bg-inverse" ng-if="vm.is_scrumm()">Total Points: <[ vm.tickets | sumValue:'points' ]></span>
+                    <span class="badge bg-inverse"><[ 'PLANNING_TOTAL_TICKETS' | translate ]>: <[ vm.tickets.length ]></span>
+                    <span class="badge bg-inverse" ng-if="vm.is_scrumm()"><[ 'PLANNING_TOTAL_POINTS' | translate ]>: <[ vm.tickets | sumValue:'points' ]></span>
                     <a ng-if="vm.is_scrumm()" class="btn btn-primary btn-sm" href="javascript:;"
-                       ng-click="vm.create_sprint();">Create
-                        Sprint</a>
+                       ng-click="vm.create_sprint();"><[ 'PLANNING_CREATE_SPRINT' | translate ]></a>
                 </div>
                 <div style="clear:both"></div>
             </header>
@@ -128,8 +122,7 @@
                             title="Click to create a new ticket">
                             <div e-style="display: inline-block;width: 100%"
                                  editable-text="vm.new_ticket"
-                                 onaftersave="vm.saveQuickTicket();">Click here
-                                to add a new Ticket...
+                                 onaftersave="vm.saveQuickTicket();"><[ 'PLANNING_FAST_NEW_TICKET' | translate ]>
                             </div>
                         </li>
                     </ul>

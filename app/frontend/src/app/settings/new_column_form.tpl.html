@@ -31,8 +31,12 @@
                     <label><[ 'SETTINGS_COLUMN_COLOR_ALERT' | translate ]></label>
                     <input class="form-control"
                            autocomplete="off"
-                           placeholder="#FF0000" data-ng-model="vm.column.color_max_cards"
-                           name="color_max_cards" type="text">
+                           colorpicker="hex"
+                           colorpicker-parent="true"
+                           style="width:32px"
+                           ng-style="{'background-color': vm.column.color_max_cards}"
+                           data-ng-model="vm.column.color_max_cards">
+                    </div>
                 </div>
 
                 <div class="form-group">

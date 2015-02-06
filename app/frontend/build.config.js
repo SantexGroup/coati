@@ -85,7 +85,8 @@ module.exports = {
             'vendor/angular-translate/angular-translate.js',
             'vendor/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js',
             'vendor/chartjs/Chart.min.js',
-            'vendor/angular-loading-bar/build/loading-bar.min.js'
+            'vendor/angular-loading-bar/build/loading-bar.min.js',
+            'vendor/angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.min.js'
         ],
         maps: [
             'vendor/angular/angular.min.js.map',
@@ -96,7 +97,8 @@ module.exports = {
             'vendor/angular-notifications/notification.min.css',
             'vendor/ng-tags-input/ng-tags-input.min.css',
             'vendor/angular-xeditable/dist/css/xeditable.css',
-            'vendor/angular-loading-bar/build/loading-bar.min.css'
+            'vendor/angular-loading-bar/build/loading-bar.min.css',
+            'vendor/angular-bootstrap-colorpicker/css/colorpicker.min.css'
         ],
         assets: [],
         fonts: [

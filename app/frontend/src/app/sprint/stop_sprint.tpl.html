@@ -1,16 +1,16 @@
 <section class="panel">
     <header class="panel-heading">
         <h4 class="modal-title">
-            <[ 'STOP_SPRINT' | translate ]>
+            <[ 'SPRINT_STOP' | translate ]>
         </h4>
     </header>
     <div class="panel-body">
         <div class="col-md-12">
-            <p><[ 'STOP_SPRINT_CONFIRMATION' | translate ]>: "<[ vm.sprint.name ]>"?</p>
+            <p><[ 'SPRINT_STOP_CONFIRMATION' | translate ]>: "<[ vm.sprint.name ]>"?</p>
             <button class="btn btn-danger" data-ng-click="vm.stopSprint();"><[ 'CONFIRM_STOP' | translate ]>
                 </button>
                 <button class="btn btn-warning"
-                        data-ng-click="vm.cancel();"><[ 'CANCEL' | translate ]>
+                        data-ng-click="vm.cancel();"><[ 'SPRINT_CANCEL' | translate ]>
                 </button>
         </div>
     </div>

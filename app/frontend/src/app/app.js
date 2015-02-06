@@ -16,7 +16,8 @@
             suffix: '.json'
         });
         translateProvider.preferredLanguage('en')
-            .fallbackLanguage('en');
+            .fallbackLanguage('en')
+            .useStorage('StorageService');
     }
 
 
@@ -77,11 +78,12 @@
         };
     };
 
-    var AppController = function (scope, rootScope, state, stateParams, modal, tokens, TicketService, SocketIO, translate) {
+    var AppController = function (scope, rootScope, state, stateParams, tokens, TicketService, SocketIO, translate, StorageService) {
         var vm = this;
         rootScope.$on('$stateChangeStart', function (event, toState) {
 
             if (angular.isDefined(toState.data.pageTitle)) {
+                
                 scope.pageTitle = toState.data.pageTitle + ' | Coati';
             }
             scope.actual_path = toState.name;
@@ -115,11 +117,11 @@
         };
 
 
-        vm.on_select_result = function (item, model, label, value) {
+        vm.on_select_result = function (item, model) {
             return model.label;
         };
 
-        vm.selectedLanguage = translate.use();
+        vm.selectedLanguage = StorageService.get('NG_TRANSLATE_LANG_KEY');
 
         vm.switchLanguage = function (lang) {
             vm.selectedLanguage = lang;
@@ -129,7 +131,7 @@
         SocketIO.init();
     };
 
-    var RunApp = function (rootScope, state, stateParams, objects, editableOptions, editableThemes) {
+    var RunApp = function (rootScope, state, stateParams, objects, StorageService, editableOptions, editableThemes) {
 
         editableThemes.bs3.inputClass = 'input-sm';
         editableThemes.bs3.buttonsClass = 'btn-sm';
@@ -137,7 +139,7 @@
 
         var user = null;
         try {
-            user = JSON.parse(window.localStorage.getItem('user'));
+            user = JSON.parse(StorageService.get('user'));
             if (objects.isObject(user)) {
                 rootScope.user = user;
             } else {
@@ -154,21 +156,30 @@
 
     // Injections
     filterTrustedHTML.$inject = ['$sce'];
-    RunApp.$inject = ['$rootScope', '$state', '$stateParams', '$objects', 'editableOptions', 'editableThemes'];
+    RunApp.$inject = ['$rootScope', '$state', '$stateParams', '$objects', 'StorageService', 'editableOptions', 'editableThemes'];
     ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider', '$translateProvider'];
-    AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', '$modal', 'tokens', 'TicketService', 'SocketIO', '$translate'];
+    AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', 'tokens', 'TicketService', 'SocketIO', '$translate', 'StorageService'];
 
     angular.module('Coati', [
-        'templates-app', 'templates-common', 'angular-loading-bar', 'pascalprecht.translate',
-        'ui.router', 'ui.bootstrap', 'angular-growl', 'xeditable',
+        'templates-app',
+        'templates-common',
+        'angular-loading-bar',
+        'pascalprecht.translate',
+        'ui.router',
+        'ui.bootstrap',
         'Coati.SocketIO',
         'Coati.Config',
         'Coati.Directives',
+        'Coati.Services.Storage',
         'Coati.Services.Ticket',
         'Coati.Errors',
         'Coati.Home',
-        'Coati.Login', 'Coati.Helpers',
-        'Coati.User', 'Coati.Project', 'Coati.Ticket', 'Coati.Sprint'])
+        'Coati.Login',
+        'Coati.User',
+        'Coati.Project',
+        'Coati.Ticket',
+        'Coati.Sprint'
+    ])
         .config(ConfigApp)
         .run(RunApp)
         .filter('getByProperty', filterGetByProperty)

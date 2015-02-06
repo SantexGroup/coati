@@ -1,15 +1,15 @@
 <div class="row" id="notifications">
     <div class="col-md-12" id="planning-list">
         <ul class="breadcrumb">
-            <li><a href="/"><i class="icon-home"></i>&nbsp;Home</a></li>
-            <li class="active">All Notifications</li>
+            <li><a href="/"><i class="icon-home"></i>&nbsp;<[ 'BREADCRUMB_HOME' | translate ]></a></li>
+            <li class="active"><[ 'NOTIFICATIONS_ALL' | translate ]></li>
         </ul>
         <section class="panel tasks-widget backlog">
             <header class="panel-heading">
-                <span>Notifications</span>
+                <span><[ 'NOTIFICATIONS' | translate ]></span>
 
                 <div class="add-task-row pull-right">
-                    <span class="badge bg-inverse">Total Messages: <[ vm.notifications.length ]></span>
+                    <span class="badge bg-inverse"><[ 'NOTIFICATIONS_TOTAL' | translate:'{total: vm.notifications.length }']></span>
                 </div>
                 <div style="clear:both"></div>
             </header>

@@ -5,7 +5,7 @@
          ng-src="<[ n.activity.author.picture ]>">
     <strong><[ n.activity.author.first_name ]>
         <[ n.activity.author.last_name
-        ]></strong> posted in <strong><[ n.activity.project.name ]></strong> a new comment for
+        ]></strong> <[ 'NOTIFICATIONS_POSTED_IN' | translate ]> <strong><[ n.activity.project.name ]></strong> <[ 'NOTIFICATIONS_COMMENT_FOR' | translate ]>
     <strong>
         <[ n.activity.project.prefix]>-<[ n.data.ticket.number ]>: <[n.data.ticket.title ]>
     </strong>

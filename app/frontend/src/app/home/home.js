@@ -33,8 +33,6 @@
     function MainController(rootScope, state, modal, ProjectService, UserService) {
         var vm = this;
 
-        vm.user = window.username;
-
         vm.getDashboard = function () {
 
             ProjectService.query().then(function(projects){

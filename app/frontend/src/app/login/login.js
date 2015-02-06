@@ -61,8 +61,8 @@
         vm.login = {};
 
         if (state.params && state.params.logout) {
-            window.localStorage.setItem('token_data', null);
-            window.localStorage.setItem('user', null);
+            StorageService.set('token_data', null);
+            StorageService.set('user', null);
         }
 
         vm.login_user = function () {
@@ -96,14 +96,14 @@
         }
     };
 
-    var LoginAuthController = function(rootScope, state, UserService, tokens) {
+    var LoginAuthController = function(rootScope, state, UserService, tokens, StorageService) {
         if (state.params.token) {
             tokens.store_token(state.params.token, state.params.expire);
 
             //Get here the user logged
             if (UserService.is_logged()) {
                 UserService.me().then(function (user) {
-                    window.localStorage.setItem('user', JSON.stringify(user));
+                    StorageService.set('user', JSON.stringify(user));
                     rootScope.user = user;
                 });
             }
@@ -137,15 +137,16 @@
     };
 
     Config.$inject = ['$stateProvider', '$translateProvider'];
-    LoginController.$inject = ['$state', 'LoginService'];
+    LoginController.$inject = ['$state', 'LoginService', 'StorageService'];
     ActivateController.$inject = ['$state', 'UserService'];
-    LoginAuthController.$inject = ['$rootScope', '$state', 'UserService', 'tokens'];
+    LoginAuthController.$inject = ['$rootScope', '$state', 'UserService', 'tokens', 'StorageService'];
     RegisterController.$inject = ['$state', 'UserService'];
 
     angular.module('Coati.Login',
         ['ui.router', 'ui.bootstrap', 'pascalprecht.translate',
             'Coati.Directives',
             'Coati.Helpers',
+            'Coati.Services.Storage',
             'Coati.Services.Login',
             'Coati.Services.User'])
         .config(Config)

@@ -1,6 +1,6 @@
 <section class="panel">
     <header class="panel-heading">
-        <[ 'USER_PROFILE' | translate ]>
+        <[ 'PROFILE' | translate ]>
     </header>
     <div class="panel-body user-profile">
         <div class="col-md-12">
@@ -8,7 +8,7 @@
                   ng-submit="vm.save()"
                   novalidate>
                 <div class="form-group">
-                    <label><[ 'IMAGE' | translate ]></label>
+                    <label><[ 'PROFILE_IMAGE' | translate ]></label>
                     <input type="file" accept="image/*"
                            ng-model="vm.picture"
                            image="vm.image"
@@ -17,7 +17,7 @@
                            resize-quality="1">
                 </div>
                 <div class="form-group">
-                    <label><[ 'PREVIEW' | translate ]></label>
+                    <label><[ 'PROFILE_IMAGE_PREVIEW' | translate ]></label>
                     <img data-ng-hide="vm.image"
                          src="/static/assets/img/preview_image.png">
                     <img data-ng-show="vm.image"
@@ -25,33 +25,33 @@
                          type="<[ vm.image.file.type ]>"/>
                 </div>
                 <div class="form-group">
-                    <label><[ 'FIRST_NAME' | translate ]></label>
+                    <label><[ 'PROFILE_FIRST_NAME' | translate ]></label>
                     <input class="form-control" autocomplete="off"
                            placeholder="First Name"
                            data-ng-model="vm.user.first_name"
                            name="first_name" type="text">
                 </div>
                 <div class="form-group">
-                    <label><[ 'LAST_NAME' | translate ]></label>
+                    <label><[ 'PROFILE_LAST_NAME' | translate ]></label>
                     <input class="form-control" autocomplete="off"
                            placeholder="Last Name"
                            data-ng-model="vm.user.last_name"
                            name="last_name" type="text">
                 </div>
                 <div class="form-group">
-                    <label><[ 'EMAIL' | translate ]></label>
+                    <label><[ 'PROFILE_EMAIL' | translate ]></label>
                     <input class="form-control" autocomplete="off"
                            data-ng-class="{'error': vm.form.user_form.email.$invalid && vm.submitted}"
                            placeholder="E-Mail" data-ng-model="vm.user.email"
                            name="email" type="email" required>
                     <label class="error"
-                           data-ng-show="vm.form.user_form.email.$invalid && vm.submitted"><[ 'INVALID_EMAIL' | translate ]></label>
+                           data-ng-show="vm.form.user_form.email.$invalid && vm.submitted"><[ 'PROFILE_INVALID_EMAIL' | translate ]></label>
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary"><[ 'UPDATE' | translate ]>
+                    <button type="submit" class="btn btn-primary"><[ 'PROFILE_UPDATE' | translate ]>
                     </button>
                     <button type="button" class="btn btn-danger"
-                            ng-click="vm.close();"><[ 'CLOSE' | translate ]>
+                            ng-click="vm.close();"><[ 'PROFILE_CLOSE' | translate ]>
                     </button>
                 </div>
 

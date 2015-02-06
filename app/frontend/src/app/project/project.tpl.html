@@ -1,15 +1,15 @@
 <div class="row">
     <div class="col-lg-12">
         <ul class="breadcrumb">
-            <li><a href="/"><i class="icon-home"></i>&nbsp;Home</a></li>
+            <li><a href="/"><i class="icon-home"></i>&nbsp;<[ 'BREADCRUMB_HOME' | translate ]></a></li>
             <li><[ project.name ]></li>
             <li class="active">
-                <span ng-if="vm.planning"><[ 'PLANNING' | translate ]></span>
-                <span ng-if="vm.board"><[ 'BOARD' | translate ]></span>
-                <span ng-if="vm.reports"><[ 'REPORTS' | translate ]></span>
-                <span ng-if="vm.archived"><[ 'ARCHIVED_SPRINTS' | translate ]></span>
-                <span ng-if="vm.closed_tickets"><[ 'ARCHIVED_TICKETS' | translate ]></span>
-                <span ng-if="vm.settings"><[ 'PROJECT_SETTINGS' | translate ]></span>
+                <span ng-if="vm.planning"><[ 'PROJECT_PLANNING' | translate ]></span>
+                <span ng-if="vm.board"><[ 'PROJECT_BOARD' | translate ]></span>
+                <span ng-if="vm.reports"><[ 'PROJECT_REPORTS' | translate ]></span>
+                <span ng-if="vm.archived"><[ 'PROJECT_ARCHIVED_SPRINTS' | translate ]></span>
+                <span ng-if="vm.closed_tickets"><[ 'PROJECT_ARCHIVED_TICKETS' | translate ]></span>
+                <span ng-if="vm.settings"><[ 'PROJECT_PROJECT_SETTINGS' | translate ]></span>
             </li>
         </ul>
         <section class="panel">
@@ -18,28 +18,28 @@
                     <li ui-sref-active="active">
                         <a href="#"
                            ui-sref="project.planning({project_pk: project._id.$oid})"
-                           ui-sref-opts="{reload: true}"><[ 'PLANNING' | translate ]></a>
+                           ui-sref-opts="{reload: true}"><[ 'PROJECT_PLANNING' | translate ]></a>
                     </li>
                     <li ui-sref-active="active">
                         <a ui-sref="project.board({project_pk: project._id.$oid})"
-                           ui-sref-opts="{reload: true}"><[ 'BOARD' | translate ]></a>
+                           ui-sref-opts="{reload: true}"><[ 'PROJECT_BOARD' | translate ]></a>
                     </li>
                     <li ui-sref-active="active" ng-if="vm.is_scrumm()">
                         <a ui-sref="project.reports({project_pk: project._id.$oid})"
-                           ui-sref-opts="{reload: true}"><[ 'REPORTS' | translate ]></a>
+                           ui-sref-opts="{reload: true}"><[ 'PROJECT_REPORTS' | translate ]></a>
                     </li>
                     <li ui-sref-active="active" ng-if="vm.is_scrumm()">
                         <a ui-sref="project.archived({project_pk: project._id.$oid})"
-                           ui-sref-opts="{reload: true}"><[ 'ARCHIVED_SPRINTS' | translate ]></a>
+                           ui-sref-opts="{reload: true}"><[ 'PROJECT_ARCHIVED_SPRINTS' | translate ]></a>
                     </li>
                     <li ui-sref-active="active">
                         <a ui-sref="project.closed_tickets({project_pk: project._id.$oid})"
-                                ui-sref-opts="{reload: true}"><[ 'ARCHIVED_TICKETS' | translate ]></a>
+                                ui-sref-opts="{reload: true}"><[ 'PROJECT_ARCHIVED_TICKETS' | translate ]></a>
                     </li>
                     <li ng-show="vm.check_permission()"
                         ui-sref-active="active">
                         <a ui-sref="project.settings({project_pk: project._id.$oid})"
-                                ui-sref-opts="{reload: true}"><[ 'PROJECT_SETTINGS' | translate ]></a>
+                                ui-sref-opts="{reload: true}"><[ 'PROJECT_PROJECT_SETTINGS' | translate ]></a>
                     </li>
                 </ul>
             </header>

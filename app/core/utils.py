@@ -1,11 +1,25 @@
 import os
 import threading
 import json
+import re
+from datetime import datetime
 from flask import make_response, current_app, copy_current_request_context
 from flask_mail import Mail, Message
 from itsdangerous import JSONWebSignatureSerializer
 from jinja2 import Environment, FileSystemLoader
-from app.schemas import UserActivity, Project, User
+from app.core.schemas import UserActivity, Project, User
+
+EMAIL_REGEX = re.compile(
+    r'\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b',
+    re.IGNORECASE
+)
+
+
+def utcnow():
+    """
+    Returns the current (naive) UTC datetime.
+    """
+    return datetime.utcnow()
 
 
 def serialize_data(data):

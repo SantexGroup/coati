@@ -1,9 +1,17 @@
-flask==0.10.1
-flask-mongoengine==0.7.1
-flask-restful==0.2.12
-flask-oauth==0.12
-flask-redis==0.0.6
+# Flask, MongoDB, Redis
+Flask==0.10.1
+Flask-Redis==0.0.6
+Flask-Script==2.0.5
+Flask-RESTful==0.3.1
+Flask-Oauth==0.12
+flask_mongoengine==0.7.1
 mongoengine==0.8.7
 mongoengine-extras==0.0.1
+
+# Fabric, for automated deployments.
+Fabric==1.10.1
+fabtools==0.19.0
+
+# More Python modules
 python-dateutil==2.3
 

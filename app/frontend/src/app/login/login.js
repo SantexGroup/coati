@@ -54,7 +54,7 @@
             });
     }
 
-    var LoginController = function(state, LoginService) {
+    var LoginController = function(state, LoginService, StorageService) {
         var vm = this;
 
         vm.form = {};

@@ -237,16 +237,12 @@ class ProjectMemberInstance(AuthResource):
             return jsonify({'error': 'Not Found'}), 404
 
     def delete(self, project_pk, member_pk, *args, **kwargs):
-        data = request.get_json(force=True, silent=True)
-        if data:
-            try:
-                pm = ProjectMember.objects.get(pk=member_pk)
-                pm.delete()
-                return jsonify({'success': True}), 200
-            except DoesNotExist:
-                return jsonify({'error': 'Not Found'}), 404
-
-        return jsonify({'error': 'Bad Request'}), 400
+        try:
+            pm = ProjectMember.objects.get(pk=member_pk)
+            pm.delete()
+            return jsonify({'success': True}), 200
+        except DoesNotExist:
+            return jsonify({'error': 'Not Found'}), 404
 
 
 class ProjectMembers(AuthResource):

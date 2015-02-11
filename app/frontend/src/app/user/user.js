@@ -37,6 +37,11 @@
     var UserProfileController = function (rootScope, modalInstance, UserService) {
         var vm = this;
         vm.user = rootScope.user;
+        vm.image = {
+            resized:{
+                dataURL: vm.user.picture
+            }
+        };
 
         vm.save = function () {
             if (vm.form.user_form.$valid) {
@@ -56,7 +61,7 @@
 
     };
 
-    var UserController = function (rootScope, timeout, growl, modal, UserService, SocketIO) {
+    var UserController = function (rootScope, filter, timeout, growl, modal, UserService, SocketIO) {
 
         var vm = this;
         vm.notifications = [];
@@ -78,6 +83,7 @@
                 act.data = JSON.parse(v.activity.data);
                 vm.notifications.push(act);
             });
+            vm.new_notifications = filter('filter', vm.all_notifications,{viewed:false});
         };
         var getNotifications = function () {
 
@@ -150,7 +156,7 @@
     };
 
     ConfigModule.$inject = ['$stateProvider', '$translateProvider'];
-    UserController.$inject = ['$rootScope', '$timeout', 'growl', '$modal', 'UserService', 'SocketIO'];
+    UserController.$inject = ['$rootScope', '$filter', '$timeout', 'growl', '$modal', 'UserService', 'SocketIO'];
     NotificationController.$inject = ['$rootScope', 'UserService', 'SocketIO'];
     UserProfileController.$inject = ['$rootScope', '$modalInstance', 'UserService'];
 

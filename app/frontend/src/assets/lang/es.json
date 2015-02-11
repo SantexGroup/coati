@@ -6,13 +6,14 @@
     "MAIN_PROFILE": "Perfil",
     "MAIN_ALL_NOTIFICATIONS": "Ver todas las notificaciones",
     "MAIN_NOTIFICATION_LIST": "Lista de notificaciones",
-    "MAIN_NEW_NOTIFICATIONS": "Tienes {numero} nuevas notificaciones",
+    "MAIN_NEW_NOTIFICATIONS": "Nuevas notificaciones",
+    "ALL_NOTIFICATIONS": "Todas las Notificaciones",
 
     "BREADCRUMB_HOME": "Inicio",
 
     "NOTIFICACIONES": "Notificaciones",
     "NOTIFICATIONS_ALL": "Todas las notificaciones",
-    "NOTIFICATIONS_TOTAL": "Total de Mensajes: {totales}",
+    "NOTIFICATIONS_TOTAL": "Total de Mensajes: ",
     "NOTIFICATIONS_MENTION": "te mencionaron en",
     "NOTIFICATIONS_POSTED_IN": "ha escrito en",
     "NOTIFICATIONS_COMMENT_FOR": "un nuevo comentario para",
@@ -129,6 +130,8 @@
     "SETTINGS_COLUMN_COLOR_ALERT": "Alerta de color",
     "SETTINGS_COLUMN_IS_DONE": "Es de Finalizacion",
     "SETTINGS_SELECT_MEMBERS": "Seleccionar miembros",
+    "SETTINGS_ALERT_TICKET_AMOUNT": "Alerta cuando exceda",
+    "SETTINGS_DONE_COLUMN": "Columna de Finalizacion",
 
     "SPRINT_ARCHIVED": "Sprints Archivados",
     "SPRINT_TOTAL_SPRINTS": "Total de Sprints",

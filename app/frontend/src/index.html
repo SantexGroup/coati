@@ -85,8 +85,8 @@
                         <div class="notify-arrow-right notify-arrow-yellow"></div>
                         <li>
                             <p class="yellow">
-                                <span ng-if="(vm.all_notifications | filter:{viewed:false}).length > 0"><[ 'MAIN_NEW_NOTIFICATIONS' | translate: '{number: vm.all_notifications | filter:{viewed:false}).length}' ]></span>
-                                <span ng-if="(vm.all_notifications | filter:{viewed:false}).length < 1"><[ 'MAIN_NOTIFICATION_LIST' | translate ]></span>
+                                <span ng-if="vm.new_notifications.length > 0"><[ vm.new_notifications.length ]> <[ 'MAIN_NEW_NOTIFICATIONS' | translate ]></span>
+                                <span ng-if="vm.new_notifications.length < 1"><[ 'MAIN_NOTIFICATION_LIST' | translate ]></span>
                             </p>
                         </li>
                         <li ng-repeat="n in vm.notifications"

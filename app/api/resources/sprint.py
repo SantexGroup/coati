@@ -57,7 +57,7 @@ class SprintList(AuthResource):
         save_notification(project_pk=project_pk,
                           author=kwargs['user_id']['pk'],
                           verb='new_sprint',
-                          data=sp.to_json())
+                          data=sp.to_dict())
         return sp.to_json(), 201
 
 
@@ -117,7 +117,7 @@ class SprintInstance(AuthResource):
             save_notification(project_pk=project_pk,
                               author=kwargs['user_id']['pk'],
                               verb='update_sprint',
-                              data=sp.to_json())
+                              data=sp.to_dict())
 
             return sp.to_json(), 200
 
@@ -130,7 +130,7 @@ class SprintInstance(AuthResource):
         save_notification(project_pk=project_pk,
                           author=kwargs['user_id']['pk'],
                           verb='delete_sprint',
-                          data=sp.to_json())
+                          data=sp.to_dict())
 
         sp.delete()
 

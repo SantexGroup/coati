@@ -69,7 +69,7 @@ module.exports = {
             'vendor/jquery/dist/jquery.min.js',
             'vendor/jquery-ui/ui/minified/jquery-ui.min.js',
             'vendor/angular/angular.min.js',
-            'vendor/lodash/dist/lodash.min.js',
+            'vendor/lodash/lodash.min.js',
             'vendor/angular-ui-router/release/angular-ui-router.js',
             'vendor/angular-ui-utils/modules/route/route.js',
             'vendor/angular-bootstrap/ui-bootstrap.min.js',

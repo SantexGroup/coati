@@ -17,8 +17,11 @@
     "NOTIFICATIONS_MENTION": "te mencionaron en",
     "NOTIFICATIONS_POSTED_IN": "ha escrito en",
     "NOTIFICATIONS_COMMENT_FOR": "un nuevo comentario para",
+    "NOTIFICATIONS_NEW_TICKET": "ha creado una nueva tarea en",
     "NOTIFICATIONS_UPDATED_IN": "Actualización en",
     "NOTIFICATIONS_THE_TICKET": "la tarea",
+    "NOTIFICATIONS_NEW_MEMBERS": "ha agregado nuevo/s miembro/s al proyecto",
+    "NOTIFICATIONS_WELCOME": "bienvenido/s",
 
     "HOME_WELCOME_MESSAGE": "Bienvenido a Coati Tablero Agil.",
     "HOME_NO_PROJECTS": "Usted no tiene proyectos creado todavía!",

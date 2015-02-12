@@ -276,7 +276,7 @@ class ProjectMembers(AuthResource):
                         m.save()
                         # Send email notification
                         send_new_member_email_async(m.member, project)
-                        members_added.append(m.to_json())
+                        members_added.append(m.to_dict())
                     else:
                         return jsonify({'success': False,
                                         'message': 'Already added'}), 200

@@ -60,7 +60,7 @@ class TicketInstance(AuthResource):
             save_notification(project_pk=project_pk,
                               author=kwargs['user_id']['pk'],
                               verb='update_ticket',
-                              data=tkt.to_json())
+                              data=tkt.to_dict())
 
             return tkt.to_json(), 200
         return jsonify({'error': 'Bad Request'}), 400
@@ -72,7 +72,7 @@ class TicketInstance(AuthResource):
             save_notification(project_pk=project_pk,
                               author=kwargs['user_id']['pk'],
                               verb='delete_ticket',
-                              data=tkt.to_json())
+                              data=tkt.to_dict())
             tkt.delete()
 
             return jsonify({'success': True}), 200
@@ -131,7 +131,7 @@ class TicketProjectList(AuthResource):
         save_notification(project_pk=project_pk,
                           author=kwargs['user_id']['pk'],
                           verb='new_ticket',
-                          data=tkt.to_json())
+                          data=tkt.to_dict())
 
         return tkt.to_json(), 201
 
@@ -351,7 +351,7 @@ class TicketTransition(AuthResource):
                     save_notification(project_pk=project_pk,
                                       author=kwargs['user_id']['pk'],
                                       verb='ticket_transition',
-                                      data=transition.to_json())
+                                      data=transition.to_dict())
 
                     return transition.to_json(), 201
                 else:
@@ -414,13 +414,13 @@ class TicketComments(AuthResource):
                                       author=kwargs['user_id']['pk'],
                                       verb='mention',
                                       user_to=u,
-                                      data=c.to_json())
+                                      data=c.to_dict())
             else:
                 # save activity
                 save_notification(project_pk=project_pk,
                                   author=kwargs['user_id']['pk'],
                                   verb='new_comment',
-                                  data=c.to_json())
+                                  data=c.to_dict())
 
             return c.to_json(), 201
         return jsonify({'error': 'Bad Request'}), 400
@@ -451,7 +451,7 @@ class TicketAttachments(AuthResource):
             save_notification(project_pk=project_pk,
                               author=kwargs['user_id']['pk'],
                               verb='new_attachment',
-                              data=att.to_json())
+                              data=att.to_dict())
 
             return att.to_json(), 200
 
@@ -475,7 +475,7 @@ class AttachmentInstance(AuthResource):
         save_notification(project_pk=project_pk,
                           author=kwargs['user_id']['pk'],
                           verb='delete_attachment',
-                          data=att.to_json())
+                          data=att.to_dict())
 
         att.delete()
         return jsonify({}), 204
@@ -497,7 +497,7 @@ class MemberTicketInstance(AuthResource):
                 save_notification(project_pk=project_pk,
                                   author=kwargs['user_id']['pk'],
                                   verb='new_assigment',
-                                  data=tkt.to_json())
+                                  data=tkt.to_dict())
                 return jsonify({'success': True}), 200
             return jsonify({'fail': 'Already added'}), 200
         except DoesNotExist as ex:
@@ -512,7 +512,7 @@ class MemberTicketInstance(AuthResource):
             save_notification(project_pk=project_pk,
                               author=kwargs['user_id']['pk'],
                               verb='delete_assignment',
-                              data=tkt.to_json())
+                              data=tkt.to_dict())
             return jsonify({'success': True}), 200
         except DoesNotExist as ex:
             return jsonify({'error': 'Bad Request'}), 400

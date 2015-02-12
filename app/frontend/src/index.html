@@ -57,18 +57,18 @@
                 ng-controller="UserCtrl as vm">
                 <li dropdown>
                     <a dropdown-toggle href="#">
-                       <img ng-src="/static/assets/img/flags/<[ main.selectedLanguage ]>.png"/>
+                        <img ng-src="/static/assets/img/flags/<[ main.selectedLanguage ]>.png"/>
                     </a>
                     <ul class="dropdown-menu">
                         <li>
-                          <a href="#" ng-click="main.switchLanguage('en')">
-                              <img src="/static/assets/img/flags/en.png" />
-                              <span><[ 'MAIN_ENGLISH' | translate ]></span>
-                          </a>
+                            <a href="#" ng-click="main.switchLanguage('en')">
+                                <img src="/static/assets/img/flags/en.png"/>
+                                <span><[ 'MAIN_ENGLISH' | translate ]></span>
+                            </a>
                         </li>
                         <li>
                             <a href="#" ng-click="main.switchLanguage('es')">
-                                <img src="/static/assets/img/flags/es.png" />
+                                <img src="/static/assets/img/flags/es.png"/>
                                 <span><[ 'MAIN_SPANISH' | translate ]></span>
                             </a>
                         </li>
@@ -89,11 +89,10 @@
                                 <span ng-if="vm.new_notifications.length < 1"><[ 'MAIN_NOTIFICATION_LIST' | translate ]></span>
                             </p>
                         </li>
-                        <li ng-repeat="n in vm.notifications"
+                        <li ng-repeat="n in vm.all_notifications"
                             ng-class="{new:!n.viewed}">
-                            <ng-include ng-if="n.activity.verb == 'mention'" src="'user/notifications/mention.tpl.html'"></ng-include>
-                            <ng-include ng-if="n.activity.verb == 'new_comment'" src="'user/notifications/new_comment.tpl.html'"></ng-include>
-                            <ng-include ng-if="n.activity.verb == 'update_ticket'" src="'user/notifications/update_ticket.tpl.html'"></ng-include>
+                            <ng-include
+                                    src="'user/notifications/wrapper_notification.tpl.html'"></ng-include>
                         </li>
                         <li>
                             <a href="javascript:;" ui-sref="notifications">
@@ -117,11 +116,13 @@
                         <div class="log-arrow-up"></div>
                         <li><a href="javascript:;"
                                ng-click="vm.show_profile();"><i
-                                class=" icon-suitcase"></i> <[ 'MAIN_PROFILE' | translate ]></a>
+                                class=" icon-suitcase"></i> <[ 'MAIN_PROFILE' |
+                            translate ]></a>
                         </li>
                         <li><a ng-href="/auth/logout" href="/logout"
                                target="_self"><i
-                                class="icon-key"></i> <[ 'MAIN_LOG_OUT' | translate ]></a>
+                                class="icon-key"></i> <[ 'MAIN_LOG_OUT' |
+                            translate ]></a>
                         </li>
                     </ul>
                 </li>

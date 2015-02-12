@@ -9,18 +9,16 @@
                 <span><[ 'NOTIFICATIONS' | translate ]></span>
 
                 <div class="add-task-row pull-right">
-                    <span class="badge bg-inverse"><[ 'NOTIFICATIONS_TOTAL' | translate ]> <[vm.notifications.length]></span>
+                    <span class="badge bg-inverse"><[ 'NOTIFICATIONS_TOTAL' | translate ]> <[vm.all_notifications.length]></span>
                 </div>
                 <div style="clear:both"></div>
             </header>
             <div class="panel-body">
                 <ul class="notification-list">
-                    <li ng-repeat="n in vm.notifications"
+                    <li ng-repeat="n in vm.all_notifications"
                         ng-class="{new:!n.viewed}">
-                        <ng-include ng-if="n.activity.verb == 'mention'"
-                                    src="'user/notifications/mention.tpl.html'"></ng-include>
-                        <ng-include ng-if="n.activity.verb == 'new_comment'"
-                                    src="'user/notifications/new_comment.tpl.html'"></ng-include>
+                        <ng-include
+                                    src="'user/notifications/wrapper_notification.tpl.html'"></ng-include>
 
                     </li>
                 </ul>

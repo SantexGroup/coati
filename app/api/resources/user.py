@@ -1,7 +1,7 @@
 import json
 import hashlib
 
-from flask import request, jsonify, current_app
+from flask import request, jsonify, current_app, g
 from flask.ext.restful import Resource
 from mongoengine import Q, DoesNotExist
 
@@ -15,7 +15,7 @@ class UsersList(AuthResource):
     def __init__(self):
         super(UsersList, self).__init__()
 
-    def get(self, *args, **kwargs):
+    def get(self):
         return User.objects.all().to_json()
 
 
@@ -23,7 +23,7 @@ class UserSearch(AuthResource):
     def __init__(self):
         super(UserSearch, self).__init__()
 
-    def get(self, query, *args, **kwargs):
+    def get(self, query):
         users = User.objects(Q(email__istartswith=query) |
                              Q(first_name__istartswith=query) |
                              Q(last_name__istartswith=query))
@@ -38,10 +38,10 @@ class UserInstance(AuthResource):
     def __init__(self):
         super(UserInstance, self).__init__()
 
-    def get(self, pk, *args, **kwargs):
+    def get(self, pk):
         return User.objects.get(id=pk).to_json()
 
-    def put(self, pk, *args, **kwargs):
+    def put(self, pk):
         data = request.get_json(force=True, silent=True)
         if data:
             user = User.objects.get(pk=pk)
@@ -59,9 +59,9 @@ class UserLogged(AuthResource):
     def __init__(self):
         super(UserLogged, self).__init__()
 
-    def get(self, *args, **kwargs):
-        if kwargs['user_id']:
-            return User.objects.get(pk=kwargs['user_id']['pk']).to_json()
+    def get(self):
+        if g.user_id:
+            return User.objects.get(pk=g.user_id).to_json()
         return jsonify({}), 204
 
 
@@ -70,7 +70,7 @@ class UserLogin(Resource):
     def __init__(self):
         super(UserLogin, self).__init__()
 
-    def post(self, *args, **kwargs):
+    def post(self):
         data = request.get_json(force=True, silent=True)
         if data:
             email = data.get('email')
@@ -94,7 +94,7 @@ class UserRegister(Resource):
         super(UserRegister, self).__init__()
 
 
-    def post(self, *args, **kwargs):
+    def post(self):
         data = request.get_json(force=True, silent=True)
         if data:
             email = data.get('email')
@@ -125,7 +125,7 @@ class UserActivate(Resource):
     def __init__(self):
         super(UserActivate, self).__init__()
 
-    def get(self, code, *args, **kwargs):
+    def get(self, code):
         try:
             user = User.objects.get(activation_token=code)
             user.active = True
@@ -142,17 +142,15 @@ class UserNotifications(AuthResource):
     def __init__(self):
         super(UserNotifications, self).__init__()
 
-    def get(self, *args, **kwargs):
-        data = UserNotification.objects(user=kwargs['user_id']['pk'])\
-                   .order_by('viewed')\
-                   .order_by('activity__when')
+    def get(self):
+        data = UserNotification.objects(user=g.user_id).order_by('viewed').order_by('activity__when')
         if request.args.get('total'):
             data = data[:int(request.args.get('total'))]
         return data.to_json(), 200
 
-    def put(self, *args, **kwargs):
-        UserNotification.objects(user=kwargs['user_id']['pk']).update(set__viewed=True)
-        data = UserNotification.objects(user=kwargs['user_id']['pk']).order_by('activity__when')
+    def put(self):
+        UserNotification.objects(user=g.user_id).update(set__viewed=True)
+        data = UserNotification.objects(user=g.user_id).order_by('activity__when')
         if request.args.get('total'):
             data = data[:int(request.args.get('total'))]
         return data.to_json(), 200

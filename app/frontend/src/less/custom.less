@@ -302,12 +302,15 @@ input.error {
 .task-list .ticket-item,
 .task-list .user-story {
   font-size: 12px;
-  padding: 15px 0 15px 10px !important;
+  padding: 15px 5px 15px 10px !important;
   position: relative;
   background: #f5f6f8;
   margin-bottom: 2px;
   border-bottom: none !important;
   cursor: pointer;
+}
+.task-list .ticket-item .editable-wrap {
+  width:100%;
 }
 
 .board-area .ticket-item, .board-area .user-story {
@@ -781,7 +784,18 @@ a.unread {
   color: #2E2E2E;
   background-color: #F7F8F9 !important;
 }
-
+.notification .notification-items{
+  height: 300px;
+  overflow-y: auto;
+}
+.notification .notification-items small,
+.notification-list small{
+  display: block;
+  color: #aaa;
+}
+.notification-list small{
+  margin-left: 26px;
+}
 .project-item .panel {
   padding: 0px 0px 15px;
 }

@@ -155,12 +155,10 @@
             });
         };
 
-        var getTicket = function (ticket_id, show_loading) {
-            vm.loading = (show_loading !== undefined ? show_loading : true);
+        var getTicket = function (ticket_id) {
             TicketService.get(vm.project._id.$oid, ticket_id).then(function (tkt) {
                 vm.ticket = tkt;
                 vm.labels = tkt.labels;
-                vm.loading = false;
                 getComments(tkt._id.$oid);
             }, function () {
                 modalInstance.dismiss('error loading ticket');
@@ -185,6 +183,10 @@
         vm.project = item.project;
         getTicket(item.ticket_id);
         getMembers();
+
+        vm.is_scrumm = function(){
+            return vm.project.project_type === "S";
+        };
 
         vm.show = function (form) {
             if (!vm.no_editing) {

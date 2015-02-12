@@ -1,7 +1,7 @@
 import json
 from functools import wraps
 
-from flask import request
+from flask import request, g
 from app.auth.tools import get_data_from_token, verify_token, \
     check_user_permissions
 
@@ -22,11 +22,10 @@ def require_authentication(view_function):
             res.content_type = 'application/json'
             return res
         token = header.split(' ')[1]
-        if verify_token(token):
-            kwargs['user_id'] = get_data_from_token(token)
-            if check_user_permissions(kwargs['user_id']['pk'],
-                                      kwargs.get('project_pk')):
-
+        token_data = verify_token(token)
+        if token_data is not None:
+            g.user_id = token_data['pk']
+            if check_user_permissions(g.user_id, kwargs.get('project_pk')):
                 return view_function(*args, **kwargs)
             else:
                 res = output_json(

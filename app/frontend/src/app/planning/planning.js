@@ -35,11 +35,9 @@
             });
         };
 
-        var getTicketsForProject = function (project_id, show_loading) {
-            vm.loading_backlog = (show_loading !== undefined ? show_loading : true);
+        var getTicketsForProject = function (project_id) {
             TicketService.query(project_id).then(function (tkts) {
                 vm.tickets = tkts;
-                vm.loading_backlog = false;
             });
         };
 

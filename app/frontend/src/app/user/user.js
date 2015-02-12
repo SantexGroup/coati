@@ -18,19 +18,19 @@
                 pageTitle: 'User Profile'
             }
         })
-        .state('notifications', {
-            url: '/notifications',
-            views: {
-                "main": {
-                    controller: 'NotificationController',
-                    controllerAs: 'vm',
-                    templateUrl: 'user/notifications/all.tpl.html'
+            .state('notifications', {
+                url: '/notifications',
+                views: {
+                    "main": {
+                        controller: 'NotificationController',
+                        controllerAs: 'vm',
+                        templateUrl: 'user/notifications/all.tpl.html'
+                    }
+                },
+                data: {
+                    pageTitle: 'Notifications'
                 }
-            },
-            data: {
-                pageTitle: 'Notifications'
-            }
-        });
+            });
 
     }
 
@@ -38,7 +38,7 @@
         var vm = this;
         vm.user = rootScope.user;
         vm.image = {
-            resized:{
+            resized: {
                 dataURL: vm.user.picture
             }
         };
@@ -64,26 +64,20 @@
     var UserController = function (rootScope, filter, timeout, growl, modal, UserService, SocketIO) {
 
         var vm = this;
-        vm.notifications = [];
+        vm.new_notifications = [];
 
         rootScope.$watch('user', function (new_value) {
             if (new_value !== undefined && new_value !== null) {
                 vm.user = new_value;
-                if(UserService.is_logged()){
+                if (UserService.is_logged()) {
                     SocketIO.user_channel(vm.user._id.$oid);
                 }
             }
         });
 
         var preProcessNotifications = function (list) {
-            vm.notifications = [];
             vm.all_notifications = list;
-            angular.forEach(list, function (v, k) {
-                var act = v;
-                act.data = JSON.parse(v.activity.data);
-                vm.notifications.push(act);
-            });
-            vm.new_notifications = filter('filter', vm.all_notifications,{viewed:false});
+            vm.new_notifications = filter('filter')(vm.all_notifications, {viewed: false});
         };
         var getNotifications = function () {
 
@@ -93,22 +87,19 @@
         };
 
         vm.loadNotifications = function () {
-            timeout(function () {
+            if (UserService.is_logged()) {
                 if (!vm.all_notifications) {
-                    if (UserService.is_logged()) {
-                        getNotifications();
+                    getNotifications();
+                }
+                timeout(function () {
+                    if (vm.new_notifications.length > 0) {
+                        //Call to set as read
+                        UserService.mark_as_viewed(10).then(function (list) {
+                            preProcessNotifications(list);
+                        });
                     }
-                }
-                var items = _.filter(vm.all_notifications, function (n) {
-                    return n.viewed === false;
-                });
-                if (items.length > 0) {
-                    //Call to set as read
-                    UserService.mark_as_viewed(10).then(function (list) {
-                        preProcessNotifications(list);
-                    });
-                }
-            }, 1500);
+                }, 5000);
+            }
         };
 
         vm.show_profile = function () {
@@ -129,21 +120,13 @@
 
     };
 
-    var NotificationController = function(rootScope, UserService, SocketIO){
+    var NotificationController = function (rootScope, UserService, SocketIO) {
         var vm = this;
 
-        var preProcessNotifications = function (list) {
-            vm.notifications = [];
-            angular.forEach(list, function (v, k) {
-                var act = v;
-                act.activity.data = JSON.parse(v.activity.data);
-                vm.notifications.push(act);
-            });
-        };
         var getNotifications = function () {
 
             UserService.notifications().then(function (list) {
-                preProcessNotifications(list);
+                vm.all_notifications = list;
             });
         };
 

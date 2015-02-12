@@ -499,7 +499,7 @@ class UserActivity(CustomDocument):
     when = mongoengine.DateTimeField(default=datetime.now())
     verb = mongoengine.StringField()
     author = mongoengine.ReferenceField('User')
-    data = mongoengine.StringField()
+    data = mongoengine.DictField()
     to = mongoengine.ReferenceField('User')
 
     meta = {
@@ -525,6 +525,7 @@ class UserActivity(CustomDocument):
                 un = UserNotification(activity=document)
                 un.user = pm.member
                 un.save()
+                #TODO: Send emails to notify
                 r = RedisClient(channel=str(un.user.pk))
                 r.store(document.verb, str(document.author.pk))
 
@@ -541,15 +542,11 @@ class UserNotification(CustomDocument):
 
     def to_json(self, *args, **kwargs):
         data = self.to_dict()
-        data['activity'] = self.activity.to_dict()
-        data['activity']['project'] = self.activity.project.to_dict()
-        author = self.activity.author.to_dict()
-        if 'password' in author.keys():
-            del author['password']
-        if 'activation_token' in author.keys():
-            del author['activation_token']
-        data['activity']['author'] = author
-        data['activity']['data'] = json_util.loads(self.activity.data)
+        if self.activity.__class__.__name__ != 'DBRef':
+            data['activity'] = self.activity.to_dict()
+            data['activity']['project'] = self.activity.project.to_dict()
+            data['activity']['author'] = self.activity.author.to_dict()
+            data['activity']['data'] = self.activity.data
         return json_util.dumps(data)
 
 # Signals

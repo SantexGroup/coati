@@ -1,0 +1,10 @@
+<ng-include ng-if="n.activity.verb == 'mention'"
+            src="'user/notifications/mention.tpl.html'"></ng-include>
+<ng-include ng-if="n.activity.verb == 'new_comment'"
+            src="'user/notifications/new_comment.tpl.html'"></ng-include>
+<ng-include ng-if="n.activity.verb == 'update_ticket'"
+            src="'user/notifications/update_ticket.tpl.html'"></ng-include>
+<ng-include ng-if="n.activity.verb == 'new_ticket'"
+            src="'user/notifications/new_ticket.tpl.html'"></ng-include>
+<ng-include ng-if="n.activity.verb == 'new_members'"
+            src="'user/notifications/new_members.tpl.html'"></ng-include>

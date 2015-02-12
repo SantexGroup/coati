@@ -17,8 +17,11 @@
     "NOTIFICATIONS_MENTION": "mentioned you in",
     "NOTIFICATIONS_POSTED_IN": "posted in",
     "NOTIFICATIONS_COMMENT_FOR": "a new comment for",
+    "NOTIFICATIONS_NEW_TICKET": "has created a ticket in",
     "NOTIFICATIONS_UPDATED_IN": "update in",
     "NOTIFICATIONS_THE_TICKET": "the ticket",
+    "NOTIFICATIONS_NEW_MEMBERS": "has added a new member/s to the project",
+    "NOTIFICATIONS_WELCOME": "welcome",
 
     "HOME_WELCOME_MESSAGE": "Welcome to Coati Agile Project.",
     "HOME_NO_PROJECTS": "You don't have Projects created yet!",

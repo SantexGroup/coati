@@ -117,6 +117,7 @@
                 <span><[ 'PLANNING_BACKLOG' | translate ]></span>
 
                 <div class="add-task-row pull-right">
+                    <input type="text" class="form-control input-sm search" ng-model="vm.searchBacklog" placeholder="Search..." />
                     <span class="badge bg-inverse"><[ 'PLANNING_TOTAL_TICKETS' | translate ]>: <[ vm.tickets.length ]></span>
                     <span class="badge bg-inverse" ng-if="vm.is_scrumm()"><[ 'PLANNING_TOTAL_POINTS' | translate ]>: <[ vm.tickets | sumValue:'points' ]></span>
                     <a ng-if="vm.is_scrumm()" class="btn btn-primary btn-sm"
@@ -130,7 +131,7 @@
                 <div class="task-content">
                     <ul class="task-list" ui-sortable="vm.sortTicketOptions"
                         ng-model="vm.tickets">
-                        <li ng-repeat="tkt in vm.tickets track by tkt._id.$oid"
+                        <li ng-repeat="tkt in vm.tickets | filter: {'title': vm.searchBacklog} track by tkt._id.$oid"
                             class="user-story <[ tkt.type ]>"
                             ui-sref="project.planning.ticket({ticket_id:tkt._id.$oid, project_pk:vm.project._id.$oid})"
                                 >

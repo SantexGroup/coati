@@ -21,6 +21,7 @@
     var ProjectCtrlPlanning = function (rootScope, scope, state, modal, growl, ProjectService, TicketService, SprintService, SocketIO) {
         var vm = this;
         vm.ticket_detail = null;
+        vm.searchBacklog = '';
 
 
         var getSprintsWithTickets = function (project_id) {

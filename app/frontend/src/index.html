@@ -82,17 +82,22 @@
                               ng-if="(vm.all_notifications | filter:{viewed:false}).length > 0"><[ (vm.all_notifications | filter:{viewed:false}).length ]></span>
                     </a>
                     <ul class="dropdown-menu extended notification">
-                        <div class="notify-arrow-right notify-arrow-yellow"></div>
                         <li>
+                            <div class="notify-arrow-right notify-arrow-yellow"></div>
                             <p class="yellow">
                                 <span ng-if="vm.new_notifications.length > 0"><[ vm.new_notifications.length ]> <[ 'MAIN_NEW_NOTIFICATIONS' | translate ]></span>
                                 <span ng-if="vm.new_notifications.length < 1"><[ 'MAIN_NOTIFICATION_LIST' | translate ]></span>
                             </p>
                         </li>
-                        <li ng-repeat="n in vm.all_notifications"
-                            ng-class="{new:!n.viewed}">
-                            <ng-include
-                                    src="'user/notifications/wrapper_notification.tpl.html'"></ng-include>
+                        <li>
+                            <ul class="notification-items">
+                                <li ng-repeat="n in vm.all_notifications"
+                                    ng-class="{new:!n.viewed}">
+                                    <ng-include
+                                            src="'user/notifications/wrapper_notification.tpl.html'"></ng-include>
+                                </li>
+                            </ul>
+
                         </li>
                         <li>
                             <a href="javascript:;" ui-sref="notifications">

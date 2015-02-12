@@ -1,6 +1,6 @@
 (function (angular) {
 
-    function ConfigApp(interpolate, location, urlRoute, growlProvider, translateProvider) {
+    function ConfigApp(interpolate, location, urlRoute, growlProvider, translateProvider, loadingBar) {
         urlRoute.when('/', '/home/');
         location.html5Mode({
             enabled: true,
@@ -18,6 +18,9 @@
         translateProvider.preferredLanguage('en')
             .fallbackLanguage('en')
             .useStorage('StorageService');
+        loadingBar.includeSpinner = false;
+        loadingBar.latencyThreshold = 500;
+
     }
 
 
@@ -170,7 +173,7 @@
     filterTrustedHTML.$inject = ['$sce'];
     filterNl2Br.$inject = ['$sce'];
     RunApp.$inject = ['$rootScope', '$state', '$stateParams', '$objects', 'StorageService', 'editableOptions', 'editableThemes'];
-    ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider', '$translateProvider'];
+    ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider', '$translateProvider', 'cfpLoadingBarProvider'];
     AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', 'tokens', 'TicketService', 'SocketIO', '$translate', 'StorageService'];
 
     angular.module('Coati', [

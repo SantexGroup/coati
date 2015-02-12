@@ -2,7 +2,7 @@ import json
 from datetime import timedelta, datetime
 
 from dateutil import parser
-from flask import jsonify, request
+from flask import jsonify, request, g
 from mongoengine import DoesNotExist
 
 from app.schemas import (Sprint, Project, SprintTicketOrder, Ticket,
@@ -15,7 +15,7 @@ class SprintOrder(AuthResource):
     def __init__(self):
         super(SprintOrder, self).__init__()
 
-    def post(self, project_pk, *args, **kwargs):
+    def post(self, project_pk):
         data = request.get_json(force=True, silent=True)
         if data:
             for index, s in enumerate(data):
@@ -24,7 +24,6 @@ class SprintOrder(AuthResource):
                 sprint.save()
             # save activity
             save_notification(project_pk=project_pk,
-                              author=kwargs['user_id']['pk'],
                               verb='order_sprints',
                               data=data)
 
@@ -36,11 +35,11 @@ class SprintList(AuthResource):
     def __init__(self):
         super(SprintList, self).__init__()
 
-    def get(self, project_pk, *args, **kwargs):
+    def get(self, project_pk):
         return Sprint.objects(project=project_pk, finalized=False).order_by(
             'order').to_json()
 
-    def post(self, project_pk, *args, **kwargs):
+    def post(self, project_pk):
         """
         Create Sprint
         """
@@ -55,7 +54,6 @@ class SprintList(AuthResource):
 
         # save activity
         save_notification(project_pk=project_pk,
-                          author=kwargs['user_id']['pk'],
                           verb='new_sprint',
                           data=sp.to_dict())
         return sp.to_json(), 201
@@ -65,11 +63,11 @@ class SprintInstance(AuthResource):
     def __init__(self):
         super(SprintInstance, self).__init__()
 
-    def get(self, project_pk, sp_id, *args, **kwargs):
+    def get(self, project_pk, sp_id):
         sp = Sprint.objects.get(pk=sp_id)
-        return sp.to_json, 200
+        return sp.to_json(), 200
 
-    def put(self, project_pk, sp_id, *args, **kwargs):
+    def put(self, project_pk, sp_id):
         data = request.get_json(force=True, silent=True)
         if data:
             sp = Sprint.objects.get(pk=sp_id)
@@ -115,7 +113,6 @@ class SprintInstance(AuthResource):
 
             # save activity
             save_notification(project_pk=project_pk,
-                              author=kwargs['user_id']['pk'],
                               verb='update_sprint',
                               data=sp.to_dict())
 
@@ -123,12 +120,11 @@ class SprintInstance(AuthResource):
 
         return jsonify({"error": 'Bad Request'}), 400
 
-    def delete(self, project_pk, sp_id, *args, **kwargs):
+    def delete(self, project_pk, sp_id):
         sp = Sprint.objects.get(pk=sp_id)
 
         # save activity
         save_notification(project_pk=project_pk,
-                          author=kwargs['user_id']['pk'],
                           verb='delete_sprint',
                           data=sp.to_dict())
 
@@ -141,7 +137,7 @@ class SprintActive(AuthResource):
     def __init__(self):
         super(SprintActive, self).__init__()
 
-    def get(self, project_pk, *args, **kwargs):
+    def get(self, project_pk):
         sprints = Sprint.objects(project=project_pk,
                                  started=True,
                                  finalized=False)
@@ -157,7 +153,7 @@ class SprintTickets(AuthResource):
     def __init__(self):
         super(SprintTickets, self).__init__()
 
-    def get(self, project_pk, sprint_id, *args, **kwargs):
+    def get(self, project_pk, sprint_id):
         sprint = Sprint.objects.get(pk=sprint_id)
         if sprint:
             return sprint.get_tickets_board_backlog()
@@ -168,7 +164,7 @@ class SprintChart(AuthResource):
     def __init__(self):
         super(SprintChart, self).__init__()
 
-    def get(self, project_pk, sprint_id, *args, **kwargs):
+    def get(self, project_pk, sprint_id):
         sprint = Sprint.objects.get(pk=sprint_id)
         if sprint:
             # include the weekends??
@@ -332,7 +328,7 @@ class SprintArchivedList(AuthResource):
     def __init__(self):
         super(SprintArchivedList, self).__init__()
 
-    def get(self, project_pk, *args, **kwargs):
+    def get(self, project_pk):
         return Sprint.objects(project=project_pk, finalized=True).order_by(
             'order').to_json(archived=True)
 
@@ -341,5 +337,5 @@ class SprintAllList(AuthResource):
     def __init__(self):
         super(SprintAllList, self).__init__()
 
-    def get(self, project_pk, *args, **kwargs):
+    def get(self, project_pk):
         return Sprint.objects(project=project_pk).order_by('order').to_json()

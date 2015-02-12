@@ -99,9 +99,6 @@
                         });
                     }
                 }, 5000);
-                timeout(function(){
-                    vm.all_notifications = undefined;
-                }, 20000);
             }
         };
 

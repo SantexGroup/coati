@@ -525,6 +525,7 @@ class UserActivity(CustomDocument):
                 un = UserNotification(activity=document)
                 un.user = pm.member
                 un.save()
+                #TODO: Send emails to notify
                 r = RedisClient(channel=str(un.user.pk))
                 r.store(document.verb, str(document.author.pk))
 

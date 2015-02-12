@@ -124,8 +124,8 @@ def verify_token(token):
     if token_data:
         expired = token_data.get('expire')
         if datetime.fromtimestamp(expired) >= datetime.now():
-            return True
-    return False
+            return token_data
+    return None
 
 
 def generate_token(user_id):

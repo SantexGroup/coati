@@ -2,7 +2,7 @@ import json
 import urllib2
 import base64
 
-from flask import jsonify
+from flask import jsonify, g
 from flask.ext.restful import request
 from mongoengine import DoesNotExist
 
@@ -16,21 +16,19 @@ class ProjectList(AuthResource):
     def __init__(self):
         super(ProjectList, self).__init__()
 
-    def get(self, *args, **kwargs):
-        return ProjectMember.get_projects_for_member(
-            kwargs['user_id']['pk']), 200
+    def get(self):
+        return ProjectMember.get_projects_for_member(g.user_id), 200
 
-    def post(self, *args, **kwargs):
+    def post(self):
         """
         Create Project
         """
-        user_id = kwargs['user_id']['pk']
         data = request.get_json(force=True, silent=True)
         if not data:
             msg = "payload must be a valid json"
             return jsonify({"error": msg}), 400
         try:
-            user = User.objects.get(pk=user_id)
+            user = User.objects.get(pk=g.user_id)
         except DoesNotExist, e:
             return jsonify({"error": 'owner user does not exist'}), 400
 
@@ -64,8 +62,8 @@ class ProjectList(AuthResource):
 
         # save activity
         save_notification(project_pk=prj.pk,
-                          author=kwargs['user_id']['pk'],
-                          verb='new_project')
+                          verb='new_project',
+                          data=prj.to_dict())
 
         return prj.to_json(), 201
 
@@ -74,11 +72,11 @@ class ProjectInstance(AuthResource):
     def __init__(self):
         super(ProjectInstance, self).__init__()
 
-    def get(self, project_pk, *args, **kwargs):
+    def get(self, project_pk):
         prj = Project.objects.get(pk=project_pk).select_related(max_depth=2)
         return prj.to_json(), 200
 
-    def put(self, project_pk, *args, **kwargs):
+    def put(self, project_pk):
         project = Project.objects.get(pk=project_pk)
         data = request.get_json(force=True, silent=True)
         if not data:
@@ -97,12 +95,12 @@ class ProjectInstance(AuthResource):
 
         # save activity
         save_notification(project_pk=project.pk,
-                          author=kwargs['user_id']['pk'],
-                          verb='update_project')
+                          verb='update_project',
+                          data=project.to_dict())
 
         return project.to_json(), 200
 
-    def delete(self, project_pk, *args, **kwargs):
+    def delete(self, project_pk):
         project = Project.objects.get(pk=project_pk)
         project.delete()
         return jsonify({}), 204
@@ -112,10 +110,10 @@ class ProjectColumns(AuthResource):
     def __init__(self):
         super(ProjectColumns, self).__init__()
 
-    def get(self, project_pk, *args, **kwargs):
+    def get(self, project_pk):
         return Column.objects(project=project_pk).order_by('order').to_json()
 
-    def post(self, project_pk, *args, **kwargs):
+    def post(self, project_pk):
         data = request.get_json(force=True, silent=True)
         if not data:
             msg = "payload must be a valid json"
@@ -141,9 +139,8 @@ class ProjectColumns(AuthResource):
 
         # save activity
         save_notification(project_pk=project.pk,
-                          author=kwargs['user_id']['pk'],
                           verb='new_column',
-                          data=col.to_json())
+                          data=col.to_dict())
 
         return col.to_json(), 200
 
@@ -152,10 +149,10 @@ class ProjectColumn(AuthResource):
     def __init__(self):
         super(ProjectColumn, self).__init__()
 
-    def get(self, project_pk, column_pk, *args, **kwargs):
+    def get(self, project_pk, column_pk):
         return Column.objects.get(pk=column_pk).to_json()
 
-    def put(self, project_pk, column_pk, *args, **kwargs):
+    def put(self, project_pk, column_pk):
         col = Column.objects.get(pk=column_pk)
         data = request.get_json(force=True, silent=True)
         if col and data:
@@ -174,21 +171,19 @@ class ProjectColumn(AuthResource):
 
             # save activity
             save_notification(project_pk=col.project.pk,
-                              author=kwargs['user_id']['pk'],
                               verb='update_column',
-                              data=col.to_json())
+                              data=col.to_dict())
 
             return col.to_json(), 200
         return jsonify({"error": 'Bad Request'}), 400
 
-    def delete(self, project_pk, column_pk, *args, **kwargs):
+    def delete(self, project_pk, column_pk):
         col = Column.objects.get(pk=column_pk)
         if col:
             # save activity
             save_notification(project_pk=col.project.pk,
-                              author=kwargs['user_id']['pk'],
                               verb='delete_column',
-                              data=col.to_json())
+                              data=col.to_dict())
 
             col.delete()
             return jsonify({"success": True}), 200
@@ -199,7 +194,7 @@ class ProjectColumnsOrder(AuthResource):
     def __init__(self):
         super(ProjectColumnsOrder, self).__init__()
 
-    def post(self, project_pk, *args, **kwargs):
+    def post(self, project_pk):
         data = request.get_json(force=True, silent=True)
         if data:
             for index, c in enumerate(data):
@@ -209,7 +204,6 @@ class ProjectColumnsOrder(AuthResource):
 
             # save activity
             save_notification(project_pk=project_pk,
-                              author=kwargs['user_id']['pk'],
                               verb='order_columns',
                               data=data)
             return jsonify({'success': True}), 200
@@ -220,10 +214,10 @@ class ProjectMemberInstance(AuthResource):
     def __init__(self):
         super(ProjectMemberInstance, self).__init__()
 
-    def get(self, project_pk, member_pk, *args, **kwargs):
+    def get(self, project_pk, member_pk):
         return ProjectMember.objects.get(pk=member_pk).to_json()
 
-    def put(self, project_pk, member_pk, *args, **kwargs):
+    def put(self, project_pk, member_pk):
         try:
             pm = ProjectMember.objects.get(pk=member_pk)
             project = Project.objects.get(pk=project_pk)
@@ -236,7 +230,7 @@ class ProjectMemberInstance(AuthResource):
         except DoesNotExist:
             return jsonify({'error': 'Not Found'}), 404
 
-    def delete(self, project_pk, member_pk, *args, **kwargs):
+    def delete(self, project_pk, member_pk):
         try:
             pm = ProjectMember.objects.get(pk=member_pk)
             pm.delete()
@@ -249,10 +243,10 @@ class ProjectMembers(AuthResource):
     def __init__(self):
         super(ProjectMembers, self).__init__()
 
-    def get(self, project_pk, *args, **kwargs):
+    def get(self, project_pk):
         return ProjectMember.objects(project=project_pk).to_json()
 
-    def post(self, project_pk, *args, **kwargs):
+    def post(self, project_pk):
         data = request.get_json(force=True, silent=True)
         if data:
             project = Project.objects.get(pk=project_pk)
@@ -282,7 +276,6 @@ class ProjectMembers(AuthResource):
                                         'message': 'Already added'}), 200
             # save activity
             save_notification(project_pk=project_pk,
-                              author=kwargs['user_id']['pk'],
                               verb='new_members',
                               data={'members': members_added})
             return jsonify({'success': True}), 200
@@ -293,7 +286,7 @@ class ProjectImport(AuthResource):
     def __init__(self):
         super(ProjectImport, self).__init__()
 
-    def post(self, project_pk, *args, **kwargs):
+    def post(self, project_pk):
         """
         Import cards and columns
         """
@@ -358,7 +351,6 @@ class ProjectImport(AuthResource):
 
         # save activity
         save_notification(project_pk=project_pk,
-                          author=kwargs['user_id']['pk'],
                           verb='import',
                           data=data)
 

@@ -1,10 +1,11 @@
 import os
 import threading
-import json
-from flask import make_response, current_app, copy_current_request_context
+
+from flask import make_response, current_app, copy_current_request_context, g
 from flask_mail import Mail, Message
 from itsdangerous import JSONWebSignatureSerializer
 from jinja2 import Environment, FileSystemLoader
+
 from app.schemas import UserActivity, Project, User
 
 
@@ -79,10 +80,10 @@ def output_json(obj, code, headers=None):
     return resp
 
 
-def save_notification(project_pk, author, verb, data=None, user_to=None):
+def save_notification(project_pk, verb, data=None, user_to=None):
     ua = UserActivity()
     ua.project = Project.objects.get(pk=project_pk)
-    ua.author = User.objects.get(pk=author)
+    ua.author = User.objects.get(pk=g.user_id)
     ua.verb = verb
     ua.data = data
     ua.to = user_to

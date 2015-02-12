@@ -6,20 +6,21 @@
                 var token_data = window.localStorage.getItem('token_data');
                 if (token_data != null) {
                     token_data = JSON.parse(token_data);
-                    var expire_in_seconds = token_data['expire'];
+                    var date_expiration = token_data['date_expiration'];
                     var token = token_data['token'];
                     var now = new Date().getTime();
-                    var expire = now + (expire_in_seconds * 1000);
-                    if (expire >= now) {
+                    if (date_expiration >= now) {
                         return token;
                     }
                 }
                 return null;
             },
             'store_token': function (token, expire) {
+                var now = new Date().getTime();
                 var data = {
                     'token': token,
-                    'expire': expire
+                    'expire': expire,
+                    'date_expiration':  now + (expire * 1000)
                 };
                 window.localStorage.setItem('token_data', JSON.stringify(data));
             }

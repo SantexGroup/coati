@@ -31,7 +31,8 @@
 <div class="row">
     <div class="col-md-12">
         <div class="col-md-10">
-        <label ng-if="vm.is_scrumm()"><[ 'TICKET_POINTS' | translate ]></label>
+            <label ng-if="vm.is_scrumm()"><[ 'TICKET_POINTS' | translate
+                ]></label>
                             <span ng-if="vm.is_scrumm()"
                                   class="badge bg-important"
                                   editable-text="vm.ticket.points"
@@ -40,7 +41,7 @@
                                   ng-click="vm.show(points_form)">
                                 <[ vm.ticket.points ]>
                             </span>
-        <label><[ 'TICKET_TYPE' | translate ]>:</label>
+            <label><[ 'TICKET_TYPE' | translate ]>:</label>
                         <span class="badge <[ vm.ticket.type]>"
                               editable-select="vm.ticket.type"
                               e-form="type_form"
@@ -49,14 +50,16 @@
                               onbeforesave="vm.saveTicket(vm.ticket);">
                             <[ vm.types | ticketTypes:vm.ticket.type ]>
                         </span>
-        <label><[ 'TICKET_IN_COLUMN' | translate ]>:</label>
+            <label><[ 'TICKET_IN_COLUMN' | translate ]>:</label>
                         <span ng-if="!vm.ticket.in_column"
                               class="badge bg-warning"><[ 'TICKET_BACKLOG' | translate ]></span>
                         <span ng-if="vm.ticket.in_column"
                               class="badge bg-warning"><[ vm.ticket.in_column ]></span>
         </div>
         <div class="col-md-2">
-            <button type="button" ng-if="!vm.is_scrumm()" ng-click="vm.archive_ticket();" class="btn btn-xs btn-danger">
+            <button type="button" ng-if="!vm.is_scrumm()"
+                    ng-click="vm.archive_ticket();"
+                    class="btn btn-xs btn-danger">
                 <[ 'TICKET_ACTION_ARCHIVE' | translate ]>
             </button>
         </div>
@@ -75,7 +78,8 @@
                      ng-src="<[ m.member.picture ]>">
                 <img ng-if="!m.member.picture"
                      src="/static/assets/img/koala.png">
-                <i class="icon-ok assigned-member" ng-show="vm.checkMember(m);"></i>
+                <i class="icon-ok assigned-member"
+                   ng-show="vm.checkMember(m);"></i>
             </li>
         </ul>
     </div>
@@ -89,7 +93,7 @@
            ng-click="vm.show(decription_form)" ng-disabled="vm.no_editing"
            e-rows="5"
            e-cols="70" onbeforesave="vm.saveTicket(vm.ticket);">
-            <[ vm.ticket.description ]>
+            <span ng-bind-html="vm.ticket.description | nl2br"></span>
                 <span ng-if="!vm.ticket.description"
                       class="ng-scope"><[ 'TICKET_NO_DESCRIPTION' | translate ]></span>
         </p>
@@ -147,7 +151,8 @@
             <button class="btn pull-left btn-sm btn-primary"
                     ng-file-select ng-model="vm.files"
                     multiple="true"
-                    ng-disabled="vm.no_editing"><[ 'TICKET_SELECT_FILES' | translate ]>
+                    ng-disabled="vm.no_editing"><[ 'TICKET_SELECT_FILES' |
+                translate ]>
             </button>
             <button ng-show="vm.files.length"
                     ng-click="vm.confirm_upload();"
@@ -213,7 +218,8 @@
             <button id="add-comment"
                     class="btn btn-success pull-right"
                     ng-disabled="vm.process_comment || vm.no_editing"
-                    ng-click="vm.add_new_comment($event)"><[ 'TICKET_NEW_COMMENT' | translate ]>
+                    ng-click="vm.add_new_comment($event)"><[
+                'TICKET_NEW_COMMENT' | translate ]>
             </button>
             <div style="clear:both"></div>
         </div>

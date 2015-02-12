@@ -72,9 +72,21 @@
         };
     };
 
-    var filterTrustedHTML = function ($sce) {
+    var filterTrustedHTML = function (sce) {
         return function (text) {
-            return $sce.trustAsHtml(text);
+            return sce.trustAsHtml(text);
+        };
+    };
+
+    var filterNl2Br =  function(sce) {
+        return function (msg, is_xhtml) {
+            if(msg === undefined){
+                return;
+            }
+            var xhtml = is_xhtml || true;
+            var breakTag = (xhtml) ? '<br />' : '<br>';
+            var data = (msg + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
+            return sce.trustAsHtml(data);
         };
     };
 
@@ -156,6 +168,7 @@
 
     // Injections
     filterTrustedHTML.$inject = ['$sce'];
+    filterNl2Br.$inject = ['$sce'];
     RunApp.$inject = ['$rootScope', '$state', '$stateParams', '$objects', 'StorageService', 'editableOptions', 'editableThemes'];
     ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider', '$translateProvider'];
     AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', 'tokens', 'TicketService', 'SocketIO', '$translate', 'StorageService'];
@@ -187,6 +200,7 @@
         .filter('sumValue', sumValue)
         .filter('ticketTypes', filterTicketTypes)
         .filter('trustedHtml', filterTrustedHTML)
+        .filter('nl2br', filterNl2Br)
         .controller('AppCtrl', AppController);
 
 

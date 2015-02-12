@@ -1,37 +1,44 @@
 <h3>
     <[ vm.project.name ]>
     <a class="btn btn-success btn-sm pull-right" href="javascript:;"
-       ng-click="vm.add_or_edit($event);"><[ 'PLANNING_NEW_TICKET' | translate ]></a>
+       ng-click="vm.add_or_edit($event);"><[ 'PLANNING_NEW_TICKET' | translate
+        ]></a>
 </h3>
 <p><[ vm.project.description ]></p>
 <div class="row" id="planning">
     <div class="col-md-12" id="planning-list">
-        <ul ng-if="vm.is_scrumm()" class="sprint-section" ui-sortable="vm.sortSprintOptions"
+        <ul ng-if="vm.is_scrumm()" class="sprint-section"
+            ui-sortable="vm.sortSprintOptions"
             ng-model="vm.sprints">
             <li ng-repeat="sprint in vm.sprints"
                 class="sprint-item">
                 <section class="panel tasks-widget sprint-item"
                          ng-class="{started:sprint.started}">
                     <header class="panel-heading">
-                        <span editable-text="sprint.name" onbeforesave="vm.renameSprint(sprint);"><[ sprint.name ]></span>
+                        <span editable-text="sprint.name"
+                              onbeforesave="vm.renameSprint(sprint);"><[ sprint.name ]></span>
                         <span ng-if="sprint.started" class="sprint_dates">(<[ sprint.start_date.$date | date:'MM/dd/yyyy' ]> <[ 'PLANNING_TO' | translate ]> <[ sprint.end_date.$date | date:'MM/dd/yyyy']>)</span>
 
                         <div class="options pull-right">
                             <span class="badge bg-inverse"><[ 'PLANNING_TOTAL_TICKETS' | translate ]>: <[ sprint.tickets.length ]></span>
                             <span class="badge bg-inverse"><[ 'PLANNING_TOTAL_POINTS' | translate ]>: <[ sprint.tickets | sumValue:'points' ]></span>
                             <a ng-if="$index == 0 && !vm.one_started && !sprint.finalized && !sprint.started"
-                               class="btn btn-primary btn-sm" href="javascript:;"
-                               ng-click="vm.startSprint(sprint);"><[ 'PLANNING_START_SPRINT' | translate ]></a>
+                               class="btn btn-primary btn-sm"
+                               href="javascript:;"
+                               ng-click="vm.startSprint(sprint);"><[
+                                'PLANNING_START_SPRINT' | translate ]></a>
                             <a ng-if="sprint.started && !sprint.finalized"
                                class="btn btn-primary btn-sm"
                                href="javascript:;"
                                ng-click="vm.edit_sprint(sprint);"><['PLANNING_EDIT_SPRINT']></a>
                             <a ng-if="sprint.started && !sprint.finalized"
                                class="btn btn-danger btn-sm" href="javascript:;"
-                               ng-click="vm.stopSprint(sprint);"><[ 'PLANNING_STOP_SPRINT' | translate ]></a>
+                               ng-click="vm.stopSprint(sprint);"><[
+                                'PLANNING_STOP_SPRINT' | translate ]></a>
                             <a class="btn btn-sm btn-danger"
                                ng-click="vm.remove_sprint(sprint._id.$oid)">
-                                <i class="icon-remove"></i> <[ 'PLANNING_REMOVE_SPRINT' | translate ]>
+                                <i class="icon-remove"></i> <[
+                                'PLANNING_REMOVE_SPRINT' | translate ]>
                             </a>
                         </div>
                         <div style="clear:both"></div>
@@ -52,9 +59,14 @@
 
                                         <div class="pull-right hidden-phone">
                                             <span class="badge bg-warning"><[ tkt.points ]> Pts.</span>
-                                            <span ng-if="tkt.badges.comments > 0" class="badge" title="Comments"><i class="icon-comments"></i> <[ tkt.badges.comments ]></span>
-                                            <span ng-if="tkt.badges.files > 0" class="badge"
-                                                  title="Attachments"><i class="icon-paper-clip"></i> <[ tkt.badges.files ]></span>
+                                            <span ng-if="tkt.badges.comments > 0"
+                                                  class="badge"
+                                                  title="Comments"><i
+                                                    class="icon-comments"></i> <[ tkt.badges.comments ]></span>
+                                            <span ng-if="tkt.badges.files > 0"
+                                                  class="badge"
+                                                  title="Attachments"><i
+                                                    class="icon-paper-clip"></i> <[ tkt.badges.files ]></span>
                                             <button title="Delete Ticket"
                                                     class="btn btn-danger btn-xs icon-trash"
                                                     ng-click="vm.delete_ticket($event, tkt);"></button>
@@ -63,11 +75,32 @@
                                 </li>
                                 <li class="ticket-item new-ticket NEW"
                                     title="Click to create a new ticket">
-                                    <div e-style="display: inline-block;width: 100%"
-                                         editable-text="vm.new_ticket"
-                                         onaftersave="vm.saveQuickTicket(sprint);">
-                                        <[ 'PLANNING_FAST_NEW_TICKET' | translate ]>
+                                    <div
+                                            onaftersave="vm.saveQuickTicket(sprint);"
+                                            editable-text="vm.new_ticket"
+                                            e-form="ticketFormSprint"
+                                            ng-show="!ticketFormSprint.$visible"
+                                            e-ng-keypress="$event.which === 13 ? ticketFormSprint.$submit() : false"
+                                            ng-click="ticketFormSprint.$show()">
+                                        <[ 'PLANNING_FAST_NEW_TICKET' |
+                                        translate ]>
                                     </div>
+                                    <form editable-form name="ticketFormSprint"
+                                          ng-show="ticketFormSprint.$visible"
+                                          class="form-buttons form-inline"
+                                          style="margin: 5px 0 0">
+                                        <button type="submit"
+                                                ng-disabled="ticketFormSprint.$waiting"
+                                                class="btn btn-primary">
+                                            <i class="icon-ok"></i>
+                                        </button>
+                                        <button type="button"
+                                                ng-disabled="ticketFormSprint.$waiting"
+                                                ng-click="ticketFormSprint.$cancel()"
+                                                class="btn btn-default">
+                                            <i class="icon-remove"></i>
+                                        </button>
+                                    </form>
                                 </li>
                             </ul>
                         </div>
@@ -83,8 +116,10 @@
                 <div class="add-task-row pull-right">
                     <span class="badge bg-inverse"><[ 'PLANNING_TOTAL_TICKETS' | translate ]>: <[ vm.tickets.length ]></span>
                     <span class="badge bg-inverse" ng-if="vm.is_scrumm()"><[ 'PLANNING_TOTAL_POINTS' | translate ]>: <[ vm.tickets | sumValue:'points' ]></span>
-                    <a ng-if="vm.is_scrumm()" class="btn btn-primary btn-sm" href="javascript:;"
-                       ng-click="vm.create_sprint();"><[ 'PLANNING_CREATE_SPRINT' | translate ]></a>
+                    <a ng-if="vm.is_scrumm()" class="btn btn-primary btn-sm"
+                       href="javascript:;"
+                       ng-click="vm.create_sprint();"><[
+                        'PLANNING_CREATE_SPRINT' | translate ]></a>
                 </div>
                 <div style="clear:both"></div>
             </header>
@@ -109,9 +144,14 @@
                                 </span>
 
                                 <div class="pull-right hidden-phone">
-                                    <span class="badge bg-warning" ng-if="vm.is_scrumm()"><[ tkt.points ]> Pts.</span>
-                                    <span ng-if="tkt.badges.comments > 0" class="badge" title="Comments"><i class="icon-comments"></i> <[ tkt.badges.comments ]></span>
-                                    <span ng-if="tkt.badges.files > 0" class="badge" title="Attachments"><i class="icon-paper-clip"></i> <[ tkt.badges.files ]></span>
+                                    <span class="badge bg-warning"
+                                          ng-if="vm.is_scrumm()"><[ tkt.points ]> Pts.</span>
+                                    <span ng-if="tkt.badges.comments > 0"
+                                          class="badge" title="Comments"><i
+                                            class="icon-comments"></i> <[ tkt.badges.comments ]></span>
+                                    <span ng-if="tkt.badges.files > 0"
+                                          class="badge" title="Attachments"><i
+                                            class="icon-paper-clip"></i> <[ tkt.badges.files ]></span>
                                     <button title="Delete Ticket"
                                             class="btn btn-danger btn-xs icon-trash"
                                             ng-click="vm.delete_ticket($event,tkt);"></button>
@@ -120,10 +160,32 @@
                         </li>
                         <li class="ticket-item new-ticket NEW"
                             title="Click to create a new ticket">
-                            <div e-style="display: inline-block;width: 100%"
-                                 editable-text="vm.new_ticket"
-                                 onaftersave="vm.saveQuickTicket();"><[ 'PLANNING_FAST_NEW_TICKET' | translate ]>
+                            <div
+                                    editable-text="vm.new_ticket"
+                                    e-form="ticketFormBacklog"
+                                    onaftersave="vm.saveQuickTicket();"
+                                    e-ng-keypress="$event.which === 13 ? ticketFormBacklog.$submit() : false"
+                                    ng-show="!ticketFormBacklog.$visible"
+                                    ng-click="ticketFormBacklog.$show()"><[
+                                'PLANNING_FAST_NEW_TICKET' | translate ]>
+
                             </div>
+                            <form editable-form name="ticketFormBacklog"
+                                  ng-show="ticketFormBacklog.$visible"
+                                  class="form-buttons form-inline"
+                                  style="margin: 5px 0 0">
+                                <button type="submit"
+                                        ng-disabled="ticketFormBacklog.$waiting"
+                                        class="btn btn-primary">
+                                    <i class="icon-ok"></i>
+                                </button>
+                                <button type="button"
+                                        ng-disabled="ticketFormBacklog.$waiting"
+                                        ng-click="ticketFormBacklog.$cancel()"
+                                        class="btn btn-default">
+                                    <i class="icon-remove"></i>
+                                </button>
+                            </form>
                         </li>
                     </ul>
                 </div>

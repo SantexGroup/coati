@@ -106,9 +106,18 @@
             }
             TicketService.save(vm.project._id.$oid, new_ticket).then(function (tkt) {
                 getSprintsWithTickets(vm.project._id.$oid);
-                getTicketsForProject(vm.project._id.$oid, false);
+                getTicketsForProject(vm.project._id.$oid);
                 vm.new_ticket = null;
             });
+        };
+
+        vm.clone_ticket = function(e, tkt){
+            TicketService.clone(vm.project._id.$oid, tkt._id.$oid).then(function (tkt) {
+                getSprintsWithTickets(vm.project._id.$oid);
+                getTicketsForProject(vm.project._id.$oid);
+                vm.new_ticket = null;
+            });
+            e.stopPropagation();
         };
 
         vm.delete_ticket = function (e, tkt) {
@@ -129,7 +138,7 @@
             });
             modal_instance.result.then(function () {
                 getSprintsWithTickets(vm.project._id.$oid);
-                getTicketsForProject(vm.project._id.$oid, false);
+                getTicketsForProject(vm.project._id.$oid);
                 growl.addSuccessMessage('The ticket was deleted successfully');
             });
             e.stopPropagation();
@@ -193,7 +202,7 @@
             });
             modal_instance.result.then(function () {
                 growl.addSuccessMessage('The sprint was stopped successfully');
-                getTicketsForProject(vm.project._id.$oid, false);
+                getTicketsForProject(vm.project._id.$oid);
                 getSprintsWithTickets(vm.project._id.$oid);
             });
         };
@@ -315,7 +324,7 @@
         vm.remove_sprint = function (sprint_id) {
             SprintService.erase(vm.project._id.$oid, sprint_id).then(function () {
                 getSprintsWithTickets(vm.project._id.$oid);
-                getTicketsForProject(vm.project._id.$oid, false);
+                getTicketsForProject(vm.project._id.$oid);
                 growl.addSuccessMessage('The sprint was deleted successfully');
             });
         };
@@ -336,12 +345,12 @@
 
         //Socket actions
         SocketIO.on('backlog_order', function () {
-            getTicketsForProject(vm.project._id.$oid, false);
+            getTicketsForProject(vm.project._id.$oid);
         });
 
         SocketIO.on('ticket_movement', function () {
             getSprintsWithTickets(vm.project._id.$oid);
-            getTicketsForProject(vm.project._id.$oid, false);
+            getTicketsForProject(vm.project._id.$oid);
         });
         SocketIO.on('order_sprints', function () {
             getSprintsWithTickets(vm.project._id.$oid);
@@ -357,7 +366,7 @@
         });
         SocketIO.on('update_ticket', function () {
             getSprintsWithTickets(vm.project._id.$oid);
-            getTicketsForProject(vm.project._id.$oid, false);
+            getTicketsForProject(vm.project._id.$oid);
         });
 
     };

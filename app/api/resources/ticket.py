@@ -527,3 +527,28 @@ class TicketBoardProject(AuthResource):
 
     def get(self, project_pk):
         return Project.objects.get(pk=project_pk).get_tickets_board().to_json()
+
+
+class TicketClone(AuthResource):
+    def __init__(self):
+        super(TicketClone, self).__init__()
+
+    def post(self, project_pk, tkt_id):
+        try:
+            tkt = Ticket.objects.get(pk=tkt_id)
+            new_tkt = tkt.clone()
+            try:
+                last_tkt = Ticket.objects(project=project_pk).order_by('-number')
+                if last_tkt:
+                    number = last_tkt[0].number + 1
+                else:
+                    number = 1
+            except Exception as ex:
+                number = 1
+            new_tkt.number = number
+            new_tkt.order = Ticket.objects(project=project_pk).count()
+            new_tkt.save()
+            return new_tkt.to_json(), 201
+        except DoesNotExist:
+            return jsonify({'error': 'Does not exists'}), 404
+

@@ -67,6 +67,9 @@
                                                   class="badge"
                                                   title="Attachments"><i
                                                     class="icon-paper-clip"></i> <[ tkt.badges.files ]></span>
+                                            <button title="Clone Ticket"
+                                                    class="btn btn-primary btn-xs icon-copy"
+                                                    ng-click="vm.clone_ticket($event,tkt);"></button>
                                             <button title="Delete Ticket"
                                                     class="btn btn-danger btn-xs icon-trash"
                                                     ng-click="vm.delete_ticket($event, tkt);"></button>
@@ -145,6 +148,9 @@
                                     <span ng-if="tkt.badges.files > 0"
                                           class="badge" title="Attachments"><i
                                             class="icon-paper-clip"></i> <[ tkt.badges.files ]></span>
+                                    <button title="Clone Ticket"
+                                            class="btn btn-primary btn-xs icon-copy"
+                                            ng-click="vm.clone_ticket($event,tkt);"></button>
                                     <button title="Delete Ticket"
                                             class="btn btn-danger btn-xs icon-trash"
                                             ng-click="vm.delete_ticket($event,tkt);"></button>

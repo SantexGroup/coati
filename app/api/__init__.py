@@ -7,7 +7,7 @@ from resources.project import ProjectList, ProjectInstance, ProjectColumns, \
 from resources.ticket import TicketOrderProject, TicketOrderSprint, TicketProjectList, \
     TicketMovement, TicketInstance, TicketTransition, TicketColumnOrder, \
     TicketComments, TicketAttachments, AttachmentInstance, MemberTicketInstance, \
-    TicketSearch, TicketClosed, TicketBoardProject
+    TicketSearch, TicketClosed, TicketBoardProject, TicketClone
 from resources.user import UsersList, UserInstance, UserSearch, UserLogged, \
     UserLogin, UserRegister, UserActivate, UserNotifications
 from app.utils import output_json
@@ -47,12 +47,14 @@ def init_app(app, decorators=None):
     api.add_resource(SprintChart, '/project/<string:project_pk>/sprint/<string:sprint_id>/chart')
 
     api.add_resource(TicketProjectList, '/project/<string:project_pk>/tickets')
+
     api.add_resource(TicketBoardProject, '/project/<string:project_pk>/tickets/board')
     api.add_resource(TicketOrderProject, '/project/<string:project_pk>/tickets/order')
     api.add_resource(TicketOrderSprint, '/project/<string:project_pk>/tickets/sprint/<string:sprint_pk>/order')
     api.add_resource(TicketSearch, '/tickets/search/<string:query>')
     api.add_resource(TicketClosed, '/project/<string:project_pk>/tickets/archived')
     api.add_resource(TicketInstance, '/project/<string:project_pk>/ticket/<string:tkt_id>')
+    api.add_resource(TicketClone, '/project/<string:project_pk>/ticket/<string:tkt_id>/clone')
     api.add_resource(TicketComments, '/project/<string:project_pk>/ticket/<string:tkt_id>/comments')
     api.add_resource(TicketAttachments, '/project/<string:project_pk>/ticket/<string:tkt_id>/attachments')
     api.add_resource(AttachmentInstance, '/project/<string:project_pk>/ticket/<string:tkt_id>/attachments/<string:att_id>/delete')

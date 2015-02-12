@@ -20,6 +20,9 @@
             'save': function (project_pk, tkt) {
                 return req.$do('/project/' + project_pk + '/tickets', req.METHODS.POST, tkt);
             },
+            'clone': function(project_pk, tkt_id){
+                return req.$do('/project/' + project_pk + '/ticket/' + tkt_id  + '/clone', req.METHODS.POST);
+            },
             'update_backlog_order': function (project_pk, data) {
                 return req.$do('/project/' + project_pk + '/tickets/order', req.METHODS.POST, data);
             },

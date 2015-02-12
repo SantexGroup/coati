@@ -1,8 +1,10 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from copy import deepcopy
 
 import mongoengine
-from mongoengine import Q, signals, queryset_manager
+from mongoengine import Q, signals
 from bson import json_util
+
 from app.redis import RedisClient
 
 
@@ -27,9 +29,14 @@ class CustomDocument(mongoengine.Document):
     def to_dict(self):
         data = self.to_mongo()
         for f in self.excluded_fields:
-            if data.has_key(f):
+            if f in data:
                 del data[f]
         return data
+
+    def clone(self):
+        cloned = deepcopy(self)
+        cloned.id = None
+        return cloned
 
 
 class CustomQuerySet(mongoengine.QuerySet):

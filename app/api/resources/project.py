@@ -6,8 +6,12 @@ from flask import jsonify, g
 from flask.ext.restful import request
 from mongoengine import DoesNotExist
 
-from app.schemas import User, Project, Column, ProjectMember, Ticket, \
-    Attachment
+from app.core.user import User
+from app.core.project import Project
+from app.core.column import Column
+from app.core.project_member import ProjectMember
+from app.core.ticket import Ticket
+from app.core.attachment import Attachment
 from app.api.resources.auth_resource import AuthResource
 from app.utils import send_new_member_email_async, save_notification
 

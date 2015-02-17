@@ -5,8 +5,10 @@ from dateutil import parser
 from flask import jsonify, request, g
 from mongoengine import DoesNotExist
 
-from app.schemas import (Sprint, Project, SprintTicketOrder, Ticket,
-                         Column, TicketColumnTransition)
+from app.core.sprint import Sprint, SprintTicketOrder
+from app.core.project import Project
+from app.core.ticket import Ticket
+from app.core.column import Column, TicketColumnTransition
 from app.api.resources.auth_resource import AuthResource
 from app.utils import save_notification
 

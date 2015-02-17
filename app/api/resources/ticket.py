@@ -6,9 +6,14 @@ from flask import jsonify, g
 from flask.ext.restful import request
 
 from app.api.resources.auth_resource import AuthResource
-from app.schemas import (Project, Ticket, SprintTicketOrder,
-                         Sprint, TicketColumnTransition, Column, User, Comment,
-                         Attachment, ProjectMember)
+from app.core.ticket import Ticket
+from app.core.project import Project
+from app.core.sprint import SprintTicketOrder, Sprint
+from app.core.column import Column, TicketColumnTransition
+from app.core.user import User
+from app.core.comment import Comment
+from app.core.attachment import Attachment
+from app.core.project_member import ProjectMember
 from app.utils import save_notification
 
 

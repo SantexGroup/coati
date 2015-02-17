@@ -7,7 +7,7 @@ from mongoengine import Q, DoesNotExist
 
 from app.api.resources.auth_resource import AuthResource
 from app.auth import generate_token
-from app.schemas import User, UserNotification
+from app.core.user import User, UserNotification
 from app.utils import send_activation_email_async
 
 

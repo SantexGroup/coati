@@ -2,18 +2,21 @@
 Sprint factory module.
 SprintFactory
     A factory class to create Sprints.
+SprintTicketOrderFactory
+    A factory class to create Sprint ticket Orders.
 """
 from datetime import datetime, timedelta
 
 from app.core import sprint
-from app.core.factory_models import base, project
+from app.core.factory_models import base, ticket, project
 
 import factory
 from factory import fuzzy
 
 
 __all__ = [
-    'SprintFactory'
+    'SprintFactory',
+    'SprintTicketOrderFactory'
 ]
 
 
@@ -35,5 +38,21 @@ class SprintFactory(base.BaseFactory):
     started = False
     finalized = False
     total_points_when_started = fuzzy.FuzzyInteger(15)
+
+
+class SprintTicketOrderFactory(base.BaseFactory):
+    """
+    Sprint model factory.
+    """
+
+    class Meta:
+        model = sprint.SprintTicketOrder
+
+    ticket = factory.SubFactory(ticket.TicketFactory)
+    ticket_repr = factory.Dict({})
+    order = fuzzy.FuzzyInteger(0)
+    sprint = factory.SubFactory(SprintFactory)
+    active = True
+    when = fuzzy.FuzzyDateTime(datetime.now())
 
 

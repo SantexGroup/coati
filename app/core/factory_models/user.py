@@ -2,18 +2,21 @@
 User factory module.
 UserFactory
     A factory class to create Users.
+UserActivityFactory
+    A factory class to create UserActivities.
 """
 
-
+from datetime import datetime
 from app.core import user
-from app.core.factory_models import base
+from app.core.factory_models import base, project
 
 import factory
 from factory import fuzzy
 
 
 __all__ = [
-    'UserFactory'
+    'UserFactory',
+    'UserActivityFactory'
 ]
 
 
@@ -37,3 +40,19 @@ class UserFactory(base.BaseFactory):
             o.last_name
         ).lower()
     )
+
+
+class UserActivityFactory(base.BaseFactory):
+    """
+    UserActivityFactory model factory.
+    """
+
+    class Meta:
+        model = user.UserActivity
+
+    project = factory.SubFactory(project.ProjectFactory)
+    when = fuzzy.FuzzyDateTime(datetime.now())
+    verb = fuzzy.FuzzyText()
+    author = factory.SubFactory(UserFactory)
+    data = factory.Dict({})
+    to = factory.SubFactory(UserFactory)

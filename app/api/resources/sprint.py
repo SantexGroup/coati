@@ -2,7 +2,7 @@ import json
 from datetime import timedelta, datetime
 
 from dateutil import parser
-from flask import jsonify, request, g
+from flask import jsonify, request
 from mongoengine import DoesNotExist
 
 from app.core.sprint import Sprint, SprintTicketOrder

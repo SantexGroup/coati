@@ -3,6 +3,9 @@ from mongoengine import signals
 from datetime import datetime
 from app.core import db
 
+from app.core.column import TicketColumnTransition, Column
+from app.core.comment import Comment
+
 
 class Sprint(db.BaseDocument):
     name = db.StringField(max_length=100, required=True)

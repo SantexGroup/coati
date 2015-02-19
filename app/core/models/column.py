@@ -7,7 +7,7 @@ from mongoengine import errors
 from bson import json_util
 from datetime import datetime
 from app.core import db
-from comment import Comment
+from app.core.models.comment import Comment
 
 
 class Column(db.BaseDocument):

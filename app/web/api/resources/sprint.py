@@ -5,12 +5,12 @@ from dateutil import parser
 from flask import jsonify, request
 from mongoengine import DoesNotExist
 
-from app.core.sprint import Sprint, SprintTicketOrder
-from app.core.project import Project
-from app.core.ticket import Ticket
-from app.core.column import Column, TicketColumnTransition
-from app.api.resources.auth_resource import AuthResource
-from app.utils import save_notification
+from app.core.models.sprint import Sprint, SprintTicketOrder
+from app.core.models.project import Project
+from app.core.models.ticket import Ticket
+from app.core.models.column import Column, TicketColumnTransition
+from app.web.api.resources.auth_resource import AuthResource
+from app.web.api.utils import save_notification
 
 
 class SprintOrder(AuthResource):

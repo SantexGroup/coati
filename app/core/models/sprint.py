@@ -3,8 +3,8 @@ from mongoengine import signals
 from datetime import datetime
 from app.core import db
 
-from column import TicketColumnTransition, Column
-from comment import Comment
+from app.core.models.column import TicketColumnTransition, Column
+from app.core.models.comment import Comment
 
 
 class Sprint(db.BaseDocument):
@@ -24,7 +24,6 @@ class Sprint(db.BaseDocument):
         SprintTicketOrder.objects(sprint=document).delete()
         # delete ticket transition
         TicketColumnTransition.objects(sprint=document).delete()
-
 
     def to_json(self, *args, **kwargs):
         data = self.to_dict()
@@ -124,6 +123,7 @@ class Sprint(db.BaseDocument):
             raise db.ValidationError('Project must be provided')
 
 signals.pre_delete.connect(Sprint.pre_delete, sender=Sprint)
+
 
 class SprintTicketOrder(db.BaseDocument):
     ticket = db.ReferenceField('Ticket',

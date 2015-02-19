@@ -3,8 +3,8 @@ from datetime import datetime
 from mongoengine import signals
 from app.core import db
 
-from project import Project, ProjectMember
-from comment import Comment
+from app.core.models.project import Project, ProjectMember
+from app.core.models.comment import Comment
 from app.redis import RedisClient
 
 

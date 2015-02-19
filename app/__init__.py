@@ -6,8 +6,9 @@ from jinja2 import ChoiceLoader, FileSystemLoader
 from flask import Flask, render_template
 from flask.ext.mongoengine import MongoEngine
 
-from app import api, auth, utils
-from auth import decorators
+from app.web import api, auth
+from app.web.api import utils
+from app.web.auth import decorators
 
 
 app = Flask(__name__)

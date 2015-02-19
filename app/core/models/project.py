@@ -3,9 +3,10 @@ from datetime import datetime
 from mongoengine import Q, signals
 from app.core import db
 
-from sprint import Sprint, SprintTicketOrder
-from ticket import Ticket
-from column import Column, TicketColumnTransition
+from app.core.models.sprint import Sprint, SprintTicketOrder
+from app.core.models.ticket import Ticket
+from app.core.models.column import Column, TicketColumnTransition
+from app.core.models.user import User
 
 PROJECT_TYPE = (('S', 'Scrum'),
                 ('K', 'Kanban'))
@@ -15,7 +16,7 @@ class Project(db.BaseDocument):
     name = db.StringField(required=True, unique_with='owner')
     description = db.StringField()
     active = db.BooleanField(default=True)
-    owner = db.ReferenceField('User',
+    owner = db.ReferenceField(User,
                               reverse_delete_rule=db.CASCADE)
     prefix = db.StringField()
     sprint_duration = db.IntField()
@@ -91,9 +92,9 @@ signals.pre_delete.connect(Project.pre_delete, sender=Project)
 
 
 class ProjectMember(db.BaseDocument):
-    member = db.ReferenceField('User',
+    member = db.ReferenceField(User,
                                reverse_delete_rule=db.CASCADE)
-    project = db.ReferenceField('Project',
+    project = db.ReferenceField(Project,
                                 reverse_delete_rule=db.CASCADE)
     since = db.DateTimeField(default=datetime.now())
     is_owner = db.BooleanField(default=False)

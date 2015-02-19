@@ -38,7 +38,7 @@
             }
             canvas.width = width;
             canvas.height = height;
-            ctx = canvas.getContext("2d");
+            ctx = canvas.getContext('2d');
             ctx.drawImage(origImage, 0, 0, width, height);
             return canvas.toDataURL(type, parseFloat(quality));
         };
@@ -119,7 +119,7 @@
             restrict: 'E',
             template: '<canvas></canvas>',
             scope: {
-                chartData: "=value"
+                chartData: '=value'
             },
             transclude: true,
             replace: true,
@@ -139,61 +139,27 @@
                     if (chart !== undefined) {
                         chart.destroy();
                     }
-                    var ctx = element[0].getContext("2d");
+                    var ctx = element[0].getContext('2d');
                     var options = {
                         bezierCurve: false,
                         scaleShowGridLines: true,
-                        scaleGridLineColor: "rgba(0,0,0,.05)",
+                        scaleGridLineColor: 'rgba(0,0,0,.05)',
                         scaleGridLineWidth: 1,
                         datasetFill: false,
                         responsive: true,
                         showTooltip: true,
                         tooltipFontSize: 10,
                         // String - Tooltip font weight style
-                        tooltipFontStyle: "normal",
+                        tooltipFontStyle: 'normal',
                         // String - Tooltip label font colour
-                        tooltipFontColor: "#fff",
+                        tooltipFontColor: '#fff',
                         // Number - Tooltip title font size in pixels
                         tooltipTitleFontSize: 12,
-                        tooltipTemplate: "<%=label%>: <%= Math.round(value) %>",
-                        multiTooltipTemplate: "<%=datasetLabel%>: <%= Math.round(value) %>",
-                        /*customTooltips: function (tooltip) {
-                            console.log(arguments);
-                            // tooltip will be false if tooltip is not visible or should be hidden
-                            var tooltipEl = $('#chart-tooltip');
-                            if (!tooltip) {
-                                tooltipEl.css({
-                                    opacity: 0
-                                });
-                                return;
-                            }
-
-                            tooltipEl.removeClass('above below');
-                            tooltipEl.addClass(tooltip.yAlign);
-
-                            var innerHtml = '';
-                            for (var i = tooltip.labels.length - 1; i >= 0; i--) {
-                                innerHtml += [
-                                    '<div class="chartjs-tooltip-section">',
-                                        '	<span class="chartjs-tooltip-key" style="background-color:' + tooltip.legendColors[i].fill + '"></span>',
-                                        '	<span class="chartjs-tooltip-value">' + tooltip.labels[i] + '</span>',
-                                        '   <span class="chartjs-tickets"></span>',
-                                    '</div>'
-                                ].join('');
-                            }
-                            tooltipEl.html(innerHtml);
-
-                            tooltipEl.css({
-                                opacity: 1,
-                                left: tooltip.chart.canvas.offsetLeft + tooltip.x + 'px',
-                                top: tooltip.chart.canvas.offsetTop + tooltip.y + 'px',
-                                fontFamily: tooltip.fontFamily,
-                                fontSize: tooltip.fontSize,
-                                fontStyle: tooltip.fontStyle
-                            });
-
-                        },*/
-                        legendTemplate: "<ul class=\"chart-legend\"><% for (var i=0; i<datasets.length; i++){%><li class=\"legend-item\"><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+                        tooltipTemplate: '<%=label%>: <%= Math.round(value) %>',
+                        multiTooltipTemplate: '<%=datasetLabel%>: <%= Math.round(value) %>',
+                        legendTemplate: '<ul class="chart-legend"><% for (var i=0; i<datasets.length; i++){%>' +
+                            '<li class="legend-item"><span style="background-color:<%=datasets[i].strokeColor%>"></span>' +
+                            '<%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>'
                     };
                     Chart.defaults.global.pointHitDetectionRadius = 1;
                     chart = new Chart(ctx).Line(scope.chartData, options);

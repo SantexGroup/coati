@@ -4,7 +4,7 @@
         stateProvider.state('project.reports', {
             url: '/reports',
             views: {
-                "project-reports": {
+                'project-reports': {
                     controller: 'ProjectCtrlReports',
                     controllerAs: 'vm',
                     templateUrl: 'report/reports.tpl.html'
@@ -60,19 +60,19 @@
                         {
                             label: 'Ideal Planned',
                             data: chart_data.ideal_planned,
-                            strokeColor: "rgba(46,159,12,1)",
-                            pointColor: "rgba(129,244,143,1)"
+                            strokeColor: 'rgba(46,159,12,1)',
+                            pointColor: 'rgba(129,244,143,1)'
                         },
                         {
                             label: 'Velocity Trend',
                             data: chart_data.ideal_real,
-                            strokeColor: "rgba(194,28,253,1)",
-                            pointColor: "rgba(226,173,251,1)"
+                            strokeColor: 'rgba(194,28,253,1)',
+                            pointColor: 'rgba(226,173,251,1)'
                         },
                         {
                             label: 'Remaining Points',
-                            strokeColor: "rgba(255,0,0, 1) ",
-                            pointColor: "rgba(254,146,146,1)",
+                            strokeColor: 'rgba(255,0,0, 1) ',
+                            pointColor: 'rgba(254,146,146,1)',
                             data: chart_data.points_remaining
                         }
                     ]

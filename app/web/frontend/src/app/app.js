@@ -106,7 +106,7 @@
         });
 
         rootScope.$on('$stateChangeSuccess', function (event) {
-            if (rootScope.state_name !== "login" &&
+            if (rootScope.state_name !== 'login' &&
                 rootScope.state_name !== 'login_auth' &&
                 rootScope.state_name !== 'login_register') {
                 if (tokens.get_token() == null) {

@@ -4,7 +4,7 @@
         stateProvider.state('project.planning', {
             url: '/planning',
             views: {
-                "project-planning": {
+                'project-planning': {
                     templateUrl: 'planning/planning.tpl.html',
                     controller: 'ProjectCtrlPlanning',
                     controllerAs: 'vm'
@@ -338,7 +338,7 @@
         scope.$parent.vm[state.current.tab_active] = true;
 
         vm.is_scrumm = function(){
-          return vm.project.project_type === "S";
+          return vm.project.project_type === 'S';
         };
 
         getTicketsForProject(vm.project._id.$oid);

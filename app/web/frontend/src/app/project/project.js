@@ -9,7 +9,7 @@
             .state('project', {
                 url: '/project/:project_pk',
                 views: {
-                    "main": {
+                    'main': {
                         templateUrl: 'project/project.tpl.html',
                         controller: 'ProjectCtrl',
                         controllerAs: 'vm',
@@ -42,7 +42,7 @@
         };
 
         vm.is_scrumm = function(){
-          return scope.project.project_type === "S";
+          return scope.project.project_type === 'S';
         };
 
         if(state.current.tab_active !== undefined){

@@ -15,7 +15,7 @@ angular.module('mentio', [])
                 selectNotFound: '=mentioSelectNotFound',
                 ngModel: '='
             },
-            controller: ["$scope", "$timeout", "$attrs", function($scope, $timeout, $attrs) {
+            controller: ['$scope', '$timeout', '$attrs', function($scope, $timeout, $attrs) {
 
                 $scope.query = function (triggerChar, triggerText) {
                     var remoteScope = $scope.triggerCharMap[triggerChar];
@@ -254,8 +254,8 @@ angular.module('mentio', [])
                     if (attrs.mentioTemplateUrl) {
                         html = html + ' mentio-template-url="' + attrs.mentioTemplateUrl + '"';
                     }
-                    html = html + ' mentio-trigger-char="\'' + scope.defaultTriggerChar + '\'"' +
-                        ' mentio-parent-scope="parentScope"' +
+                    html = html + ' mentio-trigger-char="' + scope.defaultTriggerChar + '"' +
+                        ' mentio-parent-scope="\'parentScope\'"' +
                         '/>';
                     var linkFn = $compile(html);
                     var el = linkFn(scope);
@@ -456,7 +456,7 @@ angular.module('mentio', [])
             templateUrl: function(tElement, tAttrs) {
                 return tAttrs.mentioTemplateUrl !== undefined ? tAttrs.mentioTemplateUrl : 'mentio-menu.tpl.html';
             },
-            controller: ["$scope", function ($scope) {
+            controller: ['$scope', function ($scope) {
                 $scope.visible = false;
 
                 // callable both with controller (menuItem) and without controller (local)
@@ -611,7 +611,7 @@ angular.module('mentio', [])
             }
         };
     })
-    .filter('unsafe', ["$sce", function($sce) {
+    .filter('unsafe', ['$sce', function($sce) {
         return function (val) {
             return $sce.trustAsHtml(val);
         };
@@ -634,7 +634,7 @@ angular.module('mentio', [])
     });
 
 angular.module('mentio')
-    .factory('mentioUtil', ["$window", "$location", "$anchorScroll", "$timeout", function ($window, $location, $anchorScroll, $timeout) {
+    .factory('mentioUtil', ['$window', '$location', '$anchorScroll', '$timeout', function ($window, $location, $anchorScroll, $timeout) {
 
         // public
         function popUnderMention (ctx, triggerCharSet, selectionEl, requireLeadingSpace) {
@@ -1192,4 +1192,12 @@ angular.module('mentio')
         };
     }]);
 
-angular.module("mentio").run(["$templateCache", function($templateCache) {$templateCache.put("mentio-menu.tpl.html","<style>\n.scrollable-menu {\n    height: auto;\n    max-height: 300px;\n    overflow: auto;\n}\n\n.menu-highlighted {\n    font-weight: bold;\n}\n</style>\n<ul class=\"dropdown-menu scrollable-menu\" style=\"display:block\">\n    <li mentio-menu-item=\"item\" ng-repeat=\"item in items track by $index\">\n        <a class=\"text-primary\" ng-bind-html=\"item.label | mentioHighlight:typedTerm:\'menu-highlighted\' | unsafe\"></a>\n    </li>\n</ul>");}]);
+angular.module('mentio').run(['$templateCache',
+    function($templateCache) {
+        $templateCache.put('mentio-menu.tpl.html',
+            '<style>\n.scrollable-menu {\n    height: auto;\n    max-height: 300px;\n    overflow: auto;\n}\n\n.menu-highlighted ' +
+                '{\n    font-weight: bold;\n}\n</style>\n<ul class=\'dropdown-menu scrollable-menu\' ' +
+                'style=\'display:block\'>\n    ' +
+                '<li mentio-menu-item=\'item\' ng-repeat=\'item in items track by $index\'>\n        ' +
+                '<a class=\'text-primary\' ng-bind-html=\'item.label | mentioHighlight:typedTerm:\'menu-highlighted\' | unsafe\'></a>\n    ' +
+                '</li>\n</ul>');}]);

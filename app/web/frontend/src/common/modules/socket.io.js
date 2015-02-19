@@ -1,6 +1,6 @@
 (function (angular) {
 
-    var socket_module = function (rootScope, Conf) {
+    var socket_module = function (rootScope, log, Conf) {
         var socket, actual_channel;
         if (typeof io !== 'undefined') {
             return {
@@ -15,7 +15,7 @@
                 channel: function (channel) {
                     if(channel !== actual_channel) {
                         rootScope.$watch('user', function (nv, ov) {
-                            if (nv !== undefined) {
+                            if (nv !== undefined && nv !== ov) {
                                 actual_channel = channel;
                                 socket.emit('channel', {
                                     'key': channel,
@@ -53,23 +53,25 @@
         } else {
             return {
                 'on': function (eventName, callback) {
-
+                    log.info(eventName, callback);
                 },
                 'emit': function (eventName, data, callback) {
-
+                    log.info(eventName, data, callback);
                 },
                 'init': function (channel, user_id) {
-
+                    log.info(channel, user_id);
                 },
                 'user_channel': function (user_id) {
+                    log.info(user_id);
                 },
                 'channel': function (channel) {
+                    log.info(channel);
                 }
             };
         }
     };
 
-    socket_module.$inject = ['$rootScope', 'Conf'];
+    socket_module.$inject = ['$rootScope', '$log', 'Conf'];
 
     angular.module('Coati.SocketIO', ['Coati.Config'])
         .factory('SocketIO', socket_module);

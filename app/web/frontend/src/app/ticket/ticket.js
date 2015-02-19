@@ -4,7 +4,7 @@
         stateProvider.state('project.closed_tickets', {
             url: '/archived-tickets',
             views: {
-                "closed_tickets": {
+                'closed_tickets': {
                     controller: 'TicketArchivedController',
                     controllerAs: 'vm',
                     templateUrl: 'ticket/archived_tickets.tpl.html'
@@ -42,7 +42,7 @@
                                     return promise.promise;
                                 }
                             },
-                            templateUrl: "ticket/ticket_detail_view.tpl.html",
+                            templateUrl: 'ticket/ticket_detail_view.tpl.html',
                             controller: 'TicketDetailController',
                             controllerAs: 'vm',
                             data: {
@@ -174,7 +174,7 @@
                 }).success(function (att) {
                     vm.ticket.files.push(att);
                     vm.file_uploaded += 1;
-                    if (vm.file_uploaded == vm.files.length) {
+                    if (vm.file_uploaded === vm.files.length) {
                         vm.files = [];
                     }
                 });
@@ -185,7 +185,7 @@
         getMembers();
 
         vm.is_scrumm = function(){
-            return vm.project.project_type === "S";
+            return vm.project.project_type === 'S';
         };
 
         vm.show = function (form) {
@@ -372,7 +372,7 @@
         };
 
         vm.is_scrumm = function () {
-            return vm.project.project_type === "S";
+            return vm.project.project_type === 'S';
         };
 
         getArchivedTickets(vm.project._id.$oid);

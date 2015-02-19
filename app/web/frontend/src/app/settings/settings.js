@@ -4,7 +4,7 @@
         stateProvider.state('project.settings', {
             url: '/settings',
             views: {
-                "project-settings": {
+                'project-settings': {
                     controller: 'ProjectCtrlSettings',
                     controllerAs: 'vm',
                     templateUrl: 'settings/settings.tpl.html'

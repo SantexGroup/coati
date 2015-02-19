@@ -4,7 +4,7 @@
         stateProvider.state('login', {
             url: '/login?logout&next',
             views: {
-                "master_view": {
+                'master_view': {
                     controller: 'LoginController',
                     controllerAs: 'vm',
                     templateUrl: 'login/login.tpl.html'
@@ -18,7 +18,7 @@
             .state('login_auth', {
                 url: '/login/auth?token&expire&next',
                 views: {
-                    "master_view": {
+                    'master_view': {
                         controller: 'LoginAuthController'
                     }
                 },
@@ -30,7 +30,7 @@
             .state('login_register', {
                 url: '/register',
                 views: {
-                    "master_view": {
+                    'master_view': {
                         controller: 'RegisterController',
                         controllerAs: 'vm',
                         templateUrl: 'login/register.tpl.html'
@@ -44,7 +44,7 @@
             .state('login_activate', {
                 url: '/login/activate_user/:activation_code',
                 views: {
-                    "master_view": {
+                    'master_view': {
                         controller: 'ActivateController'
                     }
                 },

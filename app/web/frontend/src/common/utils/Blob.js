@@ -1,5 +1,5 @@
 (function (view) {
-    "use strict";
+    'use strict';
 
     view.URL = view.URL || view.webkitURL;
 
@@ -34,8 +34,8 @@
                 this.code = this[this.name = type];
             },
             file_ex_codes = (
-                "NOT_FOUND_ERR SECURITY_ERR ABORT_ERR NOT_READABLE_ERR ENCODING_ERR " + "NO_MODIFICATION_ALLOWED_ERR INVALID_STATE_ERR SYNTAX_ERR"
-                ).split(" "),
+                'NOT_FOUND_ERR SECURITY_ERR ABORT_ERR NOT_READABLE_ERR ENCODING_ERR ' + 'NO_MODIFICATION_ALLOWED_ERR INVALID_STATE_ERR SYNTAX_ERR'
+                ).split(' '),
             file_ex_code = file_ex_codes.length,
             real_URL = view.URL || view.webkitURL || view,
             real_create_object_URL = real_URL.createObjectURL,
@@ -54,11 +54,11 @@
         if (!real_URL.createObjectURL) {
             URL = view.URL = function (uri) {
                 var
-                    uri_info = document.createElementNS("http://www.w3.org/1999/xhtml", "a"),
+                    uri_info = document.createElementNS('http://www.w3.org/1999/xhtml', 'a'),
                     uri_origin;
                 uri_info.href = uri;
-                if (!("origin" in uri_info)) {
-                    if (uri_info.protocol.toLowerCase() === "data:") {
+                if (!('origin' in uri_info)) {
+                    if (uri_info.protocol.toLowerCase() === 'data:') {
                         uri_info.origin = null;
                     } else {
                         uri_origin = uri.match(origin);
@@ -71,26 +71,26 @@
         URL.createObjectURL = function (blob) {
             var type = blob.type, data_URI_header;
             if (type === null) {
-                type = "application/octet-stream";
+                type = 'application/octet-stream';
             }
             if (blob instanceof FakeBlob) {
-                data_URI_header = "data:" + type;
-                if (blob.encoding === "base64") {
-                    return data_URI_header + ";base64," + blob.data;
-                } else if (blob.encoding === "URI") {
-                    return data_URI_header + "," + decodeURIComponent(blob.data);
+                data_URI_header = 'data:' + type;
+                if (blob.encoding === 'base64') {
+                    return data_URI_header + ';base64,' + blob.data;
+                } else if (blob.encoding === 'URI') {
+                    return data_URI_header + ',' + decodeURIComponent(blob.data);
                 }
                 if (btoa) {
-                    return data_URI_header + ";base64," + btoa(blob.data);
+                    return data_URI_header + ';base64,' + btoa(blob.data);
                 } else {
-                    return data_URI_header + "," + encodeURIComponent(blob.data);
+                    return data_URI_header + ',' + encodeURIComponent(blob.data);
                 }
             } else if (real_create_object_URL) {
                 return real_create_object_URL.call(real_URL, blob);
             }
         };
         URL.revokeObjectURL = function (object_URL) {
-            if (object_URL.substring(0, 5) !== "data:" && real_revoke_object_URL) {
+            if (object_URL.substring(0, 5) !== 'data:' && real_revoke_object_URL) {
                 real_revoke_object_URL.call(real_URL, object_URL);
             }
         };
@@ -99,7 +99,7 @@
             // decode data to a binary string
             if (Uint8Array && (data instanceof ArrayBuffer || data instanceof Uint8Array)) {
                 var
-                    str = "",
+                    str = '',
                     buf = new Uint8Array(data),
                     i = 0,
                     buf_len = buf.length;
@@ -107,25 +107,25 @@
                     str += String.fromCharCode(buf[i]);
                 }
                 bb.push(str);
-            } else if (get_class(data) === "Blob" || get_class(data) === "File") {
+            } else if (get_class(data) === 'Blob' || get_class(data) === 'File') {
                 if (FileReaderSync) {
                     var fr = new FileReaderSync();
                     bb.push(fr.readAsBinaryString(data));
                 } else {
                     // async FileReader won't work as BlobBuilder is sync
-                    throw new FileException("NOT_READABLE_ERR");
+                    throw new FileException('NOT_READABLE_ERR');
                 }
             } else if (data instanceof FakeBlob) {
-                if (data.encoding === "base64" && atob) {
+                if (data.encoding === 'base64' && atob) {
                     bb.push(atob(data.data));
-                } else if (data.encoding === "URI") {
+                } else if (data.encoding === 'URI') {
                     bb.push(decodeURIComponent(data.data));
-                } else if (data.encoding === "raw") {
+                } else if (data.encoding === 'raw') {
                     bb.push(data.data);
                 }
             } else {
-                if (typeof data !== "string") {
-                    data += ""; // convert unsupported types to strings
+                if (typeof data !== 'string') {
+                    data += ''; // convert unsupported types to strings
                 }
                 // decode UTF-16 to binary string
                 bb.push(unescape(encodeURIComponent(data)));
@@ -135,10 +135,10 @@
             if (!arguments.length) {
                 type = null;
             }
-            return new FakeBlob(this.data.join(""), type, "raw");
+            return new FakeBlob(this.data.join(''), type, 'raw');
         };
         FBB_proto.toString = function () {
-            return "[object BlobBuilder]";
+            return '[object BlobBuilder]';
         };
         FB_proto.slice = function (start, end, type) {
             var args = arguments.length;
@@ -152,7 +152,7 @@
             );
         };
         FB_proto.toString = function () {
-            return "[object Blob]";
+            return '[object Blob]';
         };
         FB_proto.close = function () {
             this.size = 0;
@@ -162,7 +162,7 @@
     }(view));
 
     view.Blob = function (blobParts, options) {
-        var type = options ? (options.type || "") : "";
+        var type = options ? (options.type || '') : '';
         var builder = new BlobBuilder();
         if (blobParts) {
             for (var i = 0, len = blobParts.length; i < len; i++) {
@@ -171,4 +171,4 @@
         }
         return builder.getBlob(type);
     };
-}(typeof self !== "undefined" && self || typeof window !== "undefined" && window || this.content || this));
+}(typeof self !== 'undefined' && self || typeof window !== 'undefined' && window || this.content || this));

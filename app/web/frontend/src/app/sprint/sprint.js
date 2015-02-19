@@ -4,7 +4,7 @@
         stateProvider.state('project.archived', {
             url: '/archived-sprints',
             views: {
-                "project-archived": {
+                'project-archived': {
                     controller: 'ArchivedSprintController',
                     controllerAs: 'vm',
                     templateUrl: 'sprint/archived.tpl.html'

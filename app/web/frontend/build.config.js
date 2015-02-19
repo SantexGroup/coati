@@ -9,6 +9,7 @@ module.exports = {
      */
     build_dir: 'build',
     compile_dir: 'bin',
+    static_dir: 'static',
 
     /**
      * This is a collection of file patterns that refer to our app code (the
@@ -34,7 +35,7 @@ module.exports = {
         ctpl: [ 'src/common/**/*.tpl.html', 'src/common/**/*.html' ],
 
         html: [ 'src/index.html' ],
-        less: 'src/less/main.less'
+        css: 'src/css/**.css'
     },
 
     /**

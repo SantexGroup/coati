@@ -10,7 +10,17 @@ angular.module('angular-growl').directive('growl', [
         'use strict';
         return {
             restrict: 'A',
-            template: '<div class="growl"><div class="growl-item alert alert-block fade in" ng-repeat="message in messages" ng-class="computeClasses(message)"><button type="button" class="close close-sm" ng-click="deleteMessage(message)"><i class="icon-remove"></i></button><h4><i ng-class="computeIconClasses(message)"></i><div ng-switch="message.severity" style="display:inline-block;margin-left:5px;"><span ng-switch-when="success">Success!</span><span ng-switch-when="error">Error!</span><span ng-switch-when="info">Information!</span><span ng-switch-when="warn">Warning!</span></div></h4><div ng-switch="message.enableHtml"><div ng-switch-when="true" ng-bind-html="message.text"></div><p ng-switch-default ng-bind="message.text"></p></div></div></div>',
+            template: '<div class="growl">' +
+                '<div class="growl-item alert alert-block fade in" ng-repeat="message in messages" ng-class="computeClasses(message)">' +
+                '<button type="button" class="close close-sm" ng-click="deleteMessage(message)"><i class="icon-remove"></i></button>' +
+                '<h4><i ng-class="computeIconClasses(message)"></i>' +
+                '<div ng-switch="message.severity" style="display:inline-block;margin-left:5px;">' +
+                '<span ng-switch-when="success">Success!</span><span ng-switch-when="error">Error!</span>' +
+                '<span ng-switch-when="info">Information!</span><span ng-switch-when="warn">Warning!</span>' +
+                '</div></h4>' +
+                '<div ng-switch="message.enableHtml"><div ng-switch-when="true" ng-bind-html="message.text"></div>' +
+                '<p ng-switch-default ng-bind="message.text"></p></div></div>' +
+                '</div>',
             replace: false,
             scope: true,
             controller: [

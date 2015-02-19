@@ -12,7 +12,7 @@
         stateProvider.state('error_403', {
             url: '/error/forbidden',
             views: {
-                "main": {
+                'main': {
                     templateUrl: 'error/forbidden.tpl.html'
                 }
             },

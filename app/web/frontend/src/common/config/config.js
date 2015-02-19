@@ -1,5 +1,5 @@
 (function () {
-    "use strict";
+    'use strict';
     /**
      * Define the global configuration parameters
      * @returns {{getItem: getItem, $get: $get}}
@@ -16,12 +16,12 @@
             STATE_403: 'error_403',
             DATE_FORMAT: 'MM/dd/yyyy',
             TICKET_TYPES: [
-                {value:"U", name: 'User Story'},
-                {value:"B", name: 'Bug'},
-                {value:"F", name: 'Feature'},
-                {value:"I", name: 'Improvement'},
-                {value:"E", name: 'Epic'},
-                {value:"T", name: 'Task'}
+                {value:'U', name: 'User Story'},
+                {value:'B', name: 'Bug'},
+                {value:'F', name: 'Feature'},
+                {value:'I', name: 'Improvement'},
+                {value:'E', name: 'Epic'},
+                {value:'T', name: 'Task'}
             ]
         };
         return {

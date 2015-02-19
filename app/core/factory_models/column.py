@@ -5,7 +5,7 @@ ColumnFactory
 """
 
 
-from app.core import column
+from app.core.models import column
 from app.core.factory_models import base, project
 
 import factory

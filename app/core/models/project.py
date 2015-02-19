@@ -3,9 +3,9 @@ from datetime import datetime
 from mongoengine import Q, signals
 from app.core import db
 
-from app.core.sprint import Sprint, SprintTicketOrder
-from app.core.ticket import Ticket
-from app.core.column import Column, TicketColumnTransition
+from sprint import Sprint, SprintTicketOrder
+from ticket import Ticket
+from column import Column, TicketColumnTransition
 
 PROJECT_TYPE = (('S', 'Scrum'),
                 ('K', 'Kanban'))

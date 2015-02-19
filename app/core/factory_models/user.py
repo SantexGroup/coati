@@ -7,7 +7,7 @@ UserActivityFactory
 """
 
 from datetime import datetime
-from app.core import user
+from app.core.models import user
 from app.core.factory_models import base, project
 
 import factory

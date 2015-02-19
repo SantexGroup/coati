@@ -5,7 +5,7 @@ AttachmentFactory
 """
 
 
-from app.core import attachment
+from app.core.models import attachment
 from app.core.factory_models import base
 
 import factory

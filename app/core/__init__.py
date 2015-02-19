@@ -9,7 +9,7 @@ BaseDocument
 """
 
 from bson import json_util
-from utils import utcnow
+from app.core.commons import utils
 from flask.ext.mongoengine import MongoEngine, QuerySet
 
 

@@ -2,9 +2,9 @@ from mongoengine import signals
 from bson import json_util
 from app.core import db
 
-from app.core.column import TicketColumnTransition
-from app.core.sprint import SprintTicketOrder
-from app.core.comment import Comment
+from column import TicketColumnTransition
+from sprint import SprintTicketOrder
+from comment import Comment
 
 TICKET_TYPE = (('U', 'User Story'),
                ('F', 'Feature'),

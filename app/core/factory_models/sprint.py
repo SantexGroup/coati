@@ -7,7 +7,7 @@ SprintTicketOrderFactory
 """
 from datetime import datetime, timedelta
 
-from app.core import sprint
+from app.core.models import sprint
 from app.core.factory_models import base, ticket, project
 
 import factory

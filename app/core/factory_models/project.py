@@ -7,7 +7,7 @@ ProjectMemberFactory
 """
 
 from datetime import datetime
-from app.core import project
+from app.core.models import project
 from app.core.factory_models import base, user
 
 import factory

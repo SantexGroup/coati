@@ -4,7 +4,7 @@ TicketFactory
     A factory class to create Tickets.
 """
 
-from app.core import ticket
+from app.core.models import ticket
 from app.core.factory_models import base, project
 
 import factory

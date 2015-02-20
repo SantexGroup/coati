@@ -290,7 +290,7 @@ class ProjectImport(AuthResource):
         """
         Import cards and columns
         """
-        body = request.form
+        body = json.loads(request.form.get('data'))
         imported_file = request.files.get('file')
         if not imported_file and not body:
             msg = "payload must be a valid file"
@@ -305,7 +305,7 @@ class ProjectImport(AuthResource):
         tickets = []
         actual_last_ticket = Ticket.objects(project=project).order_by('-number')
         starting_number = actual_last_ticket.first().number if actual_last_ticket else 1
-        if body.get('include_cards') == u'true':
+        if body.get('include_cards'):
             for card in data.get('cards'):
                 t = Ticket()
                 t.title = card.get('name')
@@ -336,7 +336,7 @@ class ProjectImport(AuthResource):
                 starting_number += 1
 
         columns = []
-        if body.get('include_cols') == u'true':
+        if body.get('include_cols'):
             for col in data.get('lists'):
                 if not col.get('closed'):
                     new_col = Column()

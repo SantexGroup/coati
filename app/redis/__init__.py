@@ -1,4 +1,4 @@
-import uuid, json
+import json
 from flask_redis import Redis
 from flask import current_app
 

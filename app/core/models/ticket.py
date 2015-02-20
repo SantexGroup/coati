@@ -1,4 +1,3 @@
-from mongoengine import signals
 from bson import json_util
 from app.core import db
 
@@ -28,18 +27,6 @@ class Ticket(db.BaseDocument):
     assigned_to = db.ListField(
         db.ReferenceField('ProjectMember'))
     closed = db.BooleanField(default=False)
-
-    @classmethod
-    def pre_delete(cls, sender, document, **kwargs):
-        # delete attachements
-        for att in document.files:
-            att.delete()
-        # delete ticket column transition
-        TicketColumnTransition.objects(ticket=document).delete()
-        # delete sprint ticket order
-        SprintTicketOrder.objects(ticket=document).delete()
-        # delete comments
-        Comment.objects(ticket=document).delete()
 
     def to_json(self):
         data = self.to_dict()
@@ -79,5 +66,3 @@ class Ticket(db.BaseDocument):
         data['assigned_to'] = assignments
 
         return json_util.dumps(data)
-
-signals.pre_delete.connect(Ticket.pre_delete, sender=Ticket)

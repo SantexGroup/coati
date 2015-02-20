@@ -18,13 +18,6 @@ class Sprint(db.BaseDocument):
     finalized = db.BooleanField(default=False)
     total_points_when_started = db.IntField()
 
-    @classmethod
-    def pre_delete(cls, sender, document, **kwargs):
-        # delete tickets assigned to sprint
-        SprintTicketOrder.objects(sprint=document).delete()
-        # delete ticket transition
-        TicketColumnTransition.objects(sprint=document).delete()
-
     def to_json(self, *args, **kwargs):
         data = self.to_dict()
         if kwargs.get('archived'):
@@ -121,8 +114,6 @@ class Sprint(db.BaseDocument):
     def clean(self):
         if self.project is None:
             raise db.ValidationError('Project must be provided')
-
-signals.pre_delete.connect(Sprint.pre_delete, sender=Sprint)
 
 
 class SprintTicketOrder(db.BaseDocument):

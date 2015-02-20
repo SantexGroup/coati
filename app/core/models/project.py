@@ -6,7 +6,6 @@ from app.core import db
 from app.core.models.sprint import Sprint, SprintTicketOrder
 from app.core.models.ticket import Ticket
 from app.core.models.column import Column, TicketColumnTransition
-from app.core.models.user import User
 
 PROJECT_TYPE = (('S', 'Scrum'),
                 ('K', 'Kanban'))
@@ -16,7 +15,7 @@ class Project(db.BaseDocument):
     name = db.StringField(required=True, unique_with='owner')
     description = db.StringField()
     active = db.BooleanField(default=True)
-    owner = db.ReferenceField(User,
+    owner = db.ReferenceField('User',
                               reverse_delete_rule=db.CASCADE)
     prefix = db.StringField()
     sprint_duration = db.IntField()
@@ -27,17 +26,6 @@ class Project(db.BaseDocument):
     meta = {
         'indexes': ['name']
     }
-
-    @classmethod
-    def pre_delete(cls, sender, document, **kwargs):
-        # delete sprints
-        Sprint.objects(project=document).delete()
-        # delete members
-        ProjectMember.objects(project=document).delete()
-        # delete tickets
-        Ticket.objects(project=document).delete()
-        # delete columns
-        Column.objects(project=document).delete()
 
     def to_json(self):
         data = self.to_dict()
@@ -88,21 +76,13 @@ class Project(db.BaseDocument):
         return result
 
 
-signals.pre_delete.connect(Project.pre_delete, sender=Project)
-
-
 class ProjectMember(db.BaseDocument):
-    member = db.ReferenceField(User,
+    member = db.ReferenceField('User',
                                reverse_delete_rule=db.CASCADE)
-    project = db.ReferenceField(Project,
+    project = db.ReferenceField('Project',
                                 reverse_delete_rule=db.CASCADE)
     since = db.DateTimeField(default=datetime.now())
     is_owner = db.BooleanField(default=False)
-
-    @classmethod
-    def pre_delete(cls, sender, document, **kwargs):
-        Ticket.objects(assigned_to__contains=document).update(
-            pull__assigned_to=document)
 
     def to_json(self, *args, **kwargs):
         data = self.to_dict()
@@ -130,6 +110,3 @@ class ProjectMember(db.BaseDocument):
             val['member'] = pm.member.to_dict()
             members.append(val)
         return members
-
-
-signals.pre_delete.connect(ProjectMember.pre_delete, sender=ProjectMember)

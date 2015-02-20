@@ -1,13 +1,12 @@
 from bson import json_util
 from datetime import datetime
 from app.core import db
-from app.core.models.user import User
 from app.core.models.ticket import Ticket
 
 
 class Comment(db.BaseDocument):
     comment = db.StringField()
-    who = db.ReferenceField(User,
+    who = db.ReferenceField('User',
                             reverse_delete_rule=db.NULLIFY)
     ticket = db.ReferenceField(Ticket,
                                reverse_delete_rule=db.CASCADE)

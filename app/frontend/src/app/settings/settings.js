@@ -152,8 +152,13 @@
 
         vm.confirm_upload = function () {
             vm.uploading = true;
-            ProjectService.import_file(vm.project._id.$oid, vm.json_file,
-                {'include_cards': vm.import_cards, 'include_cols': vm.import_cols})
+            var payload = {
+                'data':{
+                    'include_cards': vm.import_cards,
+                    'include_cols': vm.import_cols
+                }
+            };
+            ProjectService.import_file(vm.project._id.$oid, vm.json_file,payload)
                 .success(function (rta) {
                     vm.json_file = null;
                     vm.uploading = false;

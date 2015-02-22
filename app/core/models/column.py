@@ -3,11 +3,12 @@ Column function and models.
 Column
     A Column schema.
 """
-from mongoengine import errors
-from bson import json_util
 from datetime import datetime
+
+from mongoengine import errors
+
 from app.core import db
-from app.core.models.comment import Comment
+from app.core.helpers.columns import column_to_json
 
 
 class Column(db.BaseDocument):
@@ -41,39 +42,7 @@ class Column(db.BaseDocument):
             raise errors.ValidationError(errors=err_dict)
 
     def to_json(self, *args, **kwargs):
-        data = self.to_dict()
-        ticket_column = TicketColumnTransition.objects(column=self,
-                                                       latest_state=True)\
-            .order_by('order')
-        tickets = []
-        for t in ticket_column:
-            if not t.ticket.closed:
-                assignments = []
-                for ass in t.ticket.assigned_to:
-                    if ass.__class__.__name__ != 'DBRef':
-                        ma = ass.to_dict()
-                        ma['member'] = ass.member.to_dict()
-                        assignments.append(ma)
-
-                value = {
-                    'points': t.ticket.points,
-                    'number': t.ticket.number,
-                    'order': t.order,
-                    'title': t.ticket.title,
-                    '_id': t.ticket.id,
-                    'who': t.who.to_dict(),
-                    'when': t.when,
-                    'type': t.ticket.type,
-                    'assigned_to': assignments,
-                    'badges': {
-                        'comments': Comment.objects(ticket=t.ticket).count(),
-                        'files': len(t.ticket.files)
-                    }
-                }
-
-                tickets.append(value)
-        data['tickets'] = tickets
-        return json_util.dumps(data)
+        return column_to_json(self)
 
     def clean(self):
         if self.project is None:

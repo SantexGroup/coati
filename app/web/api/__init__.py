@@ -10,7 +10,7 @@ from resources.ticket import TicketOrderProject, TicketOrderSprint, TicketProjec
     TicketSearch, TicketClosed, TicketBoardProject, TicketClone
 from resources.user import UsersList, UserInstance, UserSearch, UserLogged, \
     UserLogin, UserRegister, UserActivate, UserNotifications
-from app.utils import output_json
+from app.web.api.utils import output_json
 
 
 def init_app(app, decorators=None):

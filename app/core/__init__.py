@@ -12,7 +12,9 @@ from bson import json_util
 from app.core.commons import utils
 from mongoengine import signals
 from flask.ext.mongoengine import MongoEngine, QuerySet
-from app.core.signals import *
+#from app.core.signals import (post_save_user_activity, pre_delete_project,
+#                              pre_delete_project_member, pre_delete_sprint,
+#                              pre_delete_ticket, pre_delete_user)
 
 
 db = MongoEngine()
@@ -74,12 +76,13 @@ class BaseDocument(db.Document):
 
         return json_util.dumps(data)
 
+
 db.BaseDocument = BaseDocument
 
 # Signals register
-signals.post_save.connect(post_save_user_activity)
-signals.pre_delete.connect(pre_delete_user)
-signals.pre_delete.connect(pre_delete_ticket)
-signals.pre_delete.connect(pre_delete_sprint)
-signals.pre_delete.connect(pre_delete_project)
-signals.pre_delete.connect(pre_delete_project_member)
+#signals.post_save.connect(post_save_user_activity)
+#signals.pre_delete.connect(pre_delete_user)
+#signals.pre_delete.connect(pre_delete_ticket)
+#signals.pre_delete.connect(pre_delete_sprint)
+#signals.pre_delete.connect(pre_delete_project)
+#signals.pre_delete.connect(pre_delete_project_member)

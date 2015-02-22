@@ -1,11 +1,10 @@
-from bson import json_util
 from datetime import datetime
-from mongoengine import Q, signals
-from app.core import db
 
-from app.core.models.sprint import Sprint, SprintTicketOrder
-from app.core.models.ticket import Ticket
-from app.core.models.column import Column, TicketColumnTransition
+from bson import json_util
+
+from app.core import db
+from app.core.helpers.projects import project_to_json
+
 
 PROJECT_TYPE = (('S', 'Scrum'),
                 ('K', 'Kanban'))
@@ -28,52 +27,11 @@ class Project(db.BaseDocument):
     }
 
     def to_json(self):
-        data = self.to_dict()
-        if isinstance(self.project_type, bool) and self.project_type:
-            data["project_type"] = 'S'
-        elif isinstance(self.project_type, bool) and not self.project_type:
-            data["project_type"] = 'K'
-        data["owner"] = self.owner.to_dict()
-        data["owner"]["id"] = str(self.owner.pk)
-        data['members'] = ProjectMember.get_members_for_project(self)
-        del data["owner"]["_id"]
-        return json_util.dumps(data)
+        return project_to_json(self)
 
     def clean(self):
         if self.owner is None:
             raise db.ValidationError('Owner must be provided')
-
-    def get_tickets(self):
-        tickets = []
-        sprints = Sprint.objects(project=self)
-        if self.project_type == u'S':
-            for s in sprints:
-                for spo in SprintTicketOrder.objects(sprint=s, active=True):
-                    tickets.append(str(spo.ticket.pk))
-
-        result = Ticket.objects(Q(project=self) &
-                                Q(id__nin=tickets) &
-                                (Q(closed=False) | Q(closed__exists=False))
-        ).order_by('order')
-
-        return result
-
-    def get_tickets_board(self):
-        tickets = []
-        col_ids = []
-        column_list = Column.objects(project=self)
-        for c in column_list:
-            col_ids.append(str(c.pk))
-        tct_list = TicketColumnTransition.objects(column__in=col_ids,
-                                                  latest_state=True)
-        for t in tct_list:
-            tickets.append(str(t.ticket.pk))
-
-        result = Ticket.objects(Q(project=self) &
-                                Q(id__nin=tickets) &
-                                (Q(closed=False) | Q(
-                                    closed__exists=False))).order_by('order')
-        return result
 
 
 class ProjectMember(db.BaseDocument):

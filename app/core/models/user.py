@@ -1,8 +1,6 @@
 from datetime import datetime
-
-from bson import json_util
-
 from app.core import db
+from app.core.helpers.users import user_notification_to_json
 
 
 class User(db.BaseDocument):
@@ -19,10 +17,6 @@ class User(db.BaseDocument):
     }
 
     excluded_fields = ['activation_token', 'password']
-
-    def to_json(self, *args, **kwargs):
-        data = self.to_dict()
-        return json_util.dumps(data)
 
 
 class UserActivity(db.BaseDocument):
@@ -41,11 +35,5 @@ class UserNotification(db.BaseDocument):
     viewed = db.BooleanField(default=False)
 
     def to_json(self):
-        data = self.to_dict()
-        if self.activity.__class__.__name__ != 'DBRef':
-            data['activity'] = self.activity.to_dict()
-            data['activity']['project'] = self.activity.project.to_dict()
-            data['activity']['author'] = self.activity.author.to_dict()
-            data['activity']['data'] = self.activity.data
-        return json_util.dumps(data)
+        return user_notification_to_json(self)
 

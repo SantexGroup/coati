@@ -1,9 +1,5 @@
-from bson import json_util
 from app.core import db
-
-from app.core.models.column import TicketColumnTransition
-from app.core.models.sprint import SprintTicketOrder
-from app.core.models.comment import Comment
+from app.core.helpers.tickets import ticket_to_json
 
 TICKET_TYPE = (('U', 'User Story'),
                ('F', 'Feature'),
@@ -29,40 +25,4 @@ class Ticket(db.BaseDocument):
     closed = db.BooleanField(default=False)
 
     def to_json(self):
-        data = self.to_dict()
-        data['project'] = self.project.to_dict()
-        data['badges'] = {
-            'comments': Comment.objects(ticket=self).count(),
-            'files': len(self.files)
-        }
-        files = []
-        for f in self.files:
-            if f.__class__.__name__ != 'DBRef':
-                file_att = f.to_dict()
-                files.append(file_att)
-        data['files'] = files
-        try:
-            tt = TicketColumnTransition.objects.get(ticket=self,
-                                                    latest_state=True)
-            if tt is not None:
-                data['in_column'] = tt.column.title
-        except db.DoesNotExist:
-            pass
-
-        try:
-            sp = SprintTicketOrder.objects.get(ticket=self, active=True)
-            if sp is not None:
-                if sp.sprint.__class__.__name__ != 'DBRef':
-                    data['sprint'] = sp.sprint.to_dict()
-        except db.DoesNotExist:
-            pass
-
-        assignments = []
-        for ass in self.assigned_to:
-            if ass.__class__.__name__ != 'DBRef':
-                val = ass.to_dict()
-                val['member'] = ass.member.to_dict()
-                assignments.append(val)
-        data['assigned_to'] = assignments
-
-        return json_util.dumps(data)
+        return ticket_to_json(self)

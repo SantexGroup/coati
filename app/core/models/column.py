@@ -4,11 +4,19 @@ Column
     A Column schema.
 """
 from datetime import datetime
+from bson import json_util
 
 from mongoengine import errors
 
 from app.core import db
-from app.core.helpers.columns import column_to_json
+import app.core.models.comment as comment
+import app.core.models.project as project
+
+
+__all__ = [
+    'Column',
+    'TicketColumnTransition'
+]
 
 
 class Column(db.BaseDocument):
@@ -24,7 +32,7 @@ class Column(db.BaseDocument):
     title = db.StringField(max_length=100, required=True)
     max_cards = db.IntField(default=9999)
     color_max_cards = db.StringField(default='#FF0000')
-    project = db.ReferenceField('Project',
+    project = db.ReferenceField(project.Project,
                                 reverse_delete_rule=db.CASCADE)
     done_column = db.BooleanField(default=False)
     order = db.IntField(required=True)
@@ -42,11 +50,39 @@ class Column(db.BaseDocument):
             raise errors.ValidationError(errors=err_dict)
 
     def to_json(self, *args, **kwargs):
-        return column_to_json(self)
+        data = self.to_dict()
+        ticket_column = TicketColumnTransition.objects(column=self,
+                                                       latest_state=True) \
+            .order_by('order')
+        tickets = []
+        for t in ticket_column:
+            if not t.ticket.closed:
+                assignments = []
+                for ass in t.ticket.assigned_to:
+                    if ass.__class__.__name__ != 'DBRef':
+                        ma = ass.to_dict()
+                        ma['member'] = ass.member.to_dict()
+                        assignments.append(ma)
 
-    def clean(self):
-        if self.project is None:
-            raise db.ValidationError('Project must be provided')
+                value = {
+                    'points': t.ticket.points,
+                    'number': t.ticket.number,
+                    'order': t.order,
+                    'title': t.ticket.title,
+                    '_id': t.ticket.id,
+                    'who': t.who.to_dict(),
+                    'when': t.when,
+                    'type': t.ticket.type,
+                    'assigned_to': assignments,
+                    'badges': {
+                        'comments': comment.Comment.objects(ticket=t.ticket).count(),
+                        'files': len(t.ticket.files)
+                    }
+                }
+
+                tickets.append(value)
+        data['tickets'] = tickets
+        return json_util.dumps(data)
 
 
 class TicketColumnTransition(db.BaseDocument):

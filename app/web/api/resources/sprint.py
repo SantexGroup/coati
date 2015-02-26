@@ -5,9 +5,7 @@ from dateutil import parser
 from flask import jsonify, request
 from mongoengine import DoesNotExist
 
-
-from app.core.models.sprint_order import SprintTicketOrder
-from app.core.models.sprint import Sprint
+from app.core.models.sprint import Sprint, SprintTicketOrder
 from app.core.models.project import Project
 from app.core.models.ticket import Ticket
 from app.core.models.column import Column, TicketColumnTransition

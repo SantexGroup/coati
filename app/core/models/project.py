@@ -3,18 +3,24 @@ from datetime import datetime
 from bson import json_util
 
 from app.core import db
-from app.core.helpers.projects import project_to_json
+import app.core.models.user as user
 
 
 PROJECT_TYPE = (('S', 'Scrum'),
                 ('K', 'Kanban'))
 
 
+__all__ = [
+    'Project',
+    'ProjectMember'
+]
+
+
 class Project(db.BaseDocument):
     name = db.StringField(required=True, unique_with='owner')
     description = db.StringField()
     active = db.BooleanField(default=True)
-    owner = db.ReferenceField('User',
+    owner = db.ReferenceField(user.User,
                               reverse_delete_rule=db.CASCADE)
     prefix = db.StringField()
     sprint_duration = db.IntField()
@@ -27,7 +33,18 @@ class Project(db.BaseDocument):
     }
 
     def to_json(self):
-        return project_to_json(self)
+        data = self.to_dict()
+        if isinstance(self.project_type,
+                      bool) and self.project_type:
+            data["project_type"] = 'S'
+        elif isinstance(self.project_type,
+                        bool) and not self.project_type:
+            data["project_type"] = 'K'
+        data["owner"] = self.owner.to_dict()
+        data["owner"]["id"] = str(self.owner.pk)
+        data['members'] = ProjectMember.get_members_for_project(self)
+        del data["owner"]["_id"]
+        return json_util.dumps(data)
 
     def clean(self):
         if self.owner is None:
@@ -35,9 +52,9 @@ class Project(db.BaseDocument):
 
 
 class ProjectMember(db.BaseDocument):
-    member = db.ReferenceField('User',
+    member = db.ReferenceField(user.User,
                                reverse_delete_rule=db.CASCADE)
-    project = db.ReferenceField('Project',
+    project = db.ReferenceField(Project,
                                 reverse_delete_rule=db.CASCADE)
     since = db.DateTimeField(default=datetime.now())
     is_owner = db.BooleanField(default=False)

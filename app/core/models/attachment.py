@@ -6,6 +6,10 @@ Attachment
 from mongoengine import errors
 from app.core import db
 
+__all__ = [
+    'Attachment'
+]
+
 
 class Attachment(db.BaseDocument):
     """

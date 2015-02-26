@@ -1,6 +1,15 @@
 from datetime import datetime
+
+from bson import json_util
+
 from app.core import db
-from app.core.helpers.users import user_notification_to_json
+import app.core.models.project as project
+
+__all__ = [
+    'User',
+    'UserActivity',
+    'UserNotification'
+]
 
 
 class User(db.BaseDocument):
@@ -20,20 +29,26 @@ class User(db.BaseDocument):
 
 
 class UserActivity(db.BaseDocument):
-    project = db.ReferenceField('Project')
+    project = db.ReferenceField(project.Project)
     when = db.DateTimeField(default=datetime.now())
     verb = db.StringField()
-    author = db.ReferenceField('User')
+    author = db.ReferenceField(User)
     data = db.DictField()
-    to = db.ReferenceField('User')
+    to = db.ReferenceField(User)
 
 
 class UserNotification(db.BaseDocument):
-    activity = db.ReferenceField('UserActivity',
+    activity = db.ReferenceField(UserActivity,
                                  reverse_delete_rule=db.CASCADE)
-    user = db.ReferenceField('User')
+    user = db.ReferenceField(User)
     viewed = db.BooleanField(default=False)
 
     def to_json(self):
-        return user_notification_to_json(self)
+        data = self.to_dict()
+        if self.activity.__class__.__name__ != 'DBRef':
+            data['activity'] = self.activity.to_dict()
+            data['activity']['project'] = self.activity.project.to_dict()
+            data['activity']['author'] = self.activity.author.to_dict()
+            data['activity']['data'] = self.activity.data
+        return json_util.dumps(data)
 

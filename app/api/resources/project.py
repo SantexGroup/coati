@@ -302,10 +302,11 @@ class ProjectImport(AuthResource):
 
         data = json.loads(imported_file.stream.read().decode('utf-8'),
                           encoding='UTF-8')
+        import_args = body.get('data')
         tickets = []
         actual_last_ticket = Ticket.objects(project=project).order_by('-number')
         starting_number = actual_last_ticket.first().number if actual_last_ticket else 1
-        if body.get('include_cards'):
+        if import_args.get('include_cards'):
             for card in data.get('cards'):
                 t = Ticket()
                 t.title = card.get('name')
@@ -336,7 +337,7 @@ class ProjectImport(AuthResource):
                 starting_number += 1
 
         columns = []
-        if body.get('include_cols'):
+        if import_args.get('include_cols'):
             for col in data.get('lists'):
                 if not col.get('closed'):
                     new_col = Column()

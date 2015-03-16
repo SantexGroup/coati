@@ -59,7 +59,7 @@
             getColumnConfiguration(vm.project._id.$oid);
             if (vm.is_scrumm()) {
                 if (vm.sprint.started) {
-                    getSprintTickets(vm.project._id.$oid);
+                    getSprintTickets(vm.sprint._id.$oid);
                 }
             } else {
                 getProjectTickets(vm.project._id.$oid);

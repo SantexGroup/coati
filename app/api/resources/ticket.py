@@ -267,7 +267,7 @@ class TicketTransition(AuthResource):
     def __init__(self):
         super(TicketTransition, self).__init__()
 
-    def post(self, project_pk, *args, **kwargs):
+    def post(self, project_pk):
         data = request.get_json(force=True, silent=True)
         if data:
             project = Project.objects.get(pk=project_pk)
@@ -321,7 +321,7 @@ class TicketTransition(AuthResource):
                     transition.latest_state = True
                     transition.when = datetime.now()
                     transition.who = User.objects.get(
-                        pk=kwargs['user_id']['pk'])
+                        pk=g.user_id)
                     transition.save()
 
                     # execute order

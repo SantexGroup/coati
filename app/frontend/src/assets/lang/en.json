@@ -145,6 +145,7 @@
     "SPRINT_NAME": "Name",
     "SPRINT_NAME_ERROR": "Please enter a sprint name",
     "SPRINT_START_DATE": "Start Date",
+    "SPRINT_END_DATE": "End Date",
     "START_DATE_REQUIRED": "Please enter a start date",
     "START_END_DATE": "End Date",
     "START_END_DATE_REQUIRED": "Please enter a end date",

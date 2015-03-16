@@ -145,6 +145,7 @@
     "SPRINT_NAME": "Nombre",
     "SPRINT_NAME_ERROR": "Por favor, introduzca un nombre de sprint",
     "SPRINT_START_DATE": "Fecha de Inicio",
+    "SPRINT_END_DATE": "Fecha de Fin",
     "START_DATE_REQUIRED": "Por favor, introduzca una fecha de inicio",
     "START_END_DATE": "Fecha de finalización",
     "START_END_DATE_REQUIRED": "Por favor, introduzca una fecha de finalización",

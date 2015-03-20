@@ -177,6 +177,7 @@
     "TICKET_NEW_COMMENT": "Add New Comment",
     "TICKET_NEW": "New Ticket",
     "TICKET_CHOOSE_SPRINT": "Choose a Sprint...",
+    "TICKET_SPRINT": "Sprint",
     "TICKET_TITLE": "Title",
     "TICKET_SAVE": "Save",
 

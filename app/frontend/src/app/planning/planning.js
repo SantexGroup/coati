@@ -50,15 +50,23 @@
                     item: function () {
                         return {
                             'editing': (tkt !== undefined ? true : false),
-                            'project': vm.project._id.$oid,
+                            'project': vm.project,
                             'ticket': (tkt !== undefined ? tkt._id.$oid : null)
                         };
                     }
                 }
             });
-            modal_instance.result.then(function () {
-                getSprintsWithTickets(vm.project._id.$oid);
-                getTicketsForProject(vm.project._id.$oid, false);
+            modal_instance.result.then(function (tkt) {
+                if (tkt.sprint) {
+                    for (var i in vm.sprints) {
+                        if (vm.sprints[i]._id.$oid === tkt.sprint._id.$oid) {
+                            vm.sprints[i].tickets.push(tkt);
+                            break;
+                        }
+                    }
+                } else {
+                    vm.tickets.push(tkt);
+                }
                 //Notify
                 growl.addSuccessMessage('The ticket was saved successfully');
             });
@@ -72,50 +80,34 @@
         };
 
 
-        vm.showDetails = function (e, tkt) {
-            if (tkt) {
-                tkt = angular.copy(tkt);
-                tkt.pk = tkt._id.$oid;
-
-            }
-            var modal_instance = modal.open({
-                controller: 'TicketDetailController as vm',
-                templateUrl: 'ticket/ticket_detail_view.tpl.html',
-                resolve: {
-                    item: function () {
-                        return {
-                            'project': vm.project,
-                            'ticket_id': tkt._id.$oid
-                        };
-                    }
-                }
-            });
-            modal_instance.result.then(function () {
-                getSprintsWithTickets(vm.project._id.$oid);
-                getTicketsForProject(vm.project._id.$oid, false);
-            });
-            e.stopPropagation();
-        };
-
-        vm.saveQuickTicket = function(sprint){
+        vm.saveQuickTicket = function (sprint) {
             var new_ticket = {
                 title: vm.new_ticket,
                 sprint: sprint
             };
-            if(new_ticket.sprint){
+            if (new_ticket.sprint) {
                 new_ticket.sprint.pk = sprint._id.$oid;
             }
             TicketService.save(vm.project._id.$oid, new_ticket).then(function (tkt) {
-                getSprintsWithTickets(vm.project._id.$oid);
-                getTicketsForProject(vm.project._id.$oid);
+                if (new_ticket.sprint) {
+                    for (var i in vm.sprints) {
+                        if (vm.sprints[i]._id.$oid === new_ticket.sprint.pk) {
+                            vm.sprints[i].tickets.push(tkt);
+                            break;
+                        }
+                    }
+                } else {
+                    vm.tickets.push(tkt);
+                }
                 vm.new_ticket = null;
             });
         };
 
-        vm.clone_ticket = function(e, tkt){
+        vm.clone_ticket = function (e, tkt) {
             TicketService.clone(vm.project._id.$oid, tkt._id.$oid).then(function (tkt) {
-                getSprintsWithTickets(vm.project._id.$oid);
-                getTicketsForProject(vm.project._id.$oid);
+                vm.tickets.push(tkt);
+                //getSprintsWithTickets(vm.project._id.$oid);
+                //getTicketsForProject(vm.project._id.$oid);
                 vm.new_ticket = null;
             });
             e.stopPropagation();
@@ -132,7 +124,7 @@
                     item: function () {
                         return ticket;
                     },
-                    project: function(){
+                    project: function () {
                         return vm.project._id.$oid;
                     }
                 }
@@ -155,7 +147,7 @@
                         sprint.to_start = true;
                         return angular.copy(sprint);
                     },
-                    project: function(){
+                    project: function () {
                         return vm.project._id.$oid;
                     }
                 }
@@ -167,8 +159,8 @@
             });
         };
 
-        vm.edit_sprint = function(sprint){
-          var modal_instance = modal.open({
+        vm.edit_sprint = function (sprint) {
+            var modal_instance = modal.open({
                 controller: 'StartSprintController as vm',
                 templateUrl: 'sprint/sprint_form.tpl.html',
                 resolve: {
@@ -177,7 +169,7 @@
                         sprint.to_start = false;
                         return angular.copy(sprint);
                     },
-                    project: function(){
+                    project: function () {
                         return vm.project._id.$oid;
                     }
                 }
@@ -196,7 +188,7 @@
                     sprint: function () {
                         return angular.copy(sprint);
                     },
-                    project: function(){
+                    project: function () {
                         return vm.project._id.$oid;
                     }
                 }
@@ -337,12 +329,36 @@
         // set the active tab
         scope.$parent.vm[state.current.tab_active] = true;
 
-        vm.is_scrumm = function(){
-          return vm.project.project_type === "S";
+        vm.is_scrumm = function () {
+            return vm.project.project_type === "S";
         };
 
         getTicketsForProject(vm.project._id.$oid);
         getSprintsWithTickets(vm.project._id.$oid);
+
+        //broadcasting
+        rootScope.$on('savedTicket', function (evt, tkt) {
+            if (tkt.sprint) {
+                for (var i in vm.sprints) {
+                    if (vm.sprints[i]._id.$oid === tkt.sprint._id.$oid) {
+                        for(var j in vm.sprints[i].tickets){
+                            if(vm.sprints[i].tickets[j]._id.$oid === tkt._id.$oid){
+                                vm.sprints[i].tickets[j] = tkt;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            } else {
+                for(var k in vm.tickets){
+                    if(vm.tickets[k]._id.$oid === tkt._id.$oid){
+                        vm.tickets[k] = tkt;
+                        break;
+                    }
+                }
+            }
+        });
 
         //Socket actions
         SocketIO.on('backlog_order', function () {

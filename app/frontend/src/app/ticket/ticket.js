@@ -19,7 +19,7 @@
         })
             .state('project.planning.ticket', {
                 url: '/ticket/:ticket_id',
-                onEnter: ['$timeout', '$q', '$stateParams', '$state', '$modal', 'ProjectService', function ($timeout, $q, $stateParams, $state, $modal, ProjectService) {
+                onEnter: ['$timeout', '$rootScope', '$q', '$stateParams', '$state', '$modal', 'ProjectService', function ($timeout, $rootScope, $q, $stateParams, $state, $modal, ProjectService) {
 
                     var vm = this;
                     $timeout(function () {
@@ -50,7 +50,7 @@
                             }
                         });
                         modalInstance.result.then(function () {
-                            $state.go('^', {}, {reload: true});
+                            $state.go('^', {}, {reload: false});
                         });
                     });
                 }],
@@ -74,12 +74,16 @@
                 });
             });
         } else {
-            SprintService.query(item.project).then(function (sprints) {
+            SprintService.query(item.project._id.$oid).then(function (sprints) {
                 vm.sprints = sprints;
                 vm.ticket = {};
                 vm.labels = [];
             });
         }
+
+        vm.is_scrumm = function(){
+            return item.project.project_type === "S";
+        };
 
         vm.save = function () {
             if (vm.form.ticket_form.$valid) {
@@ -93,15 +97,15 @@
                 }
 
                 if (item.ticket) {
-                    TicketService.update(item.project, vm.ticket._id.$oid, vm.ticket).then(function (tkt) {
-                        modalInstance.close();
+                    TicketService.update(item.project._id.$oid, vm.ticket._id.$oid, vm.ticket).then(function (tkt) {
+                        modalInstance.close(tkt);
                     }, function (err) {
                         modalInstance.dismiss('error');
                         log.error(err);
                     });
                 } else {
-                    TicketService.save(item.project, vm.ticket).then(function (tkt) {
-                        modalInstance.close();
+                    TicketService.save(item.project._id.$oid, vm.ticket).then(function (tkt) {
+                        modalInstance.close(tkt);
                     }, function (err) {
                         modalInstance.dismiss('error');
                         log.error(err);
@@ -199,6 +203,7 @@
                 ticket.sprint = undefined;
                 TicketService.update(vm.project._id.$oid, ticket._id.$oid, ticket).then(function (tkt) {
                     vm.ticket = tkt;
+                    rootScope.$broadcast('savedTicket', tkt);
                 });
             }
         };

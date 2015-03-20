@@ -47,7 +47,7 @@
                             ng-options="t.value as t.name for t in vm.types">
                     </select>
                 </div>
-                <div class="form-group" ng-if="vm.project.project_type == 'S'">
+                <div class="form-group" ng-if="vm.is_scrumm()">
                     <label><[ 'TICKET_SPRINT' | translate ]></label>
                     <select class="form-control"
                             data-ng-model="vm.ticket.sprint"

@@ -177,6 +177,7 @@
     "TICKET_NEW_COMMENT": "Añadir nuevo comentario",
     "TICKET_NEW": "Nueva Tarea",
     "TICKET_CHOOSE_SPRINT": "Elegir un Sprint ...",
+    "TICKET_SPRINT": "Sprint",
     "TICKET_TITLE": "Título",
     "TICKET_SAVE": "Guardar",
 

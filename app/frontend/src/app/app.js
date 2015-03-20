@@ -81,9 +81,9 @@
         };
     };
 
-    var filterNl2Br =  function(sce) {
+    var filterNl2Br = function (sce) {
         return function (msg, is_xhtml) {
-            if(msg === undefined){
+            if (msg === undefined) {
                 return;
             }
             var xhtml = is_xhtml || true;
@@ -93,28 +93,18 @@
         };
     };
 
-    var AppController = function (scope, rootScope, state, stateParams, tokens, TicketService, SocketIO, translate, StorageService) {
+    var AppController = function (scope, rootScope, state, stateParams, UserService, TicketService, SocketIO, translate, StorageService) {
         var vm = this;
         rootScope.$on('$stateChangeStart', function (event, toState) {
 
             if (angular.isDefined(toState.data.pageTitle)) {
-                
+
                 scope.pageTitle = toState.data.pageTitle + ' | Coati';
             }
             scope.actual_path = toState.name;
             rootScope.state_name = toState.name;
         });
 
-        rootScope.$on('$stateChangeSuccess', function (event) {
-            if (rootScope.state_name !== "login" &&
-                rootScope.state_name !== 'login_auth' &&
-                rootScope.state_name !== 'login_register') {
-                if (tokens.get_token() == null) {
-                    event.preventDefault();
-                    state.go('login', stateParams, {reload: true, notify: false});
-                }
-            }
-        });
 
         vm.searchTickets = function (query) {
             vm.loading_results = true;
@@ -146,7 +136,7 @@
         SocketIO.init();
     };
 
-    var RunApp = function (rootScope, state, stateParams, objects, StorageService, editableOptions, editableThemes) {
+    var RunApp = function (rootScope, state, stateParams, objects, UserService, StorageService, editableOptions, editableThemes) {
 
         editableThemes.bs3.inputClass = 'input-sm';
         editableThemes.bs3.buttonsClass = 'btn-sm';
@@ -154,27 +144,39 @@
 
         var user = null;
         try {
+
             user = JSON.parse(StorageService.get('user'));
             if (objects.isObject(user)) {
+
                 rootScope.user = user;
+
             } else {
                 if (window.location.href.indexOf('login') < 0) {
                     stateParams.next = window.location.href;
-                    state.go('login', stateParams);
+                    state.go('login', stateParams, {reload: true});
                 }
             }
-        } catch (err) {
 
+        } catch (err) {
+            state.go('login', stateParams, {reload: true});
         }
+
+        rootScope.$on('$stateChangeSuccess', function () {
+            if (!_.startsWith(rootScope.state_name, 'login')) {
+                if (!UserService.is_logged()) {
+                    state.go('login', stateParams,{reload: true});
+                }
+            }
+        });
 
     };
 
     // Injections
     filterTrustedHTML.$inject = ['$sce'];
     filterNl2Br.$inject = ['$sce'];
-    RunApp.$inject = ['$rootScope', '$state', '$stateParams', '$objects', 'StorageService', 'editableOptions', 'editableThemes'];
+    RunApp.$inject = ['$rootScope', '$state', '$stateParams', '$objects', 'UserService', 'StorageService', 'editableOptions', 'editableThemes'];
     ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider', '$translateProvider', 'cfpLoadingBarProvider'];
-    AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', 'tokens', 'TicketService', 'SocketIO', '$translate', 'StorageService'];
+    AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', 'UserService', 'TicketService', 'SocketIO', '$translate', 'StorageService'];
 
     angular.module('Coati', [
         'templates-app',
@@ -186,6 +188,7 @@
         'Coati.SocketIO',
         'Coati.Config',
         'Coati.Directives',
+        'Coati.Services.User',
         'Coati.Services.Storage',
         'Coati.Services.Ticket',
         'Coati.Errors',

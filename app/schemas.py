@@ -513,6 +513,16 @@ class UserActivity(CustomDocument):
         'queryset_class': CustomQuerySet
     }
 
+    @classmethod
+    def store_notification(cls, user_id, project_pk, verb, data=None, user_to=None):
+        ua = cls()
+        ua.project = Project.objects.get(pk=project_pk)
+        ua.author = User.objects.get(pk=user_id)
+        ua.verb = verb
+        ua.data = data
+        ua.to = user_to
+        ua.save()
+
 
     @classmethod
     def post_save(cls, sender, document, **kwargs):
@@ -532,7 +542,6 @@ class UserActivity(CustomDocument):
                 un = UserNotification(activity=document)
                 un.user = pm.member
                 un.save()
-                #TODO: Send emails to notify
                 r = RedisClient(channel=str(un.user.pk))
                 r.store(document.verb, str(document.author.pk))
 

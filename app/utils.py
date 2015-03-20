@@ -27,6 +27,10 @@ def send_new_member_email_async(*args):
     send_email_async(create_new_member_email, *args)
 
 
+def send_notification_email_async(*args):
+    send_email_async(create_notification_email, *args)
+
+
 def create_activation_email(user):
     path = os.path.dirname(os.path.abspath(__file__))
     env = Environment(loader=FileSystemLoader(path + '/templates'))
@@ -48,6 +52,24 @@ def create_new_member_email(user, project):
     msg = Message(subject='Coati - Project Participation',
                   recipients=[user.email],
                   html=template.render(link=link, name=project.name))
+    return msg
+
+
+def create_notification_email(user, comment):
+    path = os.path.dirname(os.path.abspath(__file__))
+    env = Environment(loader=FileSystemLoader(path + '/templates'))
+    template = env.get_template('notification.html')
+    message = '%s' % comment.comment
+    domain = current_app.config['CURRENT_DOMAIN']
+    link = '%s/project/%s/planning/ticket/%s' % (domain,
+                                                 str(comment.ticket.project.pk),
+                                                 str(comment.ticket.pk))
+
+    msg = Message(subject='Coati - Notification',
+                  recipients=[user.email],
+                  html=template.render(message=message,
+                                       link=link,
+                                       title=comment.ticket.title))
     return msg
 
 
@@ -81,13 +103,7 @@ def output_json(obj, code, headers=None):
 
 
 def save_notification(project_pk, verb, data=None, user_to=None):
-    ua = UserActivity()
-    ua.project = Project.objects.get(pk=project_pk)
-    ua.author = User.objects.get(pk=g.user_id)
-    ua.verb = verb
-    ua.data = data
-    ua.to = user_to
-    ua.save()
+    UserActivity.store_notification(g.user_id, project_pk, verb, data, user_to)
 
 
 

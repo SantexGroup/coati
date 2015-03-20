@@ -6,11 +6,13 @@
                 var token_data = window.localStorage.getItem('token_data');
                 if (token_data != null) {
                     token_data = JSON.parse(token_data);
-                    var date_expiration = token_data['date_expiration'];
-                    var token = token_data['token'];
-                    var now = new Date().getTime();
-                    if (date_expiration >= now) {
-                        return token;
+                    if(token_data) {
+                        var date_expiration = token_data['date_expiration'];
+                        var token = token_data['token'];
+                        var now = new Date().getTime();
+                        if (date_expiration >= now) {
+                            return token;
+                        }
                     }
                 }
                 return null;

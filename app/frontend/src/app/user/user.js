@@ -80,9 +80,9 @@
             vm.new_notifications = filter('filter')(vm.all_notifications, {viewed: false});
         };
         var getNotifications = function () {
-
             return UserService.notifications(10).then(function (list) {
                 preProcessNotifications(list);
+                timeout(getNotifications, 30000);
             });
         };
 
@@ -113,6 +113,10 @@
 
         };
 
+        //get notifications
+        if (UserService.is_logged()) {
+            getNotifications();
+        }
         //Socket actions
         SocketIO.on('notify', function () {
             getNotifications();

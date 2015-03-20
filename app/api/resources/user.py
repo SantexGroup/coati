@@ -7,7 +7,7 @@ from mongoengine import Q, DoesNotExist
 
 from app.api.resources.auth_resource import AuthResource
 from app.auth import generate_token
-from app.schemas import User, UserNotification
+from app.schemas import User, UserNotification, UserActivity
 from app.utils import send_activation_email_async
 
 
@@ -143,14 +143,20 @@ class UserNotifications(AuthResource):
         super(UserNotifications, self).__init__()
 
     def get(self):
-        data = UserNotification.objects(user=g.user_id).order_by('viewed').order_by('activity__when')
+        data = UserNotification.objects(
+            user=g.user_id,
+            activity__in=UserActivity.objects(author__ne=g.user_id)
+        ).order_by('viewed').order_by('activity__when')
         if request.args.get('total'):
             data = data[:int(request.args.get('total'))]
         return data.to_json(), 200
 
     def put(self):
         UserNotification.objects(user=g.user_id).update(set__viewed=True)
-        data = UserNotification.objects(user=g.user_id).order_by('activity__when')
+        data = UserNotification.objects(
+            user=g.user_id,
+            activity__in=UserActivity.objects(author__ne=g.user_id)
+        ).order_by('viewed').order_by('activity__when')
         if request.args.get('total'):
             data = data[:int(request.args.get('total'))]
         return data.to_json(), 200

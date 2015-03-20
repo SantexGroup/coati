@@ -9,7 +9,7 @@ from app.api.resources.auth_resource import AuthResource
 from app.schemas import (Project, Ticket, SprintTicketOrder,
                          Sprint, TicketColumnTransition, Column, User, Comment,
                          Attachment, ProjectMember)
-from app.utils import save_notification
+from app.utils import save_notification, send_notification_email_async
 
 
 class TicketInstance(AuthResource):
@@ -397,12 +397,14 @@ class TicketComments(AuthResource):
             c.save()
             if data.get('mentions'):
                 for m in data.get('mentions'):
-                    u = User.objects.get(pk=m)
-                    # save activity
-                    save_notification(project_pk=project_pk,
-                                      verb='mention',
-                                      user_to=u,
-                                      data=c.to_dict())
+                    if m is not None:
+                        u = User.objects.get(pk=m)
+                        send_notification_email_async(u, c)
+                        # save activity
+                        save_notification(project_pk=project_pk,
+                                          verb='mention',
+                                          user_to=u,
+                                          data=c.to_dict())
             else:
                 # save activity
                 save_notification(project_pk=project_pk,

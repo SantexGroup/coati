@@ -274,10 +274,11 @@ class ProjectMembers(AuthResource):
                     else:
                         return jsonify({'success': False,
                                         'message': 'Already added'}), 200
-            # save activity
-            save_notification(project_pk=project_pk,
-                              verb='new_members',
-                              data={'members': members_added})
+            if members_added:
+                # save activity
+                save_notification(project_pk=project_pk,
+                                  verb='new_members',
+                                  data={'members': members_added})
             return jsonify({'success': True}), 200
         return jsonify({"error": 'Bad Request'}), 400
 

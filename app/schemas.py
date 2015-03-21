@@ -559,7 +559,9 @@ class UserNotification(CustomDocument):
 
     def to_json(self, *args, **kwargs):
         data = self.to_dict()
-        if self.activity.__class__.__name__ != 'DBRef':
+        if self.activity.__class__.__name__ != 'DBRef' \
+                and self.activity.project.__class__.__name__ != 'DBRef'\
+                and self.activity.author.__class__.__name__ != 'DBRef':
             data['activity'] = self.activity.to_dict()
             data['activity']['project'] = self.activity.project.to_dict()
             data['activity']['author'] = self.activity.author.to_dict()

@@ -553,7 +553,8 @@ class UserNotification(CustomDocument):
     viewed = mongoengine.BooleanField(default=False)
 
     meta = {
-        'queryset_class': CustomQuerySet
+        'queryset_class': CustomQuerySet,
+        'ordering': ['-activity__when']
     }
 
     def to_json(self, *args, **kwargs):

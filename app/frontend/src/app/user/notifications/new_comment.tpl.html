@@ -9,5 +9,6 @@
     <strong>
         <[ n.activity.project.prefix]>-<[ n.activity.data.ticket.number ]>: <[n.activity.data.ticket.title ]>
     </strong>
+    <span ng-bind-html="n.activity.data.comment.comment | trustedHtml"></span>
     <small><[ n.activity.when.$date | date:'medium' ]></small>
 </a>

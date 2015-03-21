@@ -55,7 +55,6 @@ class UserInstance(AuthResource):
 
 
 class UserLogged(AuthResource):
-
     def __init__(self):
         super(UserLogged, self).__init__()
 
@@ -66,7 +65,6 @@ class UserLogged(AuthResource):
 
 
 class UserLogin(Resource):
-
     def __init__(self):
         super(UserLogin, self).__init__()
 
@@ -89,7 +87,6 @@ class UserLogin(Resource):
 
 
 class UserRegister(Resource):
-
     def __init__(self):
         super(UserRegister, self).__init__()
 
@@ -121,7 +118,6 @@ class UserRegister(Resource):
 
 
 class UserActivate(Resource):
-
     def __init__(self):
         super(UserActivate, self).__init__()
 
@@ -132,31 +128,32 @@ class UserActivate(Resource):
             user.save()
             token = generate_token(str(user.pk))
             return jsonify({'token': token,
-                            'expire': current_app.config['TOKEN_EXPIRATION_TIME']}), 200
+                            'expire': current_app.config[
+                                'TOKEN_EXPIRATION_TIME']}), 200
         except DoesNotExist:
             return jsonify({'error': 'Bad Request'}), 400
 
 
 class UserNotifications(AuthResource):
-
     def __init__(self):
         super(UserNotifications, self).__init__()
 
     def get(self):
-        data = UserNotification.objects(
-            user=g.user_id,
-            activity__in=UserActivity.objects(author__ne=g.user_id)
-        ).order_by('viewed').order_by('activity__when')
-        if request.args.get('total'):
-            data = data[:int(request.args.get('total'))]
-        return data.to_json(), 200
+        return get_notifications()
 
     def put(self):
         UserNotification.objects(user=g.user_id).update(set__viewed=True)
-        data = UserNotification.objects(
-            user=g.user_id,
-            activity__in=UserActivity.objects(author__ne=g.user_id)
-        ).order_by('viewed').order_by('activity__when')
-        if request.args.get('total'):
-            data = data[:int(request.args.get('total'))]
-        return data.to_json(), 200
+        return get_notifications()
+
+
+def get_notifications():
+    notifications = UserNotification.objects(user=g.user_id)
+    results = []
+    for n in notifications:
+        if n.activity.author != g.user_id:
+            results.append(json.loads(n.to_json()))
+
+    results.sort(key=lambda x: x['activity']['when']['$date'], reverse=True)
+    if request.args.get('total'):
+        results = results[:int(request.args.get('total'))]
+    return jsonify({'notifications': results}), 200

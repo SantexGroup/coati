@@ -80,8 +80,8 @@
             vm.new_notifications = filter('filter')(vm.all_notifications, {viewed: false});
         };
         var getNotifications = function () {
-            return UserService.notifications(10).then(function (list) {
-                preProcessNotifications(list);
+            return UserService.notifications(10).then(function (result) {
+                preProcessNotifications(result['notifications']);
                 timeout(getNotifications, 30000);
             });
         };
@@ -94,8 +94,8 @@
                 timeout(function () {
                     if (vm.new_notifications.length > 0) {
                         //Call to set as read
-                        UserService.mark_as_viewed(10).then(function (list) {
-                            preProcessNotifications(list);
+                        UserService.mark_as_viewed(10).then(function (result) {
+                            preProcessNotifications(result['notifications']);
                         });
                     }
                 }, 5000);
@@ -117,10 +117,6 @@
         if (UserService.is_logged()) {
             getNotifications();
         }
-        //Socket actions
-        SocketIO.on('notify', function () {
-            getNotifications();
-        });
 
     };
 
@@ -129,8 +125,8 @@
 
         var getNotifications = function () {
 
-            UserService.notifications().then(function (list) {
-                vm.all_notifications = list;
+            UserService.notifications().then(function (result) {
+                vm.all_notifications = result['notifications'];
             });
         };
 

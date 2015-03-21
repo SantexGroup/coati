@@ -20,10 +20,11 @@
 <div class="row">
 <div class="col-md-12">
 <div class="row">
-    <div class="col-md-12">
-        <div class="col-md-10" style="padding-left: 0px">
-            <label ng-if="vm.is_scrumm()"><[ 'TICKET_POINTS' | translate
-                ]></label>
+    <div class="col-md-10">
+        <div class="row">
+            <div class="col-md-12">
+                <label ng-if="vm.is_scrumm()"><[ 'TICKET_POINTS' | translate
+                    ]></label>
                             <span ng-if="vm.is_scrumm()"
                                   class="badge bg-important"
                                   editable-text="vm.ticket.points"
@@ -32,7 +33,7 @@
                                   ng-click="vm.show(points_form)">
                                 <[ vm.ticket.points ]>
                             </span>
-            <label><[ 'TICKET_TYPE' | translate ]>:</label>
+                <label><[ 'TICKET_TYPE' | translate ]>:</label>
                         <span class="badge <[ vm.ticket.type]>"
                               editable-select="vm.ticket.type"
                               e-form="type_form"
@@ -41,19 +42,37 @@
                               onbeforesave="vm.saveTicket(vm.ticket);">
                             <[ vm.types | ticketTypes:vm.ticket.type ]>
                         </span>
-            <label><[ 'TICKET_IN_COLUMN' | translate ]>:</label>
+                <label><[ 'TICKET_IN_COLUMN' | translate ]>:</label>
                         <span ng-if="!vm.ticket.in_column"
                               class="badge bg-warning"><[ 'TICKET_BACKLOG' | translate ]></span>
                         <span ng-if="vm.ticket.in_column"
                               class="badge bg-warning"><[ vm.ticket.in_column ]></span>
+            </div>
+            <div class="col-md-12">
+                <label><[ 'TICKET_LABELS' | translate ]>:</label>
+
+                <p class="labels-ticket" editable-tags="vm.labels"
+                   e-form="labels_form"
+                   ng-click="vm.show(labels_form)"
+                   e-style="display:inline-block;min-width:400px;"
+                   oncancel="vm.prepareLabelsToSave($data, false);"
+                   onbeforesave="vm.prepareLabelsToSave($data, true);">
+                <span class="badge bg-info"
+                      ng-repeat="lbl in vm.ticket.labels">
+                    <[ lbl ]>
+                </span>
+                    <span ng-if="vm.labels.length < 1"><[ 'TICKET_NO_LABELS' | translate ]></span>
+                </p>
+            </div>
         </div>
-        <div class="col-md-2">
-            <button type="button" ng-if="!vm.is_scrumm()"
-                    ng-click="vm.archive_ticket();"
-                    class="btn btn-xs btn-danger">
-                <[ 'TICKET_ACTION_ARCHIVE' | translate ]>
-            </button>
-        </div>
+
+    </div>
+    <div class="col-md-2">
+        <button type="button" ng-if="!vm.is_scrumm()"
+                ng-click="vm.archive_ticket();"
+                class="btn btn-xs btn-danger">
+            <[ 'TICKET_ACTION_ARCHIVE' | translate ]>
+        </button>
     </div>
 </div>
 <hr>
@@ -87,24 +106,6 @@
             <span ng-bind-html="vm.ticket.description | nl2br"></span>
                 <span ng-if="!vm.ticket.description"
                       class="ng-scope"><[ 'TICKET_NO_DESCRIPTION' | translate ]></span>
-        </p>
-    </div>
-</div>
-<hr>
-<div class="row">
-    <div class="col-md-12">
-        <label><[ 'TICKET_LABELS' | translate ]>:</label>
-
-        <p class="labels-ticket" editable-tags="vm.labels" e-form="labels_form"
-           ng-click="vm.show(labels_form)"
-           e-style="display:inline-block;min-width:400px;"
-           oncancel="vm.prepareLabelsToSave($data, false);"
-           onbeforesave="vm.prepareLabelsToSave($data, true);">
-                <span class="badge bg-info"
-                      ng-repeat="lbl in vm.ticket.labels">
-                    <[ lbl ]>
-                </span>
-            <span ng-if="vm.labels.length < 1"><[ 'TICKET_NO_LABELS' | translate ]></span>
         </p>
     </div>
 </div>

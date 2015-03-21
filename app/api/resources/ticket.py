@@ -300,7 +300,7 @@ class TicketTransition(AuthResource):
                 sp = data.get('sprint')
                 if tkt and col:
                     filters = dict(ticket=tkt,
-                                      latest_state=True)
+                                   latest_state=True)
                     if project.project_type == 'S':
                         filters.update(dict(sprint=sp))
 
@@ -334,7 +334,8 @@ class TicketTransition(AuthResource):
                         if project.project_type == 'S':
                             filters.update(dict(sprint=sp))
 
-                        tkt_trans_order = TicketColumnTransition.objects.get(**filters)
+                        tkt_trans_order = TicketColumnTransition.objects.get(
+                            **filters)
                         tkt_trans_order.order = index
                         tkt_trans_order.save()
 
@@ -404,12 +405,18 @@ class TicketComments(AuthResource):
                         save_notification(project_pk=project_pk,
                                           verb='mention',
                                           user_to=u,
-                                          data=c.to_dict())
+                                          data={
+                                              "comment": c.to_dict(),
+                                              "ticket": c.ticket.to_dict()
+                                          })
             else:
                 # save activity
                 save_notification(project_pk=project_pk,
                                   verb='new_comment',
-                                  data=c.to_dict())
+                                  data={
+                                      "comment": c.to_dict(),
+                                      "ticket": c.ticket.to_dict()
+                                  })
 
             return c.to_json(), 201
         return jsonify({'error': 'Bad Request'}), 400
@@ -540,7 +547,8 @@ class TicketClone(AuthResource):
             tkt = Ticket.objects.get(pk=tkt_id)
             new_tkt = tkt.clone()
             try:
-                last_tkt = Ticket.objects(project=project_pk).order_by('-number')
+                last_tkt = Ticket.objects(project=project_pk).order_by(
+                    '-number')
                 if last_tkt:
                     number = last_tkt[0].number + 1
                 else:

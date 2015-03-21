@@ -566,6 +566,8 @@ class UserNotification(CustomDocument):
             data['activity']['project'] = self.activity.project.to_dict()
             data['activity']['author'] = self.activity.author.to_dict()
             data['activity']['data'] = self.activity.data
+        else:
+            data['activity'] = dict(when=self.activity.when)
         return json_util.dumps(data)
 
 # Signals

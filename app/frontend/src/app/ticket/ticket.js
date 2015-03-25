@@ -81,7 +81,7 @@
             });
         }
 
-        vm.is_scrumm = function(){
+        vm.is_scrumm = function () {
             return item.project.project_type === "S";
         };
 
@@ -136,7 +136,7 @@
 
     };
 
-    var TicketDetailController = function (rootScope,log, filter, tmo, modalInstance, conf, downloader, ProjectService, TicketService, SocketIO, item) {
+    var TicketDetailController = function (rootScope, log, filter, tmo, modalInstance, conf, downloader, ProjectService, TicketService, SocketIO, item) {
         var vm = this;
 
 
@@ -188,7 +188,7 @@
         getTicket(item.ticket_id);
         getMembers();
 
-        vm.is_scrumm = function(){
+        vm.is_scrumm = function () {
             return vm.project.project_type === "S";
         };
 
@@ -233,15 +233,7 @@
             downloader.download_file(f.name, f.type, f.data);
         };
 
-        vm.checkMember = function (m) {
-            if (vm.ticket !== undefined) {
-                return _.find(vm.ticket.assigned_to, function (obj) {
-                    var valid = obj._id.$oid === m._id.$oid;
-                    m.is_member = valid;
-                    return valid;
-                });
-            }
-        };
+
         vm.archive_ticket = function () {
             vm.ticket.closed = true;
             TicketService.update(vm.project._id.$oid, vm.ticket._id.$oid, vm.ticket).then(function (tkt) {
@@ -253,19 +245,15 @@
         };
 
         vm.assign_to_ticket = function (m) {
-            if (!m.is_member) {
-                TicketService.assign_member(vm.project._id.$oid, vm.ticket._id.$oid, m._id.$oid).then(function () {
-                    getTicket(vm.ticket._id.$oid);
-                }, function () {
-                    m.is_member = false;
-                });
-            } else {
-                TicketService.remove_member(vm.project._id.$oid, vm.ticket._id.$oid, m._id.$oid).then(function () {
-                    getTicket(vm.ticket._id.$oid);
-                }, function () {
-                    m.is_member = true;
-                });
-            }
+            TicketService.assign_member(vm.project._id.$oid, vm.ticket._id.$oid, m._id.$oid).then(function () {
+                getTicket(vm.ticket._id.$oid);
+            });
+        };
+
+        vm.remove_from_ticket = function (m) {
+            TicketService.remove_member(vm.project._id.$oid, vm.ticket._id.$oid, m._id.$oid).then(function () {
+                getTicket(vm.ticket._id.$oid);
+            });
         };
 
         vm.checkTypeIcon = function (f) {
@@ -347,7 +335,7 @@
             });
         };
 
-        vm.is_scrumm = function(){
+        vm.is_scrumm = function () {
             return vm.project.project_type === 'S';
         };
 

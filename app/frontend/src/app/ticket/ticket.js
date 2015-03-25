@@ -167,7 +167,7 @@
         };
 
         var getTicket = function (ticket_id) {
-            TicketService.get(vm.project._id.$oid, ticket_id).then(function (tkt) {
+            return TicketService.get(vm.project._id.$oid, ticket_id).then(function (tkt) {
                 vm.ticket = tkt;
                 vm.labels = tkt.labels;
                 getComments(tkt._id.$oid);
@@ -205,7 +205,7 @@
             }
         };
 
-        vm.searchTickets = function(q){
+        vm.searchTickets = function (q) {
             return TicketService.related_search(vm.project._id.$oid, q);
         };
 
@@ -213,21 +213,26 @@
             vm.ticket.related_tickets_data = [];
             angular.forEach(vm.related_tickets, function (v, k) {
                 vm.ticket.related_tickets_data.push({'value': v.value,
-                'type': vm.dependency_type});
+                    'type': vm.dependency_type});
             });
             if (save) {
-                vm.saveTicket(vm.ticket).then(function(){
+                vm.saveTicket(vm.ticket).then(function () {
                     vm.cancelDependencyAdd();
                 });
             }
         };
+        vm.remove_related_ticket = function (rtkt) {
+            TicketService.remove_related(vm.project._id.$oid, vm.ticket._id.$oid, rtkt._id.$oid).then(function () {
+                getTicket(vm.ticket._id.$oid);
+            });
+        };
 
-        vm.getDependencyType = function(type){
+        vm.getDependencyType = function (type) {
             var value = _.result(_.findWhere(vm.ticket_dependencies, { 'value': type }), 'name');
             return value;
         };
 
-        vm.cancelDependencyAdd = function(){
+        vm.cancelDependencyAdd = function () {
             vm.related_collapsed = true;
             vm.related_tickets = [];
             vm.dependency_type = null;
@@ -281,13 +286,17 @@
 
         vm.assign_to_ticket = function (m) {
             TicketService.assign_member(vm.project._id.$oid, vm.ticket._id.$oid, m._id.$oid).then(function () {
-                getTicket(vm.ticket._id.$oid);
+                getTicket(vm.ticket._id.$oid).then(function () {
+                    rootScope.$broadcast('savedTicket', vm.ticket);
+                });
             });
         };
 
         vm.remove_from_ticket = function (m) {
             TicketService.remove_member(vm.project._id.$oid, vm.ticket._id.$oid, m._id.$oid).then(function () {
-                getTicket(vm.ticket._id.$oid);
+                getTicket(vm.ticket._id.$oid).then(function () {
+                    rootScope.$broadcast('savedTicket', vm.ticket);
+                });
             });
         };
 

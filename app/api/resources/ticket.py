@@ -568,6 +568,17 @@ class TicketBoardProject(AuthResource):
         return Project.objects.get(pk=project_pk).get_tickets_board().to_json()
 
 
+class TicketRelated(AuthResource):
+    def __init__(self):
+        super(TicketRelated, self).__init__()
+
+    def delete(self, project_pk, tkt_id, rtkt_id):
+        rtkt = TicketDependency.objects.get(pk=rtkt_id)
+        if rtkt:
+            Ticket.objects(pk=tkt_id).update_one(pull__related_tickets=rtkt)
+            return jsonify({'success': True}), 200
+        return jsonify({'error': 'Bad Request'}), 400
+
 class TicketClone(AuthResource):
     def __init__(self):
         super(TicketClone, self).__init__()

@@ -5,7 +5,7 @@
             editable-text="vm.ticket.title"
             e-form="title_form"
             ng-click="vm.show(title_form)"
-            onbeforesave="vm.saveTicket(vm.ticket);"><[ vm.ticket.title ]></span>
+            onaftersave="vm.saveTicket(vm.ticket);"><[ vm.ticket.title ]></span>
     </h4>
 
     <div class="close-ticket">
@@ -28,7 +28,7 @@
                             <span ng-if="vm.is_scrumm()"
                                   class="badge bg-important"
                                   editable-text="vm.ticket.points"
-                                  onbeforesave="vm.saveTicket(vm.ticket);"
+                                  onaftersave="vm.saveTicket(vm.ticket);"
                                   e-form="points_form"
                                   ng-click="vm.show(points_form)">
                                 <[ vm.ticket.points ]>
@@ -39,7 +39,7 @@
                               e-form="type_form"
                               ng-click="vm.show(type_form)"
                               e-ng-options="t.value as t.name for t in vm.types"
-                              onbeforesave="vm.saveTicket(vm.ticket);">
+                              onaftersave="vm.saveTicket(vm.ticket);">
                             <[ vm.types | ticketTypes:vm.ticket.type ]>
                         </span>
                 <label><[ 'TICKET_IN_COLUMN' | translate ]>:</label>
@@ -52,11 +52,11 @@
                 <label><[ 'TICKET_LABELS' | translate ]>:</label>
 
                 <p class="labels-ticket" editable-tags="vm.labels"
-                   e-form="labels_form"
+                   e-form="labels_form" style="display: inline-block;"
                    ng-click="vm.show(labels_form)"
                    e-style="display:inline-block;min-width:400px;"
                    oncancel="vm.prepareLabelsToSave($data, false);"
-                   onbeforesave="vm.prepareLabelsToSave($data, true);">
+                   onaftersave="vm.prepareLabelsToSave($data, true);">
                 <span class="badge bg-info"
                       ng-repeat="lbl in vm.ticket.labels">
                     <[ lbl ]>
@@ -83,7 +83,7 @@
                 ng-click="vm.related_collapsed=!vm.related_collapsed">
             <i class="icon-plus"></i>
         </button>
-        <div collapse="vm.related_collapsed">
+        <div collapse="vm.related_collapsed" class="form-related">
             <tags-input ng-model="vm.related_tickets" type="text"
                         placeholder="<[ 'SEARCH' | translate ]>"
                         add-from-autocomplete-only="true">
@@ -115,7 +115,7 @@
                         <a ui-sref="project.planning.ticket({project_pk:vm.project._id.$oid, ticket_id:rtkt.ticket._id.$oid})">
                             <span><[ vm.project.prefix ]>-<[ rtkt.ticket.number ]>: <[ rtkt.ticket.title ]></span>
                         </a>
-                        <a href="#">
+                        <a href="#" ng-click="vm.remove_related_ticket(rtkt);">
                             <i class="icon-remove"></i>
                         </a>
                     </li>
@@ -185,7 +185,7 @@
         <p editable-textarea="vm.ticket.description" e-form="decription_form"
            ng-click="vm.show(decription_form)" ng-disabled="vm.no_editing"
            e-rows="5"
-           e-cols="70" onbeforesave="vm.saveTicket(vm.ticket);">
+           e-cols="70" onaftersave="vm.saveTicket(vm.ticket);">
             <span ng-bind-html="vm.ticket.description | nl2br"></span>
                 <span ng-if="!vm.ticket.description"
                       class="ng-scope"><[ 'TICKET_NO_DESCRIPTION' | translate ]></span>

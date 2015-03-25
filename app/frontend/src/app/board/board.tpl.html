@@ -1,10 +1,11 @@
 <div class="row">
     <div class="col-md-12" ng-hide="vm.enabled"></h3>
-        <h3><[ 'BOARD_NO_SPRINT_STARTED' | translate ]></h3>
+        <h3 style="margin:0px;"><[ 'BOARD_NO_SPRINT_STARTED' | translate ]></h3>
     </div>
     <div class="col-md-12" ng-show="vm.enabled" prepare-board>
 
-        <h3 ng-if="vm.is_scrumm()"><[ 'BOARD_ACTIVE_SPRINT' | translate ]>:<[ vm.sprint.name ]></h3>
+        <h3 ng-if="vm.is_scrumm()"><[ 'BOARD_ACTIVE_SPRINT' | translate ]>:<[
+            vm.sprint.name ]></h3>
 
         <div class="pull-right">
             <!-- aca van los usuarios -->
@@ -24,26 +25,36 @@
                                     ng-model="vm.tickets">
                                     <li ng-repeat="tkt in vm.tickets track by tkt._id.$oid"
                                         class="card ticket-item <[ tkt.type ]>"
-                                        ng-click="vm.showDetails($event, tkt._id.$oid);">
+                                        ui-sref="project.board.ticket({ticket_id:tkt._id.$oid, project_pk:vm.project._id.$oid})">
                                         <div class="task-title">
                                             <span class="task-title-sp">
                                               <[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
                                             </span>
 
                                         </div>
-                                        <div class="row options">
-                                            <div class="col-md-12">
-                                                <span class="badge bg-warning" ng-if="vm.is_scrumm()"><[ tkt.points ]> Pts.</span>
-                                                <span ng-if="tkt.badges.comments > 0" class="badge" title="Comments"><i class="icon-comments"></i> <[ tkt.badges.comments ]></span>
-                                                <span ng-if="tkt.badges.files > 0" class="badge" title="Attachments"><i class="icon-paper-clip"></i> <[ tkt.badges.files ]></span>
-                                                <ul class="members pull-right">
-                                                    <li ng-repeat="m in tkt.assigned_to"
-                                                        title="<[ m.member.email ]>">
-                                                        <img ng-if="m.member.picture" ng-src="<[ m.member.picture ]>">
-                                                        <img ng-if="!m.member.picture" src="/static/assets/img/koala.png">
-                                                    </li>
-                                                </ul>
+                                        <div class="options">
+                                            <div class="pull-left">
+                                                <span class="badge bg-warning"
+                                                      ng-if="vm.is_scrumm()"><[ tkt.points ]> Pts.</span>
+                                                <span ng-if="tkt.badges.comments > 0"
+                                                      class="badge"
+                                                      title="Comments"><i
+                                                        class="icon-comments"></i> <[ tkt.badges.comments ]></span>
+                                                <span ng-if="tkt.badges.files > 0"
+                                                      class="badge"
+                                                      title="Attachments"><i
+                                                        class="icon-paper-clip"></i> <[ tkt.badges.files ]></span>
                                             </div>
+                                            <ul class="members pull-right">
+                                                <li ng-repeat="m in tkt.assigned_to"
+                                                    title="<[ m.member.email ]>">
+                                                    <img ng-if="m.member.picture"
+                                                         ng-src="<[ m.member.picture ]>">
+                                                    <img ng-if="!m.member.picture"
+                                                         src="/static/assets/img/koala.png">
+                                                </li>
+                                            </ul>
+                                            <div style="clear:both"></div>
                                         </div>
                                     </li>
                                 </ul>
@@ -60,27 +71,35 @@
                                     ng-model="col.tickets">
                                     <li ng-repeat="tkt in col.tickets"
                                         class="card ticket-item <[ tkt.type ]>"
-                                        ng-click="vm.showDetails($event, tkt._id.$oid);">
+                                        ui-sref="project.board.ticket({ticket_id:tkt._id.$oid, project_pk:vm.project._id.$oid})">
                                         <div class="task-title">
                                             <span class="task-title-sp">
                                               <[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
                                             </span>
                                         </div>
-                                        <div class="row options">
-                                            <div class="col-md-12">
-                                                <span class="badge bg-warning" ng-if="vm.is_scrumm()"><[ tkt.points ]> Pts.</span>
-                                                <span ng-if="tkt.badges.comments > 0" class="badge" title="Comments"><i class="icon-comments"></i> <[ tkt.badges.comments ]></span>
-                                                <span ng-if="tkt.badges.files > 0" class="badge" title="Attachments"><i class="icon-paper-clip"></i> <[ tkt.badges.files ]></span>
-                                                <ul class="members pull-right">
-                                                    <li ng-repeat="m in tkt.assigned_to"
-                                                        title="<[ m.member.email ]>">
-                                                        <img ng-if="m.member.picture"
-                                                             ng-src="<[ m.member.picture ]>"/>
-                                                        <img ng-if="!m.member.picture"
-                                                             src="/static/assets/img/koala.png"/>
-                                                    </li>
-                                                </ul>
+                                        <div class="options">
+                                            <div class="pull-left">
+                                                <span class="badge bg-warning"
+                                                      ng-if="vm.is_scrumm()"><[ tkt.points ]> Pts.</span>
+                                                <span ng-if="tkt.badges.comments > 0"
+                                                      class="badge"
+                                                      title="Comments"><i
+                                                        class="icon-comments"></i> <[ tkt.badges.comments ]></span>
+                                                <span ng-if="tkt.badges.files > 0"
+                                                      class="badge"
+                                                      title="Attachments"><i
+                                                        class="icon-paper-clip"></i> <[ tkt.badges.files ]></span>
                                             </div>
+                                            <ul class="members pull-right">
+                                                <li ng-repeat="m in tkt.assigned_to"
+                                                    title="<[ m.member.email ]>">
+                                                    <img ng-if="m.member.picture"
+                                                         ng-src="<[ m.member.picture ]>"/>
+                                                    <img ng-if="!m.member.picture"
+                                                         src="/static/assets/img/koala.png"/>
+                                                </li>
+                                            </ul>
+                                            <div style="clear:both"></div>
                                         </div>
                                     </li>
                                 </ul>

@@ -20,7 +20,7 @@
 <div class="row">
 <div class="col-md-12">
 <div class="row">
-    <div class="col-md-10">
+    <div class="col-md-9">
         <div class="row">
             <div class="col-md-12">
                 <label ng-if="vm.is_scrumm()"><[ 'TICKET_POINTS' | translate
@@ -67,10 +67,10 @@
         </div>
 
     </div>
-    <div class="col-md-2">
+    <div class="col-md-3">
         <button type="button" ng-if="!vm.is_scrumm()"
                 ng-click="vm.archive_ticket();"
-                class="btn btn-xs btn-danger">
+                class="btn btn-xs btn-danger pull-right">
             <[ 'TICKET_ACTION_ARCHIVE' | translate ]>
         </button>
     </div>

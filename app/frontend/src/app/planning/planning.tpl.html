@@ -30,7 +30,8 @@
                             <a ng-if="sprint.started && !sprint.finalized"
                                class="btn btn-primary btn-sm"
                                href="javascript:;"
-                               ng-click="vm.edit_sprint(sprint);"><['PLANNING_EDIT_SPRINT' | translate ]></a>
+                               ng-click="vm.edit_sprint(sprint);"><['PLANNING_EDIT_SPRINT'
+                                | translate ]></a>
                             <a ng-if="sprint.started && !sprint.finalized"
                                class="btn btn-danger btn-sm" href="javascript:;"
                                ng-click="vm.stopSprint(sprint);"><[
@@ -58,6 +59,11 @@
                                         </span>
 
                                         <div class="pull-right hidden-phone">
+                                            <span class="badge bg-info"
+                                                  style="margin-right:2px"
+                                                  ng-repeat="lbl in tkt.labels">
+                                                <[ lbl ]>
+                                            </span>
                                             <span class="badge bg-warning"><[ tkt.points ]> Pts.</span>
                                             <span ng-if="tkt.badges.comments > 0"
                                                   class="badge"
@@ -117,7 +123,8 @@
                 <span><[ 'PLANNING_BACKLOG' | translate ]></span>
 
                 <div class="add-task-row pull-right">
-                    <input type="text" class="form-control input-sm search" ng-model="vm.searchBacklog" placeholder="Search..." />
+                    <input type="text" class="form-control input-sm search"
+                           ng-model="vm.searchBacklog" placeholder="Search..."/>
                     <span class="badge bg-inverse"><[ 'PLANNING_TOTAL_TICKETS' | translate ]>: <[ vm.tickets.length ]></span>
                     <span class="badge bg-inverse" ng-if="vm.is_scrumm()"><[ 'PLANNING_TOTAL_POINTS' | translate ]>: <[ vm.tickets | sumValue:'points' ]></span>
                     <a ng-if="vm.is_scrumm()" class="btn btn-primary btn-sm"
@@ -141,6 +148,11 @@
                                 </span>
 
                                 <div class="pull-right hidden-phone">
+                                    <span class="badge bg-info"
+                                          style="margin-right:2px"
+                                          ng-repeat="lbl in tkt.labels">
+                                                <[ lbl ]>
+                                            </span>
                                     <span class="badge bg-warning"
                                           ng-if="vm.is_scrumm()"><[ tkt.points ]> Pts.</span>
                                     <span ng-if="tkt.badges.comments > 0"

@@ -22,6 +22,15 @@
                 {value:"I", name: 'Improvement'},
                 {value:"E", name: 'Epic'},
                 {value:"T", name: 'Task'}
+            ],
+            TICKET_DEPENDENCIES: [
+                {value:"B", name: "BLOCKED"},
+                {value:"BB", name: "BLOCKED_BY"},
+                {value:"C", name: "CLONED"},
+                {value:"CB", name: "CLONED_BY"},
+                {value:"D", name: "DUPLICATED"},
+                {value:"DB", name: "DUPLICATED_BY"},
+                {value:"R", name: "RELATED"}
             ]
         };
         return {

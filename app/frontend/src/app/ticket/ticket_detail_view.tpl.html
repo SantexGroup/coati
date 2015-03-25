@@ -78,6 +78,57 @@
 <hr>
 <div class="row">
     <div class="col-md-12">
+        <label><[ 'TICKET_LINKED' | translate ]></label>
+        <button class="btn btn-xs btn-success"
+                ng-click="vm.related_collapsed=!vm.related_collapsed">
+            <i class="icon-plus"></i>
+        </button>
+        <div collapse="vm.related_collapsed">
+            <tags-input ng-model="vm.related_tickets" type="text"
+                        placeholder="<[ 'SEARCH' | translate ]>"
+                        add-from-autocomplete-only="true">
+                <auto-complete
+                        source="vm.searchTickets($query)"></auto-complete>
+            </tags-input>
+            <select class="form-control" ng-model="vm.dependency_type"
+                    ng-options="t.value as ( 'TICKET_' + t.name | translate) for t in vm.ticket_dependencies">
+                <option value=""><[ 'TICKET_DEPENDENCY_TYPE' | translate ]>
+                </option>
+            </select>
+
+            <div style="margin:5px 0 0">
+                <button class="btn btn-xs btn-success"
+                        ng-click="vm.prepareLabelsToDependencies(true);"><[
+                    'TICKET_DEPENDENCY_TYPE_SAVE' | translate ]>
+                </button>
+                <button class="btn btn-xs btn-danger"
+                        ng-click="vm.cancelDependencyAdd();"><[
+                    'TICKET_DEPENDENCY_TYPE_CANCEL' | translate ]>
+                </button>
+            </div>
+        </div>
+        <div>
+            <div ng-repeat="(key, value) in vm.ticket.related_tickets | groupBy:'type'">
+                <label><[ 'TICKET_' + vm.getDependencyType(key) | translate ]></label>
+                <ul>
+                    <li ng-repeat="rtkt in value">
+                        <a ui-sref="project.planning.ticket({project_pk:vm.project._id.$oid, ticket_id:rtkt.ticket._id.$oid})">
+                            <span><[ vm.project.prefix ]>-<[ rtkt.ticket.number ]>: <[ rtkt.ticket.title ]></span>
+                        </a>
+                        <a href="#">
+                            <i class="icon-remove"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-md-12">
         <label><[ 'TICKET_MEMBERS' | translate ]></label>
         <ul class="ticket-members">
             <li dropdown
@@ -92,7 +143,8 @@
                 </a>
                 <ul class="dropdown-menu" role="menu">
                     <li>
-                        <a href="#" ng-click="vm.remove_from_ticket(m);">Remove from this ticket</a>
+                        <a href="#" ng-click="vm.remove_from_ticket(m);">Remove
+                            from this ticket</a>
                     </li>
                 </ul>
             </li>

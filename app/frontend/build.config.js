@@ -77,7 +77,7 @@ module.exports = {
             'vendor/angular-cookies/angular-cookies.min.js',
             'vendor/bootstrap/dist/js/bootstrap.min.js',
             'vendor/html5shiv/dist/html5shiv.min.js',
-            'vendor/ng-tags-input/ng-tags-input.min.js',
+            'vendor/ng-tags-input/ng-tags-input.js',
             'vendor/ng-file-upload/angular-file-upload.min.js',
             'vendor/ng-file-upload/angular-file-upload-shim.min.js',
             'vendor/angular-ui-sortable/sortable.min.js',
@@ -86,7 +86,8 @@ module.exports = {
             'vendor/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js',
             'vendor/chartjs/Chart.min.js',
             'vendor/angular-loading-bar/build/loading-bar.min.js',
-            'vendor/angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.min.js'
+            'vendor/angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.min.js',
+            'vendor/angular-filter/dist/angular-filter.min.js'
         ],
         maps: [
             'vendor/angular/angular.min.js.map',

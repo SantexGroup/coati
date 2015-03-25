@@ -17,6 +17,9 @@
             'search': function (query) {
                 return req.$do('/tickets/search/' + query, req.METHODS.GET);
             },
+            'related_search': function(project_pk, query){
+                return req.$do('/project/'+ project_pk +'/tickets/search/' + query, req.METHODS.GET);
+            },
             'save': function (project_pk, tkt) {
                 return req.$do('/project/' + project_pk + '/tickets', req.METHODS.POST, tkt);
             },

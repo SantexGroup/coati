@@ -293,7 +293,7 @@
         };
     };
 
-    Config.$inject = ['$stateProvider', 'tagsInputConfigProvider', '$translateProvider'];
+    Config.$inject = ['$stateProvider', 'tagsInputConfigProvider'];
     ProjectCtrlSettings.$inject = ['$rootScope', '$timeout', '$filter', '$scope', '$state', '$modal', 'growl', 'ProjectService', 'SocketIO'];
     ColumnFormController.$inject = ['$log', '$modalInstance', 'ProjectService', 'project', 'column'];
     ColumnDeleteController.$inject = ['$modalInstance', 'ProjectService', 'column'];

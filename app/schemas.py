@@ -15,6 +15,14 @@ TICKET_TYPE = (('U', 'User Story'),
                ('E', 'Epic'),
                ('T', 'Task'))
 
+DEPENDENCY_TYPE = (('B', 'Blocked'),
+                   ('BB', 'Blocked By'),
+                   ('C', 'Cloned'),
+                   ('CB', 'Cloned By'),
+                   ('D', 'Duplicated'),
+                   ('DB', 'Duplicated By'),
+                   ('R', 'Related'))
+
 PROJECT_TYPE = (('S', 'Scrum'),
                 ('K', 'Kanban'))
 
@@ -340,6 +348,7 @@ class Ticket(CustomDocument):
     assigned_to = mongoengine.ListField(
         mongoengine.ReferenceField('ProjectMember'))
     closed = mongoengine.BooleanField(default=False)
+    related_tickets = mongoengine.ListField(mongoengine.ReferenceField('TicketDependency'))
 
     meta = {
         'queryset_class': CustomQuerySet
@@ -395,7 +404,20 @@ class Ticket(CustomDocument):
                 assignments.append(val)
         data['assigned_to'] = assignments
 
+        related = []
+        for r in self.related_tickets:
+            if r.__class__.__name__ != 'DBRef':
+                rtkt = r.to_dict()
+                rtkt['ticket'] = r.ticket.to_dict()
+                related.append(rtkt)
+        data['related_tickets'] = related
+
         return json_util.dumps(data)
+
+
+class TicketDependency(CustomDocument):
+    ticket = mongoengine.ReferenceField('Ticket')
+    type = mongoengine.StringField(choices=DEPENDENCY_TYPE, max_length=2)
 
 
 class SprintTicketOrder(CustomDocument):
@@ -514,7 +536,8 @@ class UserActivity(CustomDocument):
     }
 
     @classmethod
-    def store_notification(cls, user_id, project_pk, verb, data=None, user_to=None):
+    def store_notification(cls, user_id, project_pk, verb, data=None,
+                           user_to=None):
         ua = cls()
         ua.project = Project.objects.get(pk=project_pk)
         ua.author = User.objects.get(pk=user_id)
@@ -560,7 +583,7 @@ class UserNotification(CustomDocument):
     def to_json(self, *args, **kwargs):
         data = self.to_dict()
         if self.activity.__class__.__name__ != 'DBRef' \
-                and self.activity.project.__class__.__name__ != 'DBRef'\
+                and self.activity.project.__class__.__name__ != 'DBRef' \
                 and self.activity.author.__class__.__name__ != 'DBRef':
             data['activity'] = self.activity.to_dict()
             data['activity']['project'] = self.activity.project.to_dict()

@@ -309,8 +309,9 @@ input.error {
   border-bottom: none !important;
   cursor: pointer;
 }
+
 .task-list .ticket-item .editable-wrap {
-  width:100%;
+  width: 100%;
 }
 
 .board-area .ticket-item, .board-area .user-story {
@@ -784,18 +785,22 @@ a.unread {
   color: #2E2E2E;
   background-color: #F7F8F9 !important;
 }
-.notification .notification-items{
+
+.notification .notification-items {
   height: 300px;
   overflow-y: auto;
 }
+
 .notification .notification-items small,
-.notification-list small{
+.notification-list small {
   display: block;
   color: #aaa;
 }
-.notification-list small{
+
+.notification-list small {
   margin-left: 26px;
 }
+
 .project-item .panel {
   padding: 0px 0px 15px;
 }
@@ -857,7 +862,7 @@ a.unread {
   margin: 0px;
 }
 
-.ticket-members li {
+.ticket-members li.member {
   float: left;
   margin-right: 2px;
   position: relative;
@@ -874,14 +879,29 @@ a.unread {
   clear: right;
 }
 
-.ticket-members .assigned-member {
-  position: absolute;
-  bottom: 1px;
-  right: 1px;
-  color: greenyellow;
-  font-size: 18px;
+.ticket-members li.divider {
+  margin: 0px;
+  height: 2px;
+  background-color: #539B11;
 }
-.backlog .search{
+
+.ticket-members .search-member-li {
+  padding: 5px;
+  background-color: #a9d86e;
+}
+.ticket-members ul.member-menu{
+  left: auto !important;
+  right: auto !important;
+  padding:0px;
+}
+.ticket-members ul.dropdown-menu>li>a:hover,
+.ticket-members ul.dropdown-menu>li>a:focus {
+  text-decoration: none;
+  background-color: #a9d86e !important;
+  background-image: none !important;
+}
+
+.backlog .search {
   display: inline-block;
   margin: 0px;
 }
@@ -893,7 +913,7 @@ hr {
   border-top: 1px solid #eee
 }
 
-.close-ticket{
-  position:absolute;
+.close-ticket {
+  position: absolute;
   right: 10px;
 }

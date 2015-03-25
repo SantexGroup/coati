@@ -80,16 +80,47 @@
     <div class="col-md-12">
         <label><[ 'TICKET_MEMBERS' | translate ]></label>
         <ul class="ticket-members">
-            <li ng-repeat="m in vm.members track by m._id.$oid"
-                ng-click="$event.stopPropagation();vm.assign_to_ticket(m);"
-                title="<[ m.member.first_name ]> <[ m.member.last_name ]> (<[ m.member.email ]>)">
-
-                <img ng-if="m.member.picture"
-                     ng-src="<[ m.member.picture ]>">
-                <img ng-if="!m.member.picture"
-                     src="/static/assets/img/koala.png">
-                <i class="icon-ok assigned-member"
-                   ng-show="vm.checkMember(m);"></i>
+            <li dropdown
+                ng-repeat="m in vm.ticket.assigned_to track by m._id.$oid"
+                title="<[ m.member.first_name ]> <[ m.member.last_name ]> (<[ m.member.email ]>)"
+                class="member">
+                <a href="#" dropdown-toggle>
+                    <img ng-if="m.member.picture"
+                         ng-src="<[ m.member.picture ]>">
+                    <img ng-if="!m.member.picture"
+                         src="/static/assets/img/koala.png">
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                    <li>
+                        <a href="#" ng-click="vm.remove_from_ticket(m);">Remove from this ticket</a>
+                    </li>
+                </ul>
+            </li>
+            <li dropdown>
+                <button class="btn btn-default" dropdown-toggle>
+                    <i class="icon-plus"></i>
+                </button>
+                <ul class="dropdown-menu member-menu"
+                    role="menu">
+                    <li ng-click="$event.stopPropagation();"
+                        class="search-member-li">
+                        <div class="notify-arrow notify-arrow-green"></div>
+                        <input type="text"
+                               placeholder="<[ 'SEARCH' | translate ]>"
+                               class="form-control"
+                               ng-model="vm.searchMemberInput">
+                    </li>
+                    <li class="divider"></li>
+                    <li ng-repeat="m in vm.members | filter:vm.searchMemberInput track by m._id.$oid">
+                        <a href="#" ng-click="vm.assign_to_ticket(m)">
+                            <img ng-if="m.member.picture"
+                                 ng-src="<[ m.member.picture ]>">
+                            <img ng-if="!m.member.picture"
+                                 src="/static/assets/img/koala.png">
+                            <span><[ m.member.first_name ]> <[ m.member.last_name ]> (<[ m.member.email ]>)</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
         </ul>
     </div>

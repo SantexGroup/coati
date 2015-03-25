@@ -150,7 +150,7 @@ def get_notifications():
     notifications = UserNotification.objects(user=g.user_id)
     results = []
     for n in notifications:
-        if n.activity.author != g.user_id:
+        if str(n.activity.author.pk) != g.user_id:
             results.append(json.loads(n.to_json()))
 
     results.sort(key=lambda x: x['activity']['when']['$date'], reverse=True)

@@ -337,6 +337,28 @@
         getSprintsWithTickets(vm.project._id.$oid);
 
         //broadcasting
+        rootScope.$on('archivedTicket', function(evt, tkt){
+            if (tkt.sprint) {
+                for (var i in vm.sprints) {
+                    if (vm.sprints[i]._id.$oid === tkt.sprint._id.$oid) {
+                        for(var j in vm.sprints[i].tickets){
+                            if(vm.sprints[i].tickets[j]._id.$oid === tkt._id.$oid){
+                                vm.sprints[i].tickets.splice(j,1);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            } else {
+                for(var k in vm.tickets){
+                    if(vm.tickets[k]._id.$oid === tkt._id.$oid){
+                        vm.tickets.splice(k, 1);
+                        break;
+                    }
+                }
+            }
+        });
         rootScope.$on('savedTicket', function (evt, tkt) {
             if (tkt.sprint) {
                 for (var i in vm.sprints) {

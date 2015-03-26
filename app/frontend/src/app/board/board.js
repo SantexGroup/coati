@@ -14,45 +14,6 @@
             data: {
                 pageTitle: 'Project Board'
             }
-        }).state('project.board.ticket', {
-            url: '/ticket/:ticket_id',
-            onEnter: ['$timeout', '$rootScope', '$q', '$stateParams', '$state', '$modal', 'ProjectService', function ($timeout, $rootScope, $q, $stateParams, $state, $modal, ProjectService) {
-
-                var vm = this;
-                $timeout(function () {
-                    vm.project = $stateParams.project_pk;
-
-                    var modalInstance = $modal.open({
-                        backdrop: true,
-                        windowClass: 'right fade',
-                        resolve: {
-                            item: function () {
-                                var promise = $q.defer();
-                                ProjectService.get(vm.project).then(function (prj) {
-                                    promise.resolve({
-                                        'project': prj,
-                                        'ticket_id': $stateParams.ticket_id
-                                    });
-                                }, function () {
-                                    promise.reject('Error');
-                                });
-                                return promise.promise;
-                            }
-                        },
-                        templateUrl: "ticket/ticket_detail_view.tpl.html",
-                        controller: 'TicketDetailController',
-                        controllerAs: 'vm',
-                        data: {
-                            pageTitle: 'Ticket Detail'
-                        }
-                    });
-                    modalInstance.result.then(function () {
-                        $state.go('^', {}, {reload: false});
-                    });
-                });
-            }],
-            reload: true,
-            tab_active: 'board'
         });
     };
 
@@ -181,7 +142,28 @@
             getMembers();
         }
 
-
+        rootScope.$on('archivedTicket', function(evt, tkt){
+            if (tkt.in_column === undefined) {
+                for (var i = 0; i < vm.tickets.length; i++) {
+                    if (vm.tickets[i]._id.$oid === tkt._id.$oid) {
+                        vm.tickets.splice(i, 1);
+                        break;
+                    }
+                }
+            } else {
+                for(var k =0;k<vm.columns.length;k++){
+                    if(vm.columns[k].title === tkt.in_column) {
+                        for (var j = 0; j < vm.columns[k].tickets.length; j++) {
+                            if (vm.columns[k].tickets[j]._id.$oid === tkt._id.$oid) {
+                                vm.columns[k].tickets.splice(j,1);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        });
         rootScope.$on('savedTicket', function (evt, tkt) {
             if (tkt.in_column === undefined) {
                 for (var i = 0; i < vm.tickets.length; i++) {

@@ -1,5 +1,43 @@
 (function (angular) {
 
+    var onEnter = function (timeout, q, stateParams, state, modal, ProjectService) {
+
+        var vm = this;
+        timeout(function () {
+            vm.project = stateParams.project_pk;
+
+            var modalInstance = modal.open({
+                backdrop: true,
+                windowClass: 'right fade',
+                resolve: {
+                    item: function () {
+                        var promise = q.defer();
+                        ProjectService.get(vm.project).then(function (prj) {
+                            promise.resolve({
+                                'project': prj,
+                                'ticket_id': stateParams.ticket_id
+                            });
+                        }, function () {
+                            promise.reject('Error');
+                        });
+                        return promise.promise;
+                    }
+                },
+                templateUrl: "ticket/ticket_detail_view.tpl.html",
+                controller: 'TicketDetailController',
+                controllerAs: 'vm',
+                data: {
+                    pageTitle: 'Ticket Detail'
+                }
+            });
+            modalInstance.result.then(function () {
+                state.go('^', {}, {reload: false});
+            }, function () {
+                state.go('^', {}, {reload: false});
+            });
+        });
+    };
+
     var Config = function (stateProvider, tagsInputProvider) {
         stateProvider.state('project.closed_tickets', {
             url: '/archived-tickets',
@@ -19,43 +57,14 @@
         })
             .state('project.planning.ticket', {
                 url: '/ticket/:ticket_id',
-                onEnter: ['$timeout', '$rootScope', '$q', '$stateParams', '$state', '$modal', 'ProjectService', function ($timeout, $rootScope, $q, $stateParams, $state, $modal, ProjectService) {
-
-                    var vm = this;
-                    $timeout(function () {
-                        vm.project = $stateParams.project_pk;
-
-                        var modalInstance = $modal.open({
-                            backdrop: true,
-                            windowClass: 'right fade',
-                            resolve: {
-                                item: function () {
-                                    var promise = $q.defer();
-                                    ProjectService.get(vm.project).then(function (prj) {
-                                        promise.resolve({
-                                            'project': prj,
-                                            'ticket_id': $stateParams.ticket_id
-                                        });
-                                    }, function () {
-                                        promise.reject('Error');
-                                    });
-                                    return promise.promise;
-                                }
-                            },
-                            templateUrl: "ticket/ticket_detail_view.tpl.html",
-                            controller: 'TicketDetailController',
-                            controllerAs: 'vm',
-                            data: {
-                                pageTitle: 'Ticket Detail'
-                            }
-                        });
-                        modalInstance.result.then(function () {
-                            $state.go('^', {}, {reload: false});
-                        });
-                    });
-                }],
+                onEnter: ['$timeout', '$q', '$stateParams', '$state', '$modal', 'ProjectService', onEnter],
                 reload: true,
                 tab_active: 'planning'
+            }).state('project.board.ticket', {
+                url: '/ticket/:ticket_id',
+                onEnter: ['$timeout', '$q', '$stateParams', '$state', '$modal', 'ProjectService', onEnter],
+                reload: true,
+                tab_active: 'board'
             });
 
         tagsInputProvider.setDefaults('autoComplete', {
@@ -278,9 +287,9 @@
             vm.ticket.closed = true;
             TicketService.update(vm.project._id.$oid, vm.ticket._id.$oid, vm.ticket).then(function (tkt) {
                 modalInstance.close();
+                rootScope.$broadcast('archivedTicket', vm.ticket);
             }, function (err) {
                 modalInstance.dismiss('error');
-                log.error(err);
             });
         };
 

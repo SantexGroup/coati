@@ -1,5 +1,6 @@
 import base64
 from datetime import datetime
+import json
 
 from mongoengine import DoesNotExist, Q
 from flask import jsonify, g
@@ -8,7 +9,7 @@ from flask.ext.restful import request
 from app.api.resources.auth_resource import AuthResource
 from app.schemas import (Project, Ticket, SprintTicketOrder,
                          Sprint, TicketColumnTransition, Column, User, Comment,
-                         Attachment, ProjectMember)
+                         Attachment, ProjectMember, TicketDependency)
 from app.utils import save_notification, send_notification_email_async
 
 
@@ -29,8 +30,19 @@ class TicketInstance(AuthResource):
             tkt.labels = data.get('labels')
             tkt.type = data.get('type')
             tkt.closed = data.get('closed', False)
+            if 'related_tickets_data' in data:
+                for tkt_rel_data in data.get('related_tickets_data'):
+                    try:
+                        tkt_rel = Ticket.objects.get(
+                            pk=tkt_rel_data.get('value'))
+                        rt = TicketDependency()
+                        rt.ticket = tkt_rel
+                        rt.type = tkt_rel_data.get('type', 'R')
+                        rt.save()
+                        tkt.related_tickets.append(rt)
+                    except Ticket.DoesNotFound:
+                        pass
             tkt.save()
-
             if data.get('sprint'):
 
                 sprint = Sprint.objects.get(pk=data.get('sprint')['pk'])
@@ -428,7 +440,7 @@ class TicketAttachments(AuthResource):
 
     def post(self, project_pk, tkt_id):
         file_item = request.files.get('file')
-        data = request.form
+        data = json.loads(request.form.get('data'))
         ticket = Ticket.objects.get(pk=tkt_id)
         if file_item and ticket and data:
             att = Attachment()
@@ -517,9 +529,27 @@ class TicketSearch(AuthResource):
         projects_query = ProjectMember.objects(member=user_id)
         for p in projects_query:
             projects.append(str(p.project.pk))
-        return Ticket.objects((Q(title__icontains=query) |
-                               Q(description__icontains=query)) &
-                              Q(project__in=projects)).to_json()
+        return Ticket.objects.distinct((Q(title__icontains=query) |
+                                        Q(description__icontains=query)) &
+                                       Q(project__in=projects)).to_json()
+
+
+class TicketSearchRelated(AuthResource):
+    def __init__(self):
+        super(TicketSearchRelated, self).__init__()
+
+    def get(self, project_pk, query):
+        tickets = Ticket.objects((Q(title__icontains=query) |
+                                  Q(description__icontains=query)) &
+                                 Q(project=project_pk))
+        results = []
+        for tkt in tickets:
+            val = dict(text='%s-%s: %s' % (tkt.project.prefix,
+                                           tkt.number,
+                                           tkt.title),
+                       value=str(tkt.id))
+            results.append(val)
+        return json.dumps(results), 200
 
 
 class TicketClosed(AuthResource):
@@ -537,6 +567,17 @@ class TicketBoardProject(AuthResource):
     def get(self, project_pk):
         return Project.objects.get(pk=project_pk).get_tickets_board().to_json()
 
+
+class TicketRelated(AuthResource):
+    def __init__(self):
+        super(TicketRelated, self).__init__()
+
+    def delete(self, project_pk, tkt_id, rtkt_id):
+        rtkt = TicketDependency.objects.get(pk=rtkt_id)
+        if rtkt:
+            Ticket.objects(pk=tkt_id).update_one(pull__related_tickets=rtkt)
+            return jsonify({'success': True}), 200
+        return jsonify({'error': 'Bad Request'}), 400
 
 class TicketClone(AuthResource):
     def __init__(self):

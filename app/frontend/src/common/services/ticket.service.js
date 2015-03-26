@@ -17,6 +17,12 @@
             'search': function (query) {
                 return req.$do('/tickets/search/' + query, req.METHODS.GET);
             },
+            'related_search': function(project_pk, query){
+                return req.$do('/project/'+ project_pk +'/tickets/search/' + query, req.METHODS.GET);
+            },
+            'remove_related': function(project_pk, tkt_id, rtkt_id){
+                return req.$do('/project/'+ project_pk +'/ticket/' + tkt_id + '/related/' + rtkt_id, req.METHODS.DELETE);
+            },
             'save': function (project_pk, tkt) {
                 return req.$do('/project/' + project_pk + '/tickets', req.METHODS.POST, tkt);
             },

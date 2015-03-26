@@ -164,7 +164,7 @@
         rootScope.$on('$stateChangeSuccess', function () {
             if (!_.startsWith(rootScope.state_name, 'login')) {
                 if (!UserService.is_logged()) {
-                    state.go('login', stateParams,{reload: true});
+                    state.go('login', stateParams, {reload: true});
                 }
             }
         });
@@ -182,6 +182,7 @@
         'templates-app',
         'templates-common',
         'angular-loading-bar',
+        'angular.filter',
         'pascalprecht.translate',
         'ui.router',
         'ui.bootstrap',

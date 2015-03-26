@@ -1,6 +1,6 @@
 (function (angular) {
 
-    var Config = function (stateProvider) {
+    var Config = function (stateProvider, tagsInputProvider) {
         stateProvider.state('project.closed_tickets', {
             url: '/archived-tickets',
             views: {
@@ -57,6 +57,11 @@
                 reload: true,
                 tab_active: 'planning'
             });
+
+        tagsInputProvider.setDefaults('autoComplete', {
+            maxResultsToShow: 20,
+            debounceDelay: 300
+        });
     };
 
     var TicketFormController = function (log, modalInstance, conf, TicketService, SprintService, item) {
@@ -145,7 +150,9 @@
         vm.members_filtered = [];
         vm.mentions = [];
         vm.types = conf.TICKET_TYPES;
+        vm.ticket_dependencies = conf.TICKET_DEPENDENCIES;
         vm.no_editing = item.disabled || false;
+        vm.related_collapsed = true;
 
         var getComments = function (ticket_id) {
             TicketService.get_comments(vm.project._id.$oid, ticket_id).then(function (comments) {
@@ -160,7 +167,7 @@
         };
 
         var getTicket = function (ticket_id) {
-            TicketService.get(vm.project._id.$oid, ticket_id).then(function (tkt) {
+            return TicketService.get(vm.project._id.$oid, ticket_id).then(function (tkt) {
                 vm.ticket = tkt;
                 vm.labels = tkt.labels;
                 getComments(tkt._id.$oid);
@@ -198,10 +205,43 @@
             }
         };
 
+        vm.searchTickets = function (q) {
+            return TicketService.related_search(vm.project._id.$oid, q);
+        };
+
+        vm.prepareLabelsToDependencies = function (save) {
+            vm.ticket.related_tickets_data = [];
+            angular.forEach(vm.related_tickets, function (v, k) {
+                vm.ticket.related_tickets_data.push({'value': v.value,
+                    'type': vm.dependency_type});
+            });
+            if (save) {
+                vm.saveTicket(vm.ticket).then(function () {
+                    vm.cancelDependencyAdd();
+                });
+            }
+        };
+        vm.remove_related_ticket = function (rtkt) {
+            TicketService.remove_related(vm.project._id.$oid, vm.ticket._id.$oid, rtkt._id.$oid).then(function () {
+                getTicket(vm.ticket._id.$oid);
+            });
+        };
+
+        vm.getDependencyType = function (type) {
+            var value = _.result(_.findWhere(vm.ticket_dependencies, { 'value': type }), 'name');
+            return value;
+        };
+
+        vm.cancelDependencyAdd = function () {
+            vm.related_collapsed = true;
+            vm.related_tickets = [];
+            vm.dependency_type = null;
+        };
+
         vm.saveTicket = function (ticket) {
             if (ticket) {
                 ticket.sprint = undefined;
-                TicketService.update(vm.project._id.$oid, ticket._id.$oid, ticket).then(function (tkt) {
+                return TicketService.update(vm.project._id.$oid, ticket._id.$oid, ticket).then(function (tkt) {
                     vm.ticket = tkt;
                     rootScope.$broadcast('savedTicket', tkt);
                 });
@@ -246,13 +286,17 @@
 
         vm.assign_to_ticket = function (m) {
             TicketService.assign_member(vm.project._id.$oid, vm.ticket._id.$oid, m._id.$oid).then(function () {
-                getTicket(vm.ticket._id.$oid);
+                getTicket(vm.ticket._id.$oid).then(function () {
+                    rootScope.$broadcast('savedTicket', vm.ticket);
+                });
             });
         };
 
         vm.remove_from_ticket = function (m) {
             TicketService.remove_member(vm.project._id.$oid, vm.ticket._id.$oid, m._id.$oid).then(function () {
-                getTicket(vm.ticket._id.$oid);
+                getTicket(vm.ticket._id.$oid).then(function () {
+                    rootScope.$broadcast('savedTicket', vm.ticket);
+                });
             });
         };
 
@@ -371,7 +415,7 @@
         getArchivedTickets(vm.project._id.$oid);
     };
 
-    Config.$inject = ['$stateProvider'];
+    Config.$inject = ['$stateProvider', 'tagsInputConfigProvider'];
     TicketArchivedController.$inject = ['$scope', '$modal', 'TicketService'];
     TicketDetailController.$inject = ['$rootScope', '$log', '$filter', '$timeout', '$modalInstance', 'Conf', '$file_download', 'ProjectService', 'TicketService', 'SocketIO', 'item'];
     TicketFormController.$inject = ['$log', '$modalInstance', 'Conf', 'TicketService', 'SprintService', 'item'];

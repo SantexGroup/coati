@@ -14,6 +14,45 @@
             data: {
                 pageTitle: 'Project Board'
             }
+        }).state('project.board.ticket', {
+            url: '/ticket/:ticket_id',
+            onEnter: ['$timeout', '$rootScope', '$q', '$stateParams', '$state', '$modal', 'ProjectService', function ($timeout, $rootScope, $q, $stateParams, $state, $modal, ProjectService) {
+
+                var vm = this;
+                $timeout(function () {
+                    vm.project = $stateParams.project_pk;
+
+                    var modalInstance = $modal.open({
+                        backdrop: true,
+                        windowClass: 'right fade',
+                        resolve: {
+                            item: function () {
+                                var promise = $q.defer();
+                                ProjectService.get(vm.project).then(function (prj) {
+                                    promise.resolve({
+                                        'project': prj,
+                                        'ticket_id': $stateParams.ticket_id
+                                    });
+                                }, function () {
+                                    promise.reject('Error');
+                                });
+                                return promise.promise;
+                            }
+                        },
+                        templateUrl: "ticket/ticket_detail_view.tpl.html",
+                        controller: 'TicketDetailController',
+                        controllerAs: 'vm',
+                        data: {
+                            pageTitle: 'Ticket Detail'
+                        }
+                    });
+                    modalInstance.result.then(function () {
+                        $state.go('^', {}, {reload: false});
+                    });
+                });
+            }],
+            reload: true,
+            tab_active: 'board'
         });
     };
 
@@ -26,8 +65,8 @@
         // set the active tab
         scope.$parent.vm[state.current.tab_active] = true;
 
-        vm.is_scrumm = function(){
-          return vm.project.project_type === "S";
+        vm.is_scrumm = function () {
+            return vm.project.project_type === "S";
         };
 
         var getSprintTickets = function (sprint_id) {
@@ -55,7 +94,7 @@
             });
         };
 
-        var reloadData = function(){
+        var reloadData = function () {
             getColumnConfiguration(vm.project._id.$oid);
             if (vm.is_scrumm()) {
                 if (vm.sprint.started) {
@@ -65,33 +104,6 @@
                 getProjectTickets(vm.project._id.$oid);
             }
         };
-
-        var showTicketDetails = function (id) {
-            vm.modal_ticket_instance = modal.open({
-                controller: 'TicketDetailController as vm',
-                templateUrl: 'ticket/ticket_detail_view.tpl.html',
-                resolve: {
-                    item: function () {
-                        return {
-                            'project': vm.project,
-                            'ticket_id': id
-                        };
-                    }
-                }
-            });
-            vm.modal_ticket_instance.result.then(function () {
-                reloadData();
-            }, function () {
-               reloadData();
-            });
-
-        };
-
-        vm.showDetails = function (e, tkt) {
-            showTicketDetails(tkt);
-            e.stopPropagation();
-        };
-
 
         vm.checkAlert = function (col) {
             if (col.max_cards <= col.tickets.length) {
@@ -168,6 +180,30 @@
             reloadData();
             getMembers();
         }
+
+
+        rootScope.$on('savedTicket', function (evt, tkt) {
+            if (tkt.in_column === undefined) {
+                for (var i = 0; i < vm.tickets.length; i++) {
+                    if (vm.tickets[i]._id.$oid === tkt._id.$oid) {
+                        vm.tickets[i] = tkt;
+                        break;
+                    }
+                }
+            } else {
+                for(var k =0;k<vm.columns.length;k++){
+                    if(vm.columns[k].title === tkt.in_column) {
+                        for (var j = 0; j < vm.columns[k].tickets.length; j++) {
+                            if (vm.columns[k].tickets[j]._id.$oid === tkt._id.$oid) {
+                                vm.columns[k].tickets[j] = tkt;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        });
 
         //Socket IO listeners
         SocketIO.on('ticket_transition', function () {

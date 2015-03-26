@@ -440,7 +440,7 @@ class TicketAttachments(AuthResource):
 
     def post(self, project_pk, tkt_id):
         file_item = request.files.get('file')
-        data = request.form
+        data = json.loads(request.form.get('data'))
         ticket = Ticket.objects.get(pk=tkt_id)
         if file_item and ticket and data:
             att = Attachment()

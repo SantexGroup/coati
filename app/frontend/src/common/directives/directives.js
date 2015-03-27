@@ -281,7 +281,7 @@
     };
 
 
-    var contentEditable = function ($sce) {
+    var contentEditable = function (filter) {
         return {
             restrict: 'A', // only activate on element attribute
             require: '?ngModel', // get a hold of NgModelController
@@ -312,8 +312,9 @@
 
                 // Specify how UI should be updated
                 ngModel.$render = function () {
-                    if (ngModel.$viewValue !== element.html()) {
-                        element.html($sce.getTrustedHtml(ngModel.$viewValue || ''));
+                    if (ngModel.$viewValue !== undefined && ngModel.$viewValue !== element.html()) {
+                        element.html(ngModel.$viewValue  || '');
+                        read();
                     }
                 };
 
@@ -325,8 +326,9 @@
                 scope.$on('comment_saved', function () {
                     element.empty();
                 });
-
-                read(); // initialize
+                if(attrs.isNew) {
+                    read(); // initialize
+                }
             }
         };
     };
@@ -344,7 +346,7 @@
     };
 
     ImageFunction.$inject = ['$q'];
-    contentEditable.$inject = ['$sce'];
+    contentEditable.$inject = ['$filter'];
     editableTagInput.$inject = ['editableDirectiveFactory'];
     ChartDraw.$inject = ['$filter'];
     CalculateWithBoard.$inject = ['$rootScope', '$timeout'];

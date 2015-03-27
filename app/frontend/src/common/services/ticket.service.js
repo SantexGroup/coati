@@ -56,6 +56,12 @@
             'add_comment': function (project_pk, tkt_id, comment) {
                 return req.$do('/project/' + project_pk + '/ticket/' + tkt_id + '/comments', req.METHODS.POST, comment);
             },
+            'update_comment': function (project_pk, tkt_id, comment_id, comment) {
+                return req.$do('/project/' + project_pk + '/ticket/' + tkt_id + '/comment/' + comment_id, req.METHODS.UPDATE, comment);
+            },
+            'delete_comment': function (project_pk, tkt_id, comment_id, comment) {
+                return req.$do('/project/' + project_pk + '/ticket/' + tkt_id + '/comment/' + comment_id, req.METHODS.DELETE);
+            },
             'upload_attachments': function (project_pk, tkt_id, files, extra_data) {
                 return file_upload.$do('/project/' + project_pk + '/ticket/' + tkt_id + '/attachments', files, extra_data);
             },

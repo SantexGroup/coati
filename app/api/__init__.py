@@ -8,7 +8,7 @@ from resources.ticket import TicketOrderProject, TicketOrderSprint, TicketProjec
     TicketMovement, TicketInstance, TicketTransition, TicketColumnOrder, \
     TicketComments, TicketAttachments, AttachmentInstance, MemberTicketInstance, \
     TicketSearch, TicketClosed, TicketBoardProject, TicketClone, \
-    TicketSearchRelated, TicketRelated
+    TicketSearchRelated, TicketRelated, CommentInstance
 from resources.user import UsersList, UserInstance, UserSearch, UserLogged, \
     UserLogin, UserRegister, UserActivate, UserNotifications
 from app.utils import output_json
@@ -60,6 +60,7 @@ def init_app(app, decorators=None):
     api.add_resource(TicketRelated, '/project/<string:project_pk>/ticket/<string:tkt_id>/related/<string:rtkt_id>')
     api.add_resource(TicketClone, '/project/<string:project_pk>/ticket/<string:tkt_id>/clone')
     api.add_resource(TicketComments, '/project/<string:project_pk>/ticket/<string:tkt_id>/comments')
+    api.add_resource(CommentInstance, '/project/<string:project_pk>/ticket/<string:tkt_id>/comment/<string:comment_id>')
     api.add_resource(TicketAttachments, '/project/<string:project_pk>/ticket/<string:tkt_id>/attachments')
     api.add_resource(AttachmentInstance, '/project/<string:project_pk>/ticket/<string:tkt_id>/attachments/<string:att_id>/delete')
     api.add_resource(MemberTicketInstance, '/project/<string:project_pk>/ticket/<string:tkt_id>/assignments/<string:member_id>')

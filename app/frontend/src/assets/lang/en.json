@@ -177,6 +177,7 @@
     "TICKET_SELECT_FILES": "Select Files...",
     "TICKET_UPLOAD_FILES": "Upload Files",
     "TICKET_NEW_COMMENT": "Add New Comment",
+    "TICKET_UPDATE_COMMENT": "Update Comment",
     "TICKET_NEW": "New Ticket",
     "TICKET_CHOOSE_SPRINT": "Choose a Sprint...",
     "TICKET_SPRINT": "Sprint",

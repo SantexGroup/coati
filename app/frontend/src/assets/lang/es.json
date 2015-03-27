@@ -177,6 +177,7 @@
     "TICKET_SELECT_FILES": "Seleccione archivos ...",
     "TICKET_UPLOAD_FILES": "Cargar archivos",
     "TICKET_NEW_COMMENT": "Añadir nuevo comentario",
+    "TICKET_UPDATE_COMMENT": "Actualizar comentario",
     "TICKET_NEW": "Nueva Tarea",
     "TICKET_CHOOSE_SPRINT": "Elegir un Sprint ...",
     "TICKET_SPRINT": "Sprint",

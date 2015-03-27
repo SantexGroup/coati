@@ -278,7 +278,8 @@
             </div>
         </div>
         <div class="add_new_comment">
-            <div contenteditable="<[!vm.no_editing]>" stripBr="true"
+
+            <div contenteditable="<[!vm.no_editing]>" stripBr="true" isNew="true"
                  class="form-control"
                  style="height: auto !important;"
                  id="comment_area"
@@ -310,7 +311,15 @@
                         <div class="message-body msg-in">
                             <div class="text">
 
-                                <p class="attribution">
+                                <div class="attribution" ng-if="!c.editable">
+                                    <div class="comment-options" ng-if="c.who._id.$oid === vm.user._id.$oid">
+                                        <button class="btn btn-xs" ng-click="vm.edit_comment(c);">
+                                            <i class="icon-edit"></i>
+                                        </button>
+                                        <button class="btn btn-xs" ng-click="vm.delete_comment(c);">
+                                            <i class="icon-trash"></i>
+                                        </button>
+                                    </div>
                                     <img class="avatar"
                                          ng-if="!c.who.picture"
                                          alt=""
@@ -323,9 +332,37 @@
                                         <span ng-if="c.who.first_name"><[ c.who.first_name ]> <[ c.who.last_name ]></span>
                                         <span ng-if="!c.who.first_name"><[ c.who.email ]></span>
                                     </a>
-                                    <[ c.when.$date | date:'medium':'UTC' ]></p>
+                                    <[ c.when.$date | date:'medium':'UTC' ]>
+                                </div>
+                                <p ng-if="!c.editable" ng-bind-html="c.comment | trustedHtml"><[c.comment]></p>
 
-                                <p ng-bind-html="c.comment | trustedHtml"></p>
+                                <div class="update-form" ng-if="c.editable">
+                                    <div contenteditable stripBr="true" isNew="false"
+                                     class="form-control"
+                                     style="height: auto !important;margin-bottom:10px;"
+                                     id="comment_area_<[ c._id.$oid ]>"
+                                     mentio
+                                     mentio-id="'comment_area_<[ c._id.$oid ]>'"
+                                     mentio-trigger-char="'@'"
+                                     mentio-items="vm.members_filtered"
+                                     mentio-template-url="ticket/members-mentions.tpl.html"
+                                     mentio-search="vm.searchMember(term)"
+                                     mentio-select="vm.getMemberText(item)"
+                                     mentio-typed-term="typedTerm"
+                                     ng-trim="false"
+                                     ng-model="c.comment_temp"
+                                     mentions="vm.mentions"
+                                     data-ph="Write a comment..."></div>
+                                    <button id="update-comment"
+                                        class="btn btn-success"
+                                        ng-click="vm.update_comment(c);"><[
+                                    'TICKET_UPDATE_COMMENT' | translate ]>
+                                    </button>
+                                    <button class="btn btn-danger" ng-click="vm.cancel_edit_comment(c);">
+                                        <[ 'TICKET_CANCEL' | translate ]>
+                                    </button>
+                                </div>
+
                             </div>
                         </div>
                     </div>

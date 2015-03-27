@@ -167,6 +167,7 @@
         vm.ticket_dependencies = conf.TICKET_DEPENDENCIES;
         vm.no_editing = item.disabled || false;
         vm.related_collapsed = true;
+        vm.user = rootScope.user;
 
         var getComments = function (ticket_id) {
             TicketService.get_comments(vm.project._id.$oid, ticket_id).then(function (comments) {
@@ -211,6 +212,40 @@
 
         vm.is_scrumm = function () {
             return vm.project.project_type === "S";
+        };
+
+        vm.update_comment = function(c){
+            c.comment = c.comment_temp;
+            TicketService.update_comment(vm.project._id.$oid, vm.ticket._id.$oid, c._id.$oid, c).then(function(comment){
+                for(var i = 0; i<vm.comments.length;i++){
+                    if(vm.comments[i]._id.$oid == c._id.$oid){
+                        vm.comments[i] = comment;
+                        vm.cancel_edit_comment(vm.comments[i]);
+                        break;
+                    }
+                }
+            });
+        };
+
+        vm.delete_comment = function(c){
+            TicketService.delete_comment(vm.project._id.$oid, vm.ticket._id.$oid, c._id.$oid).then(function(){
+                for(var i = 0; i<vm.comments.length;i++){
+                    if(vm.comments[i]._id.$oid == c._id.$oid){
+                        vm.comments.splice(i,1);
+                        break;
+                    }
+                }
+            });
+        };
+
+        vm.edit_comment = function(c){
+            c.editable = true;
+            c.comment_temp = c.comment;
+        };
+
+        vm.cancel_edit_comment = function(c){
+            c.editable = false;
+            c.comment_temp = '';
         };
 
         vm.show = function (form) {

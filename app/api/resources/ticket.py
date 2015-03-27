@@ -393,14 +393,51 @@ class TicketColumnOrder(AuthResource):
         return jsonify({'error': 'Bad Request'}), 400
 
 
+class CommentInstance(AuthResource):
+    def __init__(self):
+        super(CommentInstance, self).__init__()
+
+    def get(self, project_pk, tkt_id, comment_id):
+        return Comment.objects.get(pk=comment_id).to_json()
+
+    def put(self, project_pk, tkt_id, comment_id):
+        comment = Comment.objects.get(pk=comment_id)
+        data = request.get_json(force=True, silent=True)
+        if comment and data:
+            comment.comment = data.get('comment')
+            comment.save()
+            save_notification(project_pk=project_pk,
+                              verb='update_comment',
+                              data={
+                                  "comment": comment.to_dict(),
+                                  "ticket": comment.ticket.to_dict()
+                              })
+            return comment.to_json(), 200
+        return jsonify({'error': 'Bad Request'}), 400
+
+    def delete(self, project_pk, tkt_id, comment_id):
+        comment = Comment.objects.get(pk=comment_id)
+        if comment:
+            # save activity
+            save_notification(project_pk=project_pk,
+                              verb='delete_comment',
+                              data={
+                                  "comment": comment.to_dict(),
+                                  "ticket": comment.ticket.to_dict()
+                              })
+
+            comment.delete()
+        return jsonify({}), 204
+
+
 class TicketComments(AuthResource):
     def __init__(self):
         super(TicketComments, self).__init__()
 
-    def get(self, project_pk, tkt_id):
+    def get(self, project_pk, tkt_id, comment_id=None):
         return Comment.objects(ticket=tkt_id).order_by('-when').to_json()
 
-    def post(self, project_pk, tkt_id):
+    def post(self, project_pk, tkt_id, comment_id=None):
         data = request.get_json(force=True, silent=True)
         if data:
             c = Comment(ticket=tkt_id)
@@ -578,6 +615,7 @@ class TicketRelated(AuthResource):
             Ticket.objects(pk=tkt_id).update_one(pull__related_tickets=rtkt)
             return jsonify({'success': True}), 200
         return jsonify({'error': 'Bad Request'}), 400
+
 
 class TicketClone(AuthResource):
     def __init__(self):

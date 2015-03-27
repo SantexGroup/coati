@@ -166,6 +166,7 @@
     "TICKET_IN_COLUMN": "En la Columna",
     "TICKET_BACKLOG": "Pendiente",
     "TICKET_ACTION_ARCHIVE": "Archivar",
+    "TICKET_ACTION_RESTORE": "Restaurar",
     "TICKET_MEMBERS": "Miembros",
     "TICKET_DESCRIPTION": "Descripción",
     "TICKET_NO_DESCRIPTION": "Sin Descripción",

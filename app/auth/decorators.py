@@ -2,10 +2,10 @@ import json
 from functools import wraps
 
 from flask import request, g
-from app.auth.tools import get_data_from_token, verify_token, \
-    check_user_permissions
 
+from app.auth.tools import verify_token, check_user_permissions
 from app.utils import output_json
+
 
 __author__ = 'gastonrobledo'
 

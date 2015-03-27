@@ -166,6 +166,7 @@
     "TICKET_IN_COLUMN": "In Column",
     "TICKET_BACKLOG": "Backlog",
     "TICKET_ACTION_ARCHIVE": "Archive Ticket",
+    "TICKET_ACTION_RESTORE": "Restore Ticket",
     "TICKET_MEMBERS": "Members",
     "TICKET_DESCRIPTION": "Description",
     "TICKET_NO_DESCRIPTION": "No Description",

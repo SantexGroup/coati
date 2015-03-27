@@ -68,10 +68,15 @@
 
     </div>
     <div class="col-md-3">
-        <button type="button" ng-if="!vm.is_scrumm()"
-                ng-click="vm.archive_ticket();"
+        <button type="button" ng-if="!vm.is_scrumm() && !vm.ticket.closed"
+                ng-click="vm.archive_restore_ticket(true);"
                 class="btn btn-xs btn-danger pull-right">
             <[ 'TICKET_ACTION_ARCHIVE' | translate ]>
+        </button>
+        <button type="button" ng-if="!vm.is_scrumm() && vm.ticket.closed"
+                ng-click="vm.archive_restore_ticket(false);"
+                class="btn btn-xs btn-success pull-right">
+            <[ 'TICKET_ACTION_RESTORE' | translate ]>
         </button>
     </div>
 </div>

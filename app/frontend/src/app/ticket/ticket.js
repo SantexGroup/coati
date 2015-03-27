@@ -65,6 +65,11 @@
                 onEnter: ['$timeout', '$q', '$stateParams', '$state', '$modal', 'ProjectService', onEnter],
                 reload: true,
                 tab_active: 'board'
+            }).state('project.closed_tickets.ticket', {
+                url: '/ticket/:ticket_id',
+                onEnter: ['$timeout', '$q', '$stateParams', '$state', '$modal', 'ProjectService', onEnter],
+                reload: true,
+                tab_active: 'closed_tickets'
             });
 
         tagsInputProvider.setDefaults('autoComplete', {
@@ -283,11 +288,15 @@
         };
 
 
-        vm.archive_ticket = function () {
-            vm.ticket.closed = true;
+        vm.archive_restore_ticket = function (archive) {
+            vm.ticket.closed = archive;
             TicketService.update(vm.project._id.$oid, vm.ticket._id.$oid, vm.ticket).then(function (tkt) {
                 modalInstance.close();
-                rootScope.$broadcast('archivedTicket', vm.ticket);
+                if(archive) {
+                    rootScope.$broadcast('archivedTicket', vm.ticket);
+                }else{
+                    rootScope.$broadcast('restoredTicket', vm.ticket);
+                }
             }, function (err) {
                 modalInstance.dismiss('error');
             });
@@ -375,7 +384,7 @@
 
     };
 
-    var TicketArchivedController = function (scope, modal, TicketService) {
+    var TicketArchivedController = function (rootScope, scope, modal, TicketService) {
         var vm = this;
 
         vm.project = scope.$parent.project;
@@ -392,40 +401,25 @@
             return vm.project.project_type === 'S';
         };
 
-        vm.showDetails = function (e, tkt) {
-            if (tkt) {
-                tkt = angular.copy(tkt);
-                tkt.pk = tkt._id.$oid;
-
-            }
-            var modal_instance = modal.open({
-                controller: 'TicketDetailController as vm',
-                templateUrl: 'ticket/ticket_detail_view.tpl.html',
-                resolve: {
-                    item: function () {
-                        return {
-                            'project': vm.project,
-                            'ticket_id': tkt._id.$oid,
-                            'disabled': true
-                        };
-                    }
-                }
-            });
-            modal_instance.result.then(function () {
-                getArchivedTickets(vm.project._id.$oid);
-            });
-            e.stopPropagation();
-        };
 
         vm.is_scrumm = function () {
             return vm.project.project_type === "S";
         };
 
         getArchivedTickets(vm.project._id.$oid);
+
+        rootScope.$on('restoredTicket', function(evt, tkt){
+            for(var i =0;i<vm.tickets.length;i++){
+                if(vm.tickets[i]._id.$oid == tkt._id.$oid){
+                    vm.tickets.splice(i, 1);
+                }
+            }
+        });
+
     };
 
     Config.$inject = ['$stateProvider', 'tagsInputConfigProvider'];
-    TicketArchivedController.$inject = ['$scope', '$modal', 'TicketService'];
+    TicketArchivedController.$inject = ['$rootScope','$scope', '$modal', 'TicketService'];
     TicketDetailController.$inject = ['$rootScope', '$log', '$filter', '$timeout', '$modalInstance', 'Conf', '$file_download', 'ProjectService', 'TicketService', 'SocketIO', 'item'];
     TicketFormController.$inject = ['$log', '$modalInstance', 'Conf', 'TicketService', 'SprintService', 'item'];
     TicketDeleteController.$inject = ['$modalInstance', 'TicketService', 'item', 'project'];

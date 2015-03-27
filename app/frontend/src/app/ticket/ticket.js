@@ -167,6 +167,7 @@
         vm.ticket_dependencies = conf.TICKET_DEPENDENCIES;
         vm.no_editing = item.disabled || false;
         vm.related_collapsed = true;
+        vm.user = rootScope.user;
 
         var getComments = function (ticket_id) {
             TicketService.get_comments(vm.project._id.$oid, ticket_id).then(function (comments) {

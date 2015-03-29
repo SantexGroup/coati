@@ -1,5 +1,17 @@
 (function (angular) {
 
+    var modals_opened = [];
+
+    var onClosing = function(modalInstance, state){
+      modalInstance.close();
+      var previous = modals_opened.pop();
+      if(modals_opened.length < 1){
+        state.go('^', {}, {reload: false});
+      }else{
+        state.go(previous.name, previous.params, {reload: false});
+      }
+    };
+
     var onEnter = function (timeout, q, stateParams, state, modal, ProjectService) {
 
         var vm = this;
@@ -30,10 +42,12 @@
                     pageTitle: 'Ticket Detail'
                 }
             });
+            modals_opened.push({name:state.current.name, params:stateParams});
+
             modalInstance.result.then(function () {
-                state.go('^', {}, {reload: false});
+                onClosing(modalInstance, state);
             }, function () {
-                state.go('^', {}, {reload: false});
+                onClosing(modalInstance, state);
             });
         });
     };

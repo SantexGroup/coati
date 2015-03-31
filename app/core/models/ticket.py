@@ -17,7 +17,7 @@ class Ticket(RootDocument):
         'type': IS(u'U', u'F', u'B', u'I', u'E', u'T'),
         'assigned_to': [ProjectMember],
         'closed': bool,
-        'related_tickets': [TicketDependency],
+        #'related_tickets': [TicketDependency],
     }
     gridfs = {
         'containers': ['attachments']

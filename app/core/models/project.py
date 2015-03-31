@@ -8,14 +8,14 @@ from app.core.models.user import User
 
 
 class Project(RootDocument):
-    __collection__ = 'projects'
+    __collection__ = 'project'
     structure = {
         'name': unicode,
         'description': unicode,
         'active': bool,
         'owner': User,
         'prefix': unicode,
-        'sprint_duration': unicode,
+        'sprint_duration': int,
         'proyect_type': IS(u'S', u'K')
     }
     required_fields = ['name', 'owner']

@@ -4,7 +4,7 @@ from app.core.models import RootDocument
 
 
 class User(RootDocument):
-    __collection__ = 'users'
+    __collection__ = 'user'
     structure = {
         'first_name': unicode,
         'last_name': unicode,

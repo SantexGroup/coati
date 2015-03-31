@@ -1,20 +1,26 @@
-import logging
-import os
-from app import app
+from flask import Flask, render_template
 
-# create console handler and set level to debug
-path = os.path.dirname(os.path.abspath(__file__))
-ch = logging.FileHandler(path + '/logs/app.log')
-ch.setLevel(logging.DEBUG)
+from app import core
+from app.web import api, auth
 
-# create formatter
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-# add formatter to ch
-ch.setFormatter(formatter)
+app = Flask(__name__)
+app.config.from_pyfile('../config.py')
+app.static_folder = 'frontend/' + app.config['FRONTEND']
+app.static_url_path = '/static'
 
-# add ch to logger
-app.logger.addHandler(ch)
+core.init_app(app)
+# # Init apps
+auth.init_app(app)
+# # Init Api
+api.init_app(app)
+
+
+# # Default Routes
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def index(path):
+    return render_template('index.html', config=app.config)
 
 
 if __name__ == '__main__':

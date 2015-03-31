@@ -1,4 +1,4 @@
-from flask.ext.mongokit import MongoKit
+from app.core.flask_mongokit import MongoKit
 
 db = MongoKit()
 

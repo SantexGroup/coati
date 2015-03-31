@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask.ext.mongokit import Document
+from app.core.flask_mongokit import Document
 
 
 class RootDocument(Document):

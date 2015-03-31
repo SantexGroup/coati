@@ -9,3 +9,4 @@ def email_validator(value):
     )
     if not bool(email.match(value)):
         raise ValidationError('%s is not a valid email')
+    return True

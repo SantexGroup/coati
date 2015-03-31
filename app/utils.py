@@ -6,8 +6,7 @@ from flask_mail import Mail, Message
 from itsdangerous import JSONWebSignatureSerializer
 from jinja2 import Environment, FileSystemLoader
 
-from app.schemas import UserActivity, Project, User
-
+from app.core.models.notification import UserActivity
 
 def serialize_data(data):
     s = JSONWebSignatureSerializer(current_app.config['SECRET_KEY'])

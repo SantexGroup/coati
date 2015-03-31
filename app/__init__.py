@@ -6,7 +6,7 @@ from jinja2 import ChoiceLoader, FileSystemLoader
 from flask import Flask, render_template
 from flask.ext.mongoengine import MongoEngine
 
-from app import api, auth, utils
+from app import api, auth, utils, core
 from auth import decorators
 
 
@@ -15,20 +15,9 @@ app.config.from_pyfile('../config.py')
 app.static_folder = 'frontend/' + app.config['FRONTEND']
 app.static_url_path = '/static'
 
-file_handler = FileHandler('log.txt')
-file_handler.setLevel(logging.DEBUG)
-app.logger.addHandler(file_handler)
 
 db = MongoEngine(app)
-
-app_path = os.path.dirname(os.path.abspath(__file__))
-frontend_templates = app_path + '/frontend/' + app.config['FRONTEND']
-fsLoader = FileSystemLoader(searchpath=frontend_templates)
-custom_loader = ChoiceLoader([
-    app.jinja_loader,
-    fsLoader
-])
-app.jinja_loader = custom_loader
+core.init_app(app)
 # # Init apps
 auth.init_app(app)
 # # Init Api

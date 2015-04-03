@@ -35,7 +35,7 @@
                         return promise.promise;
                     }
                 },
-                templateUrl: "ticket/ticket_detail_view.tpl.html",
+                templateUrl: 'ticket/ticket_detail_view.tpl.html',
                 controller: 'TicketDetailController',
                 controllerAs: 'vm',
                 data: {
@@ -56,7 +56,7 @@
         stateProvider.state('project.closed_tickets', {
             url: '/archived-tickets',
             views: {
-                "closed_tickets": {
+                'closed_tickets': {
                     controller: 'TicketArchivedController',
                     controllerAs: 'vm',
                     templateUrl: 'ticket/archived_tickets.tpl.html'
@@ -115,7 +115,7 @@
         }
 
         vm.is_scrumm = function () {
-            return item.project.project_type === "S";
+            return item.project.project_type === 'S';
         };
 
         vm.save = function () {
@@ -214,7 +214,7 @@
                 }).success(function (att) {
                     vm.ticket.files.push(att);
                     vm.file_uploaded += 1;
-                    if (vm.file_uploaded == vm.files.length) {
+                    if (vm.file_uploaded === vm.files.length) {
                         vm.files = [];
                     }
                 });
@@ -225,14 +225,14 @@
         getMembers();
 
         vm.is_scrumm = function () {
-            return vm.project.project_type === "S";
+            return vm.project.project_type === 'S';
         };
 
         vm.update_comment = function(c){
             c.comment = c.comment_temp;
             TicketService.update_comment(vm.project._id.$oid, vm.ticket._id.$oid, c._id.$oid, c).then(function(comment){
                 for(var i = 0; i<vm.comments.length;i++){
-                    if(vm.comments[i]._id.$oid == c._id.$oid){
+                    if(vm.comments[i]._id.$oid === c._id.$oid){
                         vm.comments[i] = comment;
                         vm.cancel_edit_comment(vm.comments[i]);
                         break;
@@ -244,7 +244,7 @@
         vm.delete_comment = function(c){
             TicketService.delete_comment(vm.project._id.$oid, vm.ticket._id.$oid, c._id.$oid).then(function(){
                 for(var i = 0; i<vm.comments.length;i++){
-                    if(vm.comments[i]._id.$oid == c._id.$oid){
+                    if(vm.comments[i]._id.$oid === c._id.$oid){
                         vm.comments.splice(i,1);
                         break;
                     }
@@ -274,7 +274,7 @@
 
         vm.prepareLabelsToDependencies = function (save) {
             vm.ticket.related_tickets_data = [];
-            angular.forEach(vm.related_tickets, function (v, k) {
+            angular.forEach(vm.related_tickets, function (v) {
                 vm.ticket.related_tickets_data.push({'value': v.value,
                     'type': vm.dependency_type});
             });
@@ -339,14 +339,14 @@
 
         vm.archive_restore_ticket = function (archive) {
             vm.ticket.closed = archive;
-            TicketService.update(vm.project._id.$oid, vm.ticket._id.$oid, vm.ticket).then(function (tkt) {
+            TicketService.update(vm.project._id.$oid, vm.ticket._id.$oid, vm.ticket).then(function () {
                 modalInstance.close();
                 if(archive) {
                     rootScope.$broadcast('archivedTicket', vm.ticket);
                 }else{
                     rootScope.$broadcast('restoredTicket', vm.ticket);
                 }
-            }, function (err) {
+            }, function () {
                 modalInstance.dismiss('error');
             });
         };
@@ -404,7 +404,7 @@
 
 
         vm.confirm_upload = function () {
-            angular.forEach(vm.files, function (f, k) {
+            angular.forEach(vm.files, function (f) {
                 do_upload(f);
             });
         };
@@ -416,7 +416,7 @@
 
         vm.prepareLabelsToSave = function (lbls, save) {
             vm.ticket.labels = [];
-            angular.forEach(vm.labels, function (v, k) {
+            angular.forEach(vm.labels, function (v) {
                 vm.ticket.labels.push(v.text);
             });
             if (save) {
@@ -450,16 +450,11 @@
             return vm.project.project_type === 'S';
         };
 
-
-        vm.is_scrumm = function () {
-            return vm.project.project_type === "S";
-        };
-
         getArchivedTickets(vm.project._id.$oid);
 
         rootScope.$on('restoredTicket', function(evt, tkt){
             for(var i =0;i<vm.tickets.length;i++){
-                if(vm.tickets[i]._id.$oid == tkt._id.$oid){
+                if(vm.tickets[i]._id.$oid === tkt._id.$oid){
                     vm.tickets.splice(i, 1);
                 }
             }

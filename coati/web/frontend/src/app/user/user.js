@@ -9,7 +9,7 @@
         stateProvider.state('profile', {
             url: '/profile/me/',
             views: {
-                "main": {
+                'main': {
                     controller: 'UserProfileCtrl',
                     templateUrl: 'user/user.tpl.html'
                 }
@@ -21,7 +21,7 @@
             .state('notifications', {
                 url: '/notifications',
                 views: {
-                    "main": {
+                    'main': {
                         controller: 'NotificationController',
                         controllerAs: 'vm',
                         templateUrl: 'user/notifications/all.tpl.html'

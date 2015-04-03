@@ -4,7 +4,7 @@
         stateProvider.state('project.planning', {
             url: '/planning',
             views: {
-                "project-planning": {
+                'project-planning': {
                     templateUrl: 'planning/planning.tpl.html',
                     controller: 'ProjectCtrlPlanning',
                     controllerAs: 'vm'
@@ -28,7 +28,7 @@
             SprintService.query(project_id).then(function (sprints) {
                 vm.sprints = sprints;
                 vm.one_started = false;
-                angular.forEach(sprints, function (val, key) {
+                angular.forEach(sprints, function (val) {
                     if (val.started && !val.finalized) {
                         vm.one_started = true;
                     }
@@ -207,13 +207,13 @@
             start: function (e, ui) {
                 ui.placeholder.height(ui.helper.outerHeight());
             },
-            update: function (e, ui) {
+            update: function () {
                 this.updated = true;
             },
             stop: function (e, ui) {
                 if (this.updated) {
                     var new_order = [];
-                    angular.forEach(ui.item.sortable.sourceModel, function (val, key) {
+                    angular.forEach(ui.item.sortable.sourceModel, function (val) {
                         new_order.push(val._id.$oid);
                     });
                     SprintService.update_order(vm.project._id.$oid, new_order);
@@ -240,14 +240,14 @@
                     sender = angular.element(ui.item.sortable.source).scope();
                     ticket = ui.item.sortable.model;
                     /* this happens with the order in the same sortable */
-                    if (this.sender == null) {
+                    if (this.sender === null) {
                         if (target.sprint !== undefined) {
-                            angular.forEach(target.sprint.tickets, function (v, k) {
+                            angular.forEach(target.sprint.tickets, function (v) {
                                 new_order.push(v._id.$oid);
                             });
                             TicketService.update_sprint_order(vm.project._id.$oid, target.sprint._id.$oid, new_order);
                         } else {
-                            angular.forEach(target.vm.tickets, function (v, k) {
+                            angular.forEach(target.vm.tickets, function (v) {
                                 new_order.push(v._id.$oid);
                             });
                             TicketService.update_backlog_order(vm.project._id.$oid, new_order);
@@ -258,7 +258,7 @@
 
                         //prepare destination
                         if (target.sprint === undefined) {
-                            angular.forEach(target.vm.tickets, function (v, k) {
+                            angular.forEach(target.vm.tickets, function (v) {
                                 new_order.push(v._id.$oid);
                             });
                             // goes to backlog
@@ -268,7 +268,7 @@
                             };
                         } else {
                             //goes to sprint
-                            angular.forEach(target.sprint.tickets, function (v, k) {
+                            angular.forEach(target.sprint.tickets, function (v) {
                                 new_order.push(v._id.$oid);
                             });
                             // goes to backlog
@@ -280,7 +280,7 @@
 
                         //prepare source
                         if (sender.sprint === undefined) {
-                            angular.forEach(target.vm.tickets, function (v, k) {
+                            angular.forEach(target.vm.tickets, function (v) {
                                 new_order.push(v._id.$oid);
                             });
                             // goes from backlog to sprint
@@ -330,7 +330,7 @@
         scope.$parent.vm[state.current.tab_active] = true;
 
         vm.is_scrumm = function () {
-            return vm.project.project_type === "S";
+            return vm.project.project_type === 'S';
         };
 
         getTicketsForProject(vm.project._id.$oid);

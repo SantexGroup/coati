@@ -59,7 +59,7 @@
             'update_comment': function (project_pk, tkt_id, comment_id, comment) {
                 return req.$do('/project/' + project_pk + '/ticket/' + tkt_id + '/comment/' + comment_id, req.METHODS.UPDATE, comment);
             },
-            'delete_comment': function (project_pk, tkt_id, comment_id, comment) {
+            'delete_comment': function (project_pk, tkt_id, comment_id) {
                 return req.$do('/project/' + project_pk + '/ticket/' + tkt_id + '/comment/' + comment_id, req.METHODS.DELETE);
             },
             'upload_attachments': function (project_pk, tkt_id, files, extra_data) {

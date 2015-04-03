@@ -6,11 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-ng-bind="pageTitle"></title>
     <link rel="shortcut icon"
-          href="{{ url_for('static', filename='assets/koala.ico')}}?v2"/>
+          href="/static/assets/koala.ico"/>
     <!-- Bootstrap core CSS -->
     <!-- compiled CSS --><% styles.forEach( function ( file ) { %>
-    <link rel="stylesheet" type="text/css"
-          href="{{ url_for('static', filename='<%= file %>')}}"/>
+    <link rel="stylesheet" type="text/css" href="/static/<%= file %>"/>
     <% }); %>
 </head>
 
@@ -20,7 +19,7 @@
     <!--header start-->
     <header class="header white-bg">
         <div class="sidebar-toggle-box">
-            <img src="{{ url_for('static', filename='assets/img/koala.png')}}"/>
+            <img src="/static/assets/img/koala.png"/>
         </div>
         <!--logo start-->
         <a href="/" class="logo">Coati<span> Agile Board</span>
@@ -111,7 +110,7 @@
                     <a class="dropdown-toggle user_picture" dropdown-toggle
                        href="javascript:;">
                         <img ng-if="!vm.user.picture" alt=""
-                             src="{{ url_for('static', filename='assets/img/koala.png')}}">
+                             src="/static/assets/img/koala.png">
                         <img ng-if="vm.user.picture" alt=""
                              ng-src="<[ vm.user.picture ]>">
                         <span class="username"><[ vm.user.email ]></span>
@@ -157,9 +156,9 @@
 </section>
 <% scripts.forEach( function ( file ) { %>
 <script type="text/javascript"
-        src="{{ url_for('static', filename='<%= file %>')}}"></script>
+        src="/static/<%= file %>"></script>
 <% }); %>
 <script type="text/javascript"
-        src="{{ config['SOCKET_IO'] }}/socket.io/socket.io.js"></script>
+        src="http://localhost:8001/socket.io/socket.io.js"></script>
 </body>
 </html>

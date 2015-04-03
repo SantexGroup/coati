@@ -1,19 +1,19 @@
 (function(angular){
 
-    var LoginService = function(req, conf){
+    var LoginService = function(req){
         return {
-            'auth': function (provider, next) {
-                window.location.href = '/auth/authenticate?provider=' + provider + '&callback=' + conf.CALLBACK_URL + '&next=' + next;
+            'auth': function (data) {
+                return req.$do('/auth/authorized', req.METHODS.POST, data);
             },
             'login': function(data){
-                return req.$do('/user/login', req.METHODS.POST, data);
+                return req.$do('/token', req.METHODS.POST, data);
             }
         };
     };
 
-    LoginService.$inject = ['$requests', 'Conf'];
+    LoginService.$inject = ['$requests'];
 
-    angular.module('Coati.Services.Login', ['Coati.Config', 'Coati.Helpers'])
+    angular.module('Coati.Services.Login', ['Coati.Helpers'])
         .factory('LoginService', LoginService);
 
 }(angular));

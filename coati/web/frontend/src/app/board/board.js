@@ -4,7 +4,7 @@
         stateProvider.state('project.board', {
             url: '/board?ticket',
             views: {
-                "project-board": {
+                'project-board': {
                     controller: 'ProjectCtrlBoard',
                     controllerAs: 'vm',
                     templateUrl: 'board/board.tpl.html'
@@ -27,7 +27,7 @@
         scope.$parent.vm[state.current.tab_active] = true;
 
         vm.is_scrumm = function () {
-            return vm.project.project_type === "S";
+            return vm.project.project_type === 'S';
         };
 
         var getSprintTickets = function (sprint_id) {
@@ -91,9 +91,10 @@
                     sender = angular.element(ui.item.sortable.source).scope();
                     ticket = ui.item.sortable.model;
                     /* this happens with the order in the same sortable */
+                    var data = {};
                     if (this.sender == null) {
                         if (target.col) {
-                            angular.forEach(ui.item.sortable.sourceModel, function (v, k) {
+                            angular.forEach(ui.item.sortable.sourceModel, function (v) {
                                 new_order.push(v._id.$oid);
                             });
                             //update order
@@ -105,10 +106,10 @@
                         }
 
                     } else {
-                        angular.forEach(ui.item.sortable.droptargetModel, function (v, k) {
+                        angular.forEach(ui.item.sortable.droptargetModel, function (v) {
                             new_order.push(v._id.$oid);
                         });
-                        var data = {
+                        data = {
                             ticket: ticket._id.$oid,
                             order: new_order,
                             sprint: vm.sprint ? vm.sprint._id.$oid : null

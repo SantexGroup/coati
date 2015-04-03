@@ -1,34 +1,5 @@
 (function (angular) {
 
-    var Tokens = function () {
-        return {
-            'get_token': function () {
-                var token_data = window.localStorage.getItem('token_data');
-                if (token_data != null) {
-                    token_data = JSON.parse(token_data);
-                    if(token_data) {
-                        var date_expiration = token_data['date_expiration'];
-                        var token = token_data['token'];
-                        var now = new Date().getTime();
-                        if (date_expiration >= now) {
-                            return token;
-                        }
-                    }
-                }
-                return null;
-            },
-            'store_token': function (token, expire) {
-                var now = new Date().getTime();
-                var data = {
-                    'token': token,
-                    'expire': expire,
-                    'date_expiration':  now + (expire * 1000)
-                };
-                window.localStorage.setItem('token_data', JSON.stringify(data));
-            }
-        };
-    };
-
     var RequestHelper = function (http, q, state, conf, tokens, growl) {
         return {
             METHODS: {
@@ -53,12 +24,12 @@
                 }).success(function (body) {
                     results.resolve(body);
                 }).error(function (data, status) {
-                    if (status == 401) {
+                    if (status === 401) {
                         state.go(conf.STATE_401);
                         //Notify
-                        growl.addErrorMessage("There was an error on the server side, please try again!");
+                        growl.addErrorMessage('There was an error on the server side, please try again!');
                     }
-                    if(status == 403){
+                    if(status === 403){
                         state.go(conf.STATE_403);
                     }
                     results.reject({
@@ -98,7 +69,7 @@
             },
             'toUrlString': function (obj) {
                 var url = this.cleanArray(Object.keys(obj).map(function (k) {
-                    if (!angular.isUndefined(obj[k]) && obj[k] !== null && obj[k] !== "") {
+                    if (!angular.isUndefined(obj[k]) && obj[k] !== null && obj[k] !== '') {
                         return encodeURIComponent(k) + '=' + encodeURIComponent(obj[k]);
                     }
                 })).join('&');
@@ -121,9 +92,9 @@
                     url: endpoint,
                     data: extra_data,
                     file: files
-                }).error(function(err){
+                }).error(function(){
                     //Notify
-                    growl.addErrorMessage("There was an error on the server side, please try again!");
+                    growl.addErrorMessage('There was an error on the server side, please try again!');
 
                 });
             }
@@ -142,19 +113,18 @@
                 for (var i = 0; i < byteString.length; i++) {
                     ia[i] = byteString.charCodeAt(i);
                 }
-                var blob = new Blob([ia], {type: mime_type + ";charset=utf-8"});
+                var blob = new Blob([ia], {type: mime_type + ';charset=utf-8'});
                 saveAs(blob, name);
             }
         };
     };
 
-    RequestHelper.$inject = ['$http', '$q', '$state', 'Conf', 'tokens', 'growl'];
+    RequestHelper.$inject = ['$http', '$q', '$state', 'Conf', 'TokenService', 'growl'];
     UploadHelper.$inject = ['$upload', 'tokens', 'Conf', 'growl'];
 
-    angular.module('Coati.Helpers', ['Coati.Config',
+    angular.module('Coati.Helpers', ['Coati.Config','Coati.Services.Token',
         'angular-growl',
         'angularFileUpload'])
-        .factory('tokens', Tokens)
         .factory('$requests', RequestHelper)
         .factory('$file_uploads', UploadHelper)
         .factory('$file_download', DownloaderHelper)

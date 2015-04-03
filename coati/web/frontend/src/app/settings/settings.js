@@ -4,7 +4,7 @@
         stateProvider.state('project.settings', {
             url: '/settings',
             views: {
-                "project-settings": {
+                'project-settings': {
                     controller: 'ProjectCtrlSettings',
                     controllerAs: 'vm',
                     templateUrl: 'settings/settings.tpl.html'
@@ -23,8 +23,8 @@
         });
     };
 
-
-    var ProjectCtrlSettings = function (rootScope, tmo, filter, scope, state, modal, growl, ProjectService, SocketIO) {
+    //TODO: Add SocketIO to realtime
+    var ProjectCtrlSettings = function (wnd, rootScope, tmo, filter, scope, state, modal, growl, ProjectService) {
         var vm = this;
         vm.form = {};
 
@@ -137,7 +137,7 @@
         };
 
         vm.prepare_upload = function () {
-            if (window.FileReader != null && (window.FileAPI == null || FileAPI.html5 !== false)) {
+            if (wnd.FileReader != null && (wnd.FileAPI == null || FileAPI.html5 !== false)) {
                 tmo(function () {
                     var fileReader = new FileReader();
                     fileReader.readAsText(vm.json_file[0]);
@@ -159,7 +159,7 @@
                 }
             };
             ProjectService.import_file(vm.project._id.$oid, vm.json_file,payload)
-                .success(function (rta) {
+                .success(function () {
                     vm.json_file = null;
                     vm.uploading = false;
                     growl.addSuccessMessage('The file was imported successfully');
@@ -176,13 +176,13 @@
             start: function (e, ui) {
                 ui.placeholder.height(ui.helper.outerHeight());
             },
-            update: function (e, ui) {
+            update: function () {
                 this.updated = true;
             },
             stop: function (e, ui) {
                 if (this.updated) {
                     var new_order = [];
-                    angular.forEach(ui.item.sortable.sourceModel, function (v, k) {
+                    angular.forEach(ui.item.sortable.sourceModel, function (v) {
                         new_order.push(v._id.$oid);
                     });
                     //update order
@@ -294,7 +294,7 @@
     };
 
     Config.$inject = ['$stateProvider', 'tagsInputConfigProvider'];
-    ProjectCtrlSettings.$inject = ['$rootScope', '$timeout', '$filter', '$scope', '$state', '$modal', 'growl', 'ProjectService', 'SocketIO'];
+    ProjectCtrlSettings.$inject = ['$window', '$rootScope', '$timeout', '$filter', '$scope', '$state', '$modal', 'growl', 'ProjectService', 'SocketIO'];
     ColumnFormController.$inject = ['$log', '$modalInstance', 'ProjectService', 'project', 'column'];
     ColumnDeleteController.$inject = ['$modalInstance', 'ProjectService', 'column'];
     MembersController.$inject = ['$modalInstance', 'UserService', 'ProjectService', 'project'];

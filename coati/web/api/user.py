@@ -1,10 +1,25 @@
+import json
 from mongoengine import errors as mongo_errors
-from flask import request
+from flask import request, current_app
 from flask.ext.restful import Resource
 from coati.core.models.user import User
+from coati.core.models.notification import UserNotification
 
 from coati.web.api.auth import AuthResource, current_user
 from coati.web.api import errors as api_errors
+
+
+def get_notifications(user):
+    notifications = UserNotification.objects(user=user)
+    results = []
+    for n in notifications:
+        if str(n.activity.author.pk) != str(user.id):
+            results.append(json.loads(n.to_json()))
+
+    results.sort(key=lambda x: x['activity']['when']['$date'], reverse=True)
+    if request.args.get('total'):
+        results = results[:int(request.args.get('total'))]
+    return results, 200
 
 
 def get_user_for_request(user_id):
@@ -170,69 +185,49 @@ class UserInstance(AuthResource):
         return {}, 204
 
 
-class UserLogin(Resource):
-    """
-    Login User
-    """
-    def post(self):
-        data = request.get_json(silent=True)
-        if not data:
-            raise api_errors.InvalidAPIUsage(
-                api_errors.ERROR_PARSING_JSON_MSG
-            )
-        email = data.get('email')
-        password = data.get('password')
-        pwd = hashlib.sha1(password)
-        try:
-            user = User.objects.get(email=email,
-                                    password=pwd.hexdigest(),
-                                    active=True)
-            token = generate_token(str(user.pk))
-            expire = current_app.config['TOKEN_EXPIRATION_TIME']
-            return jsonify({'token': token, 'expire': expire}), 200
-        except DoesNotExist:
-            return jsonify({'error': 'Login Incorrect'}), 404
-
-
-
-
 class UserActivate(Resource):
-    def __init__(self):
-        super(UserActivate, self).__init__()
+    """
+    Activation Token Class
+    """
 
     def get(self, code):
-        try:
-            user = User.objects.get(activation_token=code)
-            user.active = True
-            user.save()
-            token = generate_token(str(user.pk))
-            return jsonify({'token': token,
-                            'expire': current_app.config[
-                                'TOKEN_EXPIRATION_TIME']}), 200
-        except DoesNotExist:
-            return jsonify({'error': 'Bad Request'}), 400
+        """
+        Activate a user based on a token
+        :param code: token to activate the user
+        :return: token auth
+        """
+        user = User.get_by_activation_token(code)
+        if not user:
+            raise api_errors.MissingResource(
+                api_errors.ACTIVATION_INVALID_TOKEN_MSG
+            )
+
+        user.active = True
+        user.save()
+        token = current_app.token_handler.generate_tokens_dict(str(user.pk))
+        return token, 200
 
 
 class UserNotifications(Resource):
-    def __init__(self):
-        super(UserNotifications, self).__init__()
+    """
+    Notifications of a user
+    """
 
-    def get(self):
-        return get_notifications()
+    def get(self, user_id):
+        """
+        get the notifications for a user
+        :param user_id: user id or me
+        :return: list of notifications
+        """
+        user = get_user_for_request(user_id)
+        return get_notifications(user)
 
-    def put(self):
-        UserNotification.objects(user=g.user_id).update(set__viewed=True)
-        return get_notifications()
-
-
-def get_notifications():
-    notifications = UserNotification.objects(user=g.user_id)
-    results = []
-    for n in notifications:
-        if str(n.activity.author.pk) != g.user_id:
-            results.append(json.loads(n.to_json()))
-
-    results.sort(key=lambda x: x['activity']['when']['$date'], reverse=True)
-    if request.args.get('total'):
-        results = results[:int(request.args.get('total'))]
-    return jsonify({'notifications': results}), 200
+    def put(self, user_id):
+        """
+        update as readed all the notification not read for a user
+        :param user_id: user id or me
+        :return: list of notifications
+        """
+        user = get_user_for_request(user_id)
+        UserNotification.objects(user=user).update(set__viewed=True)
+        return get_notifications(user)

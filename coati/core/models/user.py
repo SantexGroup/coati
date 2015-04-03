@@ -62,7 +62,27 @@ class User(db.Document):
         :param email: The email to filter by.
         :return: A user instance or None if the email is not in use.
         """
-        return cls.objects.filter(active=True, email=email).first()
+        try:
+            instance = cls.objects.filter(active=True, email=email).first()
+        except (mongo_errors.ValidationError, cls.DoesNotExist):
+            instance = None
+
+        return instance
+
+    @classmethod
+    def get_by_activation_token(cls, token_activation):
+        """
+        Returns User by activation token if it exists.
+        :param token_activation: The email to filter by.
+        :return: A user instance or None if the token_activation is not in use.
+        """
+        try:
+            instance = cls.objects.filter(active=False,
+                                          activation_token=token_activation).first()
+        except (mongo_errors.ValidationError, cls.DoesNotExist):
+            instance = None
+
+        return instance
 
     @classmethod
     def get_or_create(cls, **kwargs):

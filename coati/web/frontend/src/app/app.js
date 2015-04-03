@@ -1,6 +1,6 @@
 (function (angular) {
 
-    function ConfigApp(interpolate, location, urlRoute, growlProvider, translateProvider, loadingBar) {
+    function ConfigApp(ConfProvider, interpolate, location, urlRoute, growlProvider, translateProvider,FacebookProvider, GooglePlusProvider,loadingBar) {
         urlRoute.when('/', '/home/');
         location.html5Mode({
             enabled: true,
@@ -20,6 +20,11 @@
             .useStorage('StorageService');
         loadingBar.includeSpinner = false;
         loadingBar.latencyThreshold = 500;
+
+        FacebookProvider.init(ConfProvider.getItem('FACEBOOK_KEY'));
+        GooglePlusProvider.setClientId(ConfProvider.getItem('GOOGLE_KEY'));
+        GooglePlusProvider.setScopes(ConfProvider.getItem('GOOGLE_SCOPES'));
+        GooglePlusProvider.init();
 
     }
 
@@ -136,7 +141,7 @@
         SocketIO.init();
     };
 
-    var RunApp = function (rootScope, state, stateParams, objects, UserService, StorageService, editableOptions, editableThemes) {
+    var RunApp = function (wnd, rootScope, state, stateParams, objects, UserService, StorageService, editableOptions, editableThemes) {
 
         editableThemes.bs3.inputClass = 'input-sm';
         editableThemes.bs3.buttonsClass = 'btn-sm';
@@ -151,8 +156,8 @@
                 rootScope.user = user;
 
             } else {
-                if (window.location.href.indexOf('login') < 0) {
-                    stateParams.next = window.location.href;
+                if (wnd.location.href.indexOf('login') < 0) {
+                    stateParams.next = wnd.location.href;
                     state.go('login', stateParams, {reload: true});
                 }
             }
@@ -174,8 +179,8 @@
     // Injections
     filterTrustedHTML.$inject = ['$sce'];
     filterNl2Br.$inject = ['$sce'];
-    RunApp.$inject = ['$rootScope', '$state', '$stateParams', '$objects', 'UserService', 'StorageService', 'editableOptions', 'editableThemes'];
-    ConfigApp.$inject = ['$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider', '$translateProvider', 'cfpLoadingBarProvider'];
+    RunApp.$inject = ['$window', '$rootScope', '$state', '$stateParams', '$objects', 'UserService', 'StorageService', 'editableOptions', 'editableThemes'];
+    ConfigApp.$inject = ['Conf','$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider', '$translateProvider', 'FacebookProvider', 'GooglePlusProvider', 'cfpLoadingBarProvider'];
     AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', 'UserService', 'TicketService', 'SocketIO', '$translate', 'StorageService'];
 
     angular.module('Coati', [

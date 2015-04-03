@@ -9,6 +9,7 @@ module.exports = {
      */
     build_dir: 'build',
     compile_dir: 'bin',
+    static_dir: 'static',
 
     /**
      * This is a collection of file patterns that refer to our app code (the
@@ -34,7 +35,7 @@ module.exports = {
         ctpl: [ 'src/common/**/*.tpl.html', 'src/common/**/*.html' ],
 
         html: [ 'src/index.html' ],
-        less: 'src/less/main.less'
+        css: 'src/css/*.css'
     },
 
     /**
@@ -87,7 +88,9 @@ module.exports = {
             'vendor/chartjs/Chart.min.js',
             'vendor/angular-loading-bar/build/loading-bar.min.js',
             'vendor/angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.min.js',
-            'vendor/angular-filter/dist/angular-filter.min.js'
+            'vendor/angular-filter/dist/angular-filter.min.js',
+            'vendor/ng-facebook/ngFacebook.js',
+            'vendor/angular-google-plus/dist/angular-google-plus.min.js'
         ],
         maps: [
             'vendor/angular/angular.min.js.map',

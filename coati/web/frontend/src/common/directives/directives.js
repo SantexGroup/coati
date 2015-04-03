@@ -1,9 +1,9 @@
 (function (angular) {
 
-    var ImageFunction = function (q) {
+    var ImageFunction = function (wnd, q) {
         'use strict';
         var URL, createImage, getResizeArea, resizeImage;
-        URL = window.URL || window.webkitURL;
+        URL = wnd.URL || wnd.webkitURL;
         getResizeArea = function () {
             var resizeArea, resizeAreaId;
             resizeAreaId = 'fileupload-resize-area';
@@ -38,7 +38,7 @@
             }
             canvas.width = width;
             canvas.height = height;
-            ctx = canvas.getContext("2d");
+            ctx = canvas.getContext('2d');
             ctx.drawImage(origImage, 0, 0, width, height);
             return canvas.toDataURL(type, parseFloat(quality));
         };
@@ -58,7 +58,7 @@
                 resizeQuality: '@?',
                 resizeType: '@?'
             },
-            link: function (scope, element, attrs, ctrl) {
+            link: function (scope, element, attrs) {
                 var applyScope, doResizing, fileToDataURL;
                 doResizing = function (imageResult, callback) {
                     createImage(imageResult.url, function (image) {
@@ -119,15 +119,15 @@
             restrict: 'E',
             template: '<canvas></canvas>',
             scope: {
-                chartData: "=value"
+                chartData: '=value'
             },
             transclude: true,
             replace: true,
-            link: function (scope, element, attrs) {
+            link: function (scope, element) {
                 var chart;
                 scope.$watch(function () {
                     return scope.chartData;
-                }, function (value, old_value) {
+                }, function (value) {
                     if (!value) {
                         element.parent().find('.chart-legend').remove();
                         element.empty();
@@ -139,61 +139,26 @@
                     if (chart !== undefined) {
                         chart.destroy();
                     }
-                    var ctx = element[0].getContext("2d");
+                    var ctx = element[0].getContext('2d');
                     var options = {
                         bezierCurve: false,
                         scaleShowGridLines: true,
-                        scaleGridLineColor: "rgba(0,0,0,.05)",
+                        scaleGridLineColor: 'rgba(0,0,0,.05)',
                         scaleGridLineWidth: 1,
                         datasetFill: false,
                         responsive: true,
                         showTooltip: true,
                         tooltipFontSize: 10,
                         // String - Tooltip font weight style
-                        tooltipFontStyle: "normal",
+                        tooltipFontStyle: 'normal',
                         // String - Tooltip label font colour
-                        tooltipFontColor: "#fff",
+                        tooltipFontColor: '#fff',
                         // Number - Tooltip title font size in pixels
                         tooltipTitleFontSize: 12,
-                        tooltipTemplate: "<%=label%>: <%= Math.round(value) %>",
-                        multiTooltipTemplate: "<%=datasetLabel%>: <%= Math.round(value) %>",
-                        /*customTooltips: function (tooltip) {
-                            console.log(arguments);
-                            // tooltip will be false if tooltip is not visible or should be hidden
-                            var tooltipEl = $('#chart-tooltip');
-                            if (!tooltip) {
-                                tooltipEl.css({
-                                    opacity: 0
-                                });
-                                return;
-                            }
+                        tooltipTemplate: '<%=label%>: <%= Math.round(value) %>',
+                        multiTooltipTemplate: '<%=datasetLabel%>: <%= Math.round(value) %>',
 
-                            tooltipEl.removeClass('above below');
-                            tooltipEl.addClass(tooltip.yAlign);
-
-                            var innerHtml = '';
-                            for (var i = tooltip.labels.length - 1; i >= 0; i--) {
-                                innerHtml += [
-                                    '<div class="chartjs-tooltip-section">',
-                                        '	<span class="chartjs-tooltip-key" style="background-color:' + tooltip.legendColors[i].fill + '"></span>',
-                                        '	<span class="chartjs-tooltip-value">' + tooltip.labels[i] + '</span>',
-                                        '   <span class="chartjs-tickets"></span>',
-                                    '</div>'
-                                ].join('');
-                            }
-                            tooltipEl.html(innerHtml);
-
-                            tooltipEl.css({
-                                opacity: 1,
-                                left: tooltip.chart.canvas.offsetLeft + tooltip.x + 'px',
-                                top: tooltip.chart.canvas.offsetTop + tooltip.y + 'px',
-                                fontFamily: tooltip.fontFamily,
-                                fontSize: tooltip.fontSize,
-                                fontStyle: tooltip.fontStyle
-                            });
-
-                        },*/
-                        legendTemplate: "<ul class=\"chart-legend\"><% for (var i=0; i<datasets.length; i++){%><li class=\"legend-item\"><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+                        legendTemplate: '<ul class="chart-legend"><% for (var i=0; i<datasets.length; i++){%><li class="legend-item"><span style="background-color:<%=datasets[i].strokeColor%>"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>'
                     };
                     Chart.defaults.global.pointHitDetectionRadius = 1;
                     chart = new Chart(ctx).Line(scope.chartData, options);
@@ -281,7 +246,7 @@
     };
 
 
-    var contentEditable = function (filter) {
+    var contentEditable = function () {
         return {
             restrict: 'A', // only activate on element attribute
             require: '?ngModel', // get a hold of NgModelController
@@ -299,7 +264,7 @@
 
                         var spans = element.find('span');
                         scope.vm.mentions = [];
-                        angular.forEach(spans, function (item, key) {
+                        angular.forEach(spans, function (item) {
                             scope.vm.mentions.push(item.getAttribute('data-token'));
                         });
                     }
@@ -345,8 +310,7 @@
         };
     };
 
-    ImageFunction.$inject = ['$q'];
-    contentEditable.$inject = ['$filter'];
+    ImageFunction.$inject = ['$window', '$q'];
     editableTagInput.$inject = ['editableDirectiveFactory'];
     ChartDraw.$inject = ['$filter'];
     CalculateWithBoard.$inject = ['$rootScope', '$timeout'];

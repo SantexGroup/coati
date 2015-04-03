@@ -4,7 +4,7 @@
         stateProvider.state('project.archived', {
             url: '/archived-sprints',
             views: {
-                "project-archived": {
+                'project-archived': {
                     controller: 'ArchivedSprintController',
                     controllerAs: 'vm',
                     templateUrl: 'sprint/archived.tpl.html'
@@ -19,7 +19,8 @@
         });
     };
 
-    var ArchivedSprintController = function (rootScope, scope, state, modal, SprintService, SocketIO) {
+    //Todo: Add SocketIO to realtime
+    var ArchivedSprintController = function (rootScope, scope, state, modal, SprintService) {
 
         var vm = this;
 
@@ -126,7 +127,7 @@
                 }else{
                     vm.sprint.for_editing = true;
                 }
-                SprintService.update(project,  vm.sprint).then(function (sp) {
+                SprintService.update(project,  vm.sprint).then(function () {
                     modalInstance.close();
                 }, function (err) {
                     modalInstance.dismiss('error');
@@ -149,9 +150,9 @@
 
         vm.stopSprint = function () {
             vm.sprint.for_finalized = true;
-            SprintService.update(project, vm.sprint).then(function (sp) {
+            SprintService.update(project, vm.sprint).then(function () {
                 modalInstance.close();
-            }, function (err) {
+            }, function () {
                 modalInstance.dismiss('error');
             });
         };

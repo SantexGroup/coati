@@ -111,31 +111,31 @@ FACEBOOK_OAUTH = dict(
     user_info_url='https://graph.facebook.com/v2.2/me',
 )
 
-GITHUB_OAUTH = dict(
-    name='github',
-    consumer_key=GITHUB_CLIENT_ID,
-    consumer_secret=GITHUB_CLIENT_SECRET,
-    base_url='https://github.com/login',
-    request_token_url=None,
-    access_token_url='/oauth/access_token',
-    authorize_url='https://github.com/login/oauth/authorize',
-    validate_token_url=lambda token: (
-        'https://github.com/login/applications/'
-        '{client_id}/tokens/{token}'.format(
-            token=token,
-            client_id=GITHUB_CLIENT_ID
-        )
-    ),
-    request_token_params={'scope': 'user:email,public_repo'},
-    access_token_method='POST',
-    validate_token_user='user_id',
-    user_info_url='https://api.github.com/user',
-)
+# GITHUB_OAUTH = dict(
+#     name='github',
+#     consumer_key=GITHUB_CLIENT_ID,
+#     consumer_secret=GITHUB_CLIENT_SECRET,
+#     base_url='https://github.com/login',
+#     request_token_url=None,
+#     access_token_url='/oauth/access_token',
+#     authorize_url='https://github.com/login/oauth/authorize',
+#     validate_token_url=lambda token: (
+#         'https://github.com/login/applications/'
+#         '{client_id}/tokens/{token}'.format(
+#             token=token,
+#             client_id=GITHUB_CLIENT_ID
+#         )
+#     ),
+#     request_token_params={'scope': 'user:email,public_repo'},
+#     access_token_method='POST',
+#     validate_token_user='user_id',
+#     user_info_url='https://api.github.com/user',
+# )
 
 PROVIDERS = [
     GOOGLE_OAUTH,
     FACEBOOK_OAUTH,
-    GITHUB_OAUTH
+    #GITHUB_OAUTH
 ]
 
 # Email settings

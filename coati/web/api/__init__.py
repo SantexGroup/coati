@@ -30,9 +30,10 @@ api.add_resource(tokens.RefreshToken, '/refresh_token')
 
 api.add_resource(user.UsersList, '/users')
 api.add_resource(user.UserInstance, '/users/<string:user_id>')
+api.add_resource(user.UserNotifications, '/users/me/notifications')
 api.add_resource(user.UserSearch, '/users/search/<string:query>')
-api.add_resource(user.UserActivate, '/user/activate/<string:code>')
-api.add_resource(user.UserNotifications, '/user/notifications')
+api.add_resource(user.UserActivate, '/users/activate/<string:code>')
+
 
 api.add_resource(project.ProjectList, '/projects')
 api.add_resource(project.ProjectInstance, '/project/<string:project_pk>')

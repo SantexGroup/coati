@@ -12,7 +12,7 @@
         stateProvider.state('home', {
             url: '/home/',
             views: {
-                "main": {
+                'main': {
                     controller: 'MainController',
                     controllerAs: 'vm',
                     templateUrl: 'home/home.tpl.html'

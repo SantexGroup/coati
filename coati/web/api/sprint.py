@@ -5,7 +5,7 @@ from dateutil import parser
 from flask import jsonify, request, g
 from mongoengine import DoesNotExist
 
-from coati.core.models.sprint import Sprint, SprintTicketOrder
+from coati.core.models.sprint import Sprint, SprintTicketOrder, TicketColumnTransition
 from coati.core.models.project import Project, Column
 from coati.core.models.ticket import Ticket
 from coati.web.api.auth import AuthResource

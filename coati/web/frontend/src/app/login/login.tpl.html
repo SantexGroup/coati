@@ -1,7 +1,7 @@
 <form class="form-signin" name="vm.form.login" ng-submit="vm.login_user()"
       novalidate>
-    <h2 class="form-signin-heading"><[ 'LOGIN_TITLE' | translate ]>
-        <small><[ 'LOGIN_SUB_TITLE' | translate ]></small>
+    <h2 class="form-signin-heading">{{ 'LOGIN_TITLE' | translate }}
+        <small>{{ 'LOGIN_SUB_TITLE' | translate }}</small>
         <span class="beta"  style="right: 45px;font-size: 10px;top: 12px;">Beta</span>
     </h2>
 
@@ -14,7 +14,7 @@
                    placeholder="E-Mail" data-ng-model="vm.credentials.email"
                    name="email" type="email" required>
             <label class="error"
-                   data-ng-show="vm.form.login.email.$invalid && vm.submitted"><[ 'LOGIN_INVALID_EMAIL' | translate ]></label>
+                   data-ng-show="vm.form.login.email.$invalid && vm.submitted">{{ 'LOGIN_INVALID_EMAIL' | translate }}</label>
         </div>
         <div class="form-group">
             <input class="form-control"
@@ -23,16 +23,16 @@
                    placeholder="Password" data-ng-model="vm.credentials.password"
                    name="password" type="password" required>
             <label class="error"
-                   data-ng-show="vm.form.login.password.$invalid && vm.submitted"><[ 'LOGIN_INVALID_PASSWORD' | translate ]></label>
+                   data-ng-show="vm.form.login.password.$invalid && vm.submitted">{{ 'LOGIN_INVALID_PASSWORD' | translate }}</label>
         </div>
         <button class="btn btn-primary"
-                type="submit"><[ 'LOGIN_LOG_IN' | translate ]>
+                type="submit">{{ 'LOGIN_LOG_IN' | translate }}
         </button>
-        <a href="/register"><[ 'LOGIN_REGISTER' | translate ]></a>
-        <label style="display: block;" class="error" ng-if="vm.error"><[vm.error]></label>
+        <a href="/register">{{ 'LOGIN_REGISTER' | translate }}</a>
+        <label style="display: block;" class="error" ng-if="vm.error">{{vm.error}}</label>
         <hr>
 
-        <p><[ 'LOGIN_SOCIAL' | translate ]></p>
+        <p>{{ 'LOGIN_SOCIAL' | translate }}</p>
 
         <div class="login-social-link">
             <a href="javascript:;" ng-click="vm.authenticate('google')"

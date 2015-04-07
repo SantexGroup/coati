@@ -85,7 +85,7 @@ class AuthResource(Resource):
     """
 
     decorators = [
-        decorators.require_permissions,
+        #decorators.require_permissions,
         decorators.require_authentication
     ]
 

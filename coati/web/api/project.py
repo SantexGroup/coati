@@ -18,7 +18,14 @@ class ProjectList(AuthResource):
         super(ProjectList, self).__init__()
 
     def get(self):
-        return ProjectMember.get_projects_for_member(g.user_id), 200
+        prj_mem = ProjectMember.objects(member=g.user.id)
+        projects = []
+        for pm in prj_mem:
+            if pm.project.active:
+                projects.append(pm.project.to_dict())
+            elif pm.project.owner.id == g.user.id:
+                projects.append(pm.project.to_dict())
+        return projects, 200
 
     def post(self):
         """
@@ -75,7 +82,7 @@ class ProjectInstance(AuthResource):
 
     def get(self, project_pk):
         prj = Project.objects.get(pk=project_pk).select_related(max_depth=2)
-        return prj.to_json(), 200
+        return prj.to_dict(), 200
 
     def put(self, project_pk):
         project = Project.objects.get(pk=project_pk)

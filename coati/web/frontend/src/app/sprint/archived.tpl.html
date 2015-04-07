@@ -2,10 +2,10 @@
     <div class="col-md-12" id="planning-list">
         <section class="panel tasks-widget backlog">
             <header class="panel-heading">
-                <span><[ 'SPRINT_ARCHIVED' | translate ]></span>
+                <span>{{ 'SPRINT_ARCHIVED' | translate }}</span>
 
                 <div class="add-task-row pull-right">
-                    <span class="badge bg-inverse"><[ 'SPRINT_TOTAL_SPRINTS' | translate ]> : <[ vm.sprints.length ]></span>
+                    <span class="badge bg-inverse">{{ 'SPRINT_TOTAL_SPRINTS' | translate }} : {{ vm.sprints.length }}</span>
                 </div>
                 <div style="clear:both"></div>
             </header>
@@ -15,16 +15,16 @@
                         class="sprint-item">
                         <section class="panel tasks-widget sprint-item">
                             <header class="panel-heading">
-                                <span><[ sprint.name ]></span>
-                                <span class="badge"><[ sprint.tickets.length ]></span>
+                                <span>{{ sprint.name }}</span>
+                                <span class="badge">{{ sprint.tickets.length }}</span>
                                 <span ng-if="sprint.started"
-                                      class="sprint_dates">(<[ sprint.start_date.$date | date:'short' ]> <[ 'SPRINT_TO' | translate ]> <[ sprint.end_date.$date | date:'short']>)</span>
+                                      class="sprint_dates">({{ sprint.start_date.$date | date:'short' }} {{ 'SPRINT_TO' | translate }} {{ sprint.end_date.$date | date:'short'}})</span>
 
                                 <div class="options pull-right">
-                                    <span class="badge bg-inverse"><[ 'SPRINT_TOTAL_POINTS' | translate ]>: <[ sprint.tickets | sumValue:'points' ]></span>
+                                    <span class="badge bg-inverse">{{ 'SPRINT_TOTAL_POINTS' | translate }}: {{ sprint.tickets | sumValue:'points' }}</span>
                                     <a class="btn btn-sm btn-danger"
                                        ng-click="vm.remove_sprint(sprint._id.$oid)">
-                                        <i class="icon-remove"></i> <[ 'SPRINT_REMOVE' | translate ]>
+                                        <i class="icon-remove"></i> {{ 'SPRINT_REMOVE' | translate }}
                                     </a>
                                 </div>
                                 <div style="clear:both"></div>
@@ -33,16 +33,16 @@
                                 <div class="task-content">
                                     <ul class="task-list">
                                         <li ng-repeat="tkt in sprint.tickets track by tkt._id.$oid"
-                                            class="ticket-item <[ tkt.type ]>"
+                                            class="ticket-item {{ tkt.type }}"
                                             ng-click="vm.showDetails($event, tkt);"
                                             title="Click to quick view">
                                             <div class="task-title">
                                         <span class="task-title-sp">
-                                          <[ vm.project.prefix ]>-<[ tkt.number ]>: <[ tkt.title ]>
+                                          {{ vm.project.prefix }}-{{ tkt.number }}: {{ tkt.title }}
                                         </span>
 
                                                 <div class="pull-right hidden-phone">
-                                                    <span class="badge bg-info"><[ tkt.points ]></span>
+                                                    <span class="badge bg-info">{{ tkt.points }}</span>
                                                 </div>
                                             </div>
                                         </li>

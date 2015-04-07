@@ -7,8 +7,7 @@
             requireBase: false
         });
         location.hashPrefix('!');
-        interpolate.startSymbol('<[');
-        interpolate.endSymbol(']>');
+
         growlProvider.globalTimeToLive(5000);
         growlProvider.onlyUniqueMessages(true);
         translateProvider.useStaticFilesLoader({
@@ -22,9 +21,10 @@
         loadingBar.latencyThreshold = 500;
 
         FacebookProvider.init(ConfProvider.getItem('FACEBOOK_KEY'));
+        GooglePlusProvider.init();
         GooglePlusProvider.setClientId(ConfProvider.getItem('GOOGLE_KEY'));
         GooglePlusProvider.setScopes(ConfProvider.getItem('GOOGLE_SCOPES'));
-        GooglePlusProvider.init();
+
 
     }
 

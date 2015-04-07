@@ -94,7 +94,20 @@ class TicketProjectList(AuthResource):
         super(TicketProjectList, self).__init__()
 
     def get(self, project_pk):
-        return Project.objects.get(pk=project_pk).get_tickets().to_json()
+        prj = Project.objects.get(id=project_pk)
+        tickets = []
+        sprints = Sprint.objects(project=prj)
+        if prj.project_type == u'S':
+            for s in sprints:
+                for spo in SprintTicketOrder.objects(sprint=s, active=True):
+                    tickets.append(str(spo.ticket.pk))
+
+        result = Ticket.objects(Q(project=prj) &
+                                Q(id__nin=tickets) &
+                                (Q(closed=False) | Q(closed__exists=False))
+        ).order_by('order')
+
+        return result.to_json()
 
     def post(self, project_pk):
         """

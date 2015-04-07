@@ -1,7 +1,7 @@
 <section class="panel">
     <header class="panel-heading">
         <h4 class="modal-title">
-            <[ 'SETTINGS_NEW_MEMBER' | translate ]>
+            {{ 'SETTINGS_NEW_MEMBER' | translate }}
         </h4>
     </header>
     <div class="panel-body">
@@ -10,17 +10,17 @@
                   ng-submit="vm.save()"
                   novalidate>
                 <div class="form-group">
-                    <lable><[ 'SETTINGS_SELECT_MEMBERS' | translate ]></lable>
+                    <lable>{{ 'SETTINGS_SELECT_MEMBERS' | translate }}</lable>
                     <tags-input allowed-tags-pattern='^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$' ng-model="vm.members" type="email" placeholder="Enter an Email" on-tag-added="vm.check_tag($tag);">
                         <auto-complete
                                 source="vm.loadMembers($query)"></auto-complete>
                     </tags-input>
                 </div>
                 <button class="btn btn-primary"
-                        type="submit"><[ 'SETTINGS_SAVE' | translate ]>
+                        type="submit">{{ 'SETTINGS_SAVE' | translate }}
                 </button>
                 <button class="btn btn-warning" type="button"
-                        data-ng-click="vm.cancel();"><[ 'SETTINGS_CANCEL' | translate ]>
+                        data-ng-click="vm.cancel();">{{ 'SETTINGS_CANCEL' | translate }}
                 </button>
             </form>
         </div>

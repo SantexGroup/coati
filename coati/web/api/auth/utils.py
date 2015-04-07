@@ -8,7 +8,7 @@ import itsdangerous
 from flask import current_app, request, g as flask_g
 from werkzeug.local import LocalProxy
 
-from coati.core.models import user
+from coati.core.models.user import User
 from coati.web.api import errors as api_errors
 
 
@@ -64,7 +64,7 @@ def parse_auth_token(token):
         user_id = token_data.get('id')
 
         if user_id:
-            user = users.User.get_by_id(user_id)
+            user = User.get_by_id(user_id)
 
             return user
 

@@ -80,7 +80,7 @@ class UsersList(AuthResource):
         Returns the list of users
         :return: A List of json representing users.
         """
-        return User.objects.all().to_json()
+        return User.objects.all()
 
     def post(self):
         """

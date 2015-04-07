@@ -89,7 +89,6 @@ module.exports = {
             'vendor/angular-loading-bar/build/loading-bar.min.js',
             'vendor/angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.min.js',
             'vendor/angular-filter/dist/angular-filter.min.js',
-            'vendor/angular-google-plus/dist/angular-google-plus.js',
             'vendor/angular-facebook/lib/angular-facebook.js'
 
         ],

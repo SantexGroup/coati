@@ -2,13 +2,13 @@
     <img ng-if="!n.activity.author.picture" alt=""
          src="/static/assets/img/koala.png">
     <img ng-if="n.activity.author.picture" alt=""
-         ng-src="<[ vm.user.picture ]>">
-    <span><strong><[ n.activity.author.first_name
-        ]> <[ n.activity.author.last_name
-        ]></strong> <[ 'NOTIFICATIONS_MENTION' | translate ]>
+         ng-src="{{ vm.user.picture }}">
+    <span><strong>{{ n.activity.author.first_name
+        }} {{ n.activity.author.last_name
+        }}</strong> {{ 'NOTIFICATIONS_MENTION' | translate }}
         <strong>
-            <[ n.activity.project.prefix]>-<[ n.activity.data.ticket.number ]>: <[n.activity.data.ticket.title ]>
+            {{ n.activity.project.prefix}}-{{ n.activity.data.ticket.number }}: {{n.activity.data.ticket.title }}
         </strong>
     </span>
-    <small><[ n.activity.when.$date | date:'medium' ]></small>
+    <small>{{ n.activity.when.$date | date:'medium' }}</small>
 </a>

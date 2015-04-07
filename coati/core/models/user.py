@@ -11,6 +11,7 @@ class User(db.Document):
     activation_token = db.StringField()
     active = db.BooleanField(default=True)
     picture = db.StringField()
+    is_admin = db.BooleanField(default=False)
 
     meta = {
         'indexes': [{'fields': ['email'], 'sparse': True, 'unique': True}]

@@ -1,7 +1,7 @@
 <section class="panel">
     <header class="panel-heading">
         <h4 class="modal-title">
-            <[ 'SPRINT_START' | translate ]>
+            {{ 'SPRINT_START' | translate }}
         </h4>
     </header>
     <div class="panel-body">
@@ -11,7 +11,7 @@
                   novalidate>
 
                 <div class="form-group">
-                    <label><[ 'SPRINT_NAME' | translate ]></label>
+                    <label>{{ 'SPRINT_NAME' | translate }}</label>
                     <input ng-model="vm.sprint.name"
                            required
                            name="name"
@@ -19,15 +19,15 @@
                            class="form-control form-control-inline input-medium"
                            type="text">
                     <label for="name" class="error"
-                           data-ng-show="vm.form.sprint_form.name.$invalid && vm.submitted"><[ 'SPRINT_NAME_ERROR' | translate ]></label>
+                           data-ng-show="vm.form.sprint_form.name.$invalid && vm.submitted">{{ 'SPRINT_NAME_ERROR' | translate }}</label>
                 </div>
                 <div class="form-group">
-                    <label><[ 'SPRINT_START_DATE' | translate ]></label>
+                    <label>{{ 'SPRINT_START_DATE' | translate }}</label>
 
                     <p class="input-group">
                         <input type="text" class="form-control date"
                                data-ng-class="{'error': vm.form.sprint_form.start_date.$invalid && vm.submitted}"
-                               datepicker-popup="<[ vm.format ]>"
+                               datepicker-popup="{{ vm.format }}"
                                datepicker-options="vm.dateOptions"
                                ng-model="vm.sprint.start_date"
                                show-button-bar="false"
@@ -42,15 +42,15 @@
                         </span>
                     </p>
                     <label for="start_date" class="error"
-                           data-ng-show="vm.form.sprint_form.start_date.$invalid && vm.submitted"><[ 'SPRINT_START_DATE_REQUIRED' | translate ]></label>
+                           data-ng-show="vm.form.sprint_form.start_date.$invalid && vm.submitted">{{ 'SPRINT_START_DATE_REQUIRED' | translate }}</label>
                 </div>
                 <div class="form-group">
-                    <label><[ 'SPRINT_END_DATE' | translate ]></label>
+                    <label>{{ 'SPRINT_END_DATE' | translate }}</label>
 
                     <p class="input-group">
                         <input type="text" class="form-control"
                                data-ng-class="{'error': vm.form.sprint_form.end_date.$invalid && vm.submitted}"
-                               datepicker-popup="<[ vm.format ]>"
+                               datepicker-popup="{{ vm.format }}"
                                datepicker-options="vm.dateOptions"
                                show-button-bar="false"
                                ng-model="vm.sprint.end_date"
@@ -66,15 +66,15 @@
                     </span>
                     </p>
                     <label for="end_date" class="error"
-                           data-ng-show="vm.form.sprint_form.end_date.$invalid && vm.submitted"><[ 'SPRINT_END_DATE_REQUIRED' | translate ]></label>
+                           data-ng-show="vm.form.sprint_form.end_date.$invalid && vm.submitted">{{ 'SPRINT_END_DATE_REQUIRED' | translate }}</label>
                 </div>
 
 
                 <button class="btn btn-primary"
-                        type="submit"><[ 'SPRINT_SAVE' | translate ]>
+                        type="submit">{{ 'SPRINT_SAVE' | translate }}
                 </button>
                 <button class="btn btn-warning" type="button"
-                        data-ng-click="vm.cancel();"><[ 'SPRINT_CANCEL' | translate ]>
+                        data-ng-click="vm.cancel();">{{ 'SPRINT_CANCEL' | translate }}
                 </button>
 
             </form>

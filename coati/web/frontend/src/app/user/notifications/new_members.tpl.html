@@ -2,9 +2,9 @@
     <img ng-if="!n.activity.author.picture" alt=""
          src="/static/assets/img/koala.png">
     <img ng-if="n.activity.author.picture" alt=""
-         ng-src="<[ n.activity.author.picture ]>">
-    <strong><[ n.activity.author.first_name ]>
-        <[ n.activity.author.last_name
-        ]></strong> <[ 'NOTIFICATIONS_NEW_MEMBERS' | translate ]> :<strong><[ n.activity.project.name ]></strong>
-    <small><[ n.activity.when.$date | date:'medium' ]></small>
+         ng-src="{{ n.activity.author.picture }}">
+    <strong>{{ n.activity.author.first_name }}
+        {{ n.activity.author.last_name
+        }}</strong> {{ 'NOTIFICATIONS_NEW_MEMBERS' | translate }} :<strong>{{ n.activity.project.name }}</strong>
+    <small>{{ n.activity.when.$date | date:'medium' }}</small>
 </a>

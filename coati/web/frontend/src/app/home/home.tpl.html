@@ -1,16 +1,16 @@
 <div class="row">
     <div class="col-md-12 projects">
-        <h3><[ 'HOME_WELCOME_MESSAGE' | translate ]></h3>
+        <h3>{{ 'HOME_WELCOME_MESSAGE' | translate }}</h3>
 
-        <p data-ng-show="vm.projects.length < 1"><[ 'HOME_NO_PROJECTS' | translate ]></p>
+        <p data-ng-show="vm.projects.length < 1">{{ 'HOME_NO_PROJECTS' | translate }}</p>
         <!--widget start-->
         <aside class="project-item col-md-3"
                ng-repeat="item in vm.projects track by item._id.$oid"
-               data-index="<[ $index ]>">
+               data-index="{{ $index }}">
             <section class="panel">
                 <a ui-sref="project.planning({project_pk: item._id.$oid })">
                     <header class="panel-heading alt">
-                        <span><[ item.name ]></span>
+                        <span>{{ item.name }}</span>
 
                         <div class="pull-right">
                         <span ng-class="{active: item.active, deactivated: !item.active}"
@@ -21,7 +21,7 @@
                 </a>
 
                 <div class="panel-body">
-                    <p><[ item.description ]></p>
+                    <p>{{ item.description }}</p>
                     <ul class="nav nav-pills nav-stacked">
                         <li>
                         <span class="label"
@@ -36,10 +36,10 @@
         <aside class="profile-nav alt col-md-3 new-project" ng-click="vm.create_project();">
             <section class="panel">
                 <header class="panel-heading alt">
-                    <span><[ 'HOME_NEW_PROJECT' | translate ]>...</span>
+                    <span>{{ 'HOME_NEW_PROJECT' | translate }}...</span>
                 </header>
                 <div class="panel-body">
-                    <p><[ 'HOME_CREATE_PROJECT' | translate ]></p>
+                    <p>{{ 'HOME_CREATE_PROJECT' | translate }}</p>
                 </div>
             </section>
         </aside>

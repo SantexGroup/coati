@@ -56,19 +56,19 @@
                 ng-controller="UserCtrl as vm">
                 <li dropdown>
                     <a dropdown-toggle href="#">
-                        <img ng-src="/static/assets/img/flags/<[ main.selectedLanguage ]>.png"/>
+                        <img ng-src="/static/assets/img/flags/{{ main.selectedLanguage }}.png"/>
                     </a>
                     <ul class="dropdown-menu">
                         <li>
                             <a href="#" ng-click="main.switchLanguage('en')">
                                 <img src="/static/assets/img/flags/en.png"/>
-                                <span><[ 'MAIN_ENGLISH' | translate ]></span>
+                                <span>{{ 'MAIN_ENGLISH' | translate }}</span>
                             </a>
                         </li>
                         <li>
                             <a href="#" ng-click="main.switchLanguage('es')">
                                 <img src="/static/assets/img/flags/es.png"/>
-                                <span><[ 'MAIN_SPANISH' | translate ]></span>
+                                <span>{{ 'MAIN_SPANISH' | translate }}</span>
                             </a>
                         </li>
                     </ul>
@@ -78,14 +78,14 @@
                        dropdown-toggle class="dropdown-toggle" href="#">
                         <i class="icon-bell"></i>
                         <span class="badge bg-warning"
-                              ng-if="(vm.all_notifications | filter:{viewed:false}).length > 0"><[ (vm.all_notifications | filter:{viewed:false}).length ]></span>
+                              ng-if="(vm.all_notifications | filter:{viewed:false}).length > 0">{{ (vm.all_notifications | filter:{viewed:false}).length }}</span>
                     </a>
                     <ul class="dropdown-menu extended notification">
                         <li>
                             <div class="notify-arrow-right notify-arrow-yellow"></div>
                             <p class="yellow">
-                                <span ng-if="vm.new_notifications.length > 0"><[ vm.new_notifications.length ]> <[ 'MAIN_NEW_NOTIFICATIONS' | translate ]></span>
-                                <span ng-if="vm.new_notifications.length < 1"><[ 'MAIN_NOTIFICATION_LIST' | translate ]></span>
+                                <span ng-if="vm.new_notifications.length > 0">{{ vm.new_notifications.length }} {{ 'MAIN_NEW_NOTIFICATIONS' | translate }}</span>
+                                <span ng-if="vm.new_notifications.length < 1">{{ 'MAIN_NOTIFICATION_LIST' | translate }}</span>
                             </p>
                         </li>
                         <li>
@@ -100,7 +100,7 @@
                         </li>
                         <li>
                             <a href="javascript:;" ui-sref="notifications">
-                                <[ 'ALL_NOTIFICATIONS' | translate ]>
+                                {{ 'ALL_NOTIFICATIONS' | translate }}
                             </a>
                         </li>
                     </ul>
@@ -112,21 +112,21 @@
                         <img ng-if="!vm.user.picture" alt=""
                              src="/static/assets/img/koala.png">
                         <img ng-if="vm.user.picture" alt=""
-                             ng-src="<[ vm.user.picture ]>">
-                        <span class="username"><[ vm.user.email ]></span>
+                             ng-src="{{ vm.user.picture }}">
+                        <span class="username">{{ vm.user.email }}</span>
                         <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu logout">
                         <div class="log-arrow-up"></div>
                         <li><a href="javascript:;"
                                ng-click="vm.show_profile();"><i
-                                class=" icon-suitcase"></i> <[ 'MAIN_PROFILE' |
-                            translate ]></a>
+                                class=" icon-suitcase"></i> {{ 'MAIN_PROFILE' |
+                            translate }}</a>
                         </li>
                         <li><a ng-href="/auth/logout" href="/logout"
                                target="_self"><i
-                                class="icon-key"></i> <[ 'MAIN_LOG_OUT' |
-                            translate ]></a>
+                                class="icon-key"></i> {{ 'MAIN_LOG_OUT' |
+                            translate }}</a>
                         </li>
                     </ul>
                 </li>

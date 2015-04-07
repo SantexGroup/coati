@@ -1,6 +1,6 @@
 (function (angular) {
 
-    function ConfigApp(ConfProvider, interpolate, location, urlRoute, growlProvider, translateProvider,FacebookProvider, GooglePlusProvider,loadingBar) {
+    function ConfigApp(ConfProvider, interpolate, location, urlRoute, growlProvider, translateProvider, FacebookProvider, GooglePlusProvider,loadingBar) {
         urlRoute.when('/', '/home/');
         location.html5Mode({
             enabled: true,
@@ -180,7 +180,7 @@
     filterTrustedHTML.$inject = ['$sce'];
     filterNl2Br.$inject = ['$sce'];
     RunApp.$inject = ['$window', '$rootScope', '$state', '$stateParams', '$objects', 'UserService', 'StorageService', 'editableOptions', 'editableThemes'];
-    ConfigApp.$inject = ['Conf','$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider', '$translateProvider', 'FacebookProvider', 'GooglePlusProvider', 'cfpLoadingBarProvider'];
+    ConfigApp.$inject = ['ConfProvider','$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider', '$translateProvider', 'FacebookProvider', 'GooglePlusProvider', 'cfpLoadingBarProvider'];
     AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', 'UserService', 'TicketService', 'SocketIO', '$translate', 'StorageService'];
 
     angular.module('Coati', [
@@ -191,6 +191,8 @@
         'pascalprecht.translate',
         'ui.router',
         'ui.bootstrap',
+        'facebook',
+        'googleplus',
         'Coati.SocketIO',
         'Coati.Config',
         'Coati.Directives',

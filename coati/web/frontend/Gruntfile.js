@@ -344,7 +344,7 @@ module.exports = function(grunt) {
         cachebreaker: {
             dev: {
                 options: {
-                    match: ['all.min.js', 'gibike.css']
+                    match: ['all.min.js', 'coati.css']
                 },
                 files: {
                     src: ['<%= compile_dir %>/index.html']

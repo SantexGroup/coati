@@ -29,15 +29,14 @@
                 return req.$do('/user/activate/' + code, req.METHODS.GET);
             },
             'is_logged': function () {
-                var token = tokens.get_token();
-                return token ? true : false;
+                return tokens.get_access_token() !== null;
             }
         };
     };
 
-    UserService.$inject = ['$requests', 'tokens'];
+    UserService.$inject = ['$requests', 'TokenService'];
 
-    angular.module('Coati.Services.User', ['Coati.Helpers'])
+    angular.module('Coati.Services.User', ['Coati.Helpers', 'Coati.Services.Token'])
         .factory('UserService', UserService);
 
 }(angular));

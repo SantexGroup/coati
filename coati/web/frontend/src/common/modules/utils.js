@@ -11,7 +11,7 @@
             },
             '$do': function (url, method, data, not_default) {
 
-                var token = tokens.get_token();
+                var token = tokens.get_access_token();
                 if (token) {
                     http.defaults.headers.common['Authorization'] = 'Token ' + token;
                 }
@@ -81,7 +81,7 @@
     var UploadHelper = function (up, tokens, conf, growl) {
         return {
             '$do': function (url, files, extra_data, not_default) {
-                var token = tokens.get_token();
+                var token = tokens.get_access_token();
                 var headers = {};
                 if (token) {
                     headers = {'Authorization': 'Token ' + token};
@@ -120,7 +120,7 @@
     };
 
     RequestHelper.$inject = ['$http', '$q', '$state', 'Conf', 'TokenService', 'growl'];
-    UploadHelper.$inject = ['$upload', 'tokens', 'Conf', 'growl'];
+    UploadHelper.$inject = ['$upload', 'TokenService', 'Conf', 'growl'];
 
     angular.module('Coati.Helpers', ['Coati.Config','Coati.Services.Token',
         'angular-growl',

@@ -28,7 +28,7 @@ def has_permissions(user_id):
         return True
 
     if user_id:
-        # Gibikers have access only to their stuff
+        # Coati Users have access only to their stuff
         if user_id == 'me' or str(current_user.id) == user_id:
             return True
 

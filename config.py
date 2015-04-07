@@ -24,7 +24,7 @@ def get_list_from_env_var(var_name):
     return value.split(',')
 
 # Statement for enabling the development environment
-DEBUG = os.getenv('DEBUG', False)
+DEBUG = os.getenv('DEBUG', True)
 JSON_INDENT = os.getenv('JSON_INDENT')
 
 # Define the application directory
@@ -33,7 +33,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 # Flask app secret key
 SECRET_KEY = os.getenv('SECRET_KEY')
 PREFERRED_URL_SCHEME = os.getenv('PREFERRED_URL_SCHEME', 'http')
-SERVER_NAME = os.getenv('SERVER_NAME')
+#SERVER_NAME = os.getenv('SERVER_NAME')
 
 # For example: localhost
 DATABASE_HOST = os.getenv('DATABASE_HOST')

@@ -34,8 +34,8 @@
     "angular-translate": "",
     "angular-translate-loader-static-files": "",
     "angular-filter": "v0.5.4",
-    "ng-facebook": "~0.1.6",
-    "angular-google-plus": "~0.1.2"
+    "angular-facebook": "0.2.3",
+    "angular-google-plus": "0.1.2"
   },
   "devDependencies": {
     "angular-mocks": ""

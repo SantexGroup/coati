@@ -12,6 +12,9 @@
                 storage.set('accessToken', null);
                 storage.set('refreshToken', null);
                 storage.set('expirationDate', null);
+            },
+            get_access_token: function(){
+                return storage.get('accessToken');
             }
         };
 

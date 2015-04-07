@@ -17,7 +17,7 @@ from coati.web.api import auth, tokens
 APP_ACCEPTED_TYPE = 'application/json'
 
 blueprint = blueprints.Blueprint(
-    'coati.api',
+    'coati.web.api',
     __name__,
     url_prefix='/api/v1'
 )
@@ -150,7 +150,7 @@ def output_json(data, code, headers=None):
 
 def init_app(app):
     """
-    Register `gibike.api` blueprint.
+    Register `coati.api` blueprint.
     :param app: Flask application.
     """
     auth.init_app(app)

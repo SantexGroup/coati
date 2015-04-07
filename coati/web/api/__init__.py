@@ -45,7 +45,6 @@ api.add_resource(project.ProjectImport, '/project/<string:project_pk>/import')
 api.add_resource(project.ProjectColumn, '/project/<string:project_pk>/column/<string:column_pk>')
 
 
-
 api.add_resource(sprint.SprintList, '/project/<string:project_pk>/sprints')
 api.add_resource(sprint.SprintArchivedList, '/project/<string:project_pk>/sprints/archived')
 api.add_resource(sprint.SprintAllList, '/project/<string:project_pk>/sprints/all')

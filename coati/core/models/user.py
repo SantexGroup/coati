@@ -5,7 +5,7 @@ from coati.core import db, utils
 
 class User(db.Document):
     email = db.StringField(required=True)
-    password = db.StringField(required=True)
+    password = db.StringField(required=False)
     first_name = db.StringField(max_length=50)
     last_name = db.StringField(max_length=50)
     activation_token = db.StringField()
@@ -32,7 +32,8 @@ class User(db.Document):
         err_dict = {}
 
         try:
-            utils.validate_password(self.password)
+            if self.password:
+                utils.validate_password(self.password)
         except mongo_errors.ValidationError as ex:
             err_dict.update(ex.to_dict())
 

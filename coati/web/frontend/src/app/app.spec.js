@@ -7,7 +7,7 @@ describe('App Test', function () {
         $rootScope = $injector.get('$rootScope');
         $controller = $injector.get('$controller');
         $state = $injector.get('$state');
-        $tokens = $injector.get('tokens');
+        $tokens = $injector.get('TokenService');
         $scope = $rootScope.$new();
 
     }));

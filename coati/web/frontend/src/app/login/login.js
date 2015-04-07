@@ -120,7 +120,7 @@
                             authResult.authResponse.userID
                         );
                     }
-                }, {scope: AppConfig.getItem('FACEBOOK_SCOPES')});
+                }, {scope: AppConfig.FACEBOOK_SCOPES });
             } else {
                 GooglePlus.login().then(function (authResponse) {
                     if (authResponse['access_token']) {

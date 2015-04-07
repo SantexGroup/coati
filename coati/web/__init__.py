@@ -42,12 +42,12 @@ def create_app(config):
     app.add_url_rule('/', u'home', send_index_response, defaults={'path': ''})
     app.add_url_rule('/<path:path>', u'index', send_index_response)
 
-    # for bp in blueprints:
-    #     try:
-    #         init_app = bp.init_app
-    #     except AttributeError:
-    #         raise AttributeError('%r has no init_app' % (bp.__name__,))
-    #
-    #     init_app(app)
+    for bp in blueprints:
+        try:
+            init_app = bp.init_app
+        except AttributeError:
+            raise AttributeError('%r has no init_app' % (bp.__name__,))
+
+        init_app(app)
 
     return app

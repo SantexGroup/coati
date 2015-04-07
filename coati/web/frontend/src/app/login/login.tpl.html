@@ -11,7 +11,7 @@
             <input class="form-control"
                    data-ng-class="{'error': vm.form.login.email.$invalid && vm.submitted}"
                    autocomplete="off"
-                   placeholder="E-Mail" data-ng-model="vm.login.email"
+                   placeholder="E-Mail" data-ng-model="vm.credentials.email"
                    name="email" type="email" required>
             <label class="error"
                    data-ng-show="vm.form.login.email.$invalid && vm.submitted"><[ 'LOGIN_INVALID_EMAIL' | translate ]></label>
@@ -20,7 +20,7 @@
             <input class="form-control"
                    data-ng-class="{'error': vm.form.login.password.$invalid && vm.submitted}"
                    autocomplete="off"
-                   placeholder="Password" data-ng-model="vm.login.password"
+                   placeholder="Password" data-ng-model="vm.credentials.password"
                    name="password" type="password" required>
             <label class="error"
                    data-ng-show="vm.form.login.password.$invalid && vm.submitted"><[ 'LOGIN_INVALID_PASSWORD' | translate ]></label>

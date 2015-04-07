@@ -1,4 +1,4 @@
-from datetime import datetime
+from mongoengine import errors as mongo_errors
 
 from coati.core import db
 
@@ -27,6 +27,14 @@ class ProjectMember(db.Document):
     project = db.ReferenceField('Project', reverse_delete_rule=db.CASCADE)
     is_owner = db.BooleanField(default=False)
 
+    @classmethod
+    def get_by_member(cls, member_id):
+        try:
+            instances = cls.objects.get(member=member_id)
+        except (mongo_errors.ValidationError, cls.DoesNotExist):
+            instances = []
+        return instances
+
 
 class Column(db.Document):
     title = db.StringField(max_length=100, required=True)
@@ -35,3 +43,15 @@ class Column(db.Document):
     project = db.ReferenceField('Project', reverse_delete_rule=db.CASCADE)
     done_column = db.BooleanField(default=False)
     order = db.IntField()
+
+    @classmethod
+    def get_by_project(cls, project_id):
+        try:
+            instances = cls.objects(project=project_id).order_by('order')
+        except (mongo_errors.ValidationError, cls.DoesNotExist):
+            instances = []
+        return instances
+
+    @classmethod
+    def clear_done_columns(cls, project_id):
+        cls.objects(project=project_id).update(set__done_column=False)

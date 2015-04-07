@@ -30,50 +30,81 @@ api.add_resource(tokens.RefreshToken, '/refresh_token')
 
 api.add_resource(user.UsersList, '/users')
 api.add_resource(user.UserInstance, '/users/<string:user_id>')
-api.add_resource(user.UserNotifications, '/users/<string:user_id>/notifications')
+api.add_resource(user.UserNotifications,
+                 '/users/<string:user_id>/notifications')
 api.add_resource(user.UserSearch, '/users/search/<string:query>')
 api.add_resource(user.UserActivate, '/users/activate/<string:code>')
 
-
-api.add_resource(project.ProjectList, '/projects')
-api.add_resource(project.ProjectInstance, '/projects/<string:project_pk>')
-api.add_resource(project.ProjectColumns, '/projects/<string:project_pk>/columns')
-api.add_resource(project.ProjectColumnsOrder, '/projects/<string:project_pk>/order_columns')
-api.add_resource(project.ProjectMembers, '/projects/<string:project_pk>/members')
-api.add_resource(project.ProjectMemberInstance, '/projects/<string:project_pk>/members/<string:member_pk>')
-api.add_resource(project.ProjectImport, '/projects/<string:project_pk>/import')
-api.add_resource(project.ProjectColumn, '/projects/<string:project_pk>/column/<string:column_pk>')
-
+api.add_resource(project.ProjectList,
+                 '/projects/<string:user_id>')
+api.add_resource(project.ProjectInstance,
+                 '/projects/<string:project_pk>')
+api.add_resource(project.ProjectColumns,
+                 '/projects/<string:project_pk>/columns')
+api.add_resource(project.ProjectColumnsOrder,
+                 '/projects/<string:project_pk>/order_columns')
+api.add_resource(project.ProjectMembers,
+                 '/projects/<string:project_pk>/members')
+api.add_resource(project.ProjectMemberInstance,
+                 '/projects/<string:project_pk>/members/<string:member_pk>')
+api.add_resource(project.ProjectImport,
+                 '/projects/<string:project_pk>/import')
+api.add_resource(project.ProjectColumn,
+                 '/projects/<string:project_pk>/column/<string:column_pk>')
 
 api.add_resource(sprint.SprintList, '/projects/<string:project_pk>/sprints')
-api.add_resource(sprint.SprintArchivedList, '/projects/<string:project_pk>/sprints/archived')
-api.add_resource(sprint.SprintAllList, '/projects/<string:project_pk>/sprints/all')
-api.add_resource(sprint.SprintActive, '/projects/<string:project_pk>/sprints/started')
-api.add_resource(sprint.SprintOrder, '/projects/<string:project_pk>/sprints/order')
-api.add_resource(sprint.SprintInstance, '/projects/<string:project_pk>/sprint/<string:sp_id>')
-api.add_resource(sprint.SprintTickets, '/projects/<string:project_pk>/sprint/<string:sprint_id>/tickets')
-api.add_resource(sprint.SprintChart, '/projects/<string:project_pk>/sprint/<string:sprint_id>/chart')
+api.add_resource(sprint.SprintArchivedList,
+                 '/projects/<string:project_pk>/sprints/archived')
+api.add_resource(sprint.SprintAllList,
+                 '/projects/<string:project_pk>/sprints/all')
+api.add_resource(sprint.SprintActive,
+                 '/projects/<string:project_pk>/sprints/started')
+api.add_resource(sprint.SprintOrder,
+                 '/projects/<string:project_pk>/sprints/order')
+api.add_resource(sprint.SprintInstance,
+                 '/projects/<string:project_pk>/sprint/<string:sp_id>')
+api.add_resource(sprint.SprintTickets,
+                 '/projects/<string:project_pk>/sprint/<string:sprint_id>/tickets')
+api.add_resource(sprint.SprintChart,
+                 '/projects/<string:project_pk>/sprint/<string:sprint_id>/chart')
 
-api.add_resource(ticket.TicketProjectList, '/projects/<string:project_pk>/tickets')
+api.add_resource(ticket.TicketProjectList,
+                 '/projects/<string:project_pk>/tickets')
 
-api.add_resource(ticket.TicketBoardProject, '/projects/<string:project_pk>/tickets/board')
-api.add_resource(ticket.TicketOrderProject, '/projects/<string:project_pk>/tickets/order')
-api.add_resource(ticket.TicketOrderSprint, '/projects/<string:project_pk>/tickets/sprint/<string:sprint_pk>/order')
+api.add_resource(ticket.TicketBoardProject,
+                 '/projects/<string:project_pk>/tickets/board')
+api.add_resource(ticket.TicketOrderProject,
+                 '/projects/<string:project_pk>/tickets/order')
+api.add_resource(ticket.TicketOrderSprint,
+                 '/projects/<string:project_pk>/tickets/sprint/<string:sprint_pk>/order')
 api.add_resource(ticket.TicketSearch, '/projects/tickets/search/<string:query>')
-api.add_resource(ticket.TicketSearchRelated, '/projects/<string:project_pk>/tickets/search/<string:query>')
+api.add_resource(ticket.TicketSearchRelated,
+                 '/projects/<string:project_pk>/tickets/search/<string:query>')
 
-api.add_resource(ticket.TicketClosed, '/projects/<string:project_pk>/tickets/archived')
-api.add_resource(ticket.TicketInstance, '/projects/<string:project_pk>/ticket/<string:tkt_id>')
-api.add_resource(ticket.TicketRelated, '/projects/<string:project_pk>/ticket/<string:tkt_id>/related/<string:rtkt_id>')
-api.add_resource(ticket.TicketClone, '/projects/<string:project_pk>/ticket/<string:tkt_id>/clone')
-api.add_resource(ticket.TicketComments, '/projects/<string:project_pk>/ticket/<string:tkt_id>/comments')
-api.add_resource(ticket.CommentInstance, '/projects/<string:project_pk>/ticket/<string:tkt_id>/comment/<string:comment_id>')
-api.add_resource(ticket.TicketAttachments, '/projects/<string:project_pk>/ticket/<string:tkt_id>/attachments')
-api.add_resource(ticket.AttachmentInstance, '/projects/<string:project_pk>/ticket/<string:tkt_id>/attachments/<string:att_id>/delete')
-api.add_resource(ticket.MemberTicketInstance, '/projects/<string:project_pk>/ticket/<string:tkt_id>/assignments/<string:member_id>')
-api.add_resource(ticket.TicketMovement, '/projects/<string:project_pk>/ticket/movement')
-api.add_resource(ticket.TicketTransition, '/projects/<string:project_pk>/ticket/transition')
-api.add_resource(ticket.TicketColumnOrder, '/projects/<string:project_pk>/ticket/column/<string:column>/order')
+api.add_resource(ticket.TicketClosed,
+                 '/projects/<string:project_pk>/tickets/archived')
+api.add_resource(ticket.TicketInstance,
+                 '/projects/<string:project_pk>/ticket/<string:tkt_id>')
+api.add_resource(ticket.TicketRelated,
+                 '/projects/<string:project_pk>/ticket/<string:tkt_id>/related/<string:rtkt_id>')
+api.add_resource(ticket.TicketClone,
+                 '/projects/<string:project_pk>/ticket/<string:tkt_id>/clone')
+api.add_resource(ticket.TicketComments,
+                 '/projects/<string:project_pk>/ticket/<string:tkt_id>/comments')
+api.add_resource(ticket.CommentInstance,
+                 '/projects/<string:project_pk>/ticket/<string:tkt_id>/comment/<string:comment_id>')
+api.add_resource(ticket.TicketAttachments,
+                 '/projects/<string:project_pk>/ticket/<string:tkt_id>/attachments')
+api.add_resource(ticket.AttachmentInstance,
+                 '/projects/<string:project_pk>/ticket/<string:tkt_id>/attachments/<string:att_id>/delete')
+api.add_resource(ticket.MemberTicketInstance,
+                 '/projects/<string:project_pk>/ticket/<string:tkt_id>/assignments/<string:member_id>')
+api.add_resource(ticket.TicketMovement,
+                 '/projects/<string:project_pk>/ticket/movement')
+api.add_resource(ticket.TicketTransition,
+                 '/projects/<string:project_pk>/ticket/transition')
+api.add_resource(ticket.TicketColumnOrder,
+                 '/projects/<string:project_pk>/ticket/column/<string:column>/order')
 
 # Get the current logged in user (if any)
 blueprint.before_request(auth.get_user_from_token)

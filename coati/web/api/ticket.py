@@ -16,8 +16,9 @@ from coati.utils import save_notification, send_notification_email_async
 
 
 class TicketInstance(AuthResource):
-    def __init__(self):
-        super(TicketInstance, self).__init__()
+    """
+    Ticket Resource
+    """
 
     def get(self, project_pk, tkt_id):
         return Ticket.objects.get(pk=tkt_id).to_json()

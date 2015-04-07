@@ -81,7 +81,7 @@
         };
         var getNotifications = function () {
             return UserService.notifications(10).then(function (result) {
-                preProcessNotifications(result['notifications']);
+                preProcessNotifications(result);
                 timeout(getNotifications, 30000);
             });
         };
@@ -126,7 +126,7 @@
         var getNotifications = function () {
 
             UserService.notifications().then(function (result) {
-                vm.all_notifications = result['notifications'];
+                vm.all_notifications = result;
             });
         };
 

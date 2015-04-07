@@ -13,10 +13,14 @@ def get_notifications(user):
     notifications = UserNotification.objects(user=user)
     results = []
     for n in notifications:
-        if str(n.activity.author.pk) != str(user.id):
-            results.append(json.loads(n.to_json()))
+        if n.activity.author.id != user.id:
+            val = n.to_dict()
+            val['activity'] = n.activity.to_dict()
+            val['activity']['project'] = n.activity.project.to_dict()
+            val['activity']['author'] = n.activity.author.to_dict()
+            results.append(val)
 
-    results.sort(key=lambda x: x['activity']['when']['$date'], reverse=True)
+    #results.sort(key=lambda x: x.activity.created_on, reverse=True)
     if request.args.get('total'):
         results = results[:int(request.args.get('total'))]
     return results, 200

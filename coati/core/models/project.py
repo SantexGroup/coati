@@ -35,6 +35,14 @@ class ProjectMember(db.Document):
             instances = []
         return instances
 
+    @classmethod
+    def get_by_project_member(cls, project_pk, member_id):
+        return cls.objects(project=project_pk, member=member_id).first()
+
+    @classmethod
+    def clear_ownership(cls, project_pk):
+        cls.objects(project=project_pk).update(set__is_owner=False)
+
 
 class Column(db.Document):
     title = db.StringField(max_length=100, required=True)

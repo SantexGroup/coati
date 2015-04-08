@@ -2,16 +2,15 @@ import json
 import urllib2
 import base64
 
-from flask import jsonify, g
+from flask import g
 from flask.ext.restful import request
-from mongoengine import DoesNotExist
 
 from coati.core.models.user import User
 from coati.core.models.project import Project, Column, ProjectMember
 from coati.core.models.ticket import Ticket, Attachment
 from coati.web.api.auth import AuthResource
 from coati.utils import send_new_member_email_async, save_notification
-from coati.web.api import errors as api_errors, current_app
+from coati.web.api import errors as api_errors
 from coati.web.api.auth.utils import current_user
 
 
@@ -40,7 +39,7 @@ class ProjectList(AuthResource):
         """
         data = request.get_json(silent=True)
         if not data:
-            return api_errors.InvalidAPIUsage(
+            raise api_errors.InvalidAPIUsage(
                 api_errors.INVALID_JSON_BODY_MSG
             )
 
@@ -93,7 +92,7 @@ class ProjectInstance(AuthResource):
         """
         prj = Project.get_by_id(project_pk).select_related(max_depth=2)
         if prj is None:
-            return api_errors.MissingResource(
+            raise api_errors.MissingResource(
                 api_errors.INVALID_PROJECT_MSG
             )
 
@@ -108,14 +107,14 @@ class ProjectInstance(AuthResource):
         project = Project.get_by_id(project_pk)
 
         if not project:
-            return api_errors.MissingResource(
+            raise api_errors.MissingResource(
                 api_errors.INVALID_PROJECT_MSG
             )
 
         data = request.get_json(silent=True)
 
         if not data:
-            return api_errors.InvalidAPIUsage(
+            raise api_errors.InvalidAPIUsage(
                 api_errors.INVALID_JSON_BODY_MSG
             )
 
@@ -125,7 +124,7 @@ class ProjectInstance(AuthResource):
         owner = User.get_by_id(data.get('owner_id'))
 
         if not owner:
-            return api_errors.InvalidAPIUsage(
+            raise api_errors.InvalidAPIUsage(
                 api_errors.INVALID_USER_ID_MSG
             )
 
@@ -152,7 +151,7 @@ class ProjectInstance(AuthResource):
         """
         project = Project.get_by_id(project_pk)
         if not project:
-            return api_errors.MissingResource(
+            raise api_errors.MissingResource(
                 api_errors.INVALID_PROJECT_MSG
             )
 
@@ -179,13 +178,13 @@ class ProjectColumns(AuthResource):
         """
         data = request.get_json(silent=True)
         if not data:
-            return api_errors.InvalidAPIUsage(
+            raise api_errors.InvalidAPIUsage(
                 api_errors.INVALID_JSON_BODY_MSG
             )
 
         project = Project.get_by_id(project_pk)
         if not project:
-            return api_errors.MissingResource(
+            raise api_errors.MissingResource(
                 api_errors.INVALID_PROJECT_MSG
             )
 
@@ -222,6 +221,7 @@ class ProjectColumn(AuthResource):
     def get(self, project_pk, column_pk):
         """
         Get Column Instance
+
         :param project_pk: Project that belongs
         :param column_pk: Id of the column
         :return: Object Column
@@ -232,6 +232,7 @@ class ProjectColumn(AuthResource):
     def put(self, project_pk, column_pk):
         """
         Update a column instance
+
         :param project_pk: Project that belongs
         :param column_pk: Id of the column
         :return: The updated resource
@@ -239,14 +240,14 @@ class ProjectColumn(AuthResource):
 
         col = Column.get_by_id(column_pk)
         if not col:
-            return api_errors.MissingResource(
+            raise api_errors.MissingResource(
                 api_errors.INVALID_OBJECT_ID_MSG
             )
 
         data = request.get_json(silent=True)
 
         if not data:
-            return api_errors.InvalidAPIUsage(
+            raise api_errors.InvalidAPIUsage(
                 api_errors.INVALID_JSON_BODY_MSG
             )
 
@@ -270,13 +271,14 @@ class ProjectColumn(AuthResource):
     def delete(self, project_pk, column_pk):
         """
         Delete a column resource
+
         :param project_pk: Project that belongs
         :param column_pk:Id of the column
         :return: Nothing
         """
         col = Column.get_by_id(column_pk)
         if not col:
-            return api_errors.MissingResource(
+            raise api_errors.MissingResource(
                 api_errors.INVALID_OBJECT_ID_MSG
             )
         # save activity
@@ -289,121 +291,219 @@ class ProjectColumn(AuthResource):
 
 
 class ProjectColumnsOrder(AuthResource):
-
+    """
+    Columns Order by Project
+    """
 
     def post(self, project_pk):
-        data = request.get_json(force=True, silent=True)
-        if data:
-            for index, c in enumerate(data):
-                col = Column.objects.get(pk=c, project=project_pk)
+        """
+        Update order of columns
+
+        :param project_pk: project id
+        :return: same data sent
+        """
+        data = request.get_json(silent=True)
+        if not data:
+            raise api_errors.InvalidAPIUsage(
+                api_errors.INVALID_JSON_BODY_MSG
+            )
+
+        for index, col_id in enumerate(data):
+            col = Column.get_by_id(col_id)
+            if col is not None:
                 col.order = index
                 col.save()
 
-            # save activity
-            save_notification(project_pk=project_pk,
-                              verb='order_columns',
-                              data=data)
-            return jsonify({'success': True}), 200
-        return jsonify({"error": 'Bad Request'}), 400
+        # save activity
+        save_notification(project_pk=project_pk,
+                          verb='order_columns',
+                          data=data)
+        return data, 200
 
 
 class ProjectMemberInstance(AuthResource):
-    def __init__(self):
-        super(ProjectMemberInstance, self).__init__()
+    """
+    Project Member
+    """
 
     def get(self, project_pk, member_pk):
-        return ProjectMember.objects.get(pk=member_pk).to_json()
+        """
+        Get a Single instance of a ProjectMember
+
+        :param project_pk: project ID
+        :param member_pk: ProjectMember ID
+        :return: ProjectMember object
+        """
+        pm = ProjectMember.get_by_id(member_pk)
+        if not pm:
+            raise api_errors.MissingResource(
+                api_errors.INVALID_OBJECT_ID_MSG
+            )
+        return pm.to_dict()
 
     def put(self, project_pk, member_pk):
-        try:
-            pm = ProjectMember.objects.get(pk=member_pk)
-            project = Project.objects.get(pk=project_pk)
-            pm.is_owner = True
-            project.owner = pm.member
-            ProjectMember.objects(project=project_pk).update(
-                set__is_owner=False)
-            pm.save()
-            return jsonify({'success': True}), 200
-        except DoesNotExist:
-            return jsonify({'error': 'Not Found'}), 404
+        """
+        Update ProjectMember Resource
+
+        :param project_pk: ProjectID
+        :param member_pk: Project MemberID
+        :return: ProjectMember Instance
+        """
+
+        pm = ProjectMember.get_by_id(member_pk)
+        project = Project.get_by_id(project_pk)
+
+        if not pm:
+            raise api_errors.MissingResource(
+                api_errors.INVALID_OBJECT_ID_MSG
+            )
+
+        if not project:
+            raise api_errors.MissingResource(
+                api_errors.INVALID_PROJECT_MSG
+            )
+
+        ProjectMember.clear_ownership(project_pk)
+
+        pm.is_owner = True
+        project.owner = pm.member
+        pm.save()
+        return pm.to_dict(), 200
+
 
     def delete(self, project_pk, member_pk):
-        try:
-            pm = ProjectMember.objects.get(pk=member_pk)
-            pm.delete()
-            return jsonify({'success': True}), 200
-        except DoesNotExist:
-            return jsonify({'error': 'Not Found'}), 404
+        """
+        Delete ProjectMember Resource
+
+        :param project_pk: ProjectID
+        :param member_pk: Project MemberID
+        :return: Nothing
+        """
+
+        pm = ProjectMember.get_by_id(member_pk)
+        if not pm:
+            raise api_errors.MissingResource(
+                api_errors.INVALID_OBJECT_ID_MSG
+            )
+
+        pm.delete()
+        return {}, 204
 
 
 class ProjectMembers(AuthResource):
-    def __init__(self):
-        super(ProjectMembers, self).__init__()
+    """
+    Project Members List
+    """
 
     def get(self, project_pk):
+        """
+        Return list of project members by project
+
+        :param project_pk: Project ID
+        :return: List of project members
+        """
         return ProjectMember.objects(project=project_pk).to_json()
 
     def post(self, project_pk):
-        data = request.get_json(force=True, silent=True)
-        if data:
-            project = Project.objects.get(pk=project_pk)
-            members_added = []
-            for member in data:
-                if str(project.owner.pk) != member.get('value'):
-                    exists = ProjectMember.objects(project=project_pk,
-                                                   member=member.get('value'))
-                    if exists.count() < 1:
+        """
+        Create a new Project Member
 
-                        m = ProjectMember(project=project_pk)
-                        if member.get('value'):
-                            m.member = User.objects.get(pk=member.get('value'))
+        :param project_pk: Project ID
+        :return: the created ProjectMember
+        """
 
-                        else:
-                            u = User(email=member.get('text'))
-                            u.active = False
-                            u.save()
-                            m.member = u
+        data = request.get_json(silent=True)
+        if not data:
+            raise api_errors.InvalidAPIUsage(
+                api_errors.INVALID_JSON_BODY_MSG
+            )
 
-                        m.save()
-                        # Send email notification
-                        send_new_member_email_async(m.member, project)
-                        members_added.append(m.to_dict())
-                    else:
-                        return jsonify({'success': False,
-                                        'message': 'Already added'}), 200
-            if members_added:
-                # save activity
-                save_notification(project_pk=project_pk,
-                                  verb='new_members',
-                                  data={'members': members_added})
-            return jsonify({'success': True}), 200
-        return jsonify({"error": 'Bad Request'}), 400
+        project = Project.get_by_id(project_pk)
+        if not project:
+            raise api_errors.MissingResource(
+                api_errors.INVALID_PROJECT_MSG
+            )
+
+        members_added = []
+        errors_list = []
+        for member in data:
+            if member.get('value'):
+                user = User.get_by_id(member.get('value'))
+                if not user:
+                    errors_list.append(
+                        dict(member=api_errors.INVALID_MEMBER_MSG))
+            else:
+                user = User(email=member.get('text'))
+                user.active = False
+                user.save()
+            if project.owner.id != user.id:
+                m = ProjectMember.get_by_project_member(project_pk, user)
+                if not m:
+                    m = ProjectMember(project=project_pk)
+                    m.member = user
+                    m.save()
+                    # Send email notification
+                    send_new_member_email_async(m.member, project)
+                    members_added.append(m.to_dict())
+                else:
+                    errors_list.append(dict(
+                        member=api_errors.INVALID_ALREADY_ADDED_MSG
+                    ))
+        if errors_list:
+            raise api_errors.InvalidAPIUsage(
+                api_errors.VALIDATION_ERROR_MSG,
+                payload=errors_list
+            )
+
+        if members_added:
+            # save activity
+            save_notification(project_pk=project_pk,
+                              verb='new_members',
+                              data={'members': members_added})
+        return {}, 200
 
 
 class ProjectImport(AuthResource):
-    def __init__(self):
-        super(ProjectImport, self).__init__()
+    """
+    Import Data Project
+    """
 
     def post(self, project_pk):
         """
         Import cards and columns
+
+        :param project_pk: Project ID
+        :return: List of Tickets and Columns imported
         """
-        body = json.loads(request.form.get('data'))
-        imported_file = request.files.get('file')
-        if not imported_file and not body:
-            msg = "payload must be a valid file"
-            return jsonify({"error": msg}), 400
         try:
-            project = Project.objects.get(pk=project_pk)
-        except DoesNotExist, e:
-            return jsonify({"error": 'project does not exist'}), 400
+            body = json.loads(request.form.get('data'))
+        except ValueError, e:
+            raise api_errors.InvalidAPIUsage(
+                api_errors.ERROR_PARSING_JSON_MSG
+            )
+
+        imported_file = request.files.get('file')
+
+        if not imported_file:
+            raise api_errors.InvalidAPIUsage(
+                api_errors.REQUIRED_MSG
+            )
+
+        project = Project.get_by_id(project_pk)
+        if not project:
+            raise api_errors.MissingResource(
+                api_errors.INVALID_PROJECT_MSG
+            )
 
         data = json.loads(imported_file.stream.read().decode('utf-8'),
                           encoding='UTF-8')
+
         import_args = body.get('data')
         tickets = []
-        actual_last_ticket = Ticket.objects(project=project).order_by('-number')
-        starting_number = actual_last_ticket.first().number if actual_last_ticket else 1
+        last_ticket = Ticket.get_last_ticket(project_pk)
+        starting_number = last_ticket.number if last_ticket else 1
+        amazon_url = 'https://trello-attachments.s3.amazonaws.com/'
+
         if import_args.get('include_cards'):
             for card in data.get('cards'):
                 t = Ticket()
@@ -414,7 +514,7 @@ class ProjectImport(AuthResource):
 
                 for att in card.get('attachments'):
                     location = att.get('url')
-                    if 'https://trello-attachments.s3.amazonaws.com/' in location:
+                    if amazon_url in location:
                         file_location = urllib2.urlopen(location)
                         file_data = file_location.read()
                         if file_data:
@@ -453,4 +553,4 @@ class ProjectImport(AuthResource):
                           verb='import',
                           data=data)
 
-        return jsonify({'success': True}), 200
+        return [tickets, columns], 200

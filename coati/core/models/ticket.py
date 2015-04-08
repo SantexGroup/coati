@@ -29,6 +29,10 @@ class Ticket(db.Document):
     closed = db.BooleanField(default=False)
     related_tickets = db.ListField(db.ReferenceField('TicketDependency'))
 
+    @classmethod
+    def get_last_ticket(cls, project_pk):
+        return cls.objects(project=project_pk).order_by('-number').first()
+
 
 DEPENDENCY_TYPE = (('B', 'Blocked'),
                    ('BB', 'Blocked By'),

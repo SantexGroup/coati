@@ -6,7 +6,7 @@ PROJECT_TYPE = (('S', 'Scrum'),
                 ('K', 'Kanban'))
 
 
-class Project(db.Document):
+class Project(db.BaseDocument):
     name = db.StringField(required=True, unique_with='owner')
     description = db.StringField()
     active = db.BooleanField(default=True)
@@ -22,7 +22,7 @@ class Project(db.Document):
     }
 
 
-class ProjectMember(db.Document):
+class ProjectMember(db.BaseDocument):
     member = db.ReferenceField('User', reverse_delete_rule=db.CASCADE)
     project = db.ReferenceField('Project', reverse_delete_rule=db.CASCADE)
     is_owner = db.BooleanField(default=False)
@@ -44,7 +44,7 @@ class ProjectMember(db.Document):
         cls.objects(project=project_pk).update(set__is_owner=False)
 
 
-class Column(db.Document):
+class Column(db.BaseDocument):
     title = db.StringField(max_length=100, required=True)
     max_cards = db.IntField(default=9999)
     color_max_cards = db.StringField(default='#FF0000')

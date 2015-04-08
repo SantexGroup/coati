@@ -99,4 +99,4 @@ class BaseDocument(db.Document):
 
         return json_util.dumps(data)
 
-db.Document = BaseDocument
+db.BaseDocument = BaseDocument

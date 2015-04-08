@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from coati.core import db, utils
 
 
-class User(db.Document):
+class User(db.BaseDocument):
     email = db.StringField(required=True)
     password = db.StringField(required=False)
     first_name = db.StringField(max_length=50)

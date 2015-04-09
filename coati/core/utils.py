@@ -20,13 +20,6 @@ PASSWORD_ERROR_MSG = 'Password must be at least {} characters long'.format(
     PASS_MIN_LEN
 )
 INVALID_EMAIL_MSG = 'Invalid email address'
-DUP_EMAIL_ERROR_MSG = 'That email already exists'
-DUP_EMAIL_IN_PAYLOAD_MSG = 'Duplicated emails in payload'
-DUP_NICKNAME_ERROR_MSG = 'That nickname already exists'
-DUP_NICKNAME_IN_PAYLOAD_MSG = 'Duplicated nicknames in payload'
-INVALID_SERIAL_NUMBER_MSG = 'Invalid serial number'
-SERIAL_ALREADY_ACTIVE_MSG = 'Serial already active'
-
 
 def utcnow():
     """

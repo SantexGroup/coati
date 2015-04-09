@@ -18,10 +18,33 @@ class Sprint(db.BaseDocument):
     @classmethod
     def get_by_project(cls, project_pk):
         try:
-            instances = cls.objects(project=project_pk)
+            instances = cls.objects(project=project_pk).order_by('order')
         except cls.DoesNotExtis:
             instances = []
         return instances
+
+    @classmethod
+    def get_by_project_not_finalized(cls, project_pk):
+        try:
+            instances = cls.objects(project=project_pk,
+                                    finalized=False).order_by('order')
+        except cls.DoesNotExtis:
+            instances = []
+        return instances
+
+    @classmethod
+    def get_active_sprint(cls, project_pk):
+        try:
+            instance = cls.objects.get(project=project_pk,
+                                       started=True,
+                                       finalized=False)
+        except cls.DoesNotExtis:
+            instance = None
+        return instance
+
+    @classmethod
+    def get_archived_sprints(cls, project_pk):
+        return cls.objects(project=project_pk, finalized=True).order_by('order')
 
 
 class SprintTicketOrder(db.BaseDocument):
@@ -65,12 +88,28 @@ class SprintTicketOrder(db.BaseDocument):
 
     @classmethod
     def inactivate_spo(cls, sprint_pk, ticket_pk):
-        try:
-            spo = cls.objects(sprint=sprint_pk, ticket=ticket_pk, active=True)
-            spo.active = False
-            spo.save()
-        except cls.DoesNotExits:
-            pass
+        cls.objects(sprint=sprint_pk,
+                    ticket=ticket_pk,
+                    active=True).update_one(set__active=False)
+
+    @classmethod
+    def list_spo(cls, sprint_pk, tickets_ids):
+        return cls.objects(ticket__nin=tickets_ids,
+                           sprint=sprint_pk,
+                           active=True)
+
+    @classmethod
+    def inactivate_list_spo(cls, sprint_pk, tickets_ids):
+        cls.list_spo(sprint_pk, tickets_ids).update(set__active=False)
+
+
+    @classmethod
+    def order_items(cls, ordered_ids, sprint):
+        for index, s in enumerate(ordered_ids):
+            item = cls.get_active_sprint_ticket(sprint, s)
+            if item:
+                item.order = index
+                item.save()
 
 
 class TicketColumnTransition(db.BaseDocument):
@@ -94,5 +133,20 @@ class TicketColumnTransition(db.BaseDocument):
         return cls.objects(column__in=columns_ids, latest_state=True)
 
     @classmethod
+    def get_transitions_for_sprint(cls, sprint):
+        return cls.objects(sprint=sprint, latest_state=True)
+
+    @classmethod
     def get_next_order_index(cls, col):
         return cls.objects(column=col).count()
+
+    @classmethod
+    def order_items(cls, ordered_ids, sprint=None, **kwargs):
+        for index, s in enumerate(ordered_ids):
+            item = cls.get_latest_transition(ticket_pk=s,
+                                             sprint=sprint,
+                                             **kwargs)
+            if item:
+                item.order = index
+                item.save()
+

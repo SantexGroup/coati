@@ -5,7 +5,7 @@ from flask.ext.restful import request
 
 from coati.web.api.auth import AuthResource
 from coati.core.models.user import User
-from coati.core.models.project import Project, ProjectMember, Column
+from coati.core.models.project import ProjectMember, Column
 from coati.core.models.ticket import (Ticket, TicketDependency, Attachment,
                                       Comment)
 from coati.core.models.sprint import (Sprint, SprintTicketOrder,
@@ -13,6 +13,22 @@ from coati.core.models.sprint import (Sprint, SprintTicketOrder,
 from coati.utils import save_notification, send_notification_email_async
 from coati.web.api import errors as api_errors
 from coati.web.api.auth.utils import current_user
+from coati.web.api.project import get_project_request
+from coati.web.api.sprint import get_sprint_request
+
+
+def get_ticket_request(ticket_id):
+    """
+    Get Ticket from the url
+    :param ticket_id: Ticket ID
+    :return: Ticket Object
+    """
+    tkt = Ticket.get_by_id(ticket_id)
+    if tkt is None:
+        raise api_errors.MissingResource(
+            api_errors.INVALID_TICKET_MSG
+        )
+    return tkt
 
 
 class TicketInstance(AuthResource):
@@ -27,12 +43,8 @@ class TicketInstance(AuthResource):
         :param tkt_id: Ticket ID
         :return: Ticket Resource
         """
-        tkt = Ticket.get_by_id(tkt_id)
-        if not tkt:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_OBJECT_ID_MSG
-            )
-
+        get_project_request(project_pk)
+        tkt = get_ticket_request(tkt_id)
         return tkt.to_dict()
 
     def put(self, project_pk, tkt_id):
@@ -42,12 +54,8 @@ class TicketInstance(AuthResource):
         :param tkt_id: Ticket ID
         :return: updated Ticket Resource
         """
-        tkt = Ticket.get_by_id(tkt_id)
-        if not tkt:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_OBJECT_ID_MSG
-            )
-
+        get_project_request(project_pk)
+        tkt = get_ticket_request(tkt_id)
         data = request.get_json(silent=True)
 
         if not data:
@@ -105,11 +113,8 @@ class TicketInstance(AuthResource):
         :param tkt_id:  Ticket ID
         :return: Nothing
         """
-        tkt = Ticket.get_by_id(tkt_id)
-        if not tkt:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_OBJECT_ID_MSG
-            )
+        get_project_request(project_pk)
+        tkt = get_ticket_request(tkt_id)
         # save activity
         save_notification(project_pk=project_pk,
                           verb='delete_ticket',
@@ -124,11 +129,12 @@ class TicketProjectList(AuthResource):
     """
 
     def get(self, project_pk):
-        prj = Project.get_by_id(project_pk)
-        if not prj:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_PROJECT_MSG
-            )
+        """
+        Get Tickets for a Project
+        :param project_pk: Project ID
+        :return: List of tickets
+        """
+        prj = get_project_request(project_pk)
 
         tickets = []
         sprints = Sprint.get_by_project(prj)
@@ -152,11 +158,7 @@ class TicketProjectList(AuthResource):
                 api_errors.INVALID_JSON_BODY_MSG
             )
 
-        project = Project.get_by_id(project_pk)
-        if not project:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_PROJECT_MSG
-            )
+        project = get_project_request(project_pk)
 
         tkt = Ticket()
 
@@ -197,17 +199,14 @@ class TicketOrderProject(AuthResource):
         """
         Update Order
         """
+        get_project_request(project_pk)
         data = request.get_json(silent=True)
         if not data:
             raise api_errors.InvalidAPIUsage(
                 api_errors.INVALID_JSON_BODY_MSG
             )
 
-        for index, tkt_id in enumerate(data):
-            tkt_order = Ticket.get_by_id(tkt_id)
-            if tkt_order:
-                tkt_order.order = index
-                tkt_order.save()
+        Ticket.order_items(data)
 
         # save activity
         save_notification(project_pk=project_pk,
@@ -230,6 +229,7 @@ class TicketOrderSprint(AuthResource):
         :param sprint_pk: Sprint ID
         :return: Order
         """
+        get_project_request(project_pk)
         data = request.get_json(silent=True)
 
         if not data:
@@ -237,18 +237,9 @@ class TicketOrderSprint(AuthResource):
                 api_errors.INVALID_JSON_BODY_MSG
             )
 
-        sprint = Sprint.get_by_id(sprint_pk)
-        if not sprint:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_OBJECT_ID_MSG
-            )
+        sprint = get_sprint_request(sprint_pk)
 
-        for index, tkt_id in enumerate(data):
-            tkt_order = SprintTicketOrder.get_active_sprint_ticket(sprint,
-                                                                   tkt_id)
-            if tkt_order:
-                tkt_order.order = index
-                tkt_order.save()
+        SprintTicketOrder.order_items(data, sprint)
         # save activity
         save_notification(project_pk=project_pk,
                           verb='sprint_ticket_order',
@@ -268,6 +259,7 @@ class TicketMovement(AuthResource):
         :param project_pk: Project ID
         :return:
         """
+        get_project_request(project_pk)
         data = request.get_json(silent=True)
         if not data:
             raise api_errors.InvalidAPIUsage(
@@ -285,85 +277,36 @@ class TicketMovement(AuthResource):
                 }
             )
 
+        remove_from_sprint = False
+        sprint_id = None
+        ticket_id = None
+
         if source.get('project_id'):
-            # From project to sprint
-            sprint = Sprint.get_by_id(destiny.get('sprint_id'))
-            if not sprint:
-                raise api_errors.MissingResource(
-                    api_errors.INVALID_OBJECT_ID_MSG
-                )
-
-            ticket = Ticket.get_by_id(source.get('ticket_id'))
-            if not ticket:
-                raise api_errors.MissingResource(
-                    api_errors.INVALID_OBJECT_ID_MSG
-                )
-
-            tkt_ord_sprint = SprintTicketOrder()
-            tkt_ord_sprint.sprint = sprint
-            tkt_ord_sprint.ticket = ticket
-            tkt_ord_sprint.ticket_repr = ticket.to_dict()
-            tkt_ord_sprint.save()
-
-            for index, tkt_id in enumerate(destiny.get('order')):
-
-                tkt_order = SprintTicketOrder.get_active_sprint_ticket(sprint,
-                                                                       tkt_id)
-                if tkt_order:
-                    tkt_order.order = index
-                    tkt_order.save()
-
+            sprint_id = destiny.get('sprint_id')
+            ticket_id = source.get('ticket_id')
         elif source.get('sprint_id') and destiny.get('sprint_id'):
-            # From sprint to sprint
-            sprint = Sprint.get_by_id(destiny.get('sprint_id'))
-            if not sprint:
-                raise api_errors.MissingResource(
-                    api_errors.INVALID_OBJECT_ID_MSG
-                )
+            sprint_id = destiny.get('sprint_id')
+            ticket_id = source.get('ticket_id')
+        elif source.get('sprint_id') and destiny.get('project_id'):
+            sprint_id = source.get('sprint_id')
+            ticket_id = source.get('ticket_id')
+            remove_from_sprint = True
 
-            ticket = Ticket.get_by_id(source.get('ticket_id'))
-            if not ticket:
-                raise api_errors.MissingResource(
-                    api_errors.INVALID_OBJECT_ID_MSG
-                )
+        sprint = get_sprint_request(sprint_id)
+        ticket = get_ticket_request(ticket_id)
 
+        if remove_from_sprint:
+            SprintTicketOrder.inactivate_spo(sprint, ticket)
+            Ticket.order_items(destiny.get('order'))
+        else:
             tkt_ord_sprint = SprintTicketOrder()
             tkt_ord_sprint.sprint = sprint
             tkt_ord_sprint.ticket = ticket
             tkt_ord_sprint.ticket_repr = ticket.to_dict()
             tkt_ord_sprint.save()
 
-            for index, tkt_id in enumerate(destiny.get('order')):
-
-                tkt_order = SprintTicketOrder.get_active_sprint_ticket(sprint,
-                                                                       tkt_id)
-                if tkt_order:
-                    tkt_order.order = index
-                    tkt_order.save()
-
+            SprintTicketOrder.order_items(destiny.get('order'), sprint)
             SprintTicketOrder.inactivate_spo(sprint, ticket)
-
-        elif source.get('sprint_id') and destiny.get('project_id'):
-            # From sprint to backlog
-            sprint = Sprint.get_by_id(source.get('sprint_id'))
-            if not sprint:
-                raise api_errors.MissingResource(
-                    api_errors.INVALID_OBJECT_ID_MSG
-                )
-
-            ticket = Ticket.get_by_id(source.get('ticket_id'))
-            if not ticket:
-                raise api_errors.MissingResource(
-                    api_errors.INVALID_OBJECT_ID_MSG
-                )
-
-            SprintTicketOrder.inactivate_spo(sprint, ticket)
-
-            for index, tkt_id in enumerate(destiny.get('order')):
-                tkt_order = Ticket.get_by_id(tkt_id)
-                if tkt_order:
-                    tkt_order.order = index
-                    tkt_order.save()
 
         # save activity
         save_notification(project_pk=project_pk,
@@ -381,43 +324,34 @@ class TicketTransition(AuthResource):
     def post(self, project_pk):
         """
         Move Ticket to Column or Backlog
-        :param project_pk:
-        :return:
+        :param project_pk: Project ID
+        :return: Ticket Transition
         """
+        project = get_project_request(project_pk)
+
         data = request.get_json(silent=True)
         if not data:
             raise api_errors.InvalidAPIUsage(
                 api_errors.INVALID_JSON_BODY_MSG
             )
 
-        project = Project.get_by_id(project_pk)
-        if not project:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_PROJECT_MSG
-            )
-        tkt = Ticket.get_by_id(data.get('ticket'))
-        if not tkt:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_PROJECT_MSG
-            )
+        tkt = get_ticket_request(data.get('ticket'))
 
+        result = {}
         if data.get('backlog'):
             latest_tran = TicketCT.get_latest_transition(tkt)
             if latest_tran:
                 latest_tran.latest_state = False
                 latest_tran.save()
 
-            for index, s in enumerate(data.get('order')):
-                sto = SprintTicketOrder.get_active_sprint_ticket(
-                    data.get('backlog'),
-                    tkt)
-                if sto:
-                    sto.order = index
-                    sto.save()
+            SprintTicketOrder.order_items(data.get('order'),
+                                          data.get('backlog'))
             # save activity
             save_notification(project_pk=project_pk,
                               verb='ticket_transition',
                               data=data)
+
+            result = latest_tran.to_json(), 200
 
         else:
             # Search already state
@@ -425,13 +359,13 @@ class TicketTransition(AuthResource):
 
             if not col:
                 raise api_errors.MissingResource(
-                    api_errors.INVALID_OBJECT_ID_MSG
+                    api_errors.INVALID_COLUMN_MSG
                 )
 
             user = User.get_by_id(current_user.id)
             if not user:
                 raise api_errors.MissingResource(
-                    api_errors.INVALID_USER_MSG
+                    api_errors.INVALID_USER_ID_MSG
                 )
 
             transition = TicketCT()
@@ -440,12 +374,7 @@ class TicketTransition(AuthResource):
             transition.order = TicketCT.get_next_order_index(col)
 
             if project.project_type == 'S':
-                sp = data.get('sprint')
-                sprint = Sprint.get_by_id(sp)
-                if not sprint:
-                    raise api_errors.MissingResource(
-                        api_errors.INVALID_OBJECT_ID_MSG
-                    )
+                sprint = get_sprint_request(data.get('sprint'))
                 latest_tran = TicketCT.get_latest_transition(tkt, sprint)
 
                 transition.sprint = sprint
@@ -460,26 +389,20 @@ class TicketTransition(AuthResource):
             transition.who = user
             transition.save()
 
-            # execute order
-            for index, tkt_id in enumerate(data.get('order')):
-
-                if project.project_type == 'S':
-                    tkt_trans_order = TicketCT.get_latest_transition(tkt_id,
-                                                                     sprint=sp,
-                                                                     column=col)
-                else:
-                    tkt_trans_order = TicketCT.get_latest_transition(tkt_id,
-                                                                     column=col)
-                if tkt_trans_order:
-                    tkt_trans_order.order = index
-                    tkt_trans_order.save()
+            if project.project_type == 'S':
+                sprint = get_sprint_request(data.get('sprint'))
+                TicketCT.order_items(data.get('order'),
+                                     sprint=sprint, column=col)
+            else:
+                TicketCT.order_items(data.get('order'), column=col)
 
             # save activity
             save_notification(project_pk=project_pk,
                               verb='ticket_transition',
                               data=transition.to_dict())
 
-            return transition.to_json(), 201
+            result = transition.to_json(), 201
+        return result
 
 
 class TicketColumnOrder(AuthResource):
@@ -501,32 +424,19 @@ class TicketColumnOrder(AuthResource):
                 api_errors.INVALID_JSON_BODY_MSG
             )
 
-        project = Project.get_by_id(project_pk)
-        if not project:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_PROJECT_MSG
-            )
+        project = get_project_request(project_pk)
 
         col = Column.get_by_id(column)
         if not col:
             raise api_errors.MissingResource(
-                api_errors.INVALID_OBJECT_ID_MSG
+                api_errors.INVALID_COLUMN_MSG
             )
 
         if project.project_type == 'S':
-            sprint = Sprint.get_by_id(data.get('sprint'))
-            if not sprint:
-                raise api_errors.MissingResource(
-                    api_errors.INVALID_OBJECT_ID_MSG
-                )
-        # execute order
-        for index, tkt_id in enumerate(data.get('order')):
-            if sprint:
-                tkt_trans_order = TicketCT.get_latest_transition(tkt_id, sprint)
-            else:
-                tkt_trans_order = TicketCT.get_latest_transition(tkt_id)
-            tkt_trans_order.order = index
-            tkt_trans_order.save()
+            sprint = get_sprint_request(data.get('sprint'))
+            TicketCT.order_items(data.get('order'), sprint=sprint)
+        else:
+            TicketCT.order_items(data.get('order'))
 
         # save activity
         save_notification(project_pk=project_pk,
@@ -549,10 +459,14 @@ class CommentInstance(AuthResource):
         :param comment_id: Comment ID
         :return:
         """
+        get_project_request(project_pk)
+
+        tkt = get_ticket_request(tkt_id)
+
         comment = Comment.get_by_id(comment_id)
         if not comment:
             api_errors.MissingResource(
-                api_errors.INVALID_OBJECT_ID_MSG
+                api_errors.INVALID_COMMENT_MSG
             )
 
         return comment.to_json()
@@ -565,10 +479,13 @@ class CommentInstance(AuthResource):
         :param comment_id: Comment ID
         :return: Updated Comment
         """
+        get_project_request(project_pk)
+        get_ticket_request(tkt_id)
+
         comment = Comment.get_by_id(comment_id)
         if not comment:
             raise api_errors.MissingResource(
-                api_errors.INVALID_OBJECT_ID_MSG
+                api_errors.INVALID_COMMENT_MSG
             )
 
         data = request.get_json(silent=True)
@@ -600,10 +517,13 @@ class CommentInstance(AuthResource):
         :param comment_id: Comment ID
         :return: Nothing
         """
+        get_project_request(project_pk)
+        get_ticket_request(tkt_id)
+
         comment = Comment.get_by_id(comment_id)
         if not comment:
             raise api_errors.MissingResource(
-                api_errors.INVALID_OBJECT_ID_MSG
+                api_errors.INVALID_COMMENT_MSG
             )
 
         if comment.who.id != current_user.id:
@@ -633,6 +553,8 @@ class TicketComments(AuthResource):
         :param tkt_id:
         :return:
         """
+        get_project_request(project_pk)
+        get_ticket_request(tkt_id)
         return Comment.get_by_ticket(tkt_id).to_json()
 
     def post(self, project_pk, tkt_id):
@@ -642,6 +564,8 @@ class TicketComments(AuthResource):
         :param tkt_id: Ticket ID
         :return: Created Comment
         """
+        get_project_request(project_pk)
+        get_ticket_request(tkt_id)
         data = request.get_json(silent=True)
         if not data:
             raise api_errors.InvalidAPIUsage(
@@ -691,6 +615,7 @@ class TicketAttachments(AuthResource):
         :param tkt_id: Ticket ID
         :return: Created Attachment
         """
+        get_project_request(project_pk)
         file_item = request.files.get('file')
         if not file_item:
             raise api_errors.InvalidAPIUsage(
@@ -702,7 +627,7 @@ class TicketAttachments(AuthResource):
                 payload=dict(data=api_errors.REQUIRED_MSG)
             )
 
-        ticket = Ticket.get_by_id(tkt_id)
+        ticket = get_ticket_request(tkt_id)
 
         att = Attachment()
         att.name = data.get('name')
@@ -734,10 +659,12 @@ class AttachmentInstance(AuthResource):
         :param att_id: Attachment ID
         :return: Attachment
         """
+        get_project_request(project_pk)
+        get_ticket_request(tkt_id)
         att = Attachment.get_by_id(att_id)
         if not att:
             raise api_errors.MissingResource(
-                api_errors.INVALID_OBJECT_ID_MSG
+                api_errors.INVALID_ATTACHMENT_MSG
             )
         return att.to_json()
 
@@ -749,18 +676,10 @@ class AttachmentInstance(AuthResource):
         :param att_id: Attachment ID
         :return: Nothing
         """
+        get_project_request(project_pk)
         att = Attachment.get_by_id(att_id)
-        tkt = Ticket.get_by_id(pk=tkt_id)
-        if not att:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_OBJECT_ID_MSG
-            )
-        if not tkt:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_OBJECT_ID_MSG
-            )
-
-        Ticket.remove_attachment(tkt_id, att)
+        tkt = get_ticket_request(tkt_id)
+        Ticket.remove_attachment(tkt, att)
 
         # save activity
         save_notification(project_pk=project_pk,
@@ -785,21 +704,18 @@ class MemberTicketInstance(AuthResource):
         :param member_id: Member ID
         :return: Ticket Object
         """
-
-        tkt = Ticket.get_by_id(tkt_id)
-        if not tkt:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_OBJECT_ID_MSG
-            )
-
+        get_project_request(project_pk)
+        tkt = get_ticket_request(tkt_id)
         pm = ProjectMember.get_by_id(pm_id)
         if not pm:
             raise api_errors.MissingResource(
-                api_errors.INVALID_OBJECT_ID_MSG
+                api_errors.INVALID_PROJECT_MEMBER_MSG
             )
 
         if pm in tkt.assigned_to:
-            raise api_errors.InvalidAPIUsage()
+            raise api_errors.InvalidAPIUsage(
+                api_errors.INVALID_ALREADY_ADDED_MSG
+            )
 
         tkt.assigned_to.append(pm)
         tkt.save()
@@ -819,17 +735,13 @@ class MemberTicketInstance(AuthResource):
         :param member_id: ProjectMember ID
         :return: Nothing
         """
-
-        tkt = Ticket.get_by_id(tkt_id)
-        if not tkt:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_OBJECT_ID_MSG
-            )
+        get_project_request(project_pk)
+        tkt = get_ticket_request(tkt_id)
 
         pm = ProjectMember.get_by_id(pm_id)
         if not pm:
             raise api_errors.MissingResource(
-                api_errors.INVALID_OBJECT_ID_MSG
+                api_errors.INVALID_PROJECT_MEMBER_MSG
             )
 
         Ticket.remove_member(tkt, pm)
@@ -872,12 +784,7 @@ class TicketSearchRelated(AuthResource):
         :param query: text to search
         :return: List of matched tickets
         """
-        prj = Project.get_by_id(project_pk)
-        if not prj:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_PROJECT_MSG
-            )
-
+        prj = get_project_request(project_pk)
         tickets = Ticket.search(query, [str(prj.pk)])
         results = []
         for tkt in tickets:
@@ -901,7 +808,8 @@ class TicketClosed(AuthResource):
         :param project_pk: Project ID
         :return: List of tickets closed
         """
-        return Ticket.get_closed_tickets(project_pk).to_json()
+        prj = get_project_request(project_pk)
+        return Ticket.get_closed_tickets(prj).to_json()
 
 
 class TicketBoardProject(AuthResource):
@@ -919,11 +827,7 @@ class TicketBoardProject(AuthResource):
         tickets = []
         col_ids = []
 
-        prj = Project.get_by_id(project_pk)
-        if not prj:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_PROJECT_MSG
-            )
+        prj = get_project_request(project_pk)
 
         column_list = Column.get_by_project(prj)
         for c in column_list:
@@ -950,10 +854,13 @@ class TicketRelated(AuthResource):
         :param rtkt_id: Related Ticket ID
         :return:
         """
+        get_project_request(project_pk)
+        get_ticket_request(tkt_id)
+
         rtkt = TicketDependency.get_by_id(rtkt_id)
         if not rtkt:
             raise api_errors.MissingResource(
-                api_errors.INVALID_OBJECT_ID_MSG
+                api_errors.INVALID_TICKET_MSG
             )
 
         Ticket.remove_related_ticket(tkt_id, rtkt)
@@ -972,17 +879,8 @@ class TicketClone(AuthResource):
         :param tkt_id:
         :return:
         """
-        tkt = Ticket.get_by_id(tkt_id)
-        if not tkt:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_OBJECT_ID_MSG
-            )
-
-        prj = Project.get_by_id(project_pk)
-        if not prj:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_PROJECT_MSG
-            )
+        prj = get_project_request(project_pk)
+        tkt = get_ticket_request(tkt_id)
 
         new_tkt = tkt.clone()
         last_tkt = Ticket.get_last_ticket(prj)

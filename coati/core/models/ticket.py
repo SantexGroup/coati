@@ -68,6 +68,10 @@ class Ticket(db.BaseDocument):
     def get_closed_tickets(cls, project_pk):
         return cls.objects(project=project_pk, closed=True)
 
+    @classmethod
+    def close_tickets(cls, tickets_ids):
+        cls.objects(pk__in=tickets_ids).update(set__closed=True)
+
 
 DEPENDENCY_TYPE = (('B', 'Blocked'),
                    ('BB', 'Blocked By'),
@@ -92,4 +96,4 @@ class Comment(db.BaseDocument):
 
     @classmethod
     def get_by_ticket(cls, ticket_pk):
-        return cls.objects(ticket=ticket_pk).order_by('-when')
+        return cls.objects(ticket=ticket_pk).order_by('-created_on')

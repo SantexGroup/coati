@@ -68,12 +68,12 @@ class BaseDocument(db.Document):
 
     @classmethod
     def order_items(cls, ordered_ids):
-
-        for index, s in enumerate(ordered_ids):
-            item = cls.get_by_id(s)
-            if item:
-                item.order = index
-                item.save()
+        if 'order' in cls._fields:
+            for index, s in enumerate(ordered_ids):
+                item = cls.get_by_id(s)
+                if item:
+                    item.order = index
+                    item.save()
 
     @classmethod
     def get_by_id(cls, obj_id):

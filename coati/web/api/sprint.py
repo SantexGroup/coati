@@ -3,55 +3,72 @@ from datetime import timedelta, datetime
 
 from dateutil import parser
 from flask import jsonify, request
-from mongoengine import DoesNotExist
 
 from coati.core.models.sprint import (Sprint, SprintTicketOrder,
                                       TicketColumnTransition as TicketCT)
-from coati.core.models.project import Project, Column
-from coati.core.models.ticket import Ticket
+from coati.core.models.project import Column
+from coati.core.models.ticket import Ticket, Comment
+from coati.web.api import errors as api_errors
 from coati.web.api.auth import AuthResource
 from coati.utils import save_notification
+from coati.web.api.project import get_project_request
+
+
+def get_sprint_request(sprint_id):
+    sprint = Sprint.get_by_id(sprint_id)
+    if not sprint:
+        raise api_errors.MissingResource(
+            api_errors.INVALID_SPRINT_MSG
+        )
 
 
 class SprintOrder(AuthResource):
-    def __init__(self):
-        super(SprintOrder, self).__init__()
+    """
+    Order Sprints in a Project
+    """
 
     def post(self, project_pk):
-        data = request.get_json(force=True, silent=True)
-        if data:
-            Sprint.order_()
-            for index, s in enumerate(data):
-                sprint = Sprint.objects.get(pk=s)
-                sprint.order = index
-                sprint.save()
-            # save activity
-            save_notification(project_pk=project_pk,
-                              verb='order_sprints',
-                              data=data)
+        """
+        Order sprints in a project
 
-            return jsonify({'success': True}), 200
-        return jsonify({"error": 'Bad Request'}), 400
+        :param project_pk: Project ID
+        :return: Order
+        """
+        data = request.get_json(silent=True)
+        if not data:
+            raise api_errors.InvalidAPIUsage(
+                api_errors.INVALID_JSON_BODY_MSG
+            )
+
+        Sprint.order_items(data)
+        # save activity
+        save_notification(project_pk=project_pk,
+                          verb='order_sprints',
+                          data=data)
+        return data, 200
 
 
 class SprintList(AuthResource):
-    def __init__(self):
-        super(SprintList, self).__init__()
+    """
+    Get List of Sprints
+    """
 
     def get(self, project_pk):
-        return Sprint.objects(project=project_pk, finalized=False).order_by(
-            'order').to_json()
+        """
+        Get List of Sprints by Project
+        :param project_pk: Project ID
+        :return:
+        """
+        prj = get_project_request(project_pk)
+        return Sprint.get_by_project_not_finalized(prj).to_json(), 200
 
     def post(self, project_pk):
         """
-        Create Sprint
+        Create a Sprint for a Project
         """
-        try:
-            project = Project.objects.get(id=project_pk)
-        except DoesNotExist, e:
-            return jsonify({"error": 'project does not exist'}), 400
-        total = Sprint.objects(project=project_pk).count()
-        sp = Sprint(project=project.to_dbref())
+        project = get_project_request(project_pk)
+        total = Sprint.objects(project=project).count()
+        sp = Sprint(project=project)
         sp.name = 'Sprint %d' % (total + 1)
         sp.save()
 
@@ -59,73 +76,99 @@ class SprintList(AuthResource):
         save_notification(project_pk=project_pk,
                           verb='new_sprint',
                           data=sp.to_dict())
+
         return sp.to_json(), 201
 
 
 class SprintInstance(AuthResource):
-    def __init__(self):
-        super(SprintInstance, self).__init__()
+    """
+    Sprint Resource Instance
+    """
 
     def get(self, project_pk, sp_id):
-        sp = Sprint.objects.get(pk=sp_id)
+        """
+        Get a Sprint Instance
+        :param project_pk: Project ID
+        :param sp_id: Sprint ID
+        :return: Sprint Object
+        """
+        get_project_request(project_pk)
+        sp = get_sprint_request(sp_id)
         return sp.to_json(), 200
 
     def put(self, project_pk, sp_id):
-        data = request.get_json(force=True, silent=True)
-        if data:
-            sp = Sprint.objects.get(pk=sp_id)
-            sp.name = data.get('name', sp.name)
+        """
+        Update a Sprint
+        :param project_pk:
+        :param sp_id:
+        :return:
+        """
+        get_project_request(project_pk)
+        data = request.get_json(silent=True)
+        if not data:
+            raise api_errors.InvalidAPIUsage(
+                api_errors.INVALID_JSON_BODY_MSG
+            )
 
-            if data.get('for_starting'):
+        sp = get_sprint_request(sp_id)
+        sp.name = data.get('name', sp.name)
 
-                # sum all the ticket for the initial planning value
-                sto = SprintTicketOrder.objects(sprint=sp, active=True)
-                total_planned_points = 0
+        if data.get('for_starting'):
+            # sum all the ticket for the initial planning value
+            sto = SprintTicketOrder.get_active_sprint(sp)
+            total_planned_points = 0
+            if sto:
+                # get the sum of points
                 for s in sto:
                     total_planned_points += s.ticket.points
 
-                sp.total_points_when_started = total_planned_points
+            sp.total_points_when_started = total_planned_points
 
-                sp.start_date = parser.parse(
-                    data.get('start_date'))
-                sp.end_date = parser.parse(data.get('end_date'))
-                sp.started = True
-            elif data.get('for_finalized'):
-                sp.finalized = True
-                tt = TicketCT.objects(sprint=sp,
-                                      latest_state=True)
-                finished_tickets = []
-                tickets_to_close_id = []
-                for t in tt:
-                    if t.column.done_column:
-                        finished_tickets.append(t.ticket)
-                        tickets_to_close_id.append(str(t.ticket.pk))
+            sp.start_date = parser.parse(data.get('start_date'))
+            sp.end_date = parser.parse(data.get('end_date'))
+            sp.started = True
 
-                all_not_finised = SprintTicketOrder.objects(
-                    ticket__nin=finished_tickets,
-                    sprint=sp,
-                    active=True)
-                all_not_finised.update(set__active=False)
+        elif data.get('for_finalized'):
+            # Mark as finalized
+            sp.finalized = True
 
-                Ticket.objects(pk__in=tickets_to_close_id).update(
-                    set__closed=True)
-            elif data.get('for_editing'):
-                sp.start_date = parser.parse(data.get('start_date'))
-                sp.end_date = parser.parse(data.get('end_date'))
-            sp.save()
+            # Get tickets in Done column
+            finished_tickets = []
+            tickets_to_close_id = []
+            tt = TicketCT.get_transitions_for_sprint(sp)
 
-            # save activity
-            save_notification(project_pk=project_pk,
-                              verb='update_sprint',
-                              data=sp.to_dict())
+            for t in tt:
+                if t.column.done_column:
+                    finished_tickets.append(t.ticket)
+                    tickets_to_close_id.append(str(t.ticket.pk))
 
-            return sp.to_json(), 200
+            # Deactivate Tickets
+            SprintTicketOrder.inactivate_list_spo(sp, finished_tickets)
+            # Close Tickets
+            Ticket.close_tickets(tickets_to_close_id)
 
-        return jsonify({"error": 'Bad Request'}), 400
+        elif data.get('for_editing'):
+            sp.start_date = parser.parse(data.get('start_date'))
+            sp.end_date = parser.parse(data.get('end_date'))
+
+        sp.save()
+
+        # save activity
+        save_notification(project_pk=project_pk,
+                          verb='update_sprint',
+                          data=sp.to_dict())
+
+        return sp.to_json(), 200
 
     def delete(self, project_pk, sp_id):
-        sp = Sprint.objects.get(pk=sp_id)
-
+        """
+        Delete Sprint
+        :param project_pk: Project ID
+        :param sp_id: Sprint ID
+        :return: Nothing
+        """
+        get_project_request(project_pk)
+        sp = get_sprint_request(sp_id)
         # save activity
         save_notification(project_pk=project_pk,
                           verb='delete_sprint',
@@ -133,42 +176,81 @@ class SprintInstance(AuthResource):
 
         sp.delete()
 
-        return sp.to_json(), 204
+        return {}, 204
 
 
 class SprintActive(AuthResource):
-    def __init__(self):
-        super(SprintActive, self).__init__()
+    """
+    Active Sprint
+    """
 
     def get(self, project_pk):
-        sprints = Sprint.objects(project=project_pk,
-                                 started=True,
-                                 finalized=False)
-        sprint = None
-        if sprints:
-            sprint = sprints[0]
-        if sprint:
-            return sprint.to_json(), 200
-        return jsonify({'started': False}), 200
+        """
+        Get Active Sprint by Project
+        :param project_pk: ProjectID
+        :return: Sprint Object
+        """
+        prj = get_project_request(project_pk)
+        sprint = Sprint.get_active_sprint(prj)
+        return sprint.to_json(), 200
 
 
 class SprintTickets(AuthResource):
-    def __init__(self):
-        super(SprintTickets, self).__init__()
+    """
+    Get Tickets for a Sprint
+    """
 
     def get(self, project_pk, sprint_id):
-        sprint = Sprint.objects.get(pk=sprint_id)
-        if sprint:
-            return sprint.get_tickets_board_backlog()
-        return jsonify({'error': 'Bad Request'}), 400
+        """
+        Get tickets fro a Sprint
+        :param project_pk: Project ID
+        :param sprint_id: Sprint ID
+        :return: List of Tickets
+        """
+
+        prj = get_project_request(project_pk)
+        sprint = get_sprint_request(sprint_id)
+
+        # first get all the columns
+        ticket_list = []
+        columns = Column.get_by_project(prj)
+
+        if columns:
+            ticket_transitions = TicketCT.get_transitions_in_cols(columns)
+            tickets_in_cols = []
+            for tt in ticket_transitions:
+                tickets_in_cols.append(tt.ticket)
+
+            # exclude from sprint
+            tickets = SprintTicketOrder.list_spo(sprint, tickets_in_cols)
+
+            for t in tickets:
+                if t.ticket.__class__.__name__ != 'DBRef':
+                    tkt = t.ticket_repr
+                    tkt['order'] = t.order
+                    tkt['badges'] = {
+                        'comments': Comment.get_by_ticket(t.ticket).count(),
+                        'files': len(t.ticket.files)
+                    }
+                    assignments = []
+                    for ass in t.ticket.assigned_to:
+                        if ass.__class__.__name__ != 'DBRef':
+                            val = ass.to_dict()
+                            val['member'] = ass.member.to_dict()
+                            assignments.append(val)
+                    tkt['assigned_to'] = assignments
+                    ticket_list.append(tkt)
+        return ticket_list, 200
 
 
 class SprintChart(AuthResource):
-    def __init__(self):
-        super(SprintChart, self).__init__()
+    """
+    Get Burndown chart for a Sprint
+    """
 
     def get(self, project_pk, sprint_id):
-        sprint = Sprint.objects.get(pk=sprint_id)
+        prj = get_project_request(project_pk)
+        sprint = get_sprint_request(sprint_id)
         if sprint:
             # include the weekends??
             weekends = bool(request.args.get('weekends', False))
@@ -331,17 +413,30 @@ class SprintChart(AuthResource):
 
 
 class SprintArchivedList(AuthResource):
-    def __init__(self):
-        super(SprintArchivedList, self).__init__()
+    """
+    Get Sprints Archived
+    """
 
     def get(self, project_pk):
-        return Sprint.objects(project=project_pk, finalized=True).order_by(
-            'order').to_json(archived=True)
+        """
+        Get List of archived sprints
+        :param project_pk: Project ID
+        :return: List of sprints
+        """
+        prj = get_project_request(project_pk)
+        return Sprint.get_archived_sprints(prj).to_json(), 200
 
 
 class SprintAllList(AuthResource):
-    def __init__(self):
-        super(SprintAllList, self).__init__()
+    """
+    Get All Sprints
+    """
 
     def get(self, project_pk):
-        return Sprint.objects(project=project_pk).order_by('order').to_json()
+        """
+        Get List of sprints
+        :param project_pk: Project ID
+        :return: List of sprints
+        """
+        prj = get_project_request(project_pk)
+        return Sprint.objects(project=prj).order_by('order').to_json()

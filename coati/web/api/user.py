@@ -1,10 +1,9 @@
-import json
 from mongoengine import errors as mongo_errors
 from flask import request, current_app
 from flask.ext.restful import Resource
+
 from coati.core.models.user import User
 from coati.core.models.notification import UserNotification
-
 from coati.web.api.auth import AuthResource, current_user
 from coati.web.api import errors as api_errors
 
@@ -37,7 +36,12 @@ def get_user_for_request(user_id):
         # Workaround: mongoengine can not always deal with proxies'
         return current_user._get_current_object()
 
-    return User.get_by_id(user_id)
+    user = User.get_by_id(user_id)
+    if not user:
+        raise api_errors.MissingResource(
+            api_errors.INVALID_USER_ID_MSG
+        )
+    return user
 
 
 def create_user(user_data):
@@ -142,11 +146,6 @@ class UserInstance(AuthResource):
         :return: a User Object
         """
         user = get_user_for_request(user_id)
-        if not user:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_USER_ID_MSG
-            )
-
         return user.to_dict()
 
     def put(self, user_id):
@@ -158,11 +157,6 @@ class UserInstance(AuthResource):
         data = request.get_json(silent=True)
         if data:
             user = get_user_for_request(user_id)
-            if not user:
-                raise api_errors.MissingResource(
-                    api_errors.INVALID_USER_ID_MSG
-                )
-
             user.first_name = data.get('first_name', user.first_name)
             user.last_name = data.get('last_name', user.last_name)
             user.picture = data.get('picture', user.picture)
@@ -171,7 +165,7 @@ class UserInstance(AuthResource):
             user.save()
 
             return user.to_dict(), 200
-        raise api_errors.InvalidAPIUsage(api_errors.ERROR_PARSING_JSON_MSG)
+        raise api_errors.InvalidAPIUsage(api_errors.INVALID_JSON_BODY_MSG)
 
 
     def delete(self, user_id):
@@ -181,10 +175,6 @@ class UserInstance(AuthResource):
         :return: No Content
         """
         user = get_user_for_request(user_id)
-        if not user:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_USER_ID_MSG
-            )
         user.delete()
         return {}, 204
 

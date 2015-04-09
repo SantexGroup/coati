@@ -14,6 +14,20 @@ from coati.web.api import errors as api_errors
 from coati.web.api.auth.utils import current_user
 
 
+def get_project_request(project_id):
+    """
+    Get Projects from the url
+    :param project_id: Project ID
+    :return: Project Object
+    """
+    prj = Project.get_by_id(project_id)
+    if prj is None:
+        raise api_errors.MissingResource(
+            api_errors.INVALID_PROJECT_MSG
+        )
+    return prj
+
+
 class ProjectList(AuthResource):
     """
     Project Resource List
@@ -90,13 +104,8 @@ class ProjectInstance(AuthResource):
         :param project_pk: the ID of the project
         :return: a Project Object
         """
-        prj = Project.get_by_id(project_pk).select_related(max_depth=2)
-        if prj is None:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_PROJECT_MSG
-            )
-
-        return prj.to_dict(), 200
+        prj = get_project_request(project_pk)
+        return prj.select_related(max_depth=2).to_dict(), 200
 
     def put(self, project_pk):
         """
@@ -104,13 +113,7 @@ class ProjectInstance(AuthResource):
         :param project_pk:
         :return:
         """
-        project = Project.get_by_id(project_pk)
-
-        if not project:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_PROJECT_MSG
-            )
-
+        project = get_project_request(project_pk)
         data = request.get_json(silent=True)
 
         if not data:
@@ -149,12 +152,7 @@ class ProjectInstance(AuthResource):
         :param project_pk: Project ID
         :return: nothing
         """
-        project = Project.get_by_id(project_pk)
-        if not project:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_PROJECT_MSG
-            )
-
+        project = get_project_request(project_pk)
         project.delete()
         return {}, 204
 
@@ -169,7 +167,8 @@ class ProjectColumns(AuthResource):
         :param project_pk: Project ID
         :return: List of columns
         """
-        return Column.get_by_project(project_pk).to_json()
+        prj = get_project_request(project_pk)
+        return Column.get_by_project(prj).to_json()
 
     def post(self, project_pk):
         """
@@ -182,11 +181,7 @@ class ProjectColumns(AuthResource):
                 api_errors.INVALID_JSON_BODY_MSG
             )
 
-        project = Project.get_by_id(project_pk)
-        if not project:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_PROJECT_MSG
-            )
+        project = get_project_request(project_pk)
 
         col = Column()
         col.order = Column.objects.count()
@@ -226,7 +221,7 @@ class ProjectColumn(AuthResource):
         :param column_pk: Id of the column
         :return: Object Column
         """
-
+        get_project_request(project_pk)
         return Column.get_by_id(column_pk).to_dict()
 
     def put(self, project_pk, column_pk):
@@ -241,7 +236,7 @@ class ProjectColumn(AuthResource):
         col = Column.get_by_id(column_pk)
         if not col:
             raise api_errors.MissingResource(
-                api_errors.INVALID_OBJECT_ID_MSG
+                api_errors.INVALID_COLUMN_MSG
             )
 
         data = request.get_json(silent=True)
@@ -276,13 +271,14 @@ class ProjectColumn(AuthResource):
         :param column_pk:Id of the column
         :return: Nothing
         """
+        prj = get_project_request(project_pk)
         col = Column.get_by_id(column_pk)
         if not col:
             raise api_errors.MissingResource(
-                api_errors.INVALID_OBJECT_ID_MSG
+                api_errors.INVALID_COLUMN_MSG
             )
         # save activity
-        save_notification(project_pk=project_pk,
+        save_notification(project_pk=prj.id,
                           verb='delete_column',
                           data=col.to_dict())
 
@@ -302,20 +298,18 @@ class ProjectColumnsOrder(AuthResource):
         :param project_pk: project id
         :return: same data sent
         """
+        prj = get_project_request(project_pk)
+
         data = request.get_json(silent=True)
         if not data:
             raise api_errors.InvalidAPIUsage(
                 api_errors.INVALID_JSON_BODY_MSG
             )
 
-        for index, col_id in enumerate(data):
-            col = Column.get_by_id(col_id)
-            if col is not None:
-                col.order = index
-                col.save()
+        Column.order_items(data)
 
         # save activity
-        save_notification(project_pk=project_pk,
+        save_notification(project_pk=prj.id,
                           verb='order_columns',
                           data=data)
         return data, 200
@@ -334,10 +328,12 @@ class ProjectMemberInstance(AuthResource):
         :param member_pk: ProjectMember ID
         :return: ProjectMember object
         """
+        get_project_request(project_pk)
+
         pm = ProjectMember.get_by_id(member_pk)
         if not pm:
             raise api_errors.MissingResource(
-                api_errors.INVALID_OBJECT_ID_MSG
+                api_errors.INVALID_PROJECT_MEMBER_MSG
             )
         return pm.to_dict()
 
@@ -349,25 +345,20 @@ class ProjectMemberInstance(AuthResource):
         :param member_pk: Project MemberID
         :return: ProjectMember Instance
         """
-
+        prj = get_project_request(project_pk)
         pm = ProjectMember.get_by_id(member_pk)
-        project = Project.get_by_id(project_pk)
 
         if not pm:
             raise api_errors.MissingResource(
-                api_errors.INVALID_OBJECT_ID_MSG
+                api_errors.INVALID_PROJECT_MEMBER_MSG
             )
 
-        if not project:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_PROJECT_MSG
-            )
-
-        ProjectMember.clear_ownership(project_pk)
+        ProjectMember.clear_ownership(prj)
 
         pm.is_owner = True
-        project.owner = pm.member
         pm.save()
+        prj.owner = pm.member
+        prj.save()
         return pm.to_dict(), 200
 
 
@@ -379,11 +370,12 @@ class ProjectMemberInstance(AuthResource):
         :param member_pk: Project MemberID
         :return: Nothing
         """
+        get_project_request(project_pk)
 
         pm = ProjectMember.get_by_id(member_pk)
         if not pm:
             raise api_errors.MissingResource(
-                api_errors.INVALID_OBJECT_ID_MSG
+                api_errors.INVALID_PROJECT_MEMBER_MSG
             )
 
         pm.delete()
@@ -402,7 +394,8 @@ class ProjectMembers(AuthResource):
         :param project_pk: Project ID
         :return: List of project members
         """
-        return ProjectMember.objects(project=project_pk).to_json()
+        prj = get_project_request(project_pk)
+        return ProjectMember.objects(project=prj).to_json()
 
     def post(self, project_pk):
         """
@@ -418,11 +411,7 @@ class ProjectMembers(AuthResource):
                 api_errors.INVALID_JSON_BODY_MSG
             )
 
-        project = Project.get_by_id(project_pk)
-        if not project:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_PROJECT_MSG
-            )
+        project = get_project_request(project_pk)
 
         members_added = []
         errors_list = []
@@ -436,10 +425,10 @@ class ProjectMembers(AuthResource):
                 user = User(email=member.get('text'))
                 user.active = False
                 user.save()
-            if project.owner.id != user.id:
-                m = ProjectMember.get_by_project_member(project_pk, user)
+            if user and project.owner.id != user.id:
+                m = ProjectMember.get_by_project_member(project, user)
                 if not m:
-                    m = ProjectMember(project=project_pk)
+                    m = ProjectMember(project=project)
                     m.member = user
                     m.save()
                     # Send email notification
@@ -457,7 +446,7 @@ class ProjectMembers(AuthResource):
 
         if members_added:
             # save activity
-            save_notification(project_pk=project_pk,
+            save_notification(project_pk=project.id,
                               verb='new_members',
                               data={'members': members_added})
         return {}, 200
@@ -475,11 +464,12 @@ class ProjectImport(AuthResource):
         :param project_pk: Project ID
         :return: List of Tickets and Columns imported
         """
+        project = get_project_request(project_pk)
         try:
             body = json.loads(request.form.get('data'))
         except ValueError, e:
             raise api_errors.InvalidAPIUsage(
-                api_errors.ERROR_PARSING_JSON_MSG
+                api_errors.INVALID_JSON_BODY_MSG
             )
 
         imported_file = request.files.get('file')
@@ -487,12 +477,6 @@ class ProjectImport(AuthResource):
         if not imported_file:
             raise api_errors.InvalidAPIUsage(
                 api_errors.REQUIRED_MSG
-            )
-
-        project = Project.get_by_id(project_pk)
-        if not project:
-            raise api_errors.MissingResource(
-                api_errors.INVALID_PROJECT_MSG
             )
 
         data = json.loads(imported_file.stream.read().decode('utf-8'),

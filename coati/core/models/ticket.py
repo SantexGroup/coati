@@ -50,6 +50,24 @@ class Ticket(db.BaseDocument):
     def remove_attachment(cls, tkt_id, att):
         cls.objects(pk=tkt_id).update_one(pull__files=att)
 
+    @classmethod
+    def remove_member(cls, tkt_id, project_member_id):
+        cls.objects(pk=tkt_id).update_one(pull__assigned_to=project_member_id)
+
+    @classmethod
+    def remove_related_ticket(cls, tkt_id, related_tkt_id):
+        cls.objects(pk=tkt_id).update_one(pull__related_tickets=related_tkt_id)
+
+    @classmethod
+    def search(cls, query, projects):
+        return cls.objects.distinct((Q(title__icontains=query) |
+                                     Q(description__icontains=query)) &
+                                    Q(project__in=projects))
+
+    @classmethod
+    def get_closed_tickets(cls, project_pk):
+        return cls.objects(project=project_pk, closed=True)
+
 
 DEPENDENCY_TYPE = (('B', 'Blocked'),
                    ('BB', 'Blocked By'),

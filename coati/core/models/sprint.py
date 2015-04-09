@@ -73,8 +73,6 @@ class SprintTicketOrder(db.BaseDocument):
             pass
 
 
-
-
 class TicketColumnTransition(db.BaseDocument):
     ticket = db.ReferenceField(Ticket, reverse_delete_rule=db.CASCADE)
     column = db.ReferenceField(Column, reverse_delete_rule=db.CASCADE)
@@ -90,6 +88,10 @@ class TicketColumnTransition(db.BaseDocument):
             filters.update(dict(sprint=sprint))
         filters.update(kwargs)
         return cls.objects(**filters).first()
+
+    @classmethod
+    def get_transitions_in_cols(cls, columns_ids):
+        return cls.objects(column__in=columns_ids, latest_state=True)
 
     @classmethod
     def get_next_order_index(cls, col):

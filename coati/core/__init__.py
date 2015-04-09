@@ -67,6 +67,15 @@ class BaseDocument(db.Document):
     )
 
     @classmethod
+    def order_items(cls, ordered_ids):
+
+        for index, s in enumerate(ordered_ids):
+            item = cls.get_by_id(s)
+            if item:
+                item.order = index
+                item.save()
+
+    @classmethod
     def get_by_id(cls, obj_id):
         try:
             instance = cls.objects.get(id=obj_id)
@@ -98,5 +107,6 @@ class BaseDocument(db.Document):
         data = self.to_dict()
 
         return json_util.dumps(data)
+
 
 db.BaseDocument = BaseDocument

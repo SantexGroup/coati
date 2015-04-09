@@ -2,10 +2,11 @@ import json
 from datetime import timedelta, datetime
 
 from dateutil import parser
-from flask import jsonify, request, g
+from flask import jsonify, request
 from mongoengine import DoesNotExist
 
-from coati.core.models.sprint import Sprint, SprintTicketOrder, TicketColumnTransition
+from coati.core.models.sprint import (Sprint, SprintTicketOrder,
+                                      TicketColumnTransition as TicketCT)
 from coati.core.models.project import Project, Column
 from coati.core.models.ticket import Ticket
 from coati.web.api.auth import AuthResource
@@ -19,6 +20,7 @@ class SprintOrder(AuthResource):
     def post(self, project_pk):
         data = request.get_json(force=True, silent=True)
         if data:
+            Sprint.order_()
             for index, s in enumerate(data):
                 sprint = Sprint.objects.get(pk=s)
                 sprint.order = index
@@ -90,8 +92,8 @@ class SprintInstance(AuthResource):
                 sp.started = True
             elif data.get('for_finalized'):
                 sp.finalized = True
-                tt = TicketColumnTransition.objects(sprint=sp,
-                                                    latest_state=True)
+                tt = TicketCT.objects(sprint=sp,
+                                      latest_state=True)
                 finished_tickets = []
                 tickets_to_close_id = []
                 for t in tt:
@@ -172,7 +174,8 @@ class SprintChart(AuthResource):
             weekends = bool(request.args.get('weekends', False))
             # get tickets of the sprint
             tickets_in_sprint = SprintTicketOrder.objects(sprint=sprint,
-                                                          active=(sprint.started and not sprint.finalized))
+                                                          active=(
+                                                              sprint.started and not sprint.finalized))
             # get the points planned when it started
             planned_sprint_points = sprint.total_points_when_started
 
@@ -224,11 +227,11 @@ class SprintChart(AuthResource):
             if datetime.now() > sprint.end_date:
                 x2_limit_date = sprint.end_date
             total_burned_points = 0
-            tickets_done = TicketColumnTransition.objects(column=col,
-                                                          sprint=sprint,
-                                                          when__gte=sprint.start_date,
-                                                          when__lte=x2_limit_date,
-                                                          latest_state=True)
+            tickets_done = TicketCT.objects(column=col,
+                                            sprint=sprint,
+                                            when__gte=sprint.start_date,
+                                            when__lte=x2_limit_date,
+                                            latest_state=True)
 
             for td in tickets_done:
                 spo_done = SprintTicketOrder.objects.get(ticket=td.ticket,
@@ -241,7 +244,8 @@ class SprintChart(AuthResource):
             else:
                 y2_remaining_points = y1_total_sprint_points - total_burned_points
                 velocity = float(
-                    y1_total_sprint_points - y2_remaining_points) / float(used_days)
+                    y1_total_sprint_points - y2_remaining_points) / float(
+                    used_days)
             delta_real = velocity or delta_real
 
             eta = y1_total_sprint_points / delta_real
@@ -287,11 +291,11 @@ class SprintChart(AuthResource):
                         points_added += spt.ticket_repr.get('points')
 
                     # get tickets in done column
-                    tct_list = TicketColumnTransition.objects(column=col,
-                                                              sprint=sprint,
-                                                              when__gte=start_date.date(),
-                                                              when__lt=end_date,
-                                                              latest_state=True)
+                    tct_list = TicketCT.objects(column=col,
+                                                sprint=sprint,
+                                                when__gte=start_date.date(),
+                                                when__lt=end_date,
+                                                latest_state=True)
 
                     for tct in tct_list:
                         spo = SprintTicketOrder.objects.get(ticket=tct.ticket,
@@ -299,7 +303,8 @@ class SprintChart(AuthResource):
                         tickets.append(
                             u'Burned: %s-%s (%s)' % (tct.ticket.project.prefix,
                                                      tct.ticket.number,
-                                                     spo.ticket_repr.get('points')))
+                                                     spo.ticket_repr.get(
+                                                         'points')))
                         points_burned_for_date += spo.ticket_repr.get('points')
 
                     if points_burned_for_date > 0:

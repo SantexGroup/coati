@@ -1,19 +1,15 @@
 import base64
-from datetime import datetime
 import json
 
-from mongoengine import DoesNotExist, Q
-from flask import jsonify, g
 from flask.ext.restful import request
 
 from coati.web.api.auth import AuthResource
 from coati.core.models.user import User
 from coati.core.models.project import Project, ProjectMember, Column
-from coati.core.models.ticket import Ticket, TicketDependency, Attachment, \
-    Comment
-from coati.core.models.sprint import Sprint, SprintTicketOrder, \
-    TicketColumnTransition as TicketCT
-
+from coati.core.models.ticket import (Ticket, TicketDependency, Attachment,
+                                      Comment)
+from coati.core.models.sprint import (Sprint, SprintTicketOrder,
+                                      TicketColumnTransition as TicketCT)
 from coati.utils import save_notification, send_notification_email_async
 from coati.web.api import errors as api_errors
 from coati.web.api.auth.utils import current_user
@@ -432,13 +428,11 @@ class TicketTransition(AuthResource):
                     api_errors.INVALID_OBJECT_ID_MSG
                 )
 
-            user = User.get_by_id(g.user_id)
+            user = User.get_by_id(current_user.id)
             if not user:
                 raise api_errors.MissingResource(
                     api_errors.INVALID_USER_MSG
                 )
-
-
 
             transition = TicketCT()
             transition.ticket = tkt
@@ -518,7 +512,6 @@ class TicketColumnOrder(AuthResource):
             raise api_errors.MissingResource(
                 api_errors.INVALID_OBJECT_ID_MSG
             )
-
 
         if project.project_type == 'S':
             sprint = Sprint.get_by_id(data.get('sprint'))
@@ -734,6 +727,13 @@ class AttachmentInstance(AuthResource):
     """
 
     def get(self, project_pk, tkt_id, att_id):
+        """
+        Get an Attachment
+        :param project_pk: Project ID
+        :param tkt_id: Ticket ID
+        :param att_id: Attachment ID
+        :return: Attachment
+        """
         att = Attachment.get_by_id(att_id)
         if not att:
             raise api_errors.MissingResource(
@@ -742,6 +742,13 @@ class AttachmentInstance(AuthResource):
         return att.to_json()
 
     def delete(self, project_pk, tkt_id, att_id):
+        """
+        Delete an attachment
+        :param project_pk: Project ID
+        :param tkt_id: Ticket ID
+        :param att_id: Attachment ID
+        :return: Nothing
+        """
         att = Attachment.get_by_id(att_id)
         tkt = Ticket.get_by_id(pk=tkt_id)
         if not att:
@@ -761,68 +768,117 @@ class AttachmentInstance(AuthResource):
                           data=att.to_dict())
 
         att.delete()
-        
+
         return {}, 204
 
 
 class MemberTicketInstance(AuthResource):
-    def __init__(self):
-        super(MemberTicketInstance, self).__init__()
+    """
+    Assigned Member to a Ticket
+    """
 
-    def put(self, project_pk, tkt_id, member_id):
-        try:
-            tkt = Ticket.objects.get(pk=tkt_id)
-            m = ProjectMember.objects.get(pk=member_id)
-            if m not in tkt.assigned_to:
-                tkt.assigned_to.append(m)
-                tkt.save()
+    def put(self, project_pk, tkt_id, pm_id):
+        """
+        Assign a member to a ticket, this will update the ticket
+        :param project_pk: Project ID
+        :param tkt_id: Ticket ID
+        :param member_id: Member ID
+        :return: Ticket Object
+        """
 
-                # save activity
-                save_notification(project_pk=project_pk,
-                                  verb='new_assigment',
-                                  data=tkt.to_dict())
-                return jsonify({'success': True}), 200
-            return jsonify({'fail': 'Already added'}), 200
-        except DoesNotExist as ex:
-            return jsonify({'error': 'Bad Request'}), 400
+        tkt = Ticket.get_by_id(tkt_id)
+        if not tkt:
+            raise api_errors.MissingResource(
+                api_errors.INVALID_OBJECT_ID_MSG
+            )
 
-    def delete(self, project_pk, tkt_id, member_id):
-        try:
-            tkt = Ticket.objects.get(pk=tkt_id)
-            Ticket.objects(pk=tkt_id).update_one(pull__assigned_to=member_id)
+        pm = ProjectMember.get_by_id(pm_id)
+        if not pm:
+            raise api_errors.MissingResource(
+                api_errors.INVALID_OBJECT_ID_MSG
+            )
 
-            # save activity
-            save_notification(project_pk=project_pk,
-                              verb='delete_assignment',
-                              data=tkt.to_dict())
-            return jsonify({'success': True}), 200
-        except DoesNotExist as ex:
-            return jsonify({'error': 'Bad Request'}), 400
+        if pm in tkt.assigned_to:
+            raise api_errors.InvalidAPIUsage()
+
+        tkt.assigned_to.append(pm)
+        tkt.save()
+
+        # save activity
+        save_notification(project_pk=project_pk,
+                          verb='new_assigment',
+                          data=tkt.to_dict())
+        return tkt, 200
+
+
+    def delete(self, project_pk, tkt_id, pm_id):
+        """
+        Remove member from ticket
+        :param project_pk: Project ID
+        :param tkt_id: Ticket ID
+        :param member_id: ProjectMember ID
+        :return: Nothing
+        """
+
+        tkt = Ticket.get_by_id(tkt_id)
+        if not tkt:
+            raise api_errors.MissingResource(
+                api_errors.INVALID_OBJECT_ID_MSG
+            )
+
+        pm = ProjectMember.get_by_id(pm_id)
+        if not pm:
+            raise api_errors.MissingResource(
+                api_errors.INVALID_OBJECT_ID_MSG
+            )
+
+        Ticket.remove_member(tkt, pm)
+
+        # save activity
+        save_notification(project_pk=project_pk,
+                          verb='delete_assignment',
+                          data=tkt.to_dict())
+        return {}, 204
 
 
 class TicketSearch(AuthResource):
-    def __init__(self):
-        super(TicketSearch, self).__init__()
+    """
+    Search Tickets Across Projects
+    """
 
     def get(self, query):
-        user_id = g.user_id
+        """
+        Search Tickets that contains the query
+        :param query: text to search
+        :return: List of matched tickets
+        """
         projects = []
-        projects_query = ProjectMember.objects(member=user_id)
+        projects_query = ProjectMember.get_by_member(current_user.id)
         for p in projects_query:
             projects.append(str(p.project.pk))
-        return Ticket.objects.distinct((Q(title__icontains=query) |
-                                        Q(description__icontains=query)) &
-                                       Q(project__in=projects)).to_json()
+        return Ticket.search(query, projects).to_json()
 
 
 class TicketSearchRelated(AuthResource):
-    def __init__(self):
-        super(TicketSearchRelated, self).__init__()
+    """
+    Search Tickets but in One Project
+    """
 
     def get(self, project_pk, query):
-        tickets = Ticket.objects((Q(title__icontains=query) |
-                                  Q(description__icontains=query)) &
-                                 Q(project=project_pk))
+        """
+        Search Tickets by project
+
+        :param project_pk: Project ID
+        :param query: text to search
+        :return: List of matched tickets
+        """
+        prj = Project.get_by_id(project_pk)
+        if not prj:
+            raise api_errors.MissingResource(
+                api_errors.INVALID_PROJECT_MSG
+            )
+
+        tickets = Ticket.search(query, [str(prj.pk)])
         results = []
         for tkt in tickets:
             val = dict(text='%s-%s: %s' % (tkt.project.prefix,
@@ -830,58 +886,108 @@ class TicketSearchRelated(AuthResource):
                                            tkt.title),
                        value=str(tkt.id))
             results.append(val)
-        return json.dumps(results), 200
+        return results, 200
 
 
 class TicketClosed(AuthResource):
-    def __init__(self):
-        super(TicketClosed, self).__init__()
+    """
+    Get Tickets Closed
+    """
 
     def get(self, project_pk):
-        return Ticket.objects(project=project_pk, closed=True).to_json()
+        """
+        Get Closed tickets
+
+        :param project_pk: Project ID
+        :return: List of tickets closed
+        """
+        return Ticket.get_closed_tickets(project_pk).to_json()
 
 
 class TicketBoardProject(AuthResource):
-    def __init__(self):
-        super(TicketBoardProject, self).__init__()
+    """
+    Get Tickets for board backlog
+    """
 
     def get(self, project_pk):
-        return Project.objects.get(pk=project_pk).get_tickets_board().to_json()
+        """
+        Get Tickets for backlog board
+
+        :param project_pk: Project ID
+        :return: List of tickets
+        """
+        tickets = []
+        col_ids = []
+
+        prj = Project.get_by_id(project_pk)
+        if not prj:
+            raise api_errors.MissingResource(
+                api_errors.INVALID_PROJECT_MSG
+            )
+
+        column_list = Column.get_by_project(prj)
+        for c in column_list:
+            col_ids.append(str(c.pk))
+
+        tct_list = TicketCT.get_transitions_in_cols(col_ids)
+        for t in tct_list:
+            tickets.append(str(t.ticket.pk))
+
+        results = Ticket.get_tickets_backlog(prj, not_tickets=tickets)
+        return results.to_json(), 200
 
 
 class TicketRelated(AuthResource):
-    def __init__(self):
-        super(TicketRelated, self).__init__()
+    """
+    Related Ticket
+    """
 
     def delete(self, project_pk, tkt_id, rtkt_id):
-        rtkt = TicketDependency.objects.get(pk=rtkt_id)
-        if rtkt:
-            Ticket.objects(pk=tkt_id).update_one(pull__related_tickets=rtkt)
-            return jsonify({'success': True}), 200
-        return jsonify({'error': 'Bad Request'}), 400
+        """
+        Delete Related Ticket
+        :param project_pk: Project ID
+        :param tkt_id: Ticket ID
+        :param rtkt_id: Related Ticket ID
+        :return:
+        """
+        rtkt = TicketDependency.get_by_id(rtkt_id)
+        if not rtkt:
+            raise api_errors.MissingResource(
+                api_errors.INVALID_OBJECT_ID_MSG
+            )
+
+        Ticket.remove_related_ticket(tkt_id, rtkt)
+        return {}, 204
 
 
 class TicketClone(AuthResource):
-    def __init__(self):
-        super(TicketClone, self).__init__()
+    """
+    Clone Ticket
+    """
 
     def post(self, project_pk, tkt_id):
-        try:
-            tkt = Ticket.objects.get(pk=tkt_id)
-            new_tkt = tkt.clone()
-            try:
-                last_tkt = Ticket.objects(project=project_pk).order_by(
-                    '-number')
-                if last_tkt:
-                    number = last_tkt[0].number + 1
-                else:
-                    number = 1
-            except Exception as ex:
-                number = 1
-            new_tkt.number = number
-            new_tkt.order = Ticket.objects(project=project_pk).count()
-            new_tkt.save()
-            return new_tkt.to_json(), 201
-        except DoesNotExist:
-            return jsonify({'error': 'Does not exists'}), 404
+        """
+        Clone Ticket - Make a copy of a ticket
+        :param project_pk:
+        :param tkt_id:
+        :return:
+        """
+        tkt = Ticket.get_by_id(tkt_id)
+        if not tkt:
+            raise api_errors.MissingResource(
+                api_errors.INVALID_OBJECT_ID_MSG
+            )
+
+        prj = Project.get_by_id(project_pk)
+        if not prj:
+            raise api_errors.MissingResource(
+                api_errors.INVALID_PROJECT_MSG
+            )
+
+        new_tkt = tkt.clone()
+        last_tkt = Ticket.get_last_ticket(prj)
+        new_tkt.number = last_tkt.number + 1 if last_tkt else 1
+        new_tkt.order = Ticket.get_next_order_index(prj)
+        new_tkt.save()
+        return new_tkt.to_json(), 200
 

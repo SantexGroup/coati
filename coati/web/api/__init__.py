@@ -98,7 +98,7 @@ api.add_resource(ticket.TicketAttachments,
 api.add_resource(ticket.AttachmentInstance,
                  '/projects/<string:project_pk>/ticket/<string:tkt_id>/attachments/<string:att_id>/delete')
 api.add_resource(ticket.MemberTicketInstance,
-                 '/projects/<string:project_pk>/ticket/<string:tkt_id>/assignments/<string:member_id>')
+                 '/projects/<string:project_pk>/ticket/<string:tkt_id>/assignments/<string:pm_id>')
 api.add_resource(ticket.TicketMovement,
                  '/projects/<string:project_pk>/ticket/movement')
 api.add_resource(ticket.TicketTransition,

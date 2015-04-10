@@ -30,10 +30,18 @@ class ProjectMember(db.BaseDocument):
     @classmethod
     def get_by_member(cls, member_id):
         try:
-            instances = cls.objects.get(member=member_id)
+            instances = cls.objects(member=member_id)
         except (mongo_errors.ValidationError, cls.DoesNotExist):
             instances = []
         return instances
+
+    @classmethod
+    def get_members_for_project(cls, project):
+        prj_mem = cls.objects(project=project)
+        members = []
+        for pm in prj_mem:
+            members.append(pm.member)
+        return members
 
     @classmethod
     def get_by_project_member(cls, project_pk, member_id):

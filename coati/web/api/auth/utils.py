@@ -65,7 +65,7 @@ def parse_auth_token(token):
 
         if user_id:
             user = User.get_by_id(user_id)
-
+            set_current_user(user)
             return user
 
 

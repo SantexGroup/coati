@@ -13,13 +13,8 @@ def get_notifications(user):
     results = []
     for n in notifications:
         if n.activity.author.id != user.id:
-            val = n.to_dict()
-            val['activity'] = n.activity.to_dict()
-            val['activity']['project'] = n.activity.project.to_dict()
-            val['activity']['author'] = n.activity.author.to_dict()
-            results.append(val)
-
-    #results.sort(key=lambda x: x.activity.created_on, reverse=True)
+            results.append(n)
+    results.sort(key=lambda x: x.activity.created_on, reverse=True)
     if request.args.get('total'):
         results = results[:int(request.args.get('total'))]
     return results, 200

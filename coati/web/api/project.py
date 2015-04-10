@@ -1,4 +1,3 @@
-import json
 import urllib2
 import base64
 
@@ -12,7 +11,7 @@ from coati.web.api.auth import AuthResource
 from coati.utils import send_new_member_email_async, save_notification
 from coati.web.api import errors as api_errors
 from coati.web.api.auth.utils import current_user
-
+from coati.web.api import json
 
 def get_project_request(project_id):
     """
@@ -38,13 +37,13 @@ class ProjectList(AuthResource):
         Get the list of projects that the user belongs
         :return: List of project resources
         """
-        prj_mem = ProjectMember.get_by_member(current_user)
+        prj_mem = ProjectMember.get_by_member(current_user.id)
         projects = []
         for pm in prj_mem:
             if pm.project.active:
-                projects.append(pm.project.to_dict())
+                projects.append(pm.project)
             elif pm.project.owner.id == current_user.id:
-                projects.append(pm.project.to_dict())
+                projects.append(pm.project)
         return projects, 200
 
     def post(self):
@@ -90,7 +89,7 @@ class ProjectList(AuthResource):
                           verb='new_project',
                           data=prj.to_dict())
 
-        return prj.to_dict(), 201
+        return prj, 201
 
 
 class ProjectInstance(AuthResource):
@@ -105,7 +104,7 @@ class ProjectInstance(AuthResource):
         :return: a Project Object
         """
         prj = get_project_request(project_pk)
-        return prj.select_related(max_depth=2).to_dict(), 200
+        return prj.select_related(max_depth=2), 200
 
     def put(self, project_pk):
         """
@@ -143,7 +142,7 @@ class ProjectInstance(AuthResource):
                           verb='update_project',
                           data=project.to_dict())
 
-        return project.to_dict(), 200
+        return project, 200
 
 
     def delete(self, project_pk):
@@ -168,7 +167,7 @@ class ProjectColumns(AuthResource):
         :return: List of columns
         """
         prj = get_project_request(project_pk)
-        return Column.get_by_project(prj).to_json()
+        return Column.get_by_project(prj), 200
 
     def post(self, project_pk):
         """
@@ -205,7 +204,7 @@ class ProjectColumns(AuthResource):
                           verb='new_column',
                           data=col.to_dict())
 
-        return col.to_dict(), 200
+        return col, 200
 
 
 class ProjectColumn(AuthResource):
@@ -222,7 +221,7 @@ class ProjectColumn(AuthResource):
         :return: Object Column
         """
         get_project_request(project_pk)
-        return Column.get_by_id(column_pk).to_dict()
+        return Column.get_by_id(column_pk)
 
     def put(self, project_pk, column_pk):
         """
@@ -261,7 +260,7 @@ class ProjectColumn(AuthResource):
                           verb='update_column',
                           data=col.to_dict())
 
-        return col.to_dict(), 200
+        return col, 200
 
     def delete(self, project_pk, column_pk):
         """
@@ -335,7 +334,8 @@ class ProjectMemberInstance(AuthResource):
             raise api_errors.MissingResource(
                 api_errors.INVALID_PROJECT_MEMBER_MSG
             )
-        return pm.to_dict()
+
+        return pm, 200
 
     def put(self, project_pk, member_pk):
         """
@@ -359,7 +359,8 @@ class ProjectMemberInstance(AuthResource):
         pm.save()
         prj.owner = pm.member
         prj.save()
-        return pm.to_dict(), 200
+
+        return pm, 200
 
 
     def delete(self, project_pk, member_pk):
@@ -395,7 +396,7 @@ class ProjectMembers(AuthResource):
         :return: List of project members
         """
         prj = get_project_request(project_pk)
-        return ProjectMember.objects(project=prj).to_json()
+        return ProjectMember.objects(project=prj), 200
 
     def post(self, project_pk):
         """

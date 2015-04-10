@@ -60,7 +60,7 @@ class SprintList(AuthResource):
         :return:
         """
         prj = get_project_request(project_pk)
-        return Sprint.get_by_project_not_finalized(prj).to_json(), 200
+        return Sprint.get_by_project_not_finalized(prj), 200
 
     def post(self, project_pk):
         """
@@ -77,7 +77,7 @@ class SprintList(AuthResource):
                           verb='new_sprint',
                           data=sp.to_dict())
 
-        return sp.to_json(), 201
+        return sp, 201
 
 
 class SprintInstance(AuthResource):
@@ -94,7 +94,7 @@ class SprintInstance(AuthResource):
         """
         get_project_request(project_pk)
         sp = get_sprint_request(sp_id)
-        return sp.to_json(), 200
+        return sp, 200
 
     def put(self, project_pk, sp_id):
         """
@@ -158,7 +158,7 @@ class SprintInstance(AuthResource):
                           verb='update_sprint',
                           data=sp.to_dict())
 
-        return sp.to_json(), 200
+        return sp, 200
 
     def delete(self, project_pk, sp_id):
         """

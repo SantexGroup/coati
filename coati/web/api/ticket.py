@@ -15,6 +15,7 @@ from coati.web.api import errors as api_errors
 from coati.web.api.auth.utils import current_user
 from coati.web.api.project import get_project_request
 from coati.web.api.sprint import get_sprint_request
+from coati.web.api import json
 
 
 def get_ticket_request(ticket_id):
@@ -45,7 +46,7 @@ class TicketInstance(AuthResource):
         """
         get_project_request(project_pk)
         tkt = get_ticket_request(tkt_id)
-        return tkt.to_dict()
+        return tkt, 200
 
     def put(self, project_pk, tkt_id):
         """

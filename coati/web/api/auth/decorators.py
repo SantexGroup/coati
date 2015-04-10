@@ -67,7 +67,7 @@ def require_authentication(view_func):
         if 'auth_error' in flask_g:
             raise flask_g.auth_error
 
-        if current_user is None:
+        if not current_user:
             raise api_errors.UnauthorizedRequest(
                 api_errors.INVALID_AUTH_TOKEN_MSG
             )

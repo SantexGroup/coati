@@ -192,7 +192,7 @@ class SprintActive(AuthResource):
         """
         prj = get_project_request(project_pk)
         sprint = Sprint.get_active_sprint(prj)
-        return sprint.to_json(), 200
+        return sprint, 200
 
 
 class SprintTickets(AuthResource):
@@ -408,7 +408,7 @@ class SprintChart(AuthResource):
                 'all_tickets': json.loads(
                     sprint.get_tickets_with_latest_status())
             }
-            return jsonify(data), 200
+            return data, 200
         return jsonify({'error': 'Bad Request'}), 400
 
 

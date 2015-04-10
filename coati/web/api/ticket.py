@@ -104,7 +104,7 @@ class TicketInstance(AuthResource):
                           verb='update_ticket',
                           data=tkt.to_dict())
 
-        return tkt.to_dict(), 200
+        return tkt, 200
 
 
     def delete(self, project_pk, tkt_id):
@@ -146,7 +146,7 @@ class TicketProjectList(AuthResource):
                 for spo in spos:
                     tickets.append(spo.ticket.id)
 
-        return Ticket.get_tickets_backlog(project_pk, tickets).to_json()
+        return Ticket.get_tickets_backlog(project_pk, tickets), 200
 
     def post(self, project_pk):
         """
@@ -188,7 +188,7 @@ class TicketProjectList(AuthResource):
                           verb='new_ticket',
                           data=tkt.to_dict())
 
-        return tkt.to_json(), 201
+        return tkt, 201
 
 
 class TicketOrderProject(AuthResource):
@@ -462,7 +462,7 @@ class CommentInstance(AuthResource):
         """
         get_project_request(project_pk)
 
-        tkt = get_ticket_request(tkt_id)
+        get_ticket_request(tkt_id)
 
         comment = Comment.get_by_id(comment_id)
         if not comment:
@@ -470,7 +470,7 @@ class CommentInstance(AuthResource):
                 api_errors.INVALID_COMMENT_MSG
             )
 
-        return comment.to_json()
+        return comment, 200
 
     def put(self, project_pk, tkt_id, comment_id):
         """
@@ -508,7 +508,7 @@ class CommentInstance(AuthResource):
                               "ticket": comment.ticket.to_dict()
                           })
 
-        return comment.to_dict(), 200
+        return comment, 200
 
     def delete(self, project_pk, tkt_id, comment_id):
         """
@@ -556,7 +556,7 @@ class TicketComments(AuthResource):
         """
         get_project_request(project_pk)
         get_ticket_request(tkt_id)
-        return Comment.get_by_ticket(tkt_id).to_json()
+        return Comment.get_by_ticket(tkt_id), 200
 
     def post(self, project_pk, tkt_id):
         """
@@ -601,7 +601,7 @@ class TicketComments(AuthResource):
                                   "ticket": c.ticket.to_dict()
                               })
 
-        return c.to_json(), 201
+        return c, 201
 
 
 class TicketAttachments(AuthResource):
@@ -644,7 +644,7 @@ class TicketAttachments(AuthResource):
                           verb='new_attachment',
                           data=att.to_dict())
 
-        return att.to_json(), 200
+        return att, 200
 
 
 class AttachmentInstance(AuthResource):
@@ -667,7 +667,7 @@ class AttachmentInstance(AuthResource):
             raise api_errors.MissingResource(
                 api_errors.INVALID_ATTACHMENT_MSG
             )
-        return att.to_json()
+        return att, 200
 
     def delete(self, project_pk, tkt_id, att_id):
         """
@@ -769,7 +769,7 @@ class TicketSearch(AuthResource):
         projects_query = ProjectMember.get_by_member(current_user.id)
         for p in projects_query:
             projects.append(str(p.project.pk))
-        return Ticket.search(query, projects).to_json()
+        return Ticket.search(query, projects), 200
 
 
 class TicketSearchRelated(AuthResource):
@@ -810,7 +810,7 @@ class TicketClosed(AuthResource):
         :return: List of tickets closed
         """
         prj = get_project_request(project_pk)
-        return Ticket.get_closed_tickets(prj).to_json()
+        return Ticket.get_closed_tickets(prj), 200
 
 
 class TicketBoardProject(AuthResource):
@@ -839,7 +839,7 @@ class TicketBoardProject(AuthResource):
             tickets.append(str(t.ticket.pk))
 
         results = Ticket.get_tickets_backlog(prj, not_tickets=tickets)
-        return results.to_json(), 200
+        return results, 200
 
 
 class TicketRelated(AuthResource):
@@ -888,5 +888,5 @@ class TicketClone(AuthResource):
         new_tkt.number = last_tkt.number + 1 if last_tkt else 1
         new_tkt.order = Ticket.get_next_order_index(prj)
         new_tkt.save()
-        return new_tkt.to_json(), 200
+        return new_tkt, 200
 

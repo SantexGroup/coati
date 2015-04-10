@@ -107,7 +107,7 @@ class UsersList(AuthResource):
                 payload=errors_list
             )
 
-        return user.to_dict(), 201
+        return user, 201
 
 
 class UserSearch(AuthResource):
@@ -141,7 +141,7 @@ class UserInstance(AuthResource):
         :return: a User Object
         """
         user = get_user_for_request(user_id)
-        return user.to_dict()
+        return user, 200
 
     def put(self, user_id):
         """
@@ -150,18 +150,18 @@ class UserInstance(AuthResource):
         :return: Return a user instance updated
         """
         data = request.get_json(silent=True)
-        if data:
-            user = get_user_for_request(user_id)
-            user.first_name = data.get('first_name', user.first_name)
-            user.last_name = data.get('last_name', user.last_name)
-            user.picture = data.get('picture', user.picture)
-            user.email = data.get('email', user.email)
+        if not data:
+            raise api_errors.InvalidAPIUsage(api_errors.INVALID_JSON_BODY_MSG)
 
-            user.save()
+        user = get_user_for_request(user_id)
+        user.first_name = data.get('first_name', user.first_name)
+        user.last_name = data.get('last_name', user.last_name)
+        user.picture = data.get('picture', user.picture)
+        user.email = data.get('email', user.email)
 
-            return user.to_dict(), 200
-        raise api_errors.InvalidAPIUsage(api_errors.INVALID_JSON_BODY_MSG)
+        user.save()
 
+        return user, 200
 
     def delete(self, user_id):
         """
@@ -209,7 +209,7 @@ class UserNotifications(Resource):
         :return: list of notifications
         """
         user = get_user_for_request(user_id)
-        return get_notifications(user)
+        return get_notifications(user), 200
 
     def put(self, user_id):
         """
@@ -219,4 +219,4 @@ class UserNotifications(Resource):
         """
         user = get_user_for_request(user_id)
         UserNotification.objects(user=user).update(set__viewed=True)
-        return get_notifications(user)
+        return get_notifications(user), 200

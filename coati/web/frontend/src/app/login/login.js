@@ -22,6 +22,9 @@
                         controller: 'LogoutController',
                         controllerAs: 'vm'
                     }
+                },
+                data:{
+                    pageTitle: 'Coati :: Logout Page'
                 }
             })
 
@@ -203,6 +206,7 @@
             'Coati.Services.User'])
         .config(Config)
         .controller('LoginController', LoginController)
+        .controller('LogoutController', LogoutController)
         .controller('RegisterController', RegisterController)
         .controller('ActivateController', ActivateController);
 

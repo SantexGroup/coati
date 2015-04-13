@@ -33,7 +33,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 # Flask app secret key
 SECRET_KEY = os.getenv('SECRET_KEY')
 PREFERRED_URL_SCHEME = os.getenv('PREFERRED_URL_SCHEME', 'http')
-#SERVER_NAME = os.getenv('SERVER_NAME')
+#SERVER_NAME = os.getenv('SERVER_NAME', 'localhost:5000')
 
 # For example: localhost
 DATABASE_HOST = os.getenv('DATABASE_HOST')
@@ -153,6 +153,7 @@ MAIL_USE_SSL = os.getenv('MAIL_USE_SSL')
 MAIL_USERNAME = os.getenv('MAIL_USERNAME')
 MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
 MAIL_SENDER_NAME = os.getenv('MAIL_SENDER_NAME')
+MAIL_DEFAULT_SENDER = os.getenv('MAIL_FROM')
 # Expiration time for the password recovery token (7 days)
 MAIL_RECOVERY_TOKEN_TIME = os.getenv('MAIL_RECOVERY_TOKEN_TIME', 604800)
 

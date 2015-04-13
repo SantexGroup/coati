@@ -19,6 +19,10 @@ class User(db.BaseDocument):
 
     excluded_fields = ['activation_token', 'password']
 
+    @property
+    def full_name(self):
+        return '%s, %s' % (self.first_name, self.last_name)
+
     def set_password(self, password):
         utils.validate_password(password)
         self.password = generate_password_hash(password, 'sha1')
@@ -47,7 +51,7 @@ class User(db.BaseDocument):
             raise mongo_errors.ValidationError(errors=err_dict)
 
     @classmethod
-    def validate_duplicated_email(cls, email):
+    def is_duplicated_email(cls, email):
         """
         Validates if the email is already in use.
         :param email: The email to validate.
@@ -55,7 +59,8 @@ class User(db.BaseDocument):
         """
 
         if cls.objects(email=email):
-            return dict(email=utils.DUP_EMAIL_ERROR_MSG)
+            return True
+        return False
 
     @classmethod
     def get_by_email(cls, email):

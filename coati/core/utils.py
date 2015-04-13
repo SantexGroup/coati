@@ -19,7 +19,7 @@ EMAIL_REGEX = re.compile(
 PASSWORD_ERROR_MSG = 'Password must be at least {} characters long'.format(
     PASS_MIN_LEN
 )
-INVALID_EMAIL_MSG = 'Invalid email address'
+
 
 def utcnow():
     """

@@ -11,6 +11,7 @@ from coati.web.api import project, sprint, ticket, user, errors
 from coati.web.api import auth, tokens
 from coati.web.api import json
 from coati.web.api.serializers import register_serializers
+from coati.web.api.signals import register_signals
 
 APP_ACCEPTED_TYPE = 'application/json'
 
@@ -48,7 +49,7 @@ api.add_resource(project.ProjectMemberInstance,
 api.add_resource(project.ProjectImport,
                  '/projects/<string:project_pk>/import')
 api.add_resource(project.ProjectColumn,
-                 '/projects/<string:project_pk>/column/<string:column_pk>')
+                 '/projects/<string:project_pk>/columns/<string:column_pk>')
 
 api.add_resource(sprint.SprintList, '/projects/<string:project_pk>/sprints')
 api.add_resource(sprint.SprintArchivedList,
@@ -190,3 +191,4 @@ def init_app(app):
 
     app.register_blueprint(blueprint)
     register_serializers()
+    register_signals()

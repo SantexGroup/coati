@@ -80,14 +80,15 @@
             vm.new_notifications = filter('filter')(vm.all_notifications, {viewed: false});
         };
         var getNotifications = function () {
-            return UserService.notifications(10).then(function (result) {
-                preProcessNotifications(result);
-                timeout(getNotifications, 30000);
-            });
+            if (UserService.is_logged()) {
+                UserService.notifications(10).then(function (result) {
+                    preProcessNotifications(result);
+                    timeout(getNotifications, 30000);
+                });
+            }
         };
 
         vm.loadNotifications = function () {
-            if (UserService.is_logged()) {
                 if (!vm.all_notifications) {
                     getNotifications();
                 }
@@ -99,7 +100,6 @@
                         });
                     }
                 }, 5000);
-            }
         };
 
         vm.show_profile = function () {
@@ -114,9 +114,7 @@
         };
 
         //get notifications
-        if (UserService.is_logged()) {
-            getNotifications();
-        }
+        getNotifications();
 
     };
 
@@ -124,10 +122,11 @@
         var vm = this;
 
         var getNotifications = function () {
-
-            UserService.notifications().then(function (result) {
-                vm.all_notifications = result;
-            });
+            if(UserService.is_logged()) {
+                UserService.notifications().then(function (result) {
+                    vm.all_notifications = result;
+                });
+            }
         };
 
         getNotifications();

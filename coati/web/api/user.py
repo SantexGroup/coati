@@ -5,7 +5,9 @@ from flask.ext.restful import Resource
 from coati.core.models.user import User
 from coati.core.models.notification import UserNotification
 from coati.web.api.auth import AuthResource, current_user
+from coati.web.api.auth.decorators import require_authentication
 from coati.web.api import errors as api_errors
+from coati.web.api.mails import create_activation_email
 
 
 def get_notifications(user):
@@ -17,7 +19,7 @@ def get_notifications(user):
     results.sort(key=lambda x: x.activity.created_on, reverse=True)
     if request.args.get('total'):
         results = results[:int(request.args.get('total'))]
-    return results, 200
+    return results
 
 
 def get_user_for_request(user_id):
@@ -52,7 +54,8 @@ def create_user(user_data):
         first_name=user_data.get('first_name'),
         last_name=user_data.get('last_name'),
         email=user_data.get('email'),
-        password=user_data.get('password')
+        password=user_data.get('password'),
+        active=False
     )
 
     try:
@@ -64,20 +67,22 @@ def create_user(user_data):
             _object=user_data
         )
 
-    dup_errors = [User.validate_duplicated_email(user.email)]
+    if User.is_duplicated_email(user.email):
+        errors_dic.update(dict(email=api_errors.DUP_EMAIL_ERROR_MSG),
+                          _object=user_data)
 
-    for dup_error in dup_errors:
-        if dup_error:
-            errors_dic.update(dup_error, _object=user_data)
+    token = current_app.token_handler.generate_access_token(user.email)
+    user.activation_token = token
 
     return user, errors_dic
 
 
-class UsersList(AuthResource):
+class UsersList(Resource):
     """
     User Resource
     """
 
+    @require_authentication
     def get(self):
         """
         Returns the list of users
@@ -106,6 +111,9 @@ class UsersList(AuthResource):
                 api_errors.VALIDATION_ERROR_MSG,
                 payload=errors_list
             )
+
+        user.save()
+        create_activation_email(user)
 
         return user, 201
 
@@ -193,8 +201,7 @@ class UserActivate(Resource):
 
         user.active = True
         user.save()
-        token = current_app.token_handler.generate_tokens_dict(str(user.pk))
-        return token, 200
+        return user, 200
 
 
 class UserNotifications(Resource):

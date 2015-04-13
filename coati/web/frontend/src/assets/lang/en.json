@@ -30,7 +30,7 @@
     "HOME_CREATE_PROJECT": "Click here to create a new project...",
 
     "LOGIN_TITLE": "Coati Agile Board",
-    "LOGIN_SUB_TITLE": "Be simple, be agile...",
+    "LOGIN_SUBTITLE": "Be simple, be agile...",
     "LOGIN_INVALID_EMAIL": "Please enter a valid email",
     "LOGIN_INVALID_PASSWORD": "Please enter a password",
     "LOGIN_LOG_IN": "Log in",

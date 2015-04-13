@@ -42,7 +42,7 @@
                 return req.$do('/projects/' + project_pk + '/members/' + member, req.METHODS.DELETE);
             },
             'set_as_owner': function(project_pk, member){
-                return req.$do('/projects/' + project_pk + '/members/' + member, req.METHODS.UPDATE);
+                return req.$do('/projects/' + project_pk + '/members/' + member, req.METHODS.UPDATE, {});
             },
             'import_file': function(project_pk, file, extra_data){
                 return file_upload.$do('/projects/' + project_pk + '/import', file, extra_data);

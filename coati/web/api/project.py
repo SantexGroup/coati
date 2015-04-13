@@ -3,15 +3,16 @@ import base64
 
 from flask import g
 from flask.ext.restful import request
-
 from coati.core.models.user import User
 from coati.core.models.project import Project, Column, ProjectMember
 from coati.core.models.ticket import Ticket, Attachment
 from coati.web.api.auth import AuthResource
-from coati.utils import send_new_member_email_async, save_notification
+from coati.web.utils import save_notification
 from coati.web.api import errors as api_errors
 from coati.web.api.auth.utils import current_user
 from coati.web.api import json
+from coati.web.api.mails import create_new_member_email
+
 
 def get_project_request(project_id):
     """
@@ -433,7 +434,7 @@ class ProjectMembers(AuthResource):
                     m.member = user
                     m.save()
                     # Send email notification
-                    send_new_member_email_async(m.member, project)
+                    create_new_member_email(m.member, project)
                     members_added.append(m.to_dict())
                 else:
                     errors_list.append(dict(

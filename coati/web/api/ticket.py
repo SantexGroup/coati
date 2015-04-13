@@ -1,4 +1,5 @@
 import base64
+from coati.web.api.mails import create_notification_email
 import json
 
 from flask.ext.restful import request
@@ -10,7 +11,7 @@ from coati.core.models.ticket import (Ticket, TicketDependency, Attachment,
                                       Comment)
 from coati.core.models.sprint import (Sprint, SprintTicketOrder,
                                       TicketColumnTransition as TicketCT)
-from coati.utils import save_notification, send_notification_email_async
+from coati.web.utils import save_notification
 from coati.web.api import errors as api_errors
 from coati.web.api.auth.utils import current_user
 from coati.web.api.project import get_project_request
@@ -583,7 +584,7 @@ class TicketComments(AuthResource):
                 if m is not None:
                     user = User.get_by_id(m)
                     if user:
-                        send_notification_email_async(user, c)
+                        create_notification_email(user, c)
                         # save activity
                         save_notification(project_pk=project_pk,
                                           verb='mention',

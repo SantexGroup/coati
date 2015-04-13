@@ -6,13 +6,13 @@
                 return req.$do('/users/search/' + q, req.METHODS.GET);
             },
             'update': function (pk, data) {
-                return req.$do('/users/' + pk, req.METHODS.UPDATE, data);
+                return req.$do('/users' + pk, req.METHODS.UPDATE, data);
             },
             'register': function (data) {
-                return req.$do('/users/register', req.METHODS.POST, data);
+                return req.$do('/users', req.METHODS.POST, data);
             },
             'get': function (pk) {
-                return req.$do('/users/' + pk, req.METHODS.GET);
+                return req.$do('/users' + pk, req.METHODS.GET);
             },
             'me': function () {
                 return req.$do('/users/me', req.METHODS.GET);
@@ -21,9 +21,8 @@
                 var q = per_page ? '?total=' + per_page : '';
                 return req.$do('/users/me/notifications' + q, req.METHODS.GET);
             },
-            'mark_as_viewed': function (per_page) {
-                var q = per_page ? '?total=' + per_page : '';
-                return req.$do('/users/me/notifications' + q, req.METHODS.UPDATE);
+            'mark_as_viewed': function () {
+                return req.$do('/users/me/notifications', req.METHODS.UPDATE, {});
             },
             'activateUser': function (code) {
                 return req.$do('/users/activate/' + code, req.METHODS.GET);

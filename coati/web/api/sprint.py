@@ -10,7 +10,7 @@ from coati.core.models.project import Column
 from coati.core.models.ticket import Ticket, Comment
 from coati.web.api import errors as api_errors
 from coati.web.api.auth import AuthResource
-from coati.utils import save_notification
+from coati.web.utils import save_notification
 from coati.web.api.project import get_project_request
 
 
@@ -409,7 +409,7 @@ class SprintChart(AuthResource):
                     sprint.get_tickets_with_latest_status())
             }
             return data, 200
-        return jsonify({'error': 'Bad Request'}), 400
+        return {'error': 'Bad Request'}, 400
 
 
 class SprintArchivedList(AuthResource):

@@ -1,4 +1,5 @@
-from coati.core.models.project import ProjectMember, Project
+from coati.core.models.notification import UserNotification
+from coati.core.models.project import ProjectMember, Project, Column
 from coati.core.models.sprint import TicketColumnTransition as TicketCT, \
     SprintTicketOrder, Sprint
 from coati.core.models.ticket import Comment, Ticket
@@ -16,6 +17,9 @@ def register_serializers():
     json.register(ProjectMember, project_member_serializer)
     json.register(Ticket, ticket_serializer)
     json.register(Sprint, sprint_serializer)
+    json.register(Column, column_serializer)
+    json.register(Comment, comment_serializer)
+    json.register(UserNotification, user_notification_serializer)
 
 
 def ticket_serializer(tkt):
@@ -122,4 +126,46 @@ def project_member_serializer(pm):
     """
     data = pm.to_dict()
     data['member'] = pm.member
+    return data
+
+
+def column_serializer(col):
+    """
+    Serialize a Column Object
+    :param col: Column Object
+    :return: Column Composite
+    """
+    data = col.to_dict()
+    ticket_column = TicketCT.get_transitions_in_cols([col.pk]).order_by('order')
+    tickets = []
+    for t in ticket_column:
+        if not t.ticket.closed:
+            tickets.append(t.ticket)
+    data['tickets'] = tickets
+    return data
+
+
+def comment_serializer(com):
+    """
+    Comment Serializer
+    :param com: Comment Object
+    :return: Comment Composite
+    """
+    data = com.to_dict()
+    data['who'] = com.who
+    data['ticket'] = com.ticket
+    return data
+
+
+def user_notification_serializer(un):
+    """
+    Serialize Notifications
+    :param un:
+    :return:
+    """
+    data = un.to_dict()
+    data['activity'] = un.activity.to_dict()
+    data['activity']['project'] = un.activity.project
+    data['activity']['author'] = un.activity.author
+    data['activity']['data'] = un.activity.data
     return data

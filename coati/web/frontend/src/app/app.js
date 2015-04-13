@@ -1,6 +1,6 @@
 (function (angular) {
 
-    function ConfigApp(ConfProvider, interpolate, location, urlRoute, growlProvider, translateProvider, FacebookProvider, GooglePlusProvider,loadingBar) {
+    function ConfigApp(ConfProvider, location, urlRoute, growlProvider, translateProvider, FacebookProvider, GooglePlusProvider,loadingBar) {
         urlRoute.when('/', '/home/');
         location.html5Mode({
             enabled: true,
@@ -156,7 +156,8 @@
                 rootScope.user = user;
 
             } else {
-                if (wnd.location.href.indexOf('login') < 0) {
+                if (wnd.location.href.indexOf('login') < 0 &&
+                    wnd.location.href.indexOf('register') < 0) {
                     stateParams.next = wnd.location.href;
                     state.go('login', stateParams, {reload: true});
                 }
@@ -180,7 +181,7 @@
     filterTrustedHTML.$inject = ['$sce'];
     filterNl2Br.$inject = ['$sce'];
     RunApp.$inject = ['$window', '$rootScope', '$state', '$stateParams', '$objects', 'UserService', 'StorageService', 'editableOptions', 'editableThemes'];
-    ConfigApp.$inject = ['ConfProvider','$interpolateProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider', '$translateProvider', 'FacebookProvider', 'GooglePlusProvider', 'cfpLoadingBarProvider'];
+    ConfigApp.$inject = ['ConfProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider', '$translateProvider', 'FacebookProvider', 'GooglePlusProvider', 'cfpLoadingBarProvider'];
     AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', 'UserService', 'TicketService', 'SocketIO', '$translate', 'StorageService'];
 
     angular.module('Coati', [

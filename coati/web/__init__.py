@@ -35,7 +35,9 @@ def create_app(config):
     """
     app = Flask(__name__,
                 static_folder='frontend/static',
-                static_url_path='/static')
+                static_url_path='/static',
+                template_folder='templates')
+
     app.config.from_object(config)
 
     # Add URL routing to render the index

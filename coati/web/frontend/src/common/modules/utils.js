@@ -1,5 +1,10 @@
 (function (angular) {
 
+    var ConfigModule = function(httpProvider){
+        httpProvider.defaults.useXDomain = true;
+        delete httpProvider.defaults.headers.common['X-Requested-With'];
+    };
+
     var RequestHelper = function (http, q, state, conf, tokens, growl) {
         return {
             METHODS: {
@@ -10,17 +15,18 @@
                 GET: 'GET'
             },
             '$do': function (url, method, data, not_default) {
-
                 var token = tokens.get_access_token();
-                if (token) {
+                if (token !== null && token !== undefined && token !== '') {
                     http.defaults.headers.common['Authorization'] = 'Token ' + token;
                 }
-
+                //var default_headers = { 'Content-Type': 'application/json'};
                 var results = q.defer();
                 http({
                     url: (not_default ? url : conf.BASE_API_URL + url),
                     method: method,
-                    data: data
+                    data: data,
+                    headers: {'content-type': 'application/json'}
+
                 }).success(function (body) {
                     results.resolve(body);
                 }).error(function (data, status) {
@@ -119,12 +125,14 @@
         };
     };
 
+    ConfigModule.$inject = ['$httpProvider'];
     RequestHelper.$inject = ['$http', '$q', '$state', 'Conf', 'TokenService', 'growl'];
     UploadHelper.$inject = ['$upload', 'TokenService', 'Conf', 'growl'];
 
     angular.module('Coati.Helpers', ['Coati.Config','Coati.Services.Token',
         'angular-growl',
         'angularFileUpload'])
+        .config(ConfigModule)
         .factory('$requests', RequestHelper)
         .factory('$file_uploads', UploadHelper)
         .factory('$file_download', DownloaderHelper)

@@ -1,5 +1,6 @@
 import urllib2
 import base64
+from bson import DBRef
 
 from flask import g
 from flask.ext.restful import request
@@ -41,10 +42,11 @@ class ProjectList(AuthResource):
         prj_mem = ProjectMember.get_by_member(current_user.id)
         projects = []
         for pm in prj_mem:
-            if pm.project.active:
-                projects.append(pm.project)
-            elif pm.project.owner.id == current_user.id:
-                projects.append(pm.project)
+            if not isinstance(pm.project, DBRef):
+                if pm.project.active:
+                    projects.append(pm.project)
+                elif pm.project.owner.id == current_user.id:
+                    projects.append(pm.project)
         return projects, 200
 
     def post(self):

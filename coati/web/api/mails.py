@@ -5,7 +5,7 @@ from coati.web.utils import custom_url_for, get_template
 
 def create_activation_email(user):
     link = custom_url_for(
-        '/login/activate_user',
+        '/activate',
         token=user.activation_token
     )
     message = Message(

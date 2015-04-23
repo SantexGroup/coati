@@ -120,7 +120,7 @@ module.exports = function(grunt) {
             },
             build_vendorjs: { // jshint ignore:line
                 files: [{
-                    src: ['<%= vendor_files.js %>'],
+                    src: ['<%= vendor_files.js %>', '<%= vendor_files.maps %>'],
                     dest: '<%= build_dir %>/',
                     cwd: '.',
                     expand: true

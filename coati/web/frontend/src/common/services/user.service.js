@@ -25,10 +25,12 @@
                 return req.$do('/users/me/notifications', req.METHODS.UPDATE, {});
             },
             'activateUser': function (code) {
-                return req.$do('/users/activate/' + code, req.METHODS.GET);
+                var data = {'token': code};
+                return req.$do('/users/activate', req.METHODS.POST, data);
             },
             'is_logged': function () {
-                return tokens.get_access_token() !== null;
+                var tkn = tokens.get_access_token();
+                return  tkn !== null && tkn !== 'null' && tkn !== undefined;
             }
         };
     };

@@ -66,7 +66,7 @@
                 return file_upload.$do('/projects/' + project_pk + '/tickets/' + tkt_id + '/attachments', files, extra_data);
             },
             'delete_attachment': function (project_pk, tkt_id, att_id) {
-                return req.$do('/projects/' + project_pk + '/tickets/' + tkt_id + '/attachments/' + att_id + '/delete', req.METHODS.DELETE);
+                return req.$do('/projects/' + project_pk + '/tickets/' + tkt_id + '/attachments/' + att_id, req.METHODS.DELETE);
             },
             'assign_member': function (project_pk, tkt_id, member) {
                 return req.$do('/projects/' + project_pk + '/tickets/' + tkt_id + '/assignments/' + member, req.METHODS.UPDATE, {});

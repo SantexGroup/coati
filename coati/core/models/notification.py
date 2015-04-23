@@ -16,8 +16,8 @@ def store_notification(user, project, verb, data=None, user_to=None):
     prj = Project.get_by_id(project)
     if prj:
         ua = UserActivity()
-        ua.project = project
-        ua.author = user
+        ua.project = prj.to_dbref()
+        ua.author = user.to_dbref()
         ua.verb = verb
         ua.data = data
         ua.to = user_to

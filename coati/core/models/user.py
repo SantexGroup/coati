@@ -84,8 +84,7 @@ class User(db.BaseDocument):
         :return: A user instance or None if the token_activation is not in use.
         """
         try:
-            instance = cls.objects.filter(active=False,
-                                          activation_token=token_activation).first()
+            instance = cls.objects(activation_token=token_activation).first()
         except (mongo_errors.ValidationError, cls.DoesNotExist):
             instance = None
 

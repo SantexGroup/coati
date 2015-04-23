@@ -681,7 +681,7 @@ class AttachmentInstance(AuthResource):
         get_project_request(project_pk)
         att = Attachment.get_by_id(att_id)
         tkt = get_ticket_request(tkt_id)
-        Ticket.remove_attachment(tkt, att)
+        Ticket.remove_attachment(tkt.id, att)
 
         # save activity
         save_notification(project_pk=project_pk,

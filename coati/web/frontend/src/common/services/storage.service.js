@@ -6,7 +6,7 @@
                 wnd.localStorage.setItem(name, value);
             },
             get: function (name) {
-                return wnd.localStorage.getItem(name);
+                return wnd.localStorage.getItem(name) || null;
             },
             put: function (name, value) {
                 this.set(name, value);

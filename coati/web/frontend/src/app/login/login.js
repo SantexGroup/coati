@@ -11,7 +11,8 @@
                 }
             },
             data: {
-                pageTitle: 'Coati :: Login Page'
+                pageTitle: 'Coati :: Login Page',
+                anonymous: true
             },
             reload: true
         })
@@ -23,8 +24,9 @@
                         controllerAs: 'vm'
                     }
                 },
-                data:{
-                    pageTitle: 'Coati :: Logout Page'
+                data: {
+                    pageTitle: 'Coati :: Logout Page',
+                    anonymous: true
                 }
             })
 
@@ -38,19 +40,21 @@
                     }
                 },
                 data: {
-                    pageTitle: 'Coati :: Register'
+                    pageTitle: 'Coati :: Register',
+                    anonymous: true
                 }
             })
 
             .state('activate', {
-                url: '/activation/:activation_code',
+                url: '/activate?token',
                 views: {
                     'master_view': {
                         controller: 'ActivateController'
                     }
                 },
                 data: {
-                    pageTitle: 'Coati :: Activation'
+                    pageTitle: 'Coati :: Activation',
+                    anonymous: true
                 }
             });
     }
@@ -83,7 +87,7 @@
             }, function (err) {
                 log.debug(err);
 
-                if(err.data.message) {
+                if (err.data.message) {
                     vm.serverError = err.data.message;
                 }
             });
@@ -94,9 +98,9 @@
             TokenService.store(data);
 
             // Save the logged user profile info.
-            UserService.me().then(function(user){
+            UserService.me().then(function (user) {
                 StorageService.set('user', JSON.stringify(user));
-            }, function(err){
+            }, function (err) {
                 TokenService.clean();
                 StorageService.set('user', null);
                 log.debug(err);
@@ -144,15 +148,30 @@
         };
     };
 
-    var ActivateController = function (state, UserService) {
-        if (state.params.activation_code) {
-            UserService.activateUser(state.params.activation_code).then(function (data) {
-                state.go('login_auth', {token: data.token,
-                    expire: data.expire}, {reload: true});
+    var ActivateController = function (rootScope, state, UserService, TokenService, StorageService) {
+        if (state.params.token) {
+            UserService.activateUser(state.params.token).then(function (data) {
+                storeData(data);
+                state.go('home', {reload:true});
             });
         } else {
             state.go('login', {reload: true});
         }
+
+        var storeData = function (data) {
+            // Save the auth tokens and expiration time
+            TokenService.store(data);
+
+            // Save the logged user profile info.
+            UserService.me().then(function (user) {
+                StorageService.set('user', JSON.stringify(user));
+                rootScope.user = user;
+            }, function () {
+                TokenService.clean();
+                StorageService.set('user', null);
+                state.go('login');
+            });
+        };
     };
 
 
@@ -191,9 +210,9 @@
     };
 
     Config.$inject = ['$stateProvider', '$translateProvider'];
-    LoginController.$inject = ['$state','$log', 'Conf', 'Facebook', 'GooglePlus', 'TokenService', 'StorageService', 'LoginService', 'UserService'];
+    LoginController.$inject = ['$state', '$log', 'Conf', 'Facebook', 'GooglePlus', 'TokenService', 'StorageService', 'LoginService', 'UserService'];
     LogoutController.$inject = ['$state', 'TokenService', 'StorageService'];
-    ActivateController.$inject = ['$state', 'UserService'];
+    ActivateController.$inject = ['$rootScope','$state', 'UserService', 'TokenService', 'StorageService'];
     RegisterController.$inject = ['$state', 'UserService'];
 
     angular.module('Coati.Login',

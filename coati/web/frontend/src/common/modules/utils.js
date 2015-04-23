@@ -25,7 +25,7 @@
                     url: (not_default ? url : conf.BASE_API_URL + url),
                     method: method,
                     data: data,
-                    headers: {'content-type': 'application/json'}
+                    headers: {'Content-Type': 'application/json'}
 
                 }).success(function (body) {
                     results.resolve(body);
@@ -90,7 +90,10 @@
                 var token = tokens.get_access_token();
                 var headers = {};
                 if (token) {
-                    headers = {'Authorization': 'Token ' + token};
+                    headers = {
+                        'Authorization': 'Token ' + token,
+                        'Content-Type': 'application/json'
+                    };
                 }
                 var endpoint = (not_default ? url : conf.BASE_API_URL + url);
                 return up.upload({

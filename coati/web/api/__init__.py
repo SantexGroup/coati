@@ -13,7 +13,7 @@ from coati.web.api import json
 from coati.web.api.serializers import register_serializers
 from coati.web.api.signals import register_signals
 
-APP_ACCEPTED_TYPE = 'application/json'
+APP_ACCEPTED_TYPES = ['application/json', 'multipart/form-data']
 
 blueprint = blueprints.Blueprint(
     'coati.web.api',
@@ -32,7 +32,7 @@ api.add_resource(user.UserInstance, '/users/<string:user_id>')
 api.add_resource(user.UserNotifications,
                  '/users/<string:user_id>/notifications')
 api.add_resource(user.UserSearch, '/users/search/<string:query>')
-api.add_resource(user.UserActivate, '/users/activate/<string:code>')
+api.add_resource(user.UserActivate, '/users/activate')
 
 api.add_resource(project.ProjectList,
                  '/projects')
@@ -95,7 +95,7 @@ api.add_resource(ticket.CommentInstance,
 api.add_resource(ticket.TicketAttachments,
                  '/projects/<string:project_pk>/tickets/<string:tkt_id>/attachments')
 api.add_resource(ticket.AttachmentInstance,
-                 '/projects/<string:project_pk>/tickets/<string:tkt_id>/attachments/<string:att_id>/delete')
+                 '/projects/<string:project_pk>/tickets/<string:tkt_id>/attachments/<string:att_id>')
 api.add_resource(ticket.MemberTicketInstance,
                  '/projects/<string:project_pk>/tickets/<string:tkt_id>/assignments/<string:pm_id>')
 api.add_resource(ticket.TicketMovement,
@@ -119,9 +119,9 @@ def detect_mime_type():
 
     if request.method in ['POST', 'PUT']:
         # For POST/PUT we need to check the content type
-        content_type = headers_dict.get('Content-Type')
+        content_type = headers_dict.get('Content-Type').split(';')[0]
 
-        if APP_ACCEPTED_TYPE not in content_type:
+        if content_type not in APP_ACCEPTED_TYPES:
             raise errors.InvalidAPIUsage(errors.INVALID_CONTENT_TYPE_MSG)
     else:
         # For GET/DELETE we need to check the accept types
@@ -130,12 +130,12 @@ def detect_mime_type():
         # If there are no accepted types, we assume the client accepts ours
         if accept_types:
             accepts_our_mime = (
-                (APP_ACCEPTED_TYPE in accept_types) or
+                (accept_types in APP_ACCEPTED_TYPES ) or
                 ('*/*' in accept_types)
             )
 
             if not accepts_our_mime:
-                raise errors.NotAcceptable(accepted=APP_ACCEPTED_TYPE)
+                raise errors.NotAcceptable(accepted=APP_ACCEPTED_TYPES)
 
 
 @blueprint.after_request

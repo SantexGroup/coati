@@ -38,7 +38,7 @@
         };
 
         vm.check_permission = function () {
-            return scope.project.owner.id === rootScope.user._id.$oid;
+            return scope.project.owner._id.$oid === rootScope.user._id.$oid;
         };
 
         vm.is_scrumm = function(){

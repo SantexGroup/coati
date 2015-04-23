@@ -107,7 +107,8 @@
                 scope.pageTitle = toState.data.pageTitle + ' | Coati';
             }
             scope.actual_path = toState.name;
-            rootScope.state_name = toState.name;
+            rootScope.state = toState;
+
         });
 
 
@@ -157,7 +158,9 @@
 
             } else {
                 if (wnd.location.href.indexOf('login') < 0 &&
-                    wnd.location.href.indexOf('register') < 0) {
+                    wnd.location.href.indexOf('register') < 0 &&
+                    wnd.location.href.indexOf('logout') < 0 &&
+                    wnd.location.href.indexOf('activate') < 0) {
                     stateParams.next = wnd.location.href;
                     state.go('login', stateParams, {reload: true});
                 }
@@ -168,7 +171,7 @@
         }
 
         rootScope.$on('$stateChangeSuccess', function () {
-            if (!_.startsWith(rootScope.state_name, 'login')) {
+            if (!rootScope.state.data.anonymous) {
                 if (!UserService.is_logged()) {
                     state.go('login', stateParams, {reload: true});
                 }

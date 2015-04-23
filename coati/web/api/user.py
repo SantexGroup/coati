@@ -186,14 +186,18 @@ class UserActivate(Resource):
     """
     Activation Token Class
     """
-
-    def get(self, code):
+    def post(self):
         """
         Activate a user based on a token
-        :param code: token to activate the user
         :return: token auth
         """
-        user = User.get_by_activation_token(code)
+        data = request.get_json(silent=True)
+        if not data:
+            raise api_errors.InvalidAPIUsage(
+                api_errors.INVALID_JSON_BODY_MSG
+            )
+
+        user = User.get_by_activation_token(data.get('token'))
         if not user:
             raise api_errors.MissingResource(
                 api_errors.ACTIVATION_INVALID_TOKEN_MSG
@@ -201,7 +205,12 @@ class UserActivate(Resource):
 
         user.active = True
         user.save()
-        return user, 200
+
+        tokens_dict = current_app.token_handler.generate_tokens_dict(
+            user.pk
+        )
+
+        return tokens_dict, 200
 
 
 class UserNotifications(Resource):

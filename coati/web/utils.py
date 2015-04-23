@@ -55,7 +55,7 @@ def custom_url_for(path, **params):
     :return: The absolute url for that path and parameters.
     """
     hostname = get_base_url()
-    url_params = '{}'.format(urllib.urlencode(params))
+    url_params = '?{}'.format(urllib.urlencode(params))
 
     absolute_url = hostname + path + url_params
 

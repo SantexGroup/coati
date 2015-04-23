@@ -18,7 +18,7 @@ def register_signals():
     signals.pre_delete.connect(ticket_pre_delete, sender=Ticket)
 
 
-def user_pre_delete(sender, document):
+def user_pre_delete(sender, document, *args, **kwargs):
     """
     Delete related documents when a User is deleted
     :param sender: Class
@@ -34,7 +34,7 @@ def user_pre_delete(sender, document):
     Comment.objects(who=document).delete()
 
 
-def project_pre_delete(sender, document):
+def project_pre_delete(sender, document, *args, **kwargs):
     """
     Delete related documents when a User is deleted
     :param sender: Class
@@ -51,7 +51,7 @@ def project_pre_delete(sender, document):
     Column.objects(project=document).delete()
 
 
-def sprint_pre_delete(sender, document):
+def sprint_pre_delete(sender, document, *args, **kwargs):
     """
     Delete related documents when a User is deleted
     :param sender: Class
@@ -64,7 +64,7 @@ def sprint_pre_delete(sender, document):
     TicketColumnTransition.objects(sprint=document).delete()
 
 
-def project_member_pre_delete(sender, document):
+def project_member_pre_delete(sender, document, *args, **kwargs):
     """
     Delete related documents when a Project Member is deleted
     :param sender: Class
@@ -76,7 +76,7 @@ def project_member_pre_delete(sender, document):
     ).update(pull__assigned_to=document)
 
 
-def ticket_pre_delete(sender, document):
+def ticket_pre_delete(sender, document, *args, **kwargs):
     """
     Delete related documents when a Ticket is deleted
     :param sender: Class
@@ -94,7 +94,7 @@ def ticket_pre_delete(sender, document):
     Comment.objects(ticket=document).delete()
 
 
-def activity_post_save(sender, document):
+def activity_post_save(sender, document, *args, **kwargs):
     # project notify
     r = RedisClient(channel=str(document.project.pk))
     r.store(document.verb, str(document.author.pk))

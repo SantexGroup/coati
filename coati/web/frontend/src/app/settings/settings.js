@@ -112,7 +112,7 @@
 
         vm.save = function () {
             if (vm.form.project_form.$valid) {
-                vm.project.owner_id = vm.project.owner.id;
+                vm.project.owner_id = vm.project.owner._id.$oid;
                 ProjectService.update(vm.project._id.$oid, vm.project).then(function () {
                     growl.addSuccessMessage('The project was updated successfully');
                 });

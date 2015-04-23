@@ -2,7 +2,7 @@ from coati.core.models.notification import UserNotification
 from coati.core.models.project import ProjectMember, Project, Column
 from coati.core.models.sprint import TicketColumnTransition as TicketCT, \
     SprintTicketOrder, Sprint
-from coati.core.models.ticket import Comment, Ticket
+from coati.core.models.ticket import Comment, Ticket, Attachment
 from coati.core.models.user import User
 from coati.web.api import json
 
@@ -20,6 +20,7 @@ def register_serializers():
     json.register(Column, column_serializer)
     json.register(Comment, comment_serializer)
     json.register(UserNotification, user_notification_serializer)
+    json.register(Attachment, attachment_serializer)
 
 
 def ticket_serializer(tkt):
@@ -169,3 +170,12 @@ def user_notification_serializer(un):
     data['activity']['author'] = un.activity.author
     data['activity']['data'] = un.activity.data
     return data
+
+
+def attachment_serializer(att):
+    """
+    Serialize Attachment
+    :param att: Attachment Object
+    :return: dictionary
+    """
+    return att.to_dict()

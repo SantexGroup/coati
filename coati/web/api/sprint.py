@@ -20,6 +20,7 @@ def get_sprint_request(sprint_id):
         raise api_errors.MissingResource(
             api_errors.INVALID_SPRINT_MSG
         )
+    return sprint
 
 
 class SprintOrder(AuthResource):

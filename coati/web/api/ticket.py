@@ -92,7 +92,7 @@ class TicketInstance(AuthResource):
                     # remove old data if this already exists
                     spo = SprintTicketOrder(sprint=sprint, ticket=tkt)
                     spo.ticket_repr = tkt.to_dict()
-                    spo.order = SprintTicketOrder.get_next_order_index(sprint)
+                    spo.order = SprintTicketOrder.get_next_order_index(sprint.id)
                 spo.save()
         else:
             spo = SprintTicketOrder.get_active_ticket(tkt)
@@ -181,7 +181,7 @@ class TicketProjectList(AuthResource):
             if sprint:
                 spo = SprintTicketOrder(sprint=sprint, ticket=tkt)
                 spo.ticket_repr = tkt.to_dict()
-                spo.order = SprintTicketOrder.get_next_order_index(sprint)
+                spo.order = SprintTicketOrder.get_next_order_index(sprint.id)
                 spo.save()
 
         # save activity
@@ -301,6 +301,8 @@ class TicketMovement(AuthResource):
             SprintTicketOrder.inactivate_spo(sprint, ticket)
             Ticket.order_items(destiny.get('order'))
         else:
+            SprintTicketOrder.inactivate_spo(sprint, ticket)
+
             tkt_ord_sprint = SprintTicketOrder()
             tkt_ord_sprint.sprint = sprint
             tkt_ord_sprint.ticket = ticket
@@ -308,7 +310,6 @@ class TicketMovement(AuthResource):
             tkt_ord_sprint.save()
 
             SprintTicketOrder.order_items(destiny.get('order'), sprint)
-            SprintTicketOrder.inactivate_spo(sprint, ticket)
 
         # save activity
         save_notification(project_pk=project_pk,
@@ -575,7 +576,7 @@ class TicketComments(AuthResource):
             )
 
         c = Comment(ticket=tkt_id)
-        c.who = current_user
+        c.who = current_user.to_dbref()
         c.comment = data.get('comment')
         c.save()
 
@@ -787,7 +788,7 @@ class TicketSearchRelated(AuthResource):
         :return: List of matched tickets
         """
         prj = get_project_request(project_pk)
-        tickets = Ticket.search(query, [str(prj.pk)])
+        tickets = set(Ticket.search(query, [str(prj.pk)]))
         results = []
         for tkt in tickets:
             val = dict(text='%s-%s: %s' % (tkt.project.prefix,

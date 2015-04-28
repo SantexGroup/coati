@@ -15,7 +15,7 @@
                 return req.$do('/projects/' + project_pk + '/tickets/archived', req.METHODS.GET);
             },
             'search': function (query) {
-                return req.$do('/tickets/search/' + query, req.METHODS.GET);
+                return req.$do('/projects/tickets/search/' + query, req.METHODS.GET);
             },
             'related_search': function(project_pk, query){
                 return req.$do('/projects/'+ project_pk +'/tickets/search/' + query, req.METHODS.GET);
@@ -57,7 +57,7 @@
                 return req.$do('/projects/' + project_pk + '/tickets/' + tkt_id + '/comments', req.METHODS.POST, comment);
             },
             'update_comment': function (project_pk, tkt_id, comment_id, comment) {
-                return req.$do('/projects/' + project_pk + '/ticket/' + tkt_id + '/comment/' + comment_id, req.METHODS.UPDATE, comment);
+                return req.$do('/projects/' + project_pk + '/tickets/' + tkt_id + '/comment/' + comment_id, req.METHODS.UPDATE, comment);
             },
             'delete_comment': function (project_pk, tkt_id, comment_id) {
                 return req.$do('/projects/' + project_pk + '/tickets/' + tkt_id + '/comment/' + comment_id, req.METHODS.DELETE);

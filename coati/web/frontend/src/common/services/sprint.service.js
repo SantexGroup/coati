@@ -11,14 +11,14 @@
             'archived': function (project_pk) {
                 return req.$do('/projects/' + project_pk + '/sprints/archived', req.METHODS.GET);
             },
-            'save': function (project_pk, sp) {
-                return req.$do('/projects/' + project_pk + '/sprints', req.METHODS.POST, sp);
+            'save': function (project_pk) {
+                return req.$do('/projects/' + project_pk + '/sprints', req.METHODS.POST, {});
             },
             'erase': function (project_pk, sprint_id) {
                 return req.$do('/projects/' + project_pk + '/sprints/' + sprint_id, req.METHODS.DELETE);
             },
-            'update': function (project_pk, sprint) {
-                return req.$do('/projects/' + project_pk + '/sprints/' + sprint._id.$oid, req.METHODS.UPDATE, sprint);
+            'update': function (sprint) {
+                return req.$do('/projects/' + sprint.project.$oid + '/sprints/' + sprint._id.$oid, req.METHODS.UPDATE, sprint);
             },
             'update_order': function (project_pk, data) {
                 return req.$do('/projects/' + project_pk + '/sprints/order', req.METHODS.POST, data);

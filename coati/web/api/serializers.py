@@ -100,7 +100,7 @@ def sprint_serializer(obj):
     :return: Sprint Composite
     """
     data = obj.to_dict()
-    tickets = list(SprintTicketOrder.get_active_sprint(obj))
+    tickets = list(SprintTicketOrder.get_active_sprint(obj.id))
     ticket_list = []
     for t in tickets:
         tkt = t.ticket.to_dict()

@@ -9,6 +9,7 @@ BaseDocument
     Base abstract model schema that provides some common columns and methods
     for subclasses.
 """
+from copy import deepcopy
 
 from bson import json_util
 from mongoengine import errors as mongo_errors, fields
@@ -107,6 +108,15 @@ class BaseDocument(db.Document):
         data = self.to_dict()
 
         return json_util.dumps(data)
+
+    def clone(self):
+        """
+        Clone a Document
+        :return: a cloned document
+        """
+        cloned = deepcopy(self)
+        cloned.id = None
+        return cloned
 
 
 db.BaseDocument = BaseDocument

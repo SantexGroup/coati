@@ -60,9 +60,9 @@ class Ticket(db.BaseDocument):
 
     @classmethod
     def search(cls, query, projects):
-        return cls.objects.distinct((Q(title__icontains=query) |
-                                     Q(description__icontains=query)) &
-                                    Q(project__in=projects))
+        return cls.objects((Q(title__icontains=query) |
+                            Q(description__icontains=query)) &
+                           Q(project__in=projects))
 
     @classmethod
     def get_closed_tickets(cls, project_pk):

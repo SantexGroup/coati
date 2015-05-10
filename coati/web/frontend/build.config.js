@@ -36,21 +36,7 @@ module.exports = {
 
         html: [ 'src/index.html' ],
 
-        css: [
-            'src/css/font-awesome.min.css',
-            'src/css/bootstrap.min.css',
-            'src/css/bootstrap-theme.min.css',
-            'src/css/bootstrap-social.css',
-            'src/css/navbar-fixed-top.css',
-            'src/css/table-responsive.css',
-            'src/css/tasks.css',
-            'src/css/bootstrap-reset.css',
-            'src/css/style.css',
-            'src/css/style-responsive.css',
-            'src/css/angular-growl.min.css',
-            'src/css/datepicker.css',
-            'src/css/custom.css'
-        ]
+        less: ['src/less/app.less']
     },
 
     /**

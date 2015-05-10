@@ -18,6 +18,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks('grunt-ng-annotate');
     grunt.loadNpmTasks('grunt-template');
+    grunt.loadNpmTasks('grunt-contrib-less');
+
 
     /**
      * Load in our build configuration file.
@@ -219,6 +221,28 @@ module.exports = function(grunt) {
                     '<%= concat.compile_js.dest %>': '<%= concat.compile_js.dest %>'
                 }
             }
+        },
+
+        /**
+         * `grunt-contrib-less` handles our LESS compilation and uglification automatically.
+         * Only our `main.less` file is included in compilation; all other files
+         * must be imported from this file.
+         */
+        less: {
+          build: {
+            files: {
+              '<%= build_dir %>/assets/<%= pkg.name %>-<%= pkg.version %>.css': '<%= app_files.less %>'
+            }
+          },
+          compile: {
+            files: {
+              '<%= build_dir %>/assets/<%= pkg.name %>-<%= pkg.version %>.css': '<%= app_files.less %>'
+            },
+            options: {
+              cleancss: true,
+              compress: true
+            }
+          }
         },
 
         /**
@@ -445,6 +469,15 @@ module.exports = function(grunt) {
             },
 
             /**
+           * When the CSS files change, we need to compile and minify them.
+           */
+          less: {
+            files: [ 'src/less/app.less' ],
+            tasks: [ 'less:build' ]
+          },
+
+
+            /**
              * When a JavaScript unit test file changes, we only want to lint it and
              * run the unit tests. We don't want to do any live reloading.
              */
@@ -519,13 +552,13 @@ module.exports = function(grunt) {
     /**
      * The `build` task gets your app ready to run for development and testing.
      */
-    grunt.registerTask('build', ['clean:build', 'template', 'html2js', 'jshint', 'coffeelint', 'coffee', 'concat:build_css', 'copy:build_app_assets', 'copy:build_vendor_assets', 'copy:build_appjs', 'copy:build_vendorjs', 'index:build', 'karmaconfig', 'karma:continuous', 'copy:build_static']);
+    grunt.registerTask('build', ['clean:build', 'template', 'html2js', 'jshint', 'coffeelint', 'coffee', 'less:build', 'copy:build_app_assets', 'copy:build_vendor_assets', 'copy:build_appjs', 'copy:build_vendorjs', 'index:build', 'karmaconfig', 'karma:continuous', 'copy:build_static']);
 
     /**
      * The `compile` task gets your app ready for deployment by concatenating and
      * minifying your code.
      */
-    grunt.registerTask('compile', ['template', 'clean:compile', 'copy:compile_assets', 'ngAnnotate', 'concat:compile_js', 'uglify', 'index:compile', 'cachebreaker', 'copy:compile_static']);
+    grunt.registerTask('compile', ['less:compile', 'template', 'clean:compile', 'copy:compile_assets', 'ngAnnotate', 'concat:compile_js', 'uglify', 'index:compile', 'cachebreaker', 'copy:compile_static']);
 
     /**
      * A utility function to get all app JavaScript sources.

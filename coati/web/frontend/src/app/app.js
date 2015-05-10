@@ -1,6 +1,6 @@
 (function (angular) {
 
-    function ConfigApp(ConfProvider, location, urlRoute, growlProvider, translateProvider, FacebookProvider, GooglePlusProvider,loadingBar) {
+    function ConfigApp(ConfProvider, location, urlRoute, translateProvider, FacebookProvider, GooglePlusProvider,loadingBar) {
         urlRoute.when('/', '/home/');
         location.html5Mode({
             enabled: true,
@@ -8,8 +8,6 @@
         });
         location.hashPrefix('!');
 
-        growlProvider.globalTimeToLive(5000);
-        growlProvider.onlyUniqueMessages(true);
         translateProvider.useStaticFilesLoader({
             prefix: '/static/assets/lang/',
             suffix: '.json'
@@ -184,7 +182,7 @@
     filterTrustedHTML.$inject = ['$sce'];
     filterNl2Br.$inject = ['$sce'];
     RunApp.$inject = ['$window', '$rootScope', '$state', '$stateParams', '$objects', 'UserService', 'StorageService', 'editableOptions', 'editableThemes'];
-    ConfigApp.$inject = ['ConfProvider', '$locationProvider', '$urlRouterProvider', 'growlProvider', '$translateProvider', 'FacebookProvider', 'GooglePlusProvider', 'cfpLoadingBarProvider'];
+    ConfigApp.$inject = ['ConfProvider', '$locationProvider', '$urlRouterProvider', '$translateProvider', 'FacebookProvider', 'GooglePlusProvider', 'cfpLoadingBarProvider'];
     AppController.$inject = ['$scope', '$rootScope', '$state', '$stateParams', 'UserService', 'TicketService', 'SocketIO', '$translate', 'StorageService'];
 
     angular.module('Coati', [

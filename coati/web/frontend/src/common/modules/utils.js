@@ -5,7 +5,7 @@
         delete httpProvider.defaults.headers.common['X-Requested-With'];
     };
 
-    var RequestHelper = function (http, q, state, conf, tokens, growl) {
+    var RequestHelper = function (http, q, state, conf, tokens) {
         return {
             METHODS: {
                 UPDATE: 'PUT',
@@ -33,7 +33,7 @@
                     if (status === 401) {
                         state.go(conf.STATE_401);
                         //Notify
-                        growl.addErrorMessage('There was an error on the server side, please try again!');
+                        //growl.addErrorMessage('There was an error on the server side, please try again!');
                     }
                     if(status === 403){
                         state.go(conf.STATE_403);
@@ -84,7 +84,7 @@
         };
     };
 
-    var UploadHelper = function (up, tokens, conf, growl) {
+    var UploadHelper = function (up, tokens, conf) {
         return {
             '$do': function (url, files, extra_data, not_default) {
                 var token = tokens.get_access_token();
@@ -103,7 +103,7 @@
                     file: files
                 }).error(function(){
                     //Notify
-                    growl.addErrorMessage('There was an error on the server side, please try again!');
+                    //growl.addErrorMessage('There was an error on the server side, please try again!');
 
                 });
             }
@@ -129,12 +129,11 @@
     };
 
     ConfigModule.$inject = ['$httpProvider'];
-    RequestHelper.$inject = ['$http', '$q', '$state', 'Conf', 'TokenService', 'growl'];
-    UploadHelper.$inject = ['$upload', 'TokenService', 'Conf', 'growl'];
+    RequestHelper.$inject = ['$http', '$q', '$state', 'Conf', 'TokenService'];
+    UploadHelper.$inject = ['Upload', 'TokenService', 'Conf'];
 
     angular.module('Coati.Helpers', ['Coati.Config','Coati.Services.Token',
-        'angular-growl',
-        'angularFileUpload'])
+        'ngFileUpload'])
         .config(ConfigModule)
         .factory('$requests', RequestHelper)
         .factory('$file_uploads', UploadHelper)

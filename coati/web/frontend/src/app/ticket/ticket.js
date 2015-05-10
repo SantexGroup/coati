@@ -469,7 +469,7 @@
     TicketDeleteController.$inject = ['$modalInstance', 'TicketService', 'item', 'project'];
 
     angular.module('Coati.Ticket', ['ui.router', 'ngTagsInput', 'xeditable', 'pascalprecht.translate',
-        'angularFileUpload',
+        'ngFileUpload',
         'mentio',
         'Coati.Config',
         'Coati.SocketIO',

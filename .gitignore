@@ -1,5 +1,61 @@
-.DS_Store
+### Python
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Logs
+*.log
+*.log.*
+
+# Sphinx documentation
+docs/_build/
+
+
+### JetBrains (PyCharm)
 .idea/
-*/**/*.pyc
-*/**/node_modules
-log.txt
+
+
+### Some more
+cover
+*.pyc
+*.swp
+*.vagrant
+.DS_Store
+
+realtime/node_modules

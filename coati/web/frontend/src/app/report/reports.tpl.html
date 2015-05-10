@@ -1,0 +1,117 @@
+<h2>{{ 'REPORT_BURNDOWN_CHART' | translate }}</h2>
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-group">
+            <label>{{ 'REPORT_SPRINT' | translate }}</label>
+            <select class="form-control"
+                    name="sprint"
+                    data-ng-model="vm.sprint_selected"
+                    data-ng-options="s.name group by vm.getSprintType(s) for s in vm.sprints"
+                    data-ng-change="vm.getReport();">
+                <option value="">{{ 'REPORT_SPRINT_SELECTION' | translate }}</option>
+            </select>
+        </div>
+        <p ng-show="vm.is_not_started">
+            {{ 'REPORT_SPRINT_NOT_STARTED' | translate }}
+        </p>
+
+        <div class="col-md-6" style="position: relative">
+            <chart value="vm.chartData" type="line" width="600" height="400"
+                   chart-obj="chartObj"></chart>
+        </div>
+        <div class="col-md-6 report-tickets"
+             ng-show="vm.sprint_selected && !vm.is_not_started">
+            <section class="panel tasks-widget sprint-item">
+                <header class="panel-heading">
+                    <span>{{ 'REPORT_DONE_TICKETS' | translate }}</span>
+                </header>
+                <div class="panel-body">
+                    <div class="task-content">
+                        <ul class="task-list">
+                            <li ng-if="(vm.tickets|filter:{finished:true}).length < 1">
+                                <div class="task-title">
+                                    <span class="task-title-sp">
+                                      {{ 'REPORT_NO_TICKETS_DONE' | translate }}
+                                    </span>
+                                </div>
+                            </li>
+                            <li ng-repeat="tkt in vm.tickets|filter:{finished: true} track by tkt._id.$oid"
+                                class="ticket-item {{ tkt.type }}">
+                                <div class="task-title">
+                                        <span class="task-title-sp">
+                                         {{ tkt.title }}
+                                        </span>
+
+                                    <div class="pull-right hidden-phone">
+                                        <span class="badge bg-info">{{ tkt.points }}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            <section class="panel tasks-widget sprint-item">
+                <header class="panel-heading">
+                    <span>{{ 'REPORT_PENDING_TICKETS' | translate }}</span>
+                </header>
+                <div class="panel-body">
+                    <div class="task-content">
+                        <ul class="task-list">
+                            <li ng-if="(vm.tickets|filter:{finished:false}).length < 1">
+                                <div class="task-title">
+                                    <span class="task-title-sp">
+                                      {{ 'REPORT_NO_PENDING_TICKETS' | translate }}
+                                    </span>
+                                </div>
+                            </li>
+                            <li ng-repeat="tkt in vm.tickets|filter:{finished: false} track by tkt._id.$oid"
+                                class="ticket-item {{ tkt.type }}">
+                                <div class="task-title">
+                                        <span class="task-title-sp">
+                                          {{ tkt.title }}
+                                        </span>
+
+                                    <div class="pull-right hidden-phone">
+                                        <span class="badge bg-info">{{ tkt.points }}</span>
+                                        <span class="badge bg-warning">{{ tkt.where || 'Backlog' }}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            <section class="panel tasks-widget sprint-item">
+                <header class="panel-heading">
+                    <span>{{ 'REPORT_ADDED_TICKETS' | translate }}</span>
+                </header>
+                <div class="panel-body">
+                    <div class="task-content">
+                        <ul class="task-list">
+                            <li ng-if="(vm.tickets|filter:{added_after: true}).length < 1">
+                                <div class="task-title">
+                                    <span class="task-title-sp">
+                                      {{ 'REPORT_NO_ADDED_TICKETS' | translate }}
+                                    </span>
+                                </div>
+                            </li>
+                            <li ng-repeat="tkt in vm.tickets|filter:{added_after: true} track by tkt._id.$oid"
+                                class="ticket-item {{ tkt.type }}">
+                                <div class="task-title">
+                                        <span class="task-title-sp">
+                                         {{ tkt.title }}
+                                        </span>
+
+                                    <div class="pull-right hidden-phone">
+                                        <span class="badge bg-info">{{ tkt.points }}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>

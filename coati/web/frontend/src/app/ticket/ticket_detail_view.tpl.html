@@ -1,0 +1,378 @@
+<section class="panel">
+<header class="panel-heading">
+    <h4 class="modal-title pull-left">
+        <span>{{ vm.project.prefix}}-{{ vm.ticket.number }}</span>: <span
+            editable-text="vm.ticket.title"
+            e-form="title_form"
+            ng-click="vm.show(title_form)"
+            onaftersave="vm.saveTicket(vm.ticket);">{{ vm.ticket.title }}</span>
+    </h4>
+
+    <div class="close-ticket">
+        <a href="javascript:;" title="Close" ng-click="vm.close();">
+            <i class="icon-remove"></i>
+        </a>
+    </div>
+    <div style="clear:both"></div>
+</header>
+<div class="panel-body">
+
+<div class="row">
+<div class="col-md-12">
+<div class="row">
+    <div class="col-md-9">
+        <div class="row">
+            <div class="col-md-12">
+                <label ng-if="vm.is_scrumm()">{{ 'TICKET_POINTS' | translate
+                    }}</label>
+                            <span ng-if="vm.is_scrumm()"
+                                  class="badge bg-important"
+                                  editable-text="vm.ticket.points"
+                                  onaftersave="vm.saveTicket(vm.ticket);"
+                                  e-form="points_form"
+                                  ng-click="vm.show(points_form)">
+                                {{ vm.ticket.points }}
+                            </span>
+                <label>{{ 'TICKET_TYPE' | translate }}:</label>
+                        <span class="badge {{ vm.ticket.type}}"
+                              editable-select="vm.ticket.type"
+                              e-form="type_form"
+                              ng-click="vm.show(type_form)"
+                              e-ng-options="t.value as t.name for t in vm.types"
+                              onaftersave="vm.saveTicket(vm.ticket);">
+                            {{ vm.types | ticketTypes:vm.ticket.type }}
+                        </span>
+                <label>{{ 'TICKET_IN_COLUMN' | translate }}:</label>
+                        <span ng-if="!vm.ticket.in_column"
+                              class="badge bg-warning">{{ 'TICKET_BACKLOG' | translate }}</span>
+                        <span ng-if="vm.ticket.in_column"
+                              class="badge bg-warning">{{ vm.ticket.in_column }}</span>
+            </div>
+            <div class="col-md-12">
+                <label>{{ 'TICKET_LABELS' | translate }}:</label>
+
+                <p class="labels-ticket" editable-tags="vm.labels"
+                   e-form="labels_form" style="display: inline-block;"
+                   ng-click="vm.show(labels_form)"
+                   e-style="display:inline-block;min-width:400px;"
+                   oncancel="vm.prepareLabelsToSave($data, false);"
+                   onaftersave="vm.prepareLabelsToSave($data, true);">
+                <span class="badge bg-info"
+                      ng-repeat="lbl in vm.ticket.labels">
+                    {{ lbl }}
+                </span>
+                    <span ng-if="vm.labels.length < 1">{{ 'TICKET_NO_LABELS' | translate }}</span>
+                </p>
+            </div>
+        </div>
+
+    </div>
+    <div class="col-md-3">
+        <button type="button" ng-if="!vm.is_scrumm() && !vm.ticket.closed"
+                ng-click="vm.archive_restore_ticket(true);"
+                class="btn btn-xs btn-danger pull-right">
+            {{ 'TICKET_ACTION_ARCHIVE' | translate }}
+        </button>
+        <button type="button" ng-if="!vm.is_scrumm() && vm.ticket.closed"
+                ng-click="vm.archive_restore_ticket(false);"
+                class="btn btn-xs btn-success pull-right">
+            {{ 'TICKET_ACTION_RESTORE' | translate }}
+        </button>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-md-12">
+        <label>{{ 'TICKET_LINKED' | translate }}</label>
+        <button class="btn btn-xs btn-success"
+                ng-click="vm.related_collapsed=!vm.related_collapsed">
+            <i class="icon-plus"></i>
+        </button>
+        <div collapse="vm.related_collapsed" class="form-related">
+            <tags-input ng-model="vm.related_tickets" type="text"
+                        placeholder="{{ 'SEARCH' | translate }}"
+                        add-from-autocomplete-only="true">
+                <auto-complete
+                        source="vm.searchTickets($query)"></auto-complete>
+            </tags-input>
+            <select class="form-control" ng-model="vm.dependency_type"
+                    ng-options="t.value as ( 'TICKET_' + t.name | translate) for t in vm.ticket_dependencies">
+                <option value="">{{ 'TICKET_DEPENDENCY_TYPE' | translate }}
+                </option>
+            </select>
+
+            <div style="margin:5px 0 0">
+                <button class="btn btn-xs btn-success"
+                        ng-click="vm.prepareLabelsToDependencies(true);">{{
+                    'TICKET_DEPENDENCY_TYPE_SAVE' | translate }}
+                </button>
+                <button class="btn btn-xs btn-danger"
+                        ng-click="vm.cancelDependencyAdd();">{{
+                    'TICKET_DEPENDENCY_TYPE_CANCEL' | translate }}
+                </button>
+            </div>
+        </div>
+        <div>
+            <div ng-repeat="(key, value) in vm.ticket.related_tickets | groupBy:'type'">
+                <label>{{ 'TICKET_' + vm.getDependencyType(key) | translate }}</label>
+                <ul>
+                    <li ng-repeat="rtkt in value">
+                        <a ui-sref="project.planning.ticket({project_pk:vm.project._id.$oid, ticket_id:rtkt.ticket._id.$oid})">
+                            <span>{{ vm.project.prefix }}-{{ rtkt.ticket.number }}: {{ rtkt.ticket.title }}</span>
+                        </a>
+                        <a href="#" ng-click="vm.remove_related_ticket(rtkt);">
+                            <i class="icon-remove"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-md-12">
+        <label>{{ 'TICKET_MEMBERS' | translate }}</label>
+        <ul class="ticket-members">
+            <li dropdown
+                ng-repeat="m in vm.ticket.assigned_to track by m._id.$oid"
+                title="{{ m.member.first_name }} {{ m.member.last_name }} ({{ m.member.email }})"
+                class="member">
+                <a href="#" dropdown-toggle>
+                    <img ng-if="m.member.picture"
+                         ng-src="{{ m.member.picture }}">
+                    <img ng-if="!m.member.picture"
+                         src="/static/assets/img/koala.png">
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                    <li>
+                        <a href="#" ng-click="vm.remove_from_ticket(m);">Remove
+                            from this ticket</a>
+                    </li>
+                </ul>
+            </li>
+            <li dropdown>
+                <button class="btn btn-default" dropdown-toggle>
+                    <i class="icon-plus"></i>
+                </button>
+                <ul class="dropdown-menu member-menu"
+                    role="menu">
+                    <li ng-click="$event.stopPropagation();"
+                        class="search-member-li">
+                        <div class="notify-arrow notify-arrow-green"></div>
+                        <input type="text"
+                               placeholder="{{ 'SEARCH' | translate }}"
+                               class="form-control"
+                               ng-model="vm.searchMemberInput">
+                    </li>
+                    <li class="divider"></li>
+                    <li ng-repeat="m in vm.members | filter:vm.searchMemberInput track by m._id.$oid">
+                        <a href="#" ng-click="vm.assign_to_ticket(m)">
+                            <img ng-if="m.member.picture"
+                                 ng-src="{{ m.member.picture }}">
+                            <img ng-if="!m.member.picture"
+                                 src="/static/assets/img/koala.png">
+                            <span>{{ m.member.first_name }} {{ m.member.last_name }} ({{ m.member.email }})</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-md-12">
+        <label>{{ 'TICKET_DESCRIPTION' | translate }}:</label>
+
+        <p editable-textarea="vm.ticket.description" e-form="decription_form"
+           ng-click="vm.show(decription_form)" ng-disabled="vm.no_editing"
+           e-rows="5"
+           e-cols="70" onaftersave="vm.saveTicket(vm.ticket);">
+            <span ng-bind-html="vm.ticket.description | nl2br"></span>
+                <span ng-if="!vm.ticket.description"
+                      class="ng-scope">{{ 'TICKET_NO_DESCRIPTION' | translate }}</span>
+        </p>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-md-12">
+        <div class="attachments">
+            <label>{{ 'TICKET_ATTACHMENTS' | translate }}:</label>
+
+            <div class="attachments_stored">
+                <div style="margin-right: 3px;margin-bottom:3px"
+                     ng-repeat="f in vm.ticket.files"
+                     class="btn-group" dropdown
+                     is-open="f.isopen">
+                    <button class="btn btn-xs btn-info"
+                            dropdown-toggle>
+                        <i ng-class="vm.checkTypeIcon(f)"></i>
+                        <span>{{ f.name }}</span>
+                        <span>({{ f.size / 1024 |number:0 }} Kb)</span>
+                    </button>
+                    <ul role="menu" class="dropdown-menu">
+                        <li><a href="javascript:;"
+                               ng-click="vm.download(f);">
+                            <i class="icon-download"></i>
+                            {{ 'TICKET_DOWNLOAD' | translate }}</a>
+                        </li>
+                        <li><a href="javascript:;"
+                               ng-click="vm.delete_file(f);">
+                            <i class="icon-trash"></i>
+                            {{ 'TICKET_DELETE' | translate }}</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <button class="btn pull-left btn-sm btn-primary"
+                    ng-file-select ng-model="vm.files"
+                    multiple="true"
+                    ng-disabled="vm.no_editing">{{ 'TICKET_SELECT_FILES' |
+                translate }}
+            </button>
+            <button ng-show="vm.files.length"
+                    ng-click="vm.confirm_upload();"
+                    class="btn pull-right btn-sm btn-success">
+                {{ 'TICKET_UPLOAD_FILES' | translate }}
+            </button>
+            <div style="clear:both"></div>
+            <div class="files" ng-show="vm.files.length">
+                <ul>
+                    <li ng-repeat="f in vm.files"
+                        ng-class="{aborted: f.aborted}">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <i ng-class="vm.checkTypeIcon(f)"></i>
+                                <span>{{ f.name }}</span>
+                                <span>({{ f.size / 1024 |number:0 }} Kb)</span>
+                            </div>
+                            <div class="col-md-2">
+                                <div ng-show="!f.aborted && f.progress >= 0"
+                                     class="progress progress-striped">
+                                    <div class="progress-bar progress-bar-info"
+                                         role="progressbar"
+                                         aria-valuenow="{{ f.progress }}"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100"
+                                         ng-style="{width: f.progress + '%' }">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <button ng-hide="f.upload"
+                                        ng-click="vm.removeFileFromQueue(f)"
+                                        class="btn btn-danger btn-xs pull-right icon-trash"></button>
+                                <button class="btn btn-xs btn-danger"
+                                        ng-show="f.upload != null && f.progress < 100 && !f.aborted"
+                                        ng-click="vm.abort_upload(f);">
+                                    {{ 'TICKET_CANCEL' | translate }}
+                                </button>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="add_new_comment">
+
+            <div contenteditable="{{!vm.no_editing}}" stripBr="true" isNew="true"
+                 class="form-control"
+                 style="height: auto !important;"
+                 id="comment_area"
+                 mentio
+                 mentio-id="'comment_area'"
+                 mentio-trigger-char="'@'"
+                 mentio-items="vm.members_filtered"
+                 mentio-template-url="ticket/members-mentions.tpl.html"
+                 mentio-search="vm.searchMember(term)"
+                 mentio-select="vm.getMemberText(item)"
+                 mentio-typed-term="typedTerm"
+                 ng-trim="false"
+                 ng-model="vm.comment"
+                 mentions="vm.mentions"
+                 data-ph="Write a comment..."></div>
+            <br>
+            <button id="add-comment"
+                    class="btn btn-success pull-right"
+                    ng-disabled="vm.process_comment || vm.no_editing"
+                    ng-click="vm.add_new_comment($event)">{{
+                'TICKET_NEW_COMMENT' | translate }}
+            </button>
+            <div style="clear:both"></div>
+        </div>
+        <div class="comments">
+            <ul>
+                <li ng-repeat="c in vm.comments track by c._id.$oid">
+                    <div class="msg-time-chat">
+                        <div class="message-body msg-in">
+                            <div class="text">
+
+                                <div class="attribution" ng-if="!c.editable">
+                                    <div class="comment-options" ng-if="c.who._id.$oid === vm.user._id.$oid">
+                                        <button class="btn btn-xs" ng-click="vm.edit_comment(c);">
+                                            <i class="icon-edit"></i>
+                                        </button>
+                                        <button class="btn btn-xs" ng-click="vm.delete_comment(c);">
+                                            <i class="icon-trash"></i>
+                                        </button>
+                                    </div>
+                                    <img class="avatar"
+                                         ng-if="!c.who.picture"
+                                         alt=""
+                                         src="static/assets/img/koala.png">
+                                    <img class="avatar"
+                                         ng-if="c.who.picture"
+                                         alt=""
+                                         ng-src="{{ c.who.picture }}">
+                                    <a href="javascript:;">
+                                        <span ng-if="c.who.first_name">{{ c.who.first_name }} {{ c.who.last_name }}</span>
+                                        <span ng-if="!c.who.first_name">{{ c.who.email }}</span>
+                                    </a>
+                                    {{ c.when.$date | date:'medium':'UTC' }}
+                                </div>
+                                <p ng-if="!c.editable" ng-bind-html="c.comment | trustedHtml">{{c.comment}}</p>
+
+                                <div class="update-form" ng-if="c.editable">
+                                    <div contenteditable stripBr="true" isNew="false"
+                                     class="form-control"
+                                     style="height: auto !important;margin-bottom:10px;"
+                                     id="comment_area_{{ c._id.$oid }}"
+                                     mentio
+                                     mentio-id="'comment_area_{{ c._id.$oid }}'"
+                                     mentio-trigger-char="'@'"
+                                     mentio-items="vm.members_filtered"
+                                     mentio-template-url="ticket/members-mentions.tpl.html"
+                                     mentio-search="vm.searchMember(term)"
+                                     mentio-select="vm.getMemberText(item)"
+                                     mentio-typed-term="typedTerm"
+                                     ng-trim="false"
+                                     ng-model="c.comment_temp"
+                                     mentions="vm.mentions"
+                                     data-ph="Write a comment..."></div>
+                                    <button id="update-comment"
+                                        class="btn btn-success"
+                                        ng-click="vm.update_comment(c);">{{
+                                    'TICKET_UPDATE_COMMENT' | translate }}
+                                    </button>
+                                    <button class="btn btn-danger" ng-click="vm.cancel_edit_comment(c);">
+                                        {{ 'TICKET_CANCEL' | translate }}
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+
+</section>

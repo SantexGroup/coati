@@ -1,0 +1,28 @@
+<div class="row" id="notifications">
+    <div class="col-md-12" id="planning-list">
+        <ul class="breadcrumb">
+            <li><a href="/"><i class="icon-home"></i>&nbsp;{{ 'BREADCRUMB_HOME' | translate }}</a></li>
+            <li class="active">{{ 'NOTIFICATIONS_ALL' | translate }}</li>
+        </ul>
+        <section class="panel tasks-widget backlog">
+            <header class="panel-heading">
+                <span>{{ 'NOTIFICATIONS' | translate }}</span>
+
+                <div class="add-task-row pull-right">
+                    <span class="badge bg-inverse">{{ 'NOTIFICATIONS_TOTAL' | translate }} {{vm.all_notifications.length}}</span>
+                </div>
+                <div style="clear:both"></div>
+            </header>
+            <div class="panel-body">
+                <ul class="notification-list">
+                    <li ng-repeat="n in vm.all_notifications"
+                        ng-class="{new:!n.viewed}">
+                        <ng-include
+                                    src="'user/notifications/wrapper_notification.tpl.html'"></ng-include>
+
+                    </li>
+                </ul>
+            </div>
+        </section>
+    </div>
+</div>

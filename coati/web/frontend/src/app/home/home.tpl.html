@@ -1,0 +1,47 @@
+<div class="row">
+    <div class="col-md-12 projects">
+        <h3>{{ 'HOME_WELCOME_MESSAGE' | translate }}</h3>
+
+        <p data-ng-show="vm.projects.length < 1">{{ 'HOME_NO_PROJECTS' | translate }}</p>
+        <!--widget start-->
+        <aside class="project-item col-md-3"
+               ng-repeat="item in vm.projects track by item._id.$oid"
+               data-index="{{ $index }}">
+            <section class="panel">
+                <a ui-sref="project.planning({project_pk: item._id.$oid })">
+                    <header class="panel-heading alt">
+                        <span>{{ item.name }}</span>
+
+                        <div class="pull-right">
+                        <span ng-class="{active: item.active, deactivated: !item.active}"
+                              title="Green: Active, Red: Inactive"><i
+                                class="icon-circle"></i></span>
+                        </div>
+                    </header>
+                </a>
+
+                <div class="panel-body">
+                    <p>{{ item.description }}</p>
+                    <ul class="nav nav-pills nav-stacked">
+                        <li>
+                        <span class="label"
+                              data-ng-class="{true: 'label-sucess', false: 'label-danger'}[item.active]"></span>
+                        </li>
+                    </ul>
+                </div>
+
+            </section>
+        </aside>
+        <!--widget end-->
+        <aside class="profile-nav alt col-md-3 new-project" ng-click="vm.create_project();">
+            <section class="panel">
+                <header class="panel-heading alt">
+                    <span>{{ 'HOME_NEW_PROJECT' | translate }}...</span>
+                </header>
+                <div class="panel-body">
+                    <p>{{ 'HOME_CREATE_PROJECT' | translate }}</p>
+                </div>
+            </section>
+        </aside>
+    </div>
+</div>

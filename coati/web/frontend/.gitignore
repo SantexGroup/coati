@@ -1,0 +1,11 @@
+.tmp
+.sass-cache
+build/
+bin/
+static/
+node_modules/
+vendor/
+.idea/
+coverage/
+*.*~
+src/common/config/config.js

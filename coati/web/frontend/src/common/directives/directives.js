@@ -408,6 +408,17 @@
                     $(this).next().slideToggle(200);
                     $(this).parent().toggleClass('toggled');
                 });
+
+                angular.element(elem).on('click', '.profile-menu > a', function(e){
+                    e.preventDefault();
+                    $(this).parent().toggleClass('toggled');
+                    $(this).next().slideToggle(200);
+                });
+
+                (function(){
+                    Waves.attach('.btn', ['waves-button', 'waves-float']);
+                    Waves.init();
+                })();
             }
         };
     };

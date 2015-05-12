@@ -52,14 +52,13 @@
         SocketIO.channel(scope.project._id.$oid);
     };
 
-    var ProjectFormCtrl = function (state, modalInstance, ProjectService, growl) {
+    var ProjectFormCtrl = function (state, modalInstance, ProjectService) {
         var vm = this;
         vm.form = {};
         vm.project = {};
         vm.save = function () {
             if (vm.form.project_form.$valid) {
                 ProjectService.save(vm.project).then(function (project) {
-                    growl.addSuccessMessage('The project was created successfully');
                     modalInstance.close(project);
                 });
             } else {
@@ -90,7 +89,7 @@
     Config.$inject = ['$stateProvider', '$translateProvider'];
     ProjectCtrl.$inject = ['$scope', '$rootScope', '$state', 'project', 'SocketIO'];
     ProjectDeleteController.$inject = ['$modalInstance', 'ProjectService', 'project'];
-    ProjectFormCtrl.$inject = ['$state', '$modalInstance', 'ProjectService', 'growl'];
+    ProjectFormCtrl.$inject = ['$state', '$modalInstance', 'ProjectService'];
 
     angular.module('Coati.Project', ['ui.router', 'pascalprecht.translate',
         'Coati.SocketIO',

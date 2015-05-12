@@ -32,8 +32,6 @@
                 }).error(function (data, status) {
                     if (status === 401) {
                         state.go(conf.STATE_401);
-                        //Notify
-                        //growl.addErrorMessage('There was an error on the server side, please try again!');
                     }
                     if(status === 403){
                         state.go(conf.STATE_403);
@@ -102,9 +100,7 @@
                     data: extra_data,
                     file: files
                 }).error(function(){
-                    //Notify
-                    //growl.addErrorMessage('There was an error on the server side, please try again!');
-
+                    //do something
                 });
             }
         };

@@ -24,7 +24,7 @@
     };
 
     //TODO: Add SocketIO to realtime
-    var ProjectCtrlSettings = function (wnd, rootScope, tmo, filter, scope, state, modal, growl, ProjectService) {
+    var ProjectCtrlSettings = function (wnd, rootScope, tmo, filter, scope, state, modal, ProjectService) {
         var vm = this;
         vm.form = {};
 
@@ -42,7 +42,6 @@
             });
             modalInstance.result.then(function () {
                 getColumnConfiguration(vm.project._id.$oid);
-                growl.addSuccessMessage('The column was removed successfully');
             });
         };
 
@@ -65,7 +64,6 @@
             });
             modalInstance.result.then(function () {
                 getColumnConfiguration(vm.project._id.$oid);
-                growl.addSuccessMessage('The column was saved successfully');
             });
         };
 
@@ -80,7 +78,6 @@
                 }
             });
             modalInstance.result.then(function () {
-                growl.addSuccessMessage('The user was added as member successfully');
                 getMembers(vm.project._id.$oid);
             });
         };
@@ -99,7 +96,6 @@
                 }
             });
             modalInstance.result.then(function () {
-                growl.addSuccessMessage('The member was removed successfully');
                 getMembers(vm.project._id.$oid);
             });
         };
@@ -113,9 +109,7 @@
         vm.save = function () {
             if (vm.form.project_form.$valid) {
                 vm.project.owner_id = vm.project.owner._id.$oid;
-                ProjectService.update(vm.project._id.$oid, vm.project).then(function () {
-                    growl.addSuccessMessage('The project was updated successfully');
-                });
+                ProjectService.update(vm.project._id.$oid, vm.project);
             } else {
                 vm.submitted = true;
             }
@@ -162,7 +156,6 @@
                 .success(function () {
                     vm.json_file = null;
                     vm.uploading = false;
-                    growl.addSuccessMessage('The file was imported successfully');
                     getColumnConfiguration(vm.project._id.$oid);
                 }).error(function(){
                     vm.uploading = false;
@@ -294,7 +287,7 @@
     };
 
     Config.$inject = ['$stateProvider', 'tagsInputConfigProvider'];
-    ProjectCtrlSettings.$inject = ['$window', '$rootScope', '$timeout', '$filter', '$scope', '$state', '$modal', 'growl', 'ProjectService', 'SocketIO'];
+    ProjectCtrlSettings.$inject = ['$window', '$rootScope', '$timeout', '$filter', '$scope', '$state', '$modal', 'ProjectService', 'SocketIO'];
     ColumnFormController.$inject = ['$log', '$modalInstance', 'ProjectService', 'project', 'column'];
     ColumnDeleteController.$inject = ['$modalInstance', 'ProjectService', 'column'];
     MembersController.$inject = ['$modalInstance', 'UserService', 'ProjectService', 'project'];

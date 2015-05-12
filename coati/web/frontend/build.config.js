@@ -106,8 +106,6 @@ module.exports = {
             'vendor/angular-bootstrap-colorpicker/css/colorpicker.min.css'
         ],
         assets: [],
-        fonts: [
-            'vendor/bootstrap/dist/fonts/*'
-        ]
+        fonts: []
     }
 };

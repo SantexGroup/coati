@@ -1,47 +1,80 @@
+<div class="block-header">
+    <h2>Your Projects</h2>
+</div>
 <div class="row">
-    <div class="col-md-12 projects">
-        <h3>{{ 'HOME_WELCOME_MESSAGE' | translate }}</h3>
+    <p data-ng-show="vm.projects.length < 1">{{ 'HOME_NO_PROJECTS' |
+        translate }}</p>
 
-        <p data-ng-show="vm.projects.length < 1">{{ 'HOME_NO_PROJECTS' | translate }}</p>
-        <!--widget start-->
-        <aside class="project-item col-md-3"
-               ng-repeat="item in vm.projects track by item._id.$oid"
-               data-index="{{ $index }}">
-            <section class="panel">
-                <a ui-sref="project.planning({project_pk: item._id.$oid })">
-                    <header class="panel-heading alt">
-                        <span>{{ item.name }}</span>
+    <div class="col-sm-4" ng-repeat="item in vm.projects track by item._id.$oid"
+         data-index="{{ $index }}">
+        <div class="card">
+            <div class="card-header bgm-bluegray m-b-20">
+                <h2>{{ item.name }}
+                    <small>Something...</small>
+                </h2>
+                <ul class="actions actions-alt">
+                    <li class="dropdown">
+                        <a href="" data-toggle="dropdown" aria-expanded="false">
+                            <i class="md md-more-vert"></i>
+                        </a>
 
-                        <div class="pull-right">
-                        <span ng-class="{active: item.active, deactivated: !item.active}"
-                              title="Green: Active, Red: Inactive"><i
-                                class="icon-circle"></i></span>
-                        </div>
-                    </header>
-                </a>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li>
+                                <a href="">Change Date Range</a>
+                            </li>
+                            <li>
+                                <a href="">Change Graph Type</a>
+                            </li>
+                            <li>
+                                <a href="">Other Settings</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <button ui-sref="project.planning({project_pk: item._id.$oid })"
+                        class="btn bgm-blue btn-float waves-effect waves-effect waves-button waves-float">
+                    <i class="md md-send"></i></button>
+            </div>
 
-                <div class="panel-body">
-                    <p>{{ item.description }}</p>
-                    <ul class="nav nav-pills nav-stacked">
-                        <li>
-                        <span class="label"
-                              data-ng-class="{true: 'label-sucess', false: 'label-danger'}[item.active]"></span>
-                        </li>
-                    </ul>
-                </div>
+            <div class="card-body card-padding">
+                {{ item.description }}
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4"
+         data-index="{{ $index }}">
+        <div class="card">
+            <div class="card-header bgm-bluegray m-b-20">
+                <h2>{{ 'HOME_NEW_PROJECT' | translate }}...
+                    <small></small>
+                </h2>
+                <ul class="actions actions-alt">
+                    <li class="dropdown">
+                        <a href="" data-toggle="dropdown" aria-expanded="false">
+                            <i class="md md-more-vert"></i>
+                        </a>
 
-            </section>
-        </aside>
-        <!--widget end-->
-        <aside class="profile-nav alt col-md-3 new-project" ng-click="vm.create_project();">
-            <section class="panel">
-                <header class="panel-heading alt">
-                    <span>{{ 'HOME_NEW_PROJECT' | translate }}...</span>
-                </header>
-                <div class="panel-body">
-                    <p>{{ 'HOME_CREATE_PROJECT' | translate }}</p>
-                </div>
-            </section>
-        </aside>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li>
+                                <a href="">Change Date Range</a>
+                            </li>
+                            <li>
+                                <a href="">Change Graph Type</a>
+                            </li>
+                            <li>
+                                <a href="">Other Settings</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <button ng-click="vm.create_project();"
+                        class="btn bgm-red btn-float waves-effect waves-effect waves-button waves-float">
+                    <i class="md md-add"></i></button>
+            </div>
+
+            <div class="card-body card-padding">
+                {{ 'HOME_CREATE_PROJECT' | translate }}
+            </div>
+        </div>
     </div>
 </div>

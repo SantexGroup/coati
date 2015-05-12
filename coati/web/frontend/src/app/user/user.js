@@ -61,7 +61,7 @@
 
     };
 
-    var UserController = function (rootScope, filter, timeout, growl, modal, UserService, SocketIO) {
+    var UserController = function (rootScope, filter, timeout, modal, UserService, SocketIO) {
 
         var vm = this;
         vm.new_notifications = [];
@@ -107,9 +107,6 @@
                 controller: 'UserProfileCtrl as vm',
                 templateUrl: 'user/user.tpl.html'
             });
-            modalInstance.result.then(function () {
-                growl.addSuccessMessage('The user was updated successfully');
-            });
 
         };
 
@@ -138,7 +135,7 @@
     };
 
     ConfigModule.$inject = ['$stateProvider', '$translateProvider'];
-    UserController.$inject = ['$rootScope', '$filter', '$timeout', 'growl', '$modal', 'UserService', 'SocketIO'];
+    UserController.$inject = ['$rootScope', '$filter', '$timeout', '$modal', 'UserService', 'SocketIO'];
     NotificationController.$inject = ['$rootScope', 'UserService', 'SocketIO'];
     UserProfileController.$inject = ['$rootScope', '$modalInstance', 'UserService'];
 

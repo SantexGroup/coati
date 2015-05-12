@@ -313,15 +313,38 @@
     var navigation = function () {
         return {
             retrict: 'A',
-            link: function (scope, elem, attr, ctrl) {
+            link: function (scope, elem) {
+                /*
+                 * Detact Mobile Browser
+                 */
+                if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+                   $('html').addClass('ismobile');
+                }
+
+                /*
+                 * Top Search
+                 */
+                (function(){
+                    angular.element(elem).on('click', '#top-search > a', function(e){
+                        e.preventDefault();
+                        $('#header').addClass('search-toggled');
+                    });
+
+                    angular.element(elem).on('click', '#top-search-close', function(e){
+                        e.preventDefault();
+
+                        $('#header').removeClass('search-toggled');
+                    });
+                })();
+
                 //Toggle
-                $('body').on('click', '#menu-trigger, #chat-trigger', function (e) {
+                angular.element(elem).on('click', '#menu-trigger, #chat-trigger', function (e) {
                     e.preventDefault();
                     var x = $(this).data('trigger');
 
                     $(x).toggleClass('toggled');
                     $(this).toggleClass('open');
-                    $('body').toggleClass('modal-open');
+                    angular.element(elem).toggleClass('modal-open');
 
                     //Close opened sub-menus
                     $('.sub-menu.toggled').not('.active').each(function () {
@@ -332,7 +355,10 @@
 
                     $('.profile-menu .main-menu').hide();
 
-                    if (x == '#sidebar') {
+                    var $elem;
+                    var $elem2;
+
+                    if (x === '#sidebar') {
 
                         $elem = '#sidebar';
                         $elem2 = '#menu-trigger';
@@ -347,7 +373,7 @@
                         }
                     }
 
-                    if (x == '#chat') {
+                    if (x === '#chat') {
                         $elem = '#chat';
                         $elem2 = '#chat-trigger';
 
@@ -377,7 +403,7 @@
                 });
 
                 //Submenu
-                $('body').on('click', '.sub-menu > a', function (e) {
+                angular.element(elem).on('click', '.sub-menu > a', function (e) {
                     e.preventDefault();
                     $(this).next().slideToggle(200);
                     $(this).parent().toggleClass('toggled');

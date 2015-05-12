@@ -18,7 +18,7 @@
         });
     };
 
-    var ProjectCtrlPlanning = function (rootScope, scope, state, modal, growl, ProjectService, TicketService, SprintService, SocketIO) {
+    var ProjectCtrlPlanning = function (rootScope, scope, state, modal, ProjectService, TicketService, SprintService, SocketIO) {
         var vm = this;
         vm.ticket_detail = null;
         vm.searchBacklog = '';
@@ -67,16 +67,12 @@
                 } else {
                     vm.tickets.push(tkt);
                 }
-                //Notify
-                growl.addSuccessMessage('The ticket was saved successfully');
             });
             e.stopPropagation();
         };
 
         vm.renameSprint = function (sprint) {
-            SprintService.update(sprint).then(function () {
-                growl.addSuccessMessage('The sprint was renamed successfully');
-            });
+            SprintService.update(sprint);
         };
 
 
@@ -132,7 +128,6 @@
             modal_instance.result.then(function () {
                 getSprintsWithTickets(vm.project._id.$oid);
                 getTicketsForProject(vm.project._id.$oid);
-                growl.addSuccessMessage('The ticket was deleted successfully');
             });
             e.stopPropagation();
         };
@@ -153,7 +148,6 @@
                 }
             });
             modal_instance.result.then(function () {
-                growl.addSuccessMessage('The sprint was started successfully');
                 vm.one_started = true;
                 getSprintsWithTickets(vm.project._id.$oid);
             });
@@ -175,7 +169,6 @@
                 }
             });
             modal_instance.result.then(function () {
-                growl.addSuccessMessage('The sprint was updated successfully');
                 getSprintsWithTickets(vm.project._id.$oid);
             });
         };
@@ -194,7 +187,6 @@
                 }
             });
             modal_instance.result.then(function () {
-                growl.addSuccessMessage('The sprint was stopped successfully');
                 getTicketsForProject(vm.project._id.$oid);
                 getSprintsWithTickets(vm.project._id.$oid);
             });
@@ -310,7 +302,6 @@
         vm.create_sprint = function () {
             SprintService.save(vm.project._id.$oid).then(function (sprint) {
                 vm.sprints.push(sprint);
-                growl.addSuccessMessage('The sprint was created successfully');
             });
         };
 
@@ -318,7 +309,6 @@
             SprintService.erase(vm.project._id.$oid, sprint_id).then(function () {
                 getSprintsWithTickets(vm.project._id.$oid);
                 getTicketsForProject(vm.project._id.$oid);
-                growl.addSuccessMessage('The sprint was deleted successfully');
             });
         };
 
@@ -411,7 +401,7 @@
     };
 
     Config.$inject = ['$stateProvider', '$translateProvider'];
-    ProjectCtrlPlanning.$inject = ['$rootScope', '$scope', '$state', '$modal', 'growl', 'ProjectService', 'TicketService', 'SprintService', 'SocketIO'];
+    ProjectCtrlPlanning.$inject = ['$rootScope', '$scope', '$state', '$modal', 'ProjectService', 'TicketService', 'SprintService', 'SocketIO'];
 
     angular.module('Coati.Planning', ['ui.router', 'ui.sortable', 'pascalprecht.translate',
         'Coati.Directives',

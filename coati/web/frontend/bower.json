@@ -38,7 +38,8 @@
         "angular-filter": "v0.5.4",
         "angular-facebook": "0.2.3",
         "angular-google-plus": "0.1.2",
-        "angular-bootstrap": "0.12.0"
+        "angular-bootstrap": "0.12.0",
+        "material-design-iconic-font": "1.1.1"
     },
     "devDependencies": {
         "angular-mocks": ""

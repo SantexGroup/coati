@@ -343,14 +343,39 @@
                     </ul>
                 </div>
 
-                <ul class="main-menu">
-                    <li ui-sref-active="active"><a href="/"><i class="md md-home"></i> Project List</a></li>
-                    <li><a href="/"><i class="md md-list"></i> Backlog</a></li>
-                    <li><a href="/"><i class="md md-dashboard"></i> Board</a></li>
-                    <li><a href="/"><i class="md md-archive"></i> Reports</a></li>
-                    <li><a href="/"><i class="md md-archive"></i> Archived Tickets</a></li>
-                    <li><a href="/"><i class="md md-archive"></i> Archived Sprints</a></li>
-                    <li><a href="/"><i class="md md-settings"></i> Settings</a></li>
+                <ul class="main-menu" data-ng-controller="ProjectCtrl as PrjCtrl">
+                    <li ui-sref-active="active"><a href="/"><i
+                            class="md md-home"></i> Project List</a></li>
+                    <li ng-if="PrjCtrl.project" ui-sref-active="active"><a
+                            ui-sref="project.planning({project_pk: PrjCtrl.project._id.$oid})"
+                            ui-sref-opts="{reload: true}"><i
+                            class="md md-list"></i> {{
+                        'PROJECT_PLANNING' | translate }}</a></li>
+                    <li ng-if="PrjCtrl.project" ui-sref-active="active"><a
+                            ui-sref="project.board({project_pk: PrjCtrl.project._id.$oid})"
+                            ui-sref-opts="{reload: true}"><i
+                            class="md md-dashboard"></i> {{
+                        'PROJECT_BOARD' | translate }}</a></li>
+                    <li ng-if="PrjCtrl.project" ui-sref-active="active"><a
+                            ui-sref="project.reports({project_pk: PrjCtrl.project._id.$oid})"
+                            ui-sref-opts="{reload: true}"><i
+                            class="md md-archive"></i> {{
+                        'PROJECT_REPORTS' | translate }}</a></li>
+                    <li ng-if="PrjCtrl.project" ui-sref-active="active"><a
+                            ui-sref="project.closed_tickets({project_pk: PrjCtrl.project._id.$oid})"
+                            ui-sref-opts="{reload: true}"><i
+                            class="md md-archive"></i> {{
+                        'PROJECT_ARCHIVED_TICKETS' | translate }}</a></li>
+                    <li ng-if="PrjCtrl.project" ui-sref-active="active"><a
+                            ui-sref="project.archived({project_pk: PrjCtrl.project._id.$oid})"
+                            ui-sref-opts="{reload: true}"><i
+                            class="md md-archive"></i> {{
+                        'PROJECT_ARCHIVED_SPRINTS' | translate }}</a></li>
+                    <li ng-if="PrjCtrl.project && PrjCtrl.check_permission()" ui-sref-active="active"><a
+                            ui-sref="project.settings({project_pk: PrjCtrl.project._id.$oid})"
+                            ui-sref-opts="{reload: true}"><i
+                            class="md md-settings"></i> {{
+                        'PROJECT_PROJECT_SETTINGS' | translate }}</a></li>
                 </ul>
             </div>
         </div>

@@ -321,6 +321,31 @@
                    $('html').addClass('ismobile');
                 }
 
+                //Get saved layout type from LocalStorage
+                var layoutStatus = localStorage.getItem('ma-layout-status');
+                if (layoutStatus == 1) {
+                    angular.element(elem).addClass('sw-toggled');
+                    $('#tw-switch').prop('checked', true);
+                }
+
+                angular.element(elem).on('change', '#toggle-width input:checkbox', function(){
+                    if ($(this).is(':checked')) {
+                        setTimeout(function(){
+                            angular.element(elem).addClass('toggled sw-toggled');
+                            localStorage.setItem('ma-layout-status', 1);
+                            animateMainmenu(0, 100);
+                        }, 250);
+                    }
+                    else {
+                        setTimeout(function(){
+                            angular.element(elem).removeClass('toggled sw-toggled');
+                            localStorage.setItem('ma-layout-status', 0);
+                            $('.main-menu > li').removeClass('animated');
+                        }, 250);
+                    }
+                });
+
+
                 /*
                  * Top Search
                  */
@@ -414,11 +439,37 @@
                     $(this).parent().toggleClass('toggled');
                     $(this).next().slideToggle(200);
                 });
+            }
+        };
+    };
 
-                (function(){
-                    Waves.attach('.btn', ['waves-button', 'waves-float']);
-                    Waves.init();
-                })();
+    var floatInputs = function(){
+        return {
+            restrict: 'C',
+            link: function(scope, elem){
+                //Add blue animated border and remove with condition when focus and blur
+
+                angular.element(elem).on('focus', function(){
+                    $(this).closest('.fg-line').addClass('fg-toggled');
+                });
+
+                angular.element(elem).on('blur', function(){
+                    var p = $(this).closest('.form-group');
+                    var i = p.find('.form-control').val();
+
+                    if (p.hasClass('fg-float')) {
+                        if (i.length == 0) {
+                            $(this).closest('.fg-line').removeClass('fg-toggled');
+                        }
+                    }
+                    else {
+                        $(this).closest('.fg-line').removeClass('fg-toggled');
+                    }
+                });
+
+                if(angular.element(elem).val().length == 0){
+                   angular.element(elem).addClass('fg-toggled');
+                }
             }
         };
     };
@@ -437,7 +488,8 @@
         .directive('editableTags', editableTagInput)
         .directive('datepickerPopup', datepicker_fix)
         .directive('contenteditable', contentEditable)
-        .directive('navigation', navigation);
+        .directive('navigation', navigation)
+        .directive('fgInput', floatInputs);
 
 
 }(angular));

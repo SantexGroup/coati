@@ -53,7 +53,8 @@ def ticket_serializer(tkt):
     for ass in tkt.assigned_to:
         if ass.__class__.__name__ != 'DBRef':
             val = ass.to_dict()
-            val['member'] = ass.member.to_dict()
+            if ass.member.__class__.__name__ != 'DBRef':
+                val['member'] = ass.member.to_dict()
             assignments.append(val)
     data['assigned_to'] = assignments
 

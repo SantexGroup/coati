@@ -4,13 +4,12 @@
         stateProvider.state('project.settings', {
             url: '/settings',
             views: {
-                'project-settings': {
+                'main@': {
                     controller: 'ProjectCtrlSettings',
                     controllerAs: 'vm',
                     templateUrl: 'settings/settings.tpl.html'
                 }
             },
-            tab_active: 'settings',
             data: {
                 pageTitle: 'Project Settings'
             },
@@ -198,8 +197,7 @@
 
         // get the project from the parent controller.
         vm.project = scope.$parent.project;
-        // set the active tab
-        scope.$parent.vm[state.current.tab_active] = true;
+
         getColumnConfiguration(vm.project._id.$oid);
         getMembers(vm.project._id.$oid);
 

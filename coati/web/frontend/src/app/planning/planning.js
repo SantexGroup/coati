@@ -1,10 +1,11 @@
 (function (angular) {
 
+
     var Config = function (stateProvider) {
         stateProvider.state('project.planning', {
             url: '/planning',
             views: {
-                'project-planning': {
+                'main@': {
                     templateUrl: 'planning/planning.tpl.html',
                     controller: 'ProjectCtrlPlanning',
                     controllerAs: 'vm'
@@ -18,7 +19,7 @@
         });
     };
 
-    var ProjectCtrlPlanning = function (rootScope, scope, state, modal, ProjectService, TicketService, SprintService, SocketIO) {
+    var ProjectCtrlPlanning = function (rootScope, scope, state, modal, project, ProjectService, TicketService, SprintService, SocketIO) {
         var vm = this;
         vm.ticket_detail = null;
         vm.searchBacklog = '';
@@ -313,11 +314,10 @@
         };
 
         // get the project from the parent controller.
-        vm.project = scope.$parent.project;
+        vm.project = project;
 
 
         // set the active tab
-        scope.$parent.vm[state.current.tab_active] = true;
 
         vm.is_scrumm = function () {
             return vm.project.project_type === 'S';
@@ -401,7 +401,7 @@
     };
 
     Config.$inject = ['$stateProvider', '$translateProvider'];
-    ProjectCtrlPlanning.$inject = ['$rootScope', '$scope', '$state', '$modal', 'ProjectService', 'TicketService', 'SprintService', 'SocketIO'];
+    ProjectCtrlPlanning.$inject = ['$rootScope', '$scope', '$state', '$modal', 'project', 'ProjectService', 'TicketService', 'SprintService', 'SocketIO'];
 
     angular.module('Coati.Planning', ['ui.router', 'ui.sortable', 'pascalprecht.translate',
         'Coati.Directives',

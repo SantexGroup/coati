@@ -4,13 +4,12 @@
         stateProvider.state('project.reports', {
             url: '/reports',
             views: {
-                'project-reports': {
+                'main@': {
                     controller: 'ProjectCtrlReports',
                     controllerAs: 'vm',
                     templateUrl: 'report/reports.tpl.html'
                 }
             },
-            tab_active: 'reports',
             data: {
                 pageTitle: 'Project Reports'
             },
@@ -95,7 +94,6 @@
         };
         vm.project = scope.$parent.project;
         // set the active tab
-        scope.$parent.vm[state.current.tab_active] = true;
         getSprints(state.params.project_pk);
 
     };

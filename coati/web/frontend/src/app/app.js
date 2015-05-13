@@ -109,6 +109,11 @@
 
         });
 
+        rootScope.$on('$viewContentLoaded', function(){
+            Waves.attach('.btn', ['waves-button', 'waves-float']);
+            Waves.init();
+        });
+
 
         vm.searchTickets = function (query) {
             vm.loading_results = true;

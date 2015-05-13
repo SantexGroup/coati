@@ -1,9 +1,10 @@
 <h3>
     {{ vm.project.name }}
-    <a class="btn btn-success btn-sm pull-right" href="javascript:;"
-       ng-click="vm.add_or_edit($event);">{{ 'PLANNING_NEW_TICKET' | translate
-        }}</a>
 </h3>
+<button class="btn bgm-red btn-float new-button"
+        ng-click="vm.add_or_edit($event);" title="{{ 'PLANNING_NEW_TICKET' | translate }}">
+    <i class="md md-add"></i>
+</button>
 <p>{{ vm.project.description }}</p>
 <div class="row" id="planning">
     <div class="col-md-12" id="planning-list">

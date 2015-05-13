@@ -1,16 +1,16 @@
 (function (angular) {
 
+
     var Config = function (stateProvider) {
         stateProvider.state('project.board', {
             url: '/board?ticket',
             views: {
-                'project-board': {
+                'main@': {
                     controller: 'ProjectCtrlBoard',
                     controllerAs: 'vm',
                     templateUrl: 'board/board.tpl.html'
                 }
             },
-            tab_active: 'board',
             data: {
                 pageTitle: 'Project Board'
             }
@@ -22,9 +22,6 @@
         vm.enabled = false;
         vm.project_pk = scope.$parent.project._id.$oid;
         vm.project = scope.$parent.project;
-
-        // set the active tab
-        scope.$parent.vm[state.current.tab_active] = true;
 
         vm.is_scrumm = function () {
             return vm.project.project_type === 'S';

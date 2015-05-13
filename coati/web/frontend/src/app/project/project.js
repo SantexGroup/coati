@@ -1,55 +1,44 @@
 (function (angular) {
 
-    var ResolveProject = function (stateParams, ProjectService) {
-        return ProjectService.get(stateParams.project_pk);
+    var ResolveProject = function (rootScope, stateParams, ProjectService) {
+        return ProjectService.get(stateParams.project_pk).then(function(prj){
+            rootScope.project = prj;
+            return prj;
+        });
     };
 
     var Config = function (stateProvider) {
         stateProvider
             .state('project', {
                 url: '/project/:project_pk',
-                views: {
-                    'main': {
-                        templateUrl: 'project/project.tpl.html',
-                        controller: 'ProjectCtrl',
-                        controllerAs: 'vm',
-                        resolve: {
-                            project: ResolveProject
-                        }
-                    }
+                resolve: {
+                    project: ResolveProject
                 },
-                data: {
-                    pageTitle: 'Project Details'
-                },
+                //template:'<ui-view/>',
                 abstract: true,
                 reload: true
             });
     };
 
 
-    var ProjectCtrl = function (scope, rootScope, state, project, SocketIO) {
-        //Keep the project in this scope so any child can access it without re-call.
-        scope.project = project;
-
+    var ProjectCtrl = function (rootScope, state, SocketIO) {
         var vm = this;
 
-        vm.switchView = function (view) {
-            state.go(view, {project_pk: state.params.project_pk}, {reload: true});
-        };
-
         vm.check_permission = function () {
-            return scope.project.owner._id.$oid === rootScope.user._id.$oid;
+            return vm.project.owner._id.$oid === rootScope.user._id.$oid;
         };
 
-        vm.is_scrumm = function(){
-          return scope.project.project_type === 'S';
+        vm.is_scrumm = function () {
+            return vm.project.project_type === 'S';
         };
 
-        if(state.current.tab_active !== undefined){
-            vm[state.current.tab_active] = true;
-        }
+        rootScope.$watch('project', function(nv){
+            vm.project = nv;
+            if(vm.project){
+                SocketIO.channel(vm.project._id.$oid);
+            }
+        });
 
-        SocketIO.channel(scope.project._id.$oid);
     };
 
     var ProjectFormCtrl = function (state, modalInstance, ProjectService) {
@@ -85,9 +74,9 @@
         };
     };
 
-    ResolveProject.$inject = ['$stateParams', 'ProjectService'];
+    ResolveProject.$inject = ['$rootScope', '$stateParams', 'ProjectService'];
     Config.$inject = ['$stateProvider', '$translateProvider'];
-    ProjectCtrl.$inject = ['$scope', '$rootScope', '$state', 'project', 'SocketIO'];
+    ProjectCtrl.$inject = ['$rootScope', '$state', 'SocketIO'];
     ProjectDeleteController.$inject = ['$modalInstance', 'ProjectService', 'project'];
     ProjectFormCtrl.$inject = ['$state', '$modalInstance', 'ProjectService'];
 

@@ -90,12 +90,14 @@ module.exports = {
             'vendor/angular-loading-bar/build/loading-bar.min.js',
             'vendor/angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.min.js',
             'vendor/angular-filter/dist/angular-filter.min.js',
-            'vendor/angular-facebook/lib/angular-facebook.js'
+            'vendor/angular-facebook/lib/angular-facebook.js',
+            'vendor/waves/dist/waves.min.js'
 
         ],
         maps: [
             'vendor/angular/angular.min.js.map',
-            'vendor/jquery/dist/jquery.min.map'
+            'vendor/jquery/dist/jquery.min.map',
+            'vendor/waves/dist/waves.min.js.map'
         ],
         css: [
             'vendor/angular/angular-csp.css',
@@ -103,7 +105,8 @@ module.exports = {
             'vendor/ng-tags-input/ng-tags-input.min.css',
             'vendor/angular-xeditable/dist/css/xeditable.css',
             'vendor/angular-loading-bar/build/loading-bar.min.css',
-            'vendor/angular-bootstrap-colorpicker/css/colorpicker.min.css'
+            'vendor/angular-bootstrap-colorpicker/css/colorpicker.min.css',
+            'vendor/waves/dist/waves.min.css'
         ],
         assets: [],
         fonts: []

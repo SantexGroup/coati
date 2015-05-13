@@ -41,40 +41,9 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-4"
-         data-index="{{ $index }}">
-        <div class="card">
-            <div class="card-header bgm-bluegray m-b-20">
-                <h2>{{ 'HOME_NEW_PROJECT' | translate }}...
-                    <small></small>
-                </h2>
-                <ul class="actions actions-alt">
-                    <li class="dropdown">
-                        <a href="" data-toggle="dropdown" aria-expanded="false">
-                            <i class="md md-more-vert"></i>
-                        </a>
-
-                        <ul class="dropdown-menu dropdown-menu-right">
-                            <li>
-                                <a href="">Change Date Range</a>
-                            </li>
-                            <li>
-                                <a href="">Change Graph Type</a>
-                            </li>
-                            <li>
-                                <a href="">Other Settings</a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-                <button ng-click="vm.create_project();"
-                        class="btn bgm-red btn-float waves-effect waves-effect waves-button waves-float">
-                    <i class="md md-add"></i></button>
-            </div>
-
-            <div class="card-body card-padding">
-                {{ 'HOME_CREATE_PROJECT' | translate }}
-            </div>
-        </div>
-    </div>
+    <button title="{{ 'HOME_NEW_PROJECT' | translate }}..."
+       ng-click="vm.create_project();"
+       class="btn bgm-red btn-float new-button">
+        <i class="md md-add"></i>
+    </button>
 </div>

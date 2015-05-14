@@ -87,8 +87,8 @@
             }, function (err) {
                 log.debug(err);
 
-                if (err.data.message) {
-                    vm.serverError = err.data.message;
+                if (err.message) {
+                    vm.serverError = err.message.message;
                 }
             });
         };

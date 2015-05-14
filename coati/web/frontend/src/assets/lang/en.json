@@ -202,5 +202,7 @@
     "PROFILE_LAST_NAME": "Last Name",
     "PROFILE_EMAIL": "Email",
     "PROFILE_UPDATE": "Update",
-    "PROFILE_CLOSE": "Close"
+    "PROFILE_CLOSE": "Close",
+
+    "ERROR_1001": "Invalid Credentials"
 }

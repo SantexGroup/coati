@@ -1,51 +1,61 @@
 <form class="form-signin" name="vm.form.login" ng-submit="vm.login_user()"
       novalidate>
-    <h2 class="form-signin-heading">{{ 'LOGIN_TITLE' | translate }}
-        <small>{{ 'LOGIN_SUBTITLE' | translate }}</small>
-        <span class="beta"  style="right: 45px;font-size: 10px;top: 12px;">Beta</span>
-    </h2>
-
-
-    <div class="login-wrap">
-        <div class="form-group">
-            <input class="form-control"
-                   data-ng-class="{'error': vm.form.login.email.$invalid && vm.submitted}"
-                   autocomplete="off"
-                   placeholder="E-Mail" data-ng-model="vm.credentials.email"
-                   name="email" type="email" required>
-            <label class="error"
-                   data-ng-show="vm.form.login.email.$invalid && vm.submitted">{{ 'LOGIN_INVALID_EMAIL' | translate }}</label>
+    <div class="lc-block toggled" id="l-login">
+        <div class="form-group fg-float">
+            <div class="fg-line"
+                 data-ng-class="{'has-error': vm.form.login.email.$invalid && vm.submitted}">
+                <input class="form-control fg-input"
+                       data-ng-model="vm.credentials.email"
+                       required
+                       name="email"
+                       type="email">
+            </div>
+            <label class="fg-label">
+                E-Mail
+            </label>
+            <small class="help-block error"
+                   data-ng-show="vm.form.login.email.$invalid && vm.submitted">
+                {{
+                'LOGIN_INVALID_EMAIL' | translate }}
+            </small>
         </div>
-        <div class="form-group">
-            <input class="form-control"
-                   data-ng-class="{'error': vm.form.login.password.$invalid && vm.submitted}"
-                   autocomplete="off"
-                   placeholder="Password" data-ng-model="vm.credentials.password"
-                   name="password" type="password" required>
-            <label class="error"
-                   data-ng-show="vm.form.login.password.$invalid && vm.submitted">{{ 'LOGIN_INVALID_PASSWORD' | translate }}</label>
+
+        <div class="form-group fg-float">
+            <div class="fg-line"
+                 data-ng-class="{'has-error': vm.form.login.password.$invalid && vm.submitted}">
+                <input class="form-control fg-input"
+                       data-ng-model="vm.credentials.password"
+                       name="password"
+                       type="password"
+                       required>
+            </div>
+            <label class="fg-label">
+                Password
+            </label>
+            <small class="help-block error"
+                   data-ng-show="vm.form.login.password.$invalid && vm.submitted">
+                {{'LOGIN_INVALID_PASSWORD' | translate }}
+            </small>
         </div>
-        <button class="btn btn-primary"
-                type="submit">{{ 'LOGIN_LOG_IN' | translate }}
+        <div class="form-group" data-ng-show="vm.serverError && vm.submitted">
+            <small class="help-block error">
+                {{vm.serverError}}
+            </small>
+        </div>
+
+        <button type="button" ng-click="vm.authenticate('google')" class="btn bgm-red waves-effect waves-button waves-float">
+            <i class="socicon socicon-google"></i> Google
         </button>
-        <a href="/register">{{ 'LOGIN_REGISTER' | translate }}</a>
-        <label style="display: block;" class="error" ng-if="vm.error">{{vm.error}}</label>
-        <hr>
+        <button type="button" ng-click="vm.authenticate('facebook')" class="btn bgm-indigo waves-effect waves-button waves-float">
+            <i class="socicon socicon-facebook"></i> Facebook
+        </button>
+        <button type="button" ui-sref="register" class="btn bgm-teal waves-effect waves-button waves-float">{{ 'LOGIN_REGISTER' | translate }}</button>
 
-        <p>{{ 'LOGIN_SOCIAL' | translate }}</p>
 
-        <div class="login-social-link">
-            <a href="javascript:;" ng-click="vm.authenticate('google')"
-               class="btn-google-plus">
-                <i class="icon-google-plus"></i>
-                Google
-            </a>
-            <a href="javascript:;" ng-click="vm.authenticate('facebook')"
-               class="btn-facebook">
-                <i class="icon-facebook"></i>
-                Facebook
-            </a>
-        </div>
+        <div class="clearfix"></div>
+        <button class="btn btn-login bgm-red btn-float waves-effect waves-button waves-float">
+            <i class="md md-arrow-forward"></i>
+        </button>
     </div>
-</form>
 
+</form>

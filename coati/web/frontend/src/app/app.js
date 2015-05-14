@@ -106,7 +106,7 @@
 
                 scope.pageTitle = toState.data.pageTitle + ' | Coati';
             }
-            scope.actual_path = toState.name;
+            vm.actual_path = toState.name;
             rootScope.state = toState;
 
         });

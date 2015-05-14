@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="Coati" ng-controller="AppCtrl as main">
+<html lang="en" ng-app="Coati" ng-controller="AppCtrl as main" data-ng-class="{true:'login-content'}[main.actual_path=='login']">
 <head>
     <base href="/">
     <meta charset="utf-8">
@@ -13,8 +13,7 @@
     <% }); %>
 </head>
 
-<body navigation
-      data-ng-class="{true:'body-500', false:''}[actual_path == 'error_403']">
+<body navigation data-ng-class="{true:'login-content'}[main.actual_path=='login']">
 <div id="wrapper" ui-view="master_view" ng-cloak translate-cloak>
     <header id="header">
         <ul class="header-inner">

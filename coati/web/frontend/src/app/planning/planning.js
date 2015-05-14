@@ -194,7 +194,7 @@
         };
 
         vm.sortSprintOptions = {
-            connectWith: '.sprint-section',
+            connectWith: '.sprints',
             forcePlaceholderSize: true,
             placeholder: 'placeholder-item',
             start: function (e, ui) {
@@ -215,7 +215,7 @@
         };
 
         vm.sortTicketOptions = {
-            connectWith: '.task-list',
+            connectWith: '.lv-body',
             forcePlaceholderSize: true,
             placeholder: 'placeholder-item',
             start: function (e, ui) {

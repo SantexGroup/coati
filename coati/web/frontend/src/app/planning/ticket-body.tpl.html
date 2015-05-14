@@ -1,0 +1,36 @@
+<div class="media-body">
+    <div class="lv-title">{{ vm.project.prefix }}-{{ tkt.number
+        }}: {{ tkt.title }}
+    </div>
+
+    <div class="extra-data">
+        <ul class="lv-attrs">
+            <li ng-repeat="lbl in tkt.labels">
+                {{ lbl }}
+            </li>
+        </ul>
+        <span class="badge bgm-orange">{{ tkt.points }} Pts.</span>
+                        <span ng-if="tkt.badges.comments > 0"
+                              class="badge bgm-bluegray"
+                              title="Comments"><i
+                                class="md md-comment"></i> {{ tkt.badges.comments }}</span>
+                        <span ng-if="tkt.badges.files > 0"
+                              class="badge bgm-bluegray"
+                              title="Attachments"><i
+                                class="md md-attach-file"></i> {{ tkt.badges.files }}</span>
+    </div>
+    <div dropdown class="lv-actions actions">
+        <a href="#" dropdown-toggle class="dropdown-toggle">
+            <i class="md md-more-vert"></i>
+        </a>
+
+        <ul class="dropdown-menu dropdown-menu-right" role="menu">
+            <li>
+                <a href="javascript:;" ng-click="vm.clone_ticket($event,tkt);">Clone</a>
+            </li>
+            <li>
+                <a href="javascript:;" ng-click="vm.delete_ticket($event, tkt);">Delete</a>
+            </li>
+        </ul>
+    </div>
+</div>

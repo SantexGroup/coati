@@ -1,7 +1,7 @@
 (function (angular) {
 
     function ConfigApp(ConfProvider, location, urlRoute, translateProvider, FacebookProvider, GooglePlusProvider,loadingBar) {
-        urlRoute.when('/', '/home/');
+        //urlRoute.when('/', '/home/');
         location.html5Mode({
             enabled: true,
             requireBase: false
@@ -15,6 +15,8 @@
         translateProvider.preferredLanguage('en')
             .fallbackLanguage('en')
             .useStorage('StorageService');
+        translateProvider.useSanitizeValueStrategy('escaped');
+
         loadingBar.includeSpinner = false;
         loadingBar.latencyThreshold = 500;
 

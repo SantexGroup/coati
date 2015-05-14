@@ -19,7 +19,7 @@
                               title="Attachments"><i
                                 class="md md-attach-file"></i> {{ tkt.badges.files }}</span>
     </div>
-    <div dropdown class="lv-actions actions">
+    <div dropdown class="lv-actions actions" ng-click="$event.stopPropagation();">
         <a href="#" dropdown-toggle class="dropdown-toggle">
             <i class="md md-more-vert"></i>
         </a>

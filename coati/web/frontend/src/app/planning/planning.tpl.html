@@ -87,7 +87,7 @@
             <div ng-repeat="tkt in vm.tickets track by tkt._id.$oid"
                  class="lv-item media user-story {{ tkt.type }}"
                  ui-sref="project.planning.ticket({ticket_id:tkt._id.$oid, project_pk:vm.project._id.$oid})">
-                <div class="checkbox pull-left">
+                <div class="checkbox pull-left" ng-click="$event.stopPropagation();">
                     <label>
                         <input type="checkbox" value="">
                         <i class="input-helper"></i>
@@ -102,29 +102,12 @@
                     <div class="lv-title"
                          onaftersave="vm.saveQuickTicket(sprint);"
                          editable-text="vm.new_ticket"
-                         e-form="ticketFormSprint"
                          ng-show="!ticketFormSprint.$visible"
                          e-ng-keypress="$event.which === 13 ? ticketFormSprint.$submit() : false"
                          ng-click="ticketFormSprint.$show()">
                         {{ 'PLANNING_FAST_NEW_TICKET' |
                         translate }}
                     </div>
-                    <form editable-form name="ticketFormSprint"
-                          ng-show="ticketFormSprint.$visible"
-                          class="form-buttons form-inline"
-                          style="margin: 5px 0 0">
-                        <button type="submit"
-                                ng-disabled="ticketFormSprint.$waiting"
-                                class="btn btn-primary">
-                            <i class="icon-ok"></i>
-                        </button>
-                        <button type="button"
-                                ng-disabled="ticketFormSprint.$waiting"
-                                ng-click="ticketFormSprint.$cancel()"
-                                class="btn btn-default">
-                            <i class="icon-remove"></i>
-                        </button>
-                    </form>
                 </div>
             </div>
 

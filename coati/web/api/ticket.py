@@ -92,7 +92,8 @@ class TicketInstance(AuthResource):
                     # remove old data if this already exists
                     spo = SprintTicketOrder(sprint=sprint, ticket=tkt)
                     spo.ticket_repr = tkt.to_dict()
-                    spo.order = SprintTicketOrder.get_next_order_index(sprint.id)
+                    spo.order = SprintTicketOrder.get_next_order_index(
+                        sprint.id)
                 spo.save()
         else:
             spo = SprintTicketOrder.get_active_ticket(tkt)
@@ -177,7 +178,7 @@ class TicketProjectList(AuthResource):
 
         if data.get('sprint'):
             # Assign to a sprint
-            sprint = Sprint.get_by_id(pk=data.get('sprint')['pk'])
+            sprint = Sprint.get_by_id(data.get('sprint')['pk'])
             if sprint:
                 spo = SprintTicketOrder(sprint=sprint, ticket=tkt)
                 spo.ticket_repr = tkt.to_dict()
@@ -213,7 +214,7 @@ class TicketOrderProject(AuthResource):
         # save activity
         save_notification(project_pk=project_pk,
                           verb='backlog_order',
-                          data=data)
+                          data={'order': data})
 
         return data, 200
 
@@ -245,7 +246,7 @@ class TicketOrderSprint(AuthResource):
         # save activity
         save_notification(project_pk=project_pk,
                           verb='sprint_ticket_order',
-                          data=data)
+                          data={'order': data})
 
         return data, 200
 

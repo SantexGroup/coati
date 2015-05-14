@@ -103,11 +103,10 @@
         };
 
         vm.show_profile = function () {
-            var modalInstance = modal.open({
+            modal.open({
                 controller: 'UserProfileCtrl as vm',
                 templateUrl: 'user/user.tpl.html'
             });
-
         };
 
         //get notifications

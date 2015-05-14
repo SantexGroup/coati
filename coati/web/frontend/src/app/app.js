@@ -1,7 +1,7 @@
 (function (angular) {
 
     function ConfigApp(ConfProvider, location, urlRoute, translateProvider, FacebookProvider, GooglePlusProvider,loadingBar) {
-        //urlRoute.when('/', '/home/');
+        urlRoute.when('/', '/home/');
         location.html5Mode({
             enabled: true,
             requireBase: false

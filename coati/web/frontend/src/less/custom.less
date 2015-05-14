@@ -1,4 +1,4 @@
-.new-button{
+.new-button {
   position: fixed;
   bottom: 30px;
   z-index: 1;
@@ -7,12 +7,74 @@
 }
 
 .ticket-item, .user-story {
-  .extra-data{
-    padding:5px 0 0 0;
+  .extra-data {
+    padding: 5px 0 0 0;
   }
 
-  .lv-attrs{
+  .lv-attrs {
     display: inline-block !important;
-    margin:0px !important;
+    margin: 0px !important;
+  }
+}
+
+.editable-text {
+
+  width: 100%;
+
+  .form-group {
+    width: 90%;
+
+    input[type=text] {
+      background-color: transparent;
+      width: 100%;
+    }
+  }
+}
+
+@media (min-width: 480px) {
+  .listview.lv-lg .lv-item {
+    padding: 17px 35px 17px 5px;
+  }
+
+  .listview {
+
+    .ticket-item, .user-story {
+      border-left: solid 8px;
+
+      .pull-left {
+        padding-left: 5px;
+        padding-top: 13px;
+        label {
+          padding-left: 15px;
+        }
+      }
+    }
+
+    .U {
+      border-left-color: #78CD51;
+    }
+    .B {
+      border-left-color: #ff0000;
+    }
+
+    .F {
+      border-left-color: #ff8a01;
+    }
+
+    .I {
+      border-left-color: #20e4ff;
+    }
+
+    .E {
+      border-left-color: #9c3fff;
+    }
+
+    .T {
+      border-left-color: #f70cff;
+    }
+
+    .NEW {
+      border-left-color: #1232ff;
+    }
   }
 }

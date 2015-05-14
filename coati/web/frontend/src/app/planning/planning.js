@@ -73,7 +73,7 @@
         };
 
         vm.renameSprint = function (sprint) {
-            SprintService.update(sprint);
+            SprintService.update(vm.project._id.$oid, sprint);
         };
 
 

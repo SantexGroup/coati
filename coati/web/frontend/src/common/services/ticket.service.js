@@ -33,7 +33,7 @@
                 return req.$do('/projects/' + project_pk + '/tickets/order', req.METHODS.POST, data);
             },
             'update_sprint_order': function (project_pk, sprint_pk, data) {
-                return req.$do('/projects/' + project_pk + '/tickets/sprint/' + sprint_pk + '/order', req.METHODS.POST, data);
+                return req.$do('/projects/' + project_pk + '/tickets/sprints/' + sprint_pk + '/order', req.METHODS.POST, data);
             },
             'movement': function (project_pk, data) {
                 return req.$do('/projects/' + project_pk + '/tickets/movement', req.METHODS.POST, data);
